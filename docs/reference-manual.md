@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.39
+HatchGrab Engineering Reference Manual · V16.40
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.39**
+**Version 16.40**
 
 November 2026
 
@@ -120,7 +120,7 @@ identical; a **pre-flight** before the migration runs and a **check** after it. 
 insert fail (its own exception block; on error it leaves the value NULL and logs a WARNING). Never run a proof against Pizzeria
 Gusto or any trading truck. A proof that can't be run is a stop: say so; don't apply the migration.
 
-# Open items (V16.39, 25 November 2026) — THE ONLY CURRENT LIST
+# Open items (V16.40, 25 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
@@ -346,12 +346,18 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     **Deadline (V16.38):** prices start to age out on **21 Feb 2027** (US first; all live countries by 31 Mar). The deploy and the
     re-enabling must happen **before mid-February 2027**. A keep-current plan (prices 90 days, features rarely, presence once, staggered
     due dates, within the $90 cap) follows a read-only review of how a routine check refreshes `checked_on`.
-    **V16.39 — the re-enable plan (compare-research-6 §6.7), in order, before mid-February 2027:** (1) a prompt for the workflow-file
-    change (`SUPABASE_DB_URL`, the pg runner) with a harness — goes out with the batch deploy; (2) two database-only migrations with
-    Dominic's yes: the settings and the stagger (live without a deploy, inert while disabled); (3) Dominic: add the GitHub secret
+    **V16.39 — the re-enable plan (compare-research-6 §6.7), in order, before mid-February 2027:** ~~(1) a prompt for the workflow-file~~
+    ~~change (`SUPABASE_DB_URL`, the pg runner) with a harness — goes out with the batch deploy;~~ ⛔ done V16.40; ~~(2) two database-only migrations with~~
+    ~~Dominic's yes: the settings and the stagger (live without a deploy, inert while disabled);~~ ⛔ done V16.40; (3) Dominic: add the GitHub secret
     `SUPABASE_DB_URL`, confirm the $100 Console spend limit on the Competitor checks workspace; (4) the batch deploy (Open item 40);
     (5) Dominic: one manual `dry_run`, then `gh workflow enable competitor-check.yml` **before 4 January**; (6) read-only verify that the
     first runs check 2–4 a day and the live countries stay live.
+    **V16.40:** (1) ⛔ done — the workflow-file change (`18836cf5`, not pushed). (2) ⛔ done — `20261140` settings and `20261141` stagger
+    (4 a day, 4 Jan → 13 Feb; smallest margin 40 days). **Left:** (3) Dominic adds the GitHub secret `SUPABASE_DB_URL` (the pooled
+    connection string; a `db.<ref>.supabase.co` direct address may not connect from GitHub, so use Supabase's Session pooler string) and
+    confirms the Console spend limit on the Competitor checks workspace; (4) the batch deploy, which carries `18836cf5`; (5) one manual
+    dispatch with `dry_run = true` (mode routine), then `gh workflow enable competitor-check.yml` **before 4 January 2027**; (6) a read-only
+    check that 2–4 competitors are checked a day (up to ~6 in early February with the kept dates) and the live countries stay live.
 56. 🔴 **Vercel Spend Management:** confirm there is no budget with "Pause production deployments" (a pause = 503 for every page, Pizzeria
     Gusto included); keep alerts only. **Decision: Observability** events (≈ $0.13–0.31 a day) — switch off if unused.
 57. ~~**Comparison research — next waves**, in launch order (the method in §91):
@@ -365,12 +371,17 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     - ~~nothing eligible found: AO BS CR CV HN IL MC MZ NI PE PY SN TN TT; KZ GE AZ AM ME KG PK KH NP MN MO BN LA TZ UG ET NA BW ZM ZW DZ BZ
       GY SR MU; micro-territories not researched.~~
     - ~~**CL** is live on SumUp's single fallback: a second real CLP tool wanted (Toteat and Justo were round-2 evidence gaps).~~
-    ⛔ **V16.39:** **Comparison research — status after compare-research-7.** Every enabled country has been researched; the one-short
-    countries two to five times.
-    - one short: MT IS RS AL BA MK MD UZ KZ JO LK BD BO DO SV JM UY CO GU VI;
-    - at 0: KR GT and the rest; the 90 territories researched once (1–4 searches each).
-    - **The remaining lever is a decision:** extend the GI rule (a parent-country tool counts unless its own site excludes the territory)
-      to JE GG IM (from GB), AX (FI), RE GP MQ GF YT BL MF PM (FR), SM VA (IT), AD (ES / FR) — evidence in compare-research-7 §5.
+    ~~⛔ **V16.39:** **Comparison research — status after compare-research-7.** Every enabled country has been researched; the one-short~~
+    ~~countries two to five times.~~
+    - ~~one short: MT IS RS AL BA MK MD UZ KZ JO LK BD BO DO SV JM UY CO GU VI;~~
+    - ~~at 0: KR GT and the rest; the 90 territories researched once (1–4 searches each).~~
+    - ~~**The remaining lever is a decision:** extend the GI rule (a parent-country tool counts unless its own site excludes the territory)~~
+      ~~to JE GG IM (from GB), AX (FI), RE GP MQ GF YT BL MF PM (FR), SM VA (IT), AD (ES / FR) — evidence in compare-research-7 §5.~~
+    - ~~Later: which comparison pages get search traffic (Search Console / Bing by country; Open item 50).~~
+    ⛔ **V16.40:** **Comparison research — status after compare-territories-1 (75 live).** Every enabled country has been researched; the one-short ones
+    two to five times.
+    - one short: MT IS RS AL BA MK MD UZ KZ JO LK BD BO DO SV JM UY CO GU VI AX;
+    - at 0: KR GT and the rest.
     - Later: which comparison pages get search traffic (Search Console / Bing by country; Open item 50).
 58. ~~**Comparison open points (compare-research-3b §4):** Poster's "Site" add-on (kept unclear); KZ — add joinposter.kz to Poster's check
     pages; **Toss Place KR** — the fee in force (0 won "try" against the planned 3.5 % + VAT) must be confirmed on its own site before KR
@@ -382,9 +393,12 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
       plan unclear; KR at 0.~~
     - ~~**Fudo AR (live):** check whether fu.do/es-ar also says Tu Delivery needs a paid Fudo plan (as on the CO page). If so, AR's
       ARS 0 + 1.9 % understates Fudo's price; store plan + module as for CO.~~
-    ⛔ **V16.39:** **Comparison open points:** Poster's "Site" add-on alone stays unclear (UA, KZ). ~~KZ check page~~ ⛔ done V16.39
-    (20261135). ~~Fudo AR~~ ⛔ done V16.39 (plan + module; the «No tiene abono mensual» flag noted). Check on a live page that Zyda's QA /
-    BH / OM / SA / EG prices read as "from" and "billed yearly".
+    ~~⛔ **V16.39:** **Comparison open points:** Poster's "Site" add-on alone stays unclear (UA, KZ).~~ ~~KZ check page~~ ~~⛔ done V16.39~~
+    ~~(20261135).~~ ~~Fudo AR~~ ~~⛔ done V16.39 (plan + module; the «No tiene abono mensual» flag noted). Check on a live page that Zyda's QA /~~
+    ~~BH / OM / SA / EG prices read as "from" and "billed yearly".~~
+    ⛔ **V16.40:** **Comparison open points:** Poster's "Site" add-on alone stays unclear (UA, KZ). **Zyda's plan name leaks in English on QA / BH pages
+    ("Zyda plans (lowest, 'from')") and "from" is missing from the price cell:** a data-only rename (with Dominic's yes) and a sweep of
+    every stored plan name for the same class; showing "from" in the price cell is a code change (mockup first, then the batch deploy).
 59. ~~**Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, Restorant NG, Menufy PR, Oddle TW, Yoveletta /
     Rent-a-Shop LI and Ordea GI (neighbour fits), Fudo AR/CL, Pedix, DISH HR/SK, Vitrina SI.~~
     ~~⛔ **V16.38:** **Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, **Linkin1 SA**, Restorant NG,
@@ -646,6 +660,39 @@ actions, `refund`, the Manage-level token routes. 6. After two clean weeks, grou
 board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings (owner only; needs a mockup first).
 
 # Changelog
+
+## V16.40 — 25 November 2026 — **75 COMPARISON COUNTRIES LIVE (14 TERRITORIES BY THE NEIGHBOUR RULE); THE CHECKER'S SETTINGS AND STAGGER APPLIED; THE WORKFLOW'S IMPORT STEP ON THE DATABASE SECRET (NOT PUSHED)**
+
+- **compare-territories-1** (Dominic's decision, 25 Nov; commit `3b9da546`; `data/compare-territories-1/` registered thirteenth;
+  `data_imports` 24 → 25): the neighbour rule now covers **JE GG IM ← GB**, **AX ← FI**, **SM VA ← IT**, **AD ← ES + FR** and
+  **RE GP MQ GF YT BL MF PM ← FR**. Each territory's stored currency equals its parent's (none skipped). Evidence: compare-research-7
+  Block 5 (no counted parent tool names or excludes a territory). **61 → 75 live** (+14; **AX one short**, Food4you only).
+  - Shown: JE GG IM Ordea · Order Tiger · Grafterr; SM VA Qromo · MenuForma · Tilby; AD and the 8 French territories Beau Camion · Nomad ·
+    Place à emporter · Eatch.
+  - Left out: FoxiFood in all 15 (its own country list omits them); Perkss (weekly price, unclear as in GB); Boom srl in SM / VA (mainland
+    only); pidopago AD (a restaurant tool behind 4 food-truck tools). MenuForma's and TopEstrellas's terms load by script: read as "says
+    nothing".
+  - Not extended: FO, GL, MC, NC, PF, WF; MT stays strict.
+- **Zyda's wording on the live pages (read-only):** QA «… شهريًا، تُدفع سنويًا» and BH the same — "billed yearly" ✅, but **"from" is
+  missing from the price cell**, and the plan name leaks in English, untranslated: "Zyda plans (lowest, 'from')". Not changed (a
+  customer-facing change).
+- **checker-prep-1** (Dominic said yes, 25 Nov; both pre-flighted rolled back, applied, verified):
+  - `20261140` settings: tier_intervals commercial 90 · **core 365 · secondary 365**; deep queue off (`deep_requested_at` null,
+    `deep_country` null, `deep_per_day` 0); quick pass off (`pass_requested_at` null); semi-deep `done`; **daily cap $3**, monthly $90;
+    `check_interval_days` 90.
+  - `20261141` stagger: `check_requested_at` cleared (209 → 0); **161 competitors with counted plans due 4 a day, 4 Jan → 13 Feb 2027**,
+    ordered by earliest expiry; **smallest margin 40 days** (Bizzfo). Competitors without counted plans kept their dates (one overdue from
+    2 Nov; 29 null, for `spreadFirstDates`). ⚠️ **No exact undo:** the old per-row dates weren't snapshotted (they were inert while the
+    workflow was disabled).
+- **The workflow file** (`18836cf5`, +5 −1): the "Import new data files" step runs `npx -y -p pg@8.13.1 node scripts/competitor-check/run.mjs
+  scripts/data-import/main.ts` with `SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}`; the two REST secrets kept; nothing else changed.
+  Harness `scripts/checker-prep-1.cjs` (18/0; registered); competitor-check-1 227/0 and compare-fix-1 65/0 (each narrowed to allow only
+  this change), compare-fix-2 79/0. **Not pushed; the workflow stays disabled.**
+- **Live comparison countries (25 Nov): 75** — AD AR AT AU BE BG BH BL BR CA CH CL CY CZ DE DK EC EE EG ES FI FR GB GF GG GI GP GR HK HR HU
+  ID IE IM IN IT JE JP KW LI LT LU LV MA MF MQ MV MY NG NL NO NZ OM PA PL PM PR PT QA RE RO SA SE SG SI SK SM TH TR TW UA US VA YT ZA.
+  Verified: shown = marked everywhere; AE false/false; 0 of 848 plans over the ceiling; no pending or duplicate answers.
+
+**OBSERVED when applying** (25 Nov 2026, read-only, section E): live **75**, exactly section A's list; AE false / false; newest `data_imports` row `data/compare-territories-1/competitors.json`, `ok` (16:22:59 UTC); settings commercial 90 · core 365 · secondary 365, deep_per_day 0, daily cap 3, monthly cap 90; `DATA_FILES` 13. Matches the delta.
 
 ## V16.39 — 25 November 2026 — **61 COMPARISON COUNTRIES LIVE (QA, BH JOIN); FOXIFOOD THE FOOD-TRUCK TOOL IN 10 MORE; SUMUP'S FALLBACK GONE FROM CL CY FI LT SI; THE COMPETITOR CHECK REVIEWED: DON'T RE-ENABLE BEFORE THE DEPLOY**
 
@@ -40093,8 +40140,10 @@ Reports: `docs/enquiries-backend-1-report.md`, `docs/inbox-1-report.md`, `docs/i
 - **Eligibility** (who may be shown): the vendor's own website shows customers can order online ahead (pre-order / click and collect /
   order for a time), with the quote and URL stored. Preference: `food_truck` focus first; `restaurant` and `pos` only to make up 2 in a
   country; never QR-menu-only, till-only, booking-only, delivery marketplaces, or a site that isn't the vendor's own. SumUp's generic web
-  shop: only as the single fallback beside an eligible food or restaurant tool. Anolla: never. Neighbour fits: LI from CH (CHF), GI from
-  GB (GBP), recorded as "serves <territory> from <neighbour>" with the quote; MT strict.
+  shop: only as the single fallback beside an eligible food or restaurant tool. Anolla: never. Neighbour fits (a tool counted in the
+  parent country, in the parent's currency, counts in the territory unless its own site excludes it; recorded as "serves <territory>
+  from <parent>" with the quote): LI ← CH; GI, JE, GG, IM ← GB; AX ← FI; SM, VA ← IT; AD ← ES and FR; RE, GP, MQ, GF, YT, BL, MF, PM ←
+  FR (V16.40). Not FO, GL, MC, NC, PF, WF. MT strict.
 - **Price:** a monthly price in the country's currency or its second accepted currency (`ALSO_ACCEPTED_CURRENCY`: RO EUR, PA USD,
   KW KWD, BH BHD, OM OMR, JO JOD), with a source on the vendor's own site, checked within its interval + 30 days; one check is enough;
   Admin-verified counts. Price on request = hidden plan. A yearly toggle → the monthly-billing price, the yearly one in the note; if it
@@ -40126,6 +40175,9 @@ Reports: `docs/enquiries-backend-1-report.md`, `docs/inbox-1-report.md`, `docs/i
   (Foodics OM, Ewity MV, Zyda). Where a monthly-billing option exists, the monthly-billing price is stored (the yearly-toggle rule).
 - **The Competitor check keeps prices current (V16.39):** an unchanged price confirmed by a routine check moves `checked_on` on through
   the publish step; a > 50 % change is held and drops after the 90-day interval until Admin decides. Measured: $0.046 a routine check.
+- **The Competitor check's settings (V16.40, `20261140`):** prices (commercial) every 90 days; core and secondary features every 365;
+  deep queue, quick pass and semi-deep off; caps $3 a day and $90 a month. Due dates are staggered 4 a day by earliest expiry
+  (`20261141`); after each check the next date is 90 days on, so the spread keeps itself.
 
 ---
 
