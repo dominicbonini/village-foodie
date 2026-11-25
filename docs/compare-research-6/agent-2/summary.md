@@ -95,3 +95,8 @@ count now: 0
 
 Nothing new: mFood / Aomi = marketplaces; others have no Macau presence.
 count now: 0
+
+## BN (BND)
+
+No new vendor worth reading: marketplaces (GoMamam, foodpanda, Dart, Ta-Pow!, pasarpbg), single-business apps (Pizza Hut Brunei), MY/SG tools with no Brunei page. StoreHub not re-read (rejected earlier). Take App: USD only.
+count now: 0
