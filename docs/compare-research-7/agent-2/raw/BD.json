@@ -1,0 +1,26 @@
+{
+ "country": "BD",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "রেস্টুরেন্ট পস সফটওয়্যার অনলাইন অর্ডার ওয়েবসাইট টেকওয়ে পিকআপ মাসিক ফি টাকা ঢাকা প্যাকেজ মূল্য",
+  "Bangladesh SaaS restaurant own branded ordering website app \"self pickup\" OR \"takeaway\" subscription BDT monthly plans Dhaka",
+  "restaurant software Bangladesh \"online order\" \"pickup\" package \"৳\" \"/month\" cafe POS price list"
+ ],
+ "vendors": [
+  {
+   "name": "YouthFireIT (WhatsApp ordering)",
+   "website": "https://youthfireit.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Dhaka agency article selling WhatsApp/chat ordering set-up: delivery and in-chat only (no pickup / takeaway / ordering ahead), no named plan ('all-in SME plans typically starting around ৳15,000/month.')",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://youthfireit.com/academy/whatsapp-ordering-system-restaurant-bangladesh"
+   ]
+  }
+ ],
+ "notes": "BD count now: 1 (Restora POS, BDT) — unchanged. Block 1: Restora POS's USD toggle names no country (V-restora-pos.json); Klikit, uEngage, Dinehere, Take App don't serve BD; MENU TIGER USD only; Blink BD is '$' only. Block 2: one Bengali and two English searches returned only vendors seen before — RestroGreen (no price), Deonde (403 twice earlier, not retried), CloudWave (till), HisabPlus (QR), Info-iCafe (netlify, QR food-court ordering), Shayan POS (lovable.app), Menumium (USD), Blink — plus DeshiCommerce / Bitcommerz / Shopify BD (generic web-shop builders, excluded), ServerBD (custom builds, quote on request), BDStall / Bikroy / Capterra / SoftwareSuggest (directories and classifieds, never sources), Fiverr / Upwork gigs. New site opened: YouthFireIT (not relevant). Nothing eligible; stopped."
+}
