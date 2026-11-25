@@ -1,0 +1,12 @@
+{
+  "country": "AL",
+  "researched_on": "2026-11-25",
+  "searches": ["sistem porosish online për restorante marrje në lokal \"lekë\" në muaj çmimi faqe porosish Shqipëri"],
+  "vendors": [
+    { "name": "doXmenu", "website": "https://www.doxmenu.com/qr-menu/albania/", "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "QR digital menu only (EUR prices); same product compare-research-2 found to have no ordering in RS. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] },
+    { "name": "logic.al", "website": "https://logic.al", "stored_id_prefix": null, "focus": "pos", "verdict": "not_relevant",
+      "reason": "Albanian POS; search snippet shows loyalty and marketing features only, no online ordering. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] }
+  ],
+  "notes": "Vitrina (ALL) is already counted. No other tool priced in ALL was found. Storekit (Albania listed, GBP prices only) and FoxiFood (EUR only) were eligible in compare-research-2 but don't count; easyBar is table QR ordering only (compare-research-2). Results were Wolt (marketplace), MENU TIGER (agent 2's) and Restaumatic/Restimo (Polish, no Albania presence or ALL price in the snippets, not opened). Count stays 1."
+}

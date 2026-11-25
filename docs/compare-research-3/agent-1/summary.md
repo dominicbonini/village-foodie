@@ -83,3 +83,7 @@ None found. Search results were only Kolonell, a custom-build agency that compar
 ## UA (Ukraine, UAH)
 
 Choice 403s again; Delivety's /uk/pricing shows no prices (compare-research-2 saw USD only); Diny is a consumer app. Poster not re-read. count now: 1 (Vitrina)
+
+## AL (Albania, ALL)
+
+No other tool priced in ALL: doXmenu is a QR menu, logic.al is a POS with loyalty, and the rest were marketplaces or foreign tools. count now: 1 (Vitrina)
