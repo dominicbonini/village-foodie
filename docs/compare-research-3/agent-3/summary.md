@@ -256,3 +256,11 @@ count now: 0
 Nothing eligible exists with a DZD price.
 
 count now: 0
+
+## BZ (BZD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| My Belize Food | nearest_local | not_relevant (BORDERLINE: WhatsApp ordering, no pickup wording) | BZD 25 / 60 per month (also "now free") | https://mybelizefood.com/en |
+
+count now: 0

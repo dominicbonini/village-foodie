@@ -1,0 +1,43 @@
+{
+ "country": "BZ",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Belize restaurant online ordering system pickup \"BZD\" OR \"BZ$\" per month Belize City takeaway ordering software platform (Capterra/GetApp/G2/FoodChow excluded)"
+ ],
+ "vendors": [
+  {
+   "name": "My Belize Food",
+   "website": "https://mybelizefood.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "BORDERLINE: Belizean online menu where customers build the order and send it to the restaurant's WhatsApp, BZD prices (Basic 'BZD 25 /month', Premium 'BZD 60 /month', also 'now free'), but no pickup / takeout / order-ahead wording",
+   "eligibility": {
+    "order_quote": "After they make their order with the online menu, they are able to send the order directly to Restaurant's WhatsApp.",
+    "order_url": "https://mybelizefood.com/en",
+    "country_quote": "Check out the clients using our food ordering system in Belize.",
+    "country_url": "https://mybelizefood.com/en"
+   },
+   "plans": [
+    {
+     "plan_name": "Basic",
+     "currency": "BZD",
+     "price_major": 25,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "BZD 25 /month",
+     "url": "https://mybelizefood.com/en",
+     "note": "recorded for reference; the same page says 'Belize Food Restaurant ordering system is now free.' Premium 'BZD 60 /month'."
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://mybelizefood.com/en"
+   ]
+  }
+ ],
+ "notes": "Count now: 0. My Belize Food is the only Belizean ordering tool found (BZD prices, WhatsApp ordering from its own online menu) but it shows no pickup / takeaway wording — BORDERLINE not_relevant, the same call as Pídeme.online (BO) and Midelivery Food (GT); if WhatsApp ordering from the restaurant's own menu is accepted as ordering ahead it would make 1. BelizeON D'Way and Run Man: delivery marketplaces. Sandbar Hostel's ordering app: a single business. GloriaFood (agent 1), UpMenu (agent 1), Square (no Belize availability) not counted."
+}
