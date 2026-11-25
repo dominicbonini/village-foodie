@@ -191,3 +191,8 @@ count now: 0
 
 FoxiFood, Storekit: not listed. NemTakeAway: no Greenland on its site. nothing eligible exists.
 count now: 0
+
+## AX
+
+FoxiFood, Storekit: not listed (Finland only). One Swedish search: Wolt and guides only. nothing eligible exists.
+count now: 0
