@@ -1,0 +1,13 @@
+{
+  "vendor": "Ocuioso",
+  "stored_id_prefix": "8bcbd76a",
+  "country": "AO",
+  "researched_on": "2026-11-25",
+  "result": "unpriced",
+  "endpoint_url": "https://www.ocuioso.com/api/plans",
+  "endpoint_on_own_domain": true,
+  "how_confirmed": "https://www.ocuioso.com/precos (HTTP 200) loads its scripts from the same domain (/_next/static/chunks/...). In /_next/static/chunks/3_39hxdnm53lm.js the plans hook is 'usePlans' -> useQuery({queryKey:[\"plans\"],queryFn:()=>x()}) with x=async()=>{let{data:e}=await n.api.get(\"/plans\");return e}; the plan cards render PlanPrice{price:e.priceKz,previous:e.previousPriceKz,interval:e.interval}. The api client in /_next/static/chunks/0z21c-amiw2_v.js is axios create({baseURL:\"/api\",withCredentials:!0,...}) — a relative base, so the browser calls https://www.ocuioso.com/api/plans (own domain).",
+  "endpoint_response": "HTTP 500, application/json: {\"message\": \"Server Error\"} (read once, 25 Nov 15:3x UK)",
+  "plans": [],
+  "notes": "Endpoint confirmed on the vendor's own domain, but it returned a server error, so no plan names or amounts could be read -> unpriced (the page's own fallback text for this case is 'Não foi possível carregar os planos.'). Not retried (one read only)."
+}
