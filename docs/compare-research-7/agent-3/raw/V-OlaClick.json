@@ -1,0 +1,9 @@
+{
+  "vendor": "OlaClick",
+  "stored_id_prefix": "c400f63a",
+  "countries": [],
+  "researched_on": "2026-11-25",
+  "searches": ["olaclick \"El Salvador\" restaurantes menú digital"],
+  "vendors": [],
+  "notes": "SV is the only one-short country where OlaClick's USD prices could count. Today's search found no olaclick.com page naming El Salvador (only generic English product pages: online-ordering-system, digital-menu-restaurants, orders-by-whatsapp, point-of-sales); compare-research-3 found no country selector on pricing.olaclick.app/es and no SV page in a site search. Presence still only 'Restaurantes en América Latina' -> does not count in SV (no page fetched today: nothing new to read). BO, DO, GT, JM, CO, UY: USD-only pricing, not the stored currency -> not plausible."
+}
