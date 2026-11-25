@@ -1,0 +1,44 @@
+{
+ "country": "PE",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Perú sistema pedidos online restaurantes carta digital \"recojo en tienda\" plan mensual \"S/\" sin comisiones plataforma peruana",
+  "LOQUIERO REST carta digital pedidos restaurante Perú precios"
+ ],
+ "vendors": [
+  {
+   "name": "Fudo (Tu Delivery)",
+   "website": "https://fu.do",
+   "stored_id_prefix": "7e12931c",
+   "focus": "food_truck",
+   "verdict": "not_relevant",
+   "reason": "Peruvian price page now exists but is USD only ('Precios en dólares.'; Plan Avanzado USD 35/mes, Plan Pro USD 45/mes, Tu Delivery USD 30/mes) and shows no retiro / pickup wording; no PEN price",
+   "eligibility": {
+    "food_quote": "Movilidad para food trucks y ferias",
+    "food_url": "https://fu.do/es-pe/precios/",
+    "country_quote": "Precios en dólares.",
+    "country_url": "https://fu.do/es-pe/precios/"
+   },
+   "plans": [
+    {
+     "plan_name": "Tu Delivery (add-on)",
+     "currency": "USD",
+     "price_major": 30,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "USD 30 /mes",
+     "url": "https://fu.do/es-pe/precios/",
+     "note": "USD, not PEN — does not count in PE"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://fu.do/es-pe/precios/"
+   ]
+  }
+ ],
+ "notes": "Count now: 0. Nothing eligible exists with a PEN price that I could find (wave 2 ~8 vendors + today). Fudo's Peru price page is USD-only. KOM (kom.pe) is a Peruvian web agency quoting one-off builds (S/ 1,950 + IGV WhatsApp-ordering site, per search snippet) — an agency, not an ordering tool, not read. LOQUIERO REST: no own site found. Propio by Rappi (2020 press, Rappi-owned), DondeKomer.pe (restaurant listing app), Niubiz go (table self-service / payment), Mallplaza 'Pide y Lleva' (mall app): marketplace / table / not found — not counted. OlaClick and Pedix USD only. Justo (wave 2): no PE pickup wording."
+}

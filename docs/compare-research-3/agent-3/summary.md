@@ -99,3 +99,13 @@ count now: 0
 Nothing eligible exists with an NIO price (also Clickeat marketplace, Recafy, Avify; Pedix/OlaClick USD only).
 
 count now: 0
+
+## PE (PEN)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Fudo (Tu Delivery) | food_truck | not_relevant here (USD only, no pickup wording) | USD 30/mes add-on | https://fu.do/es-pe/precios/ |
+
+Nothing eligible exists with a PEN price (also KOM agency, LOQUIERO REST, Propio, DondeKomer, Niubiz go; OlaClick/Pedix USD).
+
+count now: 0
