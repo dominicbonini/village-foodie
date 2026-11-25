@@ -76,7 +76,7 @@ const UNCLEAR = [
 ]
 // A vendor whose page prices only ONE country ("Prices for Kuwait"): its plans are written for that country only; elsewhere it keeps
 // its entry and evidence, with no plan (so a Kuwaiti price never lands on another country, nor corrects a stored one there).
-const PLANS_ONLY_IN = { 'zyda.com': ['KW'] }
+const PLANS_ONLY_IN = { 'zyda.com': ['KW', 'QA', 'BH'] }   // compare-research-7: Zyda's own Qatar and Bahrain pages give local prices
 // wave 2: a vendor whose presence in most countries rests only on a generic phrase ("Restaurantes en América Latina") — rows kept only
 // where its own site names the country; the others go to the reviewer's not_relevant list (the evidence stays in the raw files).
 const PRESENCE_ONLY_IN = { 'olaclick.com': ['EC'] }

@@ -2,11 +2,734 @@
  "$comment": "compare-research-7 (25 Nov 2026): competitors read on their OWN websites by three Claude Code agents, one request at a time each (docs/compare-research-7-report.md; built by docs/compare-research-7/build.cjs). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import/). Every row source research, UNVERIFIED (35.an-1). Each answer carries the vendor’s verbatim quote and its page (35.an-4); \"no\" only with a quote saying it is not offered, silence is not_mentioned (35.ao-7). monthly_minor is MINOR units, converted from the page’s amount with lib/money-format.ts toMinorUnits (the 100× guard). request_check sets check_requested_at. \"evidence\" and \"not_relevant\" are for the reviewer; the import does not read them (the importer cannot mark a competitor not relevant).",
  "id": "compare-research-7",
  "checked_on": "2026-11-25",
- "competitors": [],
- "plans": [],
- "entries": [],
- "evidence": [],
- "not_relevant": [],
- "unreadable": [],
+ "competitors": [
+  {
+   "id": "e01cb953-6393-50c2-8cd4-2e49e1465d22",
+   "name": "Thinker POS",
+   "website": "https://thinkerpos.com",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-7 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: MK.",
+   "check_urls": [
+    "https://thinkerpos.com/en/pricing/",
+    "https://thinkerpos.com/en/online-ordering-delivery/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Enable online ordering to expand your reach, allowing customers to pre-order and pick up meals on the go",
+     "source_url": "https://thinkerpos.com/en/food-truck/"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "allowing customers to pre-order and pick up meals on the go",
+     "source_url": "https://thinkerpos.com/en/food-truck/"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "6.295 / month (incl. VAT) MKD",
+     "source_url": "https://thinkerpos.com/en/pricing/"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "d0eb16fa-4f72-57e7-86e6-383769afd992",
+   "name": "SumUp",
+   "website": "https://www.sumup.com/es-co/",
+   "focus": "pos",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-7 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: CO.",
+   "check_urls": [
+    "https://www.sumup.com/es-co/tienda-en-linea/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Offer customers shipping, in-store pickup and service locations.",
+     "source_url": "https://www.sumup.com/es-co/tienda-en-linea/",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned",
+     "note": "was \"no\" without a negative quote — recorded as not mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "4.3%",
+     "source_url": "https://www.sumup.com/es-co/tienda-en-linea/"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "797df612-f4b5-584f-b2cd-6aa538d2f846",
+   "name": "Zyda",
+   "website": "https://www.zyda.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-7 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: BH, QA.",
+   "check_urls": [
+    "https://www.zyda.com/bahrain/",
+    "https://www.zyda.com/pricing",
+    "https://www.zyda.com/qatar/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Order ahead, collect fast",
+     "source_url": "https://www.zyda.com/bahrain/"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Orders for a date, daily items and occasion peaks.",
+     "source_url": "https://www.zyda.com/pricing"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  }
+ ],
+ "plans": [
+  {
+   "id": "53a2910d-52dc-5d01-90a3-4ca5b36e6854",
+   "competitor_id": "e01cb953-6393-50c2-8cd4-2e49e1465d22",
+   "country_code": "MK",
+   "plan_name": "Standard",
+   "currency": "MKD",
+   "price_hidden": false,
+   "monthly_minor": 629500,
+   "monthly_major": 6295,
+   "yearly_only": false,
+   "setup_minor": 3075000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "incl",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://thinkerpos.com/en/pricing/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"6.295 / month (incl. VAT) MKD\" — Re-read today. Standard lists a 'Free license choice (pick 1)' that includes 'Takeaway & delivery license' (also 'QR ordering system license'); implementation and training '30,750 MKD including VAT' billed separately. No monthly/yearly toggle. The pricing page never uses the words 'online ordering'; its online-ordering page says 'Create your free ordering page today' and 'set your pickup and delivery preferences' but names no plan. Basic (3.699) and 'Basic + Website' (4.990, '*Does not include ecommerce') carry no takeaway licence, so Standard is the cheapest plan that plausibly includes online ordering. Weak: reviewer to confirm."
+  },
+  {
+   "id": "be8419d0-720b-5646-9a48-634f0720ded5",
+   "competitor_id": "e01cb953-6393-50c2-8cd4-2e49e1465d22",
+   "country_code": "MK",
+   "plan_name": "Advanced",
+   "currency": "MKD",
+   "price_hidden": false,
+   "monthly_minor": 869300,
+   "monthly_major": 8693,
+   "yearly_only": false,
+   "setup_minor": 3075000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "incl",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://thinkerpos.com/en/pricing/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"8.693 / month (incl. VAT) MKD\" — Free license choice (pick 2) from the same list incl. 'Takeaway & delivery license'; KDS up to 3 devices; implementation 30,750 MKD incl. VAT."
+  },
+  {
+   "id": "278fdb28-e32b-50bc-809d-5129299ff201",
+   "competitor_id": "d0eb16fa-4f72-57e7-86e6-383769afd992",
+   "country_code": "CO",
+   "plan_name": "Online store",
+   "currency": "COP",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 430,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.sumup.com/es-co/tienda-en-linea/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"$ 0\" — Re-read today: 'Monthly costs' '$ 0', 'Competitive transaction fee' '4.3%'. The es-co page is mixed: navigation, footer and FAQ in Spanish, product copy in English. '$' on the es-co path taken as COP (not stated). Weak; a reviewer may drop it."
+  },
+  {
+   "id": "64286dd8-5e29-5189-a363-a67c76c04585",
+   "competitor_id": "797df612-f4b5-584f-b2cd-6aa538d2f846",
+   "country_code": "BH",
+   "plan_name": "Zyda plans (lowest, 'from')",
+   "currency": "BHD",
+   "price_hidden": false,
+   "monthly_minor": 15833,
+   "monthly_major": 15.833333333333334,
+   "yearly_only": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.zyda.com/bahrain/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"Plans from 190 BHD a year.\" (yearly price ÷ 12) — A 'from' price on the Bahrain country page; the plan isn't named there. Only a yearly amount is shown in BHD (no monthly BHD price; the site-wide /pricing page is 'Prices for Kuwait' in KWD: Starter '20 KWD a month', '240 KWD billed yearly'). Borderline: 'from' price."
+  },
+  {
+   "id": "ef3a362c-cc05-58bf-91c8-f24fbca9aacd",
+   "competitor_id": "797df612-f4b5-584f-b2cd-6aa538d2f846",
+   "country_code": "QA",
+   "plan_name": "Zyda plans (lowest, 'from')",
+   "currency": "QAR",
+   "price_hidden": false,
+   "monthly_minor": 23750,
+   "monthly_major": 237.5,
+   "yearly_only": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.zyda.com/qatar/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"Plans from 2,850 QAR a year.\" (yearly price ÷ 12) — A 'from' price on the Qatar country page; the plan isn't named there. Only a yearly amount is shown in QAR (no monthly QAR price; the site-wide /pricing page is 'Prices for Kuwait' in KWD: Starter '20 KWD a month', '240 KWD billed yearly'). Borderline: 'from' price."
+  }
+ ],
+ "entries": [
+  {
+   "id": "904bac79-b9c7-56f9-b325-b861af07aa78",
+   "country_code": "MK",
+   "competitor_id": "e01cb953-6393-50c2-8cd4-2e49e1465d22",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "9479509d-9ba0-5aa9-b65e-d04c97660799",
+   "country_code": "CO",
+   "competitor_id": "d0eb16fa-4f72-57e7-86e6-383769afd992",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "4fe34f8f-a9f6-5979-a41b-c4f221e68075",
+   "country_code": "BH",
+   "competitor_id": "797df612-f4b5-584f-b2cd-6aa538d2f846",
+   "primary_plan_id": "64286dd8-5e29-5189-a363-a67c76c04585",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "fe4ca8f1-089e-5a04-a77a-67411ed3c419",
+   "country_code": "QA",
+   "competitor_id": "797df612-f4b5-584f-b2cd-6aa538d2f846",
+   "primary_plan_id": "ef3a362c-cc05-58bf-91c8-f24fbca9aacd",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  }
+ ],
+ "evidence": [
+  {
+   "name": "Thinker POS",
+   "evidence": [
+    {
+     "country": "MK",
+     "food_quote": "Whether you’re running a truck, cart, or trailer, our food truck POS is built to keep you moving",
+     "food_url": "https://thinkerpos.com/en/food-truck/",
+     "order_quote": "Enable online ordering to expand your reach, allowing customers to pre-order and pick up meals on the go",
+     "order_url": "https://thinkerpos.com/en/food-truck/",
+     "country_quote": "3.699 / month (incl. VAT) MKD",
+     "country_url": "https://thinkerpos.com/en/pricing/",
+     "reason": "Skopje POS with MKD prices and a food-truck page offering online ordering so customers pre-order and pick up; online ordering = the free-choice 'Takeaway & delivery license' on Standard/Advanced (reviewer to confirm)"
+    }
+   ]
+  },
+  {
+   "name": "SumUp",
+   "evidence": [
+    {
+     "country": "CO",
+     "order_quote": "Offer customers shipping, in-store pickup and service locations.",
+     "order_url": "https://www.sumup.com/es-co/tienda-en-linea/",
+     "country_quote": "Offer customers shipping, in-store pickup and service locations.",
+     "country_url": "https://www.sumup.com/es-co/tienda-en-linea/",
+     "reason": "SumUp's Colombian site (es-co) sells a free online store with in-store pickup; generic web shop, nothing food-specific: single fallback beside a real food tool (CO counts Fudo)."
+    }
+   ]
+  },
+  {
+   "name": "Zyda",
+   "evidence": [
+    {
+     "country": "BH",
+     "order_quote": "Order ahead, collect fast",
+     "order_url": "https://www.zyda.com/bahrain/",
+     "country_quote": "Plans from 190 BHD a year.",
+     "country_url": "https://www.zyda.com/bahrain/",
+     "reason": "Gulf restaurant ordering-website platform with pickup & curbside ('Order ahead, collect fast'); its own Bahrain country page gives a plan price in BHD"
+    },
+    {
+     "country": "QA",
+     "order_quote": "Order ahead, collect fast",
+     "order_url": "https://www.zyda.com/qatar/",
+     "country_quote": "Plans from 2,850 QAR a year.",
+     "country_url": "https://www.zyda.com/qatar/",
+     "reason": "Gulf restaurant ordering-website platform with pickup & curbside ('Order ahead, collect fast'); its own Qatar country page gives a plan price in QAR"
+    },
+    {
+     "country": "BH",
+     "order_quote": "Order ahead, collect fast",
+     "order_url": "https://www.zyda.com/bahrain/",
+     "country_quote": "Plans from 190 BHD a year.",
+     "country_url": "https://www.zyda.com/bahrain/",
+     "reason": "Gulf restaurant ordering-website platform with pickup & curbside ('Order ahead, collect fast'); its own Bahrain country page gives a plan price in BHD"
+    },
+    {
+     "country": "QA",
+     "order_quote": "Order ahead, collect fast",
+     "order_url": "https://www.zyda.com/qatar/",
+     "country_quote": "Plans from 2,850 QAR a year.",
+     "country_url": "https://www.zyda.com/qatar/",
+     "reason": "Gulf restaurant ordering-website platform with pickup & curbside ('Order ahead, collect fast'); its own Qatar country page gives a plan price in QAR"
+    }
+   ]
+  }
+ ],
+ "not_relevant": [
+  {
+   "country": "AL",
+   "name": "Vlore POS+ (POSPlus World LLC)",
+   "website": "https://apps.apple.com/us/app/vlore-pos/id1639162057",
+   "stored": null,
+   "reason": "POS app whose App Store listing mentions 'online ordering management'; seller POSPlus World LLC, no own website found, no Albania presence and no ALL price (the name only echoes the city Vlorë). Not opened.",
+   "url": "https://apps.apple.com/us/app/vlore-pos/id1639162057",
+   "plans": []
+  },
+  {
+   "country": "BA",
+   "name": "Korpa (korpa.ba)",
+   "website": "https://korpa.ba",
+   "stored": null,
+   "reason": "Bosnian consumer delivery app (App Store in search) - a delivery marketplace, never counts. Not opened.",
+   "url": "https://korpa.ba",
+   "plans": []
+  },
+  {
+   "country": "BA",
+   "name": "Dostavica",
+   "website": "https://apps.apple.com/ba",
+   "stored": null,
+   "reason": "Domestic consumer food-ordering app linking many restaurants - marketplace, never counts. Not opened.",
+   "url": "https://apps.apple.com/ba",
+   "plans": []
+  },
+  {
+   "country": "BA",
+   "name": "Gustico",
+   "website": "https://apps.apple.com/ba/app/gustico/id1383344170",
+   "stored": null,
+   "reason": "A single venue's own ordering app ('collect it at Gustico'), not a tool sold to food businesses. Not opened.",
+   "url": "https://apps.apple.com/ba/app/gustico/id1383344170",
+   "plans": []
+  },
+  {
+   "country": "IS",
+   "name": "Teya",
+   "website": "https://www.teya.com/is",
+   "stored": null,
+   "reason": "Icelandic-origin payments company: its Icelandic pages in search are card machines (posar) and a payment page (Greiðslusíða), no restaurant online-ordering / pickup product. Not opened.",
+   "url": "https://www.teya.com/is",
+   "plans": []
+  },
+  {
+   "country": "IS",
+   "name": "dk Pos (DK Hugbúnaður ehf.)",
+   "website": "https://apps.apple.com/is/app/dk-pos/id1622173326",
+   "stored": null,
+   "reason": "Icelandic tablet till for waiters taking orders 'í sal eða útisvæði' (App Store listing in search); no customer online ordering ahead. Till only. Not opened.",
+   "url": "https://apps.apple.com/is/app/dk-pos/id1622173326",
+   "plans": []
+  },
+  {
+   "country": "KZ",
+   "name": "Starter (starterapp)",
+   "website": "https://crmindex.ru/services/starterapp",
+   "stored": null,
+   "reason": "Russian branded-app / website / CRM platform for delivery restaurants; directories quote rubles or 1-3 % per order and name Russia only - no Kazakhstan presence or KZT price surfaced. Own site not found in search; not opened.",
+   "url": "https://crmindex.ru/services/starterapp",
+   "plans": []
+  },
+  {
+   "country": "MD",
+   "name": "ECOM (ecom.md)",
+   "website": "https://ecom.md/en/about",
+   "stored": null,
+   "reason": "Moldovan generic e-commerce platform (online stores, mobile apps, B2B portals); nothing about restaurants or pickup, no price in the search result - a generic web-shop builder, never counts. Not opened.",
+   "url": "https://ecom.md/en/about",
+   "plans": []
+  },
+  {
+   "country": "MD",
+   "name": "Straus",
+   "website": "https://apps.apple.com/ru/app/straus/id1438722558",
+   "stored": null,
+   "reason": "Chișinău food-delivery app - a delivery marketplace, never counts. Not opened.",
+   "url": "https://apps.apple.com/ru/app/straus/id1438722558",
+   "plans": []
+  },
+  {
+   "country": "MT",
+   "name": "Sixteen Ltd",
+   "website": "https://storekit.com/strategic-partner/sixteen",
+   "stored": null,
+   "reason": "Maltese reseller of Lightspeed and Storekit (Storekit's own partner page); a reseller, not a vendor with its own ordering product. Storekit itself still has £ prices only (see V-Storekit.json). Not opened.",
+   "url": "https://storekit.com/strategic-partner/sixteen",
+   "plans": []
+  },
+  {
+   "country": "RS",
+   "name": "Svilenković (web developer, Leskovac)",
+   "website": "https://svilenkovic.com",
+   "stored": null,
+   "reason": "Freelance restaurant-website builder: custom projects priced per job in € (search result), no ordering product with a monthly price. Not opened.",
+   "url": "https://svilenkovic.com",
+   "plans": []
+  },
+  {
+   "country": "RS",
+   "name": "Zegashop",
+   "website": "https://www.zegashop.com",
+   "stored": null,
+   "reason": "Generic e-commerce store builder with SEO guides for Serbian cities; generic web-shop builder (never counts), no RSD price shown. Not opened.",
+   "url": "https://www.zegashop.com",
+   "plans": []
+  },
+  {
+   "country": "RS",
+   "name": "Minimax ESIR (Saop d.o.o.)",
+   "website": "https://rs-minimax.knowledgeowl.com",
+   "stored": null,
+   "reason": "Cloud bookkeeping with an ESIR fiscal-invoice module; no customer online ordering. Not opened.",
+   "url": "https://rs-minimax.knowledgeowl.com",
+   "plans": []
+  },
+  {
+   "country": "UZ",
+   "name": "Oshme (@Oshme_bot)",
+   "website": "https://www.it-park.uz",
+   "stored": null,
+   "reason": "Uzbek Telegram service for choosing restaurants and booking tables (IT Park startup story); booking only, no ordering ahead. Not opened.",
+   "url": "https://www.it-park.uz",
+   "plans": []
+  },
+  {
+   "country": "UZ",
+   "name": "OLX freelancer bot/site builds",
+   "website": "https://www.olx.uz",
+   "stored": null,
+   "reason": "Freelance one-off builds (Starter 1 500 000 so'm one-off etc.) - not a vendor's own product site, one-off quotes. Not opened.",
+   "url": "https://www.olx.uz",
+   "plans": []
+  },
+  {
+   "country": "BD",
+   "name": "YouthFireIT (WhatsApp ordering)",
+   "website": "https://youthfireit.com",
+   "stored": null,
+   "reason": "Dhaka agency article selling WhatsApp/chat ordering set-up: delivery and in-chat only (no pickup / takeaway / ordering ahead), no named plan ('all-in SME plans typically starting around ৳15,000/month.')",
+   "url": "https://youthfireit.com/academy/whatsapp-ordering-system-restaurant-bangladesh",
+   "plans": []
+  },
+  {
+   "country": "BH",
+   "name": "OrderJet",
+   "website": null,
+   "stored": null,
+   "reason": "Bahraini pickup / car-ordering app: only App Store listings and news found, no own website and no price",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "JO",
+   "name": "Orange Jordan POS (Smart Business)",
+   "website": "https://orange.jo",
+   "stored": null,
+   "reason": "telco checkout POS (cash management, payments, stock); no online ordering / pickup wording and no prices on https://orange.jo/en/business/small-businesses/smart-business/pos",
+   "url": "https://orange.jo/en/business/small-businesses/smart-business/pos",
+   "plans": []
+  },
+  {
+   "country": "LK",
+   "name": "Merpacc POS",
+   "website": "https://merpacc.com",
+   "stored": null,
+   "reason": "Sri Lankan cloud till ('KOT, takeaway & table management' = in-house); no online ordering / pickup / ordering website, no prices on https://merpacc.com/pos",
+   "url": "https://merpacc.com/pos",
+   "plans": []
+  }
+ ],
+ "unreadable": [
+  {
+   "country": "KZ",
+   "name": "FoodSoul",
+   "website": "https://foodsoul.pro",
+   "stored": null,
+   "reason": "Russian platform for restaurants' own delivery/ordering website and app; both rates pages (foodsoul.pro/rates and foodsoul.ru/en/rates) are script-rendered and returned only the title 'FoodSoul Rates — Website and App Development for Food and Flower Delivery' and a loading graphic. No Kazakhstan presence, tenge price or pickup wording could be read (search snippets suggest % of turnover with ruble/dollar thresholds)."
+  },
+  {
+   "country": "MT",
+   "name": "Born Digital Studio",
+   "website": "https://born-website.pages.dev",
+   "stored": null,
+   "reason": "Malta web agency writing about own ordering systems for Maltese restaurants (search result only); its page is on a throwaway host (pages.dev) that did not resolve (ENOTFOUND). Not relevant under the throwaway-host rule anyway."
+  },
+  {
+   "country": "KR",
+   "name": "Toss Place (토스오더 픽업주문)",
+   "website": "https://tossplace.com",
+   "stored": "87b9b92a",
+   "reason": "left out on review: its own site does not state the pickup-order fee in force today (compare-research-4 agent 2, raw/KR-toss.json); the stored KR plan is marked unclear by migration 20261133"
+  },
+  {
+   "country": "CO",
+   "name": "iwebnu",
+   "website": "https://iwebnu.com",
+   "stored": null,
+   "reason": "Colombian digital menu for 'corrientazos' (found via a Portafolio article: QR menu at the table, delivery; price 'under 1,000 pesos per day' — a per-day price, unclear); https://iwebnu.com/ did not connect today (no HTTP response), so nothing was read from its own site"
+  },
+  {
+   "country": "CO",
+   "name": "Propio by Rappi",
+   "website": "https://propio.rappi.com",
+   "stored": null,
+   "reason": "Rappi's 2020 own-ordering-channel product for restaurants (press: delivery or 'recojo en tienda'); https://propio.rappi.com/ did not connect today (no HTTP response) — apparently discontinued; nothing read from its own site, no price"
+  }
+ ],
  "not_needed": []
 }
