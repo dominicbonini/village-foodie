@@ -1,0 +1,52 @@
+{
+ "country": "MY",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Malaysia F&B online ordering system self pickup takeaway pre-order commission-free pricing \"RM\" per month restaurant cafe own website"
+ ],
+ "vendors": [
+  {
+   "name": "Orderla",
+   "website": "https://www.orderla.my",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "/pricing shows only 'Form Not Found' (no plans, no prices, no ordering wording)",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.orderla.my/pricing"
+   ]
+  },
+  {
+   "name": "iCHEF",
+   "website": "https://www.ichefpos.com/en-my",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "its Malaysia pricing URL (/en-my/pricing) 301-redirects to the Taiwan page (/zh-tw/pricing) — no MYR price page on its own site; rejected for HK earlier (only aggregator takeaway)",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.ichefpos.com/en-my/pricing"
+   ]
+  },
+  {
+   "name": "FeedMe POS",
+   "website": "https://feedme.ai",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Malaysian POS (KL/JB offices); pricing page lists Lite/Standard/Premium with no plan prices (only an add-on 'RM 90 per month'); no sentence about customers ordering ahead for pickup",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://feedme.ai/pricing"
+   ]
+  }
+ ],
+ "notes": "MY count now: 2 (Klikit, StoreHub) — unchanged. Qashier MY (stored, eligible) is priced per day only (compare-research-1: 'RM8 a DAY'; a search snippet now shows 'Plan RM 1.50 / day') — a per-day price is unclear, so not counted. Oddle MY: a search snippet shows 'from RM199/month' on oddle.me/en-my, but oddle.me refused automated fetches twice today (403) — not tried again; worth a later re-try (Oddle is stored). Take App MY: USD only. New sites opened: Orderla (form not found), iCHEF (no MY price page), FeedMe (no plan prices, no order-ahead). Stopped."
+}
