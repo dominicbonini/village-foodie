@@ -109,3 +109,13 @@ count now: 0
 Nothing eligible exists with a PEN price (also KOM agency, LOQUIERO REST, Propio, DondeKomer, Niubiz go; OlaClick/Pedix USD).
 
 count now: 0
+
+## PY (PYG)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| RestoPRO | nearest_local | unreadable (script-rendered, retried once) | — | https://restopro.com.py |
+
+No PYG-priced eligible tool: ClickParaPedir and PedíFácil (stored) stay unpriced; Fudo USD only; Monchis marketplace.
+
+count now: 0

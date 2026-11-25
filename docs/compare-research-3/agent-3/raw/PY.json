@@ -1,0 +1,24 @@
+{
+ "country": "PY",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Paraguay sistema pedidos online restaurantes \"para retirar\" OR \"para llevar\" plan mensual \"Gs.\" menú digital paraguayo precios"
+ ],
+ "vendors": [
+  {
+   "name": "RestoPRO",
+   "website": "https://restopro.com.py",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "retried once today (wave 2 also): script-rendered, only the title 'RestoPRO | Software para restaurantes en Paraguay' is readable",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://restopro.com.py"
+   ]
+  }
+ ],
+ "notes": "Count now: 0 priced in PYG. Eligible but unpriced (wave 2, stored): ClickParaPedir (food-truck page, price per location on request) and PedíFácil (no price). Fudo's Paraguay site is USD only (USD 35 / 45 + Tu Delivery USD 30, wave 2). RestoPRO is still unreadable (retried once). Monchis (Paraguayan delivery app, 83 venues per press) is a marketplace — never counted. Odoo via Interfaces S.A. (ERP integrator, custom quotes) not an ordering tool. KaruMenu (wave 2): QR->WhatsApp, no pickup wording. MENU TIGER (agent 2, USD). Stopped: nothing eligible with a PYG price after ~6 candidates across waves."
+}
