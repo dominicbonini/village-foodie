@@ -10,3 +10,14 @@
 | Flipdish (5b50f4e3) | nearest_local | not_relevant (no Malta found; search only) | — | https://www.flipdish.com |
 
 Count now: 1 (FoxiFood). Nothing more is eligible: Maltese-language, POS and order-ahead searches turned up only agencies, a reseller (Sixteen for Storekit) and marketplaces.
+
+## IS (ISK)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Noona | nearest_local | not_relevant (bookings + QR table ordering; search only) | — | https://noona.app |
+| Yonoton | nearest_local | unreadable (403) | — | https://www.yonoton.com |
+| Munu | nearest_local | not_relevant (Norway/Sweden/Finland only, no prices) | — | https://munu.cloud/product/webshop/ |
+| Glaze | nearest_local | not_relevant (in-venue self-pay; search only) | — | — |
+
+Count now: 1 (Vitrina). Nothing more is eligible after about 5 new vendors.

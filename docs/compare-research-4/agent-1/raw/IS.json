@@ -1,0 +1,65 @@
+{
+  "country": "IS",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Noona veitingastaðir netpantanir sækja verð kr á mánuði",
+    "noona.app online ordering takeaway pickup restaurant Iceland \"pick up\"",
+    "\"pantaðu og sæktu\" OR \"panta og sækja\" kerfi fyrir veitingastaði kaffihús vefpöntun áskrift verð",
+    "Glaze Iceland self-service ordering restaurants online order pickup pricing",
+    "vefpöntunarkerfi matarvagn OR veitingastaður \"kr. á mánuði\" pantanir sóttar netið hugbúnaður"
+  ],
+  "vendors": [
+    {
+      "name": "Noona",
+      "website": "https://noona.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Icelandic restaurant software, but what search shows is table reservations (ISK price) and QR ordering at the table (demo only); no online ordering ahead / pickup product found. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Yonoton",
+      "website": "https://www.yonoton.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Finnish self-service ordering (kiosk, online store, phone) with an 'enters the Icelandic market' news page (sold via Origo, per round 2); the page answered 403 to both tries, so nothing could be quoted and no ISK price seen.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://www.yonoton.com/news/yonoton-enters-icelandic-market"]
+    },
+    {
+      "name": "Munu",
+      "website": "https://munu.cloud",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Nordic webshop with pickup and pre-orders, but it names only Norway, Sweden and Finland ('perfect for restaurant groups operating across Norway, Sweden, and Finland'), no Iceland and no prices.",
+      "eligibility": {
+        "order_quote": "Guests can choose between delivery, pickup, or future pre-orders based on your venue's setup.",
+        "order_url": "https://munu.cloud/product/webshop/"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://munu.cloud/product/webshop/"]
+    },
+    {
+      "name": "Glaze",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Icelandic fintech for in-venue self-payment / self-service (e.g. Aska Cafe at Lava Centre), per search results; no online ordering ahead or price found. Own site not found, not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "Count stays 1 (Vitrina, ISK). Icelandic-language searches (panta og sækja, vefpöntun, kr. á mánuði, matarvagn) return mostly Wolt listings, myPOS card terminals (round 3: not relevant) and foreign tools in DKK/USD/EUR (NemTakeaway, UpMenu, GloriaFood, Flipdish). Dineout and Stefna (round 2) remain eligible but show no price; not re-read. A Búllan ordering app was seen in search; its App Store page 404'd, so its developer is unknown. tts.ai (AI phone ordering, no price) and Ice & Fries (a restaurant) aren't tools. After about 5 new vendors, nothing else is eligible."
+}
