@@ -1,0 +1,117 @@
+{
+ "country": "BH",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "OrderJet Bahrain restaurant ordering platform pickup pricing BHD"
+ ],
+ "vendors": [
+  {
+   "name": "Zyda",
+   "website": "https://www.zyda.com",
+   "stored_id_prefix": "797df612",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Gulf restaurant ordering-website platform with pickup & curbside ('Order ahead, collect fast'); its own Bahrain country page gives a plan price in BHD",
+   "eligibility": {
+    "order_quote": "Order ahead, collect fast",
+    "order_url": "https://www.zyda.com/bahrain/",
+    "country_quote": "Plans from 190 BHD a year.",
+    "country_url": "https://www.zyda.com/bahrain/"
+   },
+   "plans": [
+    {
+     "plan_name": "Zyda plans (lowest, 'from')",
+     "currency": "BHD",
+     "price_major": 190,
+     "period": "year",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Plans from 190 BHD a year.",
+     "url": "https://www.zyda.com/bahrain/",
+     "note": "A 'from' price on the Bahrain country page; the plan isn't named there. Only a yearly amount is shown in BHD (no monthly BHD price; the site-wide /pricing page is 'Prices for Kuwait' in KWD: Starter '20 KWD a month', '240 KWD billed yearly'). Borderline: 'from' price."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Order ahead, collect fast",
+     "url": "https://www.zyda.com/bahrain/"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Orders for a date, daily items and occasion peaks.",
+     "url": "https://www.zyda.com/pricing"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.zyda.com/bahrain/",
+    "https://www.zyda.com/pricing"
+   ]
+  },
+  {
+   "name": "OrderJet",
+   "website": null,
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Bahraini pickup / car-ordering app: only App Store listings and news found, no own website and no price",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": []
+  }
+ ],
+ "notes": "BH count now: 2 if Zyda's 'from' price is accepted (Ordable BHD + Zyda 'Plans from 190 BHD a year.' on https://www.zyda.com/bahrain/, BHD accepted for BH), else 1. NEW in Block 1 (Zyda country page; earlier rounds read only the KWD /pricing page). Still not counted: Blink ('$' only, no currency code anywhere — V-blink.json), Foodics (no Bahrain price page), Take App / MENU TIGER / Restora POS (Bahrain not named), OrderFlow (duckdns host, left out in compare-research-4). One Block 2 search (OrderJet): App Store / news only, no own site. Stopped at 2."
+}
