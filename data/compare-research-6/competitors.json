@@ -4,6 +4,87 @@
  "checked_on": "2026-11-25",
  "competitors": [
   {
+   "id": "77b49f4f-e705-53ee-948d-a73cecaff07d",
+   "name": "ICRTouch TouchTakeaway",
+   "website": "https://icrtouch.com",
+   "focus": "pos",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-6 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: IM.",
+   "check_urls": [
+    "https://icrtouch.com/products/touchtakeaway",
+    "https://icrtouch.com/case-study/24/4/2020/touchtakeaway-success-story-an-interview-with-shane-from-fryers-fish-and-chips",
+    "https://icrtouch.com/where-to-buy"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Customers can pre-order their meals for a time and date of their choosing.",
+     "source_url": "https://icrtouch.com/products/touchtakeaway"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "If a customer schedules their order for another time, it goes straight to a dedicated view",
+     "source_url": "https://icrtouch.com/products/touchtakeaway"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned",
+     "note": "was \"no\" without a negative quote — recorded as not mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
    "id": "0802a7c8-e311-5b65-af51-44972ef2749c",
    "name": "Poster",
    "website": "https://joinposter.kz",
@@ -24,6 +105,83 @@
      "value": "partial",
      "quote": "Доставка и самовывоз",
      "source_url": "https://joinposter.kz/pricing"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "1c3ade45-27f2-5931-9bd0-9f2ca8680fe3",
+   "name": "Restolabs",
+   "website": "https://www.restolabs.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-6 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: AW.",
+   "check_urls": [
+    "https://www.restolabs.com/case-studies/aruba-enterprise-direct-ordering",
+    "https://www.restolabs.com/pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Online Ordering [Pickup & In-House Delivery]",
+     "source_url": "https://www.restolabs.com/pricing"
     },
     {
      "key": "preorder",
@@ -316,6 +474,38 @@
  ],
  "plans": [
   {
+   "id": "11940a72-2109-56c3-bff9-e7e973584210",
+   "competitor_id": "77b49f4f-e705-53ee-948d-a73cecaff07d",
+   "country_code": "IM",
+   "plan_name": "TouchTakeaway",
+   "currency": "GBP",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "hidden",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://icrtouch.com/products/touchtakeaway",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-6, read 25 Nov 2026: \"TouchTakeaway charges 0% commission on every order, meaning 100% of the profit stays in your pocket.\" — No subscription price on the site; buyers are sent to 'Find your local ICRTouch Authorised Partner'. Country quote is from a 2020 case study; the 2026 where-to-buy list names no Isle of Man partner (weak presence)."
+  },
+  {
    "id": "22ff5e60-9f4f-5a41-9fe3-18950a90ae98",
    "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
    "country_code": "KZ",
@@ -347,6 +537,38 @@
    "verified_at": null,
    "verified_by": null,
    "notes": "compare-research-6, read 25 Nov 2026: \"8 640 ₸9 600 ₸/мес. · Стоимость — 11 400 ₸/мес.\" — Starter 9 600 ₸ + Poster Site 11 400 ₸ a month, billed monthly (Starter 8 640 ₸ a month if billed yearly)"
+  },
+  {
+   "id": "8efb2e55-54e4-525e-9c50-5ad73670492b",
+   "competitor_id": "1c3ade45-27f2-5931-9bd0-9f2ca8680fe3",
+   "country_code": "AW",
+   "plan_name": "Basic / Growth / Pro",
+   "currency": "USD",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "hidden",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.restolabs.com/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-6, read 25 Nov 2026: \"\" — page reader saw only '$00/ month Billed Annually' placeholders (amounts filled by script); toggle 'Monthly Billing' / 'Annual Billing (save 20%)'; no currency selector, no AWG. USD would not count in AW anyway."
   },
   {
    "id": "4967b515-0570-54aa-8213-e7d8e6880910",
@@ -417,10 +639,30 @@
  ],
  "entries": [
   {
+   "id": "d1b3968c-b1f4-5305-8791-d12f951bac1b",
+   "country_code": "IM",
+   "competitor_id": "77b49f4f-e705-53ee-948d-a73cecaff07d",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
    "id": "5207da6e-9ff2-55d9-8a7f-576c52bf29e0",
    "country_code": "KZ",
    "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
    "primary_plan_id": "22ff5e60-9f4f-5a41-9fe3-18950a90ae98",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "9c87a80d-30c6-5206-890e-d73a9a600bbd",
+   "country_code": "AW",
+   "competitor_id": "1c3ade45-27f2-5931-9bd0-9f2ca8680fe3",
+   "primary_plan_id": null,
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -469,6 +711,19 @@
  ],
  "evidence": [
   {
+   "name": "ICRTouch TouchTakeaway",
+   "evidence": [
+    {
+     "country": "IM",
+     "order_quote": "Customers can pre-order their meals for a time and date of their choosing.",
+     "order_url": "https://icrtouch.com/products/touchtakeaway",
+     "country_quote": "ICR Retail Systems are the Isle of Man's leading EPoS & Cash Register suppliers.",
+     "country_url": "https://icrtouch.com/case-study/24/4/2020/touchtakeaway-success-story-an-interview-with-shane-from-fryers-fish-and-chips",
+     "reason": "UK EPoS maker's own online-ordering product with collection and pre-orders for a chosen time; its own case-study page names an Isle of Man partner. No price on its site (sold via authorised partners): hidden plan, not counted as priced."
+    }
+   ]
+  },
+  {
    "name": "Poster",
    "evidence": [
     {
@@ -480,6 +735,19 @@
      "country_quote": "Автоматизация фудтрака в Казахстане",
      "country_url": "https://joinposter.kz/business/foodtruck",
      "reason": "Poster's own Kazakhstan site (joinposter.kz) with a Kazakhstan food-truck page and tenge prices; ordering website = paid Poster Site add-on ('Доставка и самовывоз'). Priced as base plan + module (V16.38): Starter 9 600 ₸ + Poster Site 11 400 ₸ = 21 000 ₸ a month on monthly billing. Recorded from compare-research-3 agent-4's evidence (read 25 Nov); joinposter.kz now counts as Poster's own check page (coordinator)."
+    }
+   ]
+  },
+  {
+   "name": "Restolabs",
+   "evidence": [
+    {
+     "country": "AW",
+     "country_quote": "Aruba is the 4th largest country by order volume on the Restolabs platform",
+     "country_url": "https://www.restolabs.com/case-studies/aruba-enterprise-direct-ordering",
+     "order_quote": "Online Ordering [Pickup & In-House Delivery]",
+     "order_url": "https://www.restolabs.com/pricing",
+     "reason": "own site shows it sells in Aruba (case study: 4th-largest market by order volume) and every plan lists 'Online Ordering [Pickup & In-House Delivery]'; but no AWG price: the pricing page is $ only, with the amounts rendered as '$00' placeholders (script-filled) and billed annually by default, so no price could be read -> not counted in AW"
     }
    ]
   },
@@ -539,6 +807,123 @@
  ],
  "not_relevant": [
   {
+   "country": "AD",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "AD",
+   "name": "CityXerpa",
+   "website": null,
+   "stored": null,
+   "reason": "Andorran food-delivery app ('més de 160 establiments', App Store); delivery marketplace. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "AD",
+   "name": "Andornet",
+   "website": null,
+   "stored": null,
+   "reason": "Andorran web agency building PrestaShop / OpenCart shops; generic e-commerce, not a food ordering tool. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "AD",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "AX",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "AX",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "BL",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "BL",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "FK",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "FK",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "FO",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "FO",
+   "name": "NemTakeAway",
+   "website": "https://www.nemtakeaway.dk",
+   "stored": null,
+   "reason": "Danish takeaway ordering system (Standard '395 / per month / Billed monthly') but its price page names no Faroe Islands / Greenland (SMS fees 'applies to +45 numbers'); territory not shown. Neighbour rule only for LI/GI.",
+   "url": "https://www.nemtakeaway.dk/en/price/",
+   "plans": []
+  },
+  {
+   "country": "FO",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
    "country": "GE",
    "name": "Syrve (GastroDigital, Georgia partner)",
    "website": "https://www.syrve.com",
@@ -548,12 +933,174 @@
    "plans": []
   },
   {
+   "country": "GF",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "GG",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "GG",
+   "name": "Food.gg",
+   "website": null,
+   "stored": null,
+   "reason": "Guernsey multi-restaurant takeaway app ('over 30 local restaurant menus'); marketplace. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "GG",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "GL",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "GL",
+   "name": "NemTakeAway",
+   "website": "https://www.nemtakeaway.dk",
+   "stored": null,
+   "reason": "Danish takeaway ordering system (Standard '395 / per month / Billed monthly') but its price page names no Faroe Islands / Greenland (SMS fees 'applies to +45 numbers'); territory not shown. Neighbour rule only for LI/GI.",
+   "url": "https://www.nemtakeaway.dk/en/price/",
+   "plans": []
+  },
+  {
+   "country": "GL",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "GP",
+   "name": "EasyTaVie (Easy Delivery app, SODIGMA, Martinique)",
+   "website": null,
+   "stored": null,
+   "reason": "Antilles multi-merchant ordering/delivery platform (own couriers via EasyBiker app, partner-merchant app EasyManager); App Store says available in Martinique and Guadeloupe with pre-order and click & collect, but it is a marketplace, no own site or merchant price found. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "GP",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
    "country": "IL",
    "name": "Foody POS",
    "website": "https://foody-pos.co.il",
    "stored": null,
    "reason": "Israeli POS + online ordering with ILS prices (pricing page per reader: 'Foody Online' 590 ₪ לחודש before VAT, incl. 'איסוף עצמי וטייק אוויי'; setup 1,090 ₪), but it shows no real customers (V16.38): no names, logos or testimonials; its about page says demos use synthetic data and 'הדוגמאות המספריות אינן תוצאות של לקוחות'. No address. Directory prices (299 ₪ Starter, $149) don't match its own page.",
    "url": "https://foody-pos.co.il/",
+   "plans": []
+  },
+  {
+   "country": "IM",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "IM",
+   "name": "Dazzler",
+   "website": null,
+   "stored": null,
+   "reason": "Manx multi-business food directory/platform with click-and-collect and planned delivery ('Uber Eats-style', per news); marketplace. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "IM",
+   "name": "Eatout.im",
+   "website": null,
+   "stored": null,
+   "reason": "Pandemic-era Manx 'middleman' ordering platform (news only); marketplace, status unclear. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "IM",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "JE",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "JE",
+   "name": "Food.je",
+   "website": null,
+   "stored": null,
+   "reason": "Jersey multi-restaurant takeaway ordering app ('over 100 local restaurants'); marketplace. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "JE",
+   "name": "Cuisine.JE",
+   "website": null,
+   "stored": null,
+   "reason": "Jersey takeaway + table-reservation platform (App Store); marketplace. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "JE",
+   "name": "Fetch.je",
+   "website": null,
+   "stored": null,
+   "reason": "Jersey shop-local online marketplace for retailers (news/Jersey Post pages); generic marketplace. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "JE",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
    "plans": []
   },
   {
@@ -599,6 +1146,168 @@
    "stored": null,
    "reason": "Paris POS with click and collect ('Développez votre chiffre d’affaires grâce à la livraison et au click and collect.') but no Monaco mention; home page says 'Fait avec amour à Paris'. /tarifs 404.",
    "url": "https://www.innovorder.com/",
+   "plans": []
+  },
+  {
+   "country": "MF",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "MF",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "MQ",
+   "name": "EasyTaVie (Easy Delivery app, SODIGMA, Martinique)",
+   "website": null,
+   "stored": null,
+   "reason": "Antilles multi-merchant ordering/delivery platform (own couriers via EasyBiker app, partner-merchant app EasyManager); App Store says available in Martinique and Guadeloupe with pre-order and click & collect, but it is a marketplace, no own site or merchant price found. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "MQ",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "NC",
+   "name": "Liv'eats",
+   "website": null,
+   "stored": null,
+   "reason": "Nouméa consumer food-delivery app (App Store); delivery marketplace. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "NC",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "PF",
+   "name": "Liv'eats",
+   "website": null,
+   "stored": null,
+   "reason": "Nouméa consumer food-delivery app (App Store); delivery marketplace. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "PF",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "PM",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "PM",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "RE",
+   "name": "Stick'Eat (YESITIS)",
+   "website": null,
+   "stored": null,
+   "reason": "Consumer click-and-collect app listing local restaurants (App Store only, multi-restaurant marketplace style); no own site, no Réunion statement, no merchant price. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "RE",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "SH",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "SH",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "SJ",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "SJ",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "SM",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "SM",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
    "plans": []
   },
   {
@@ -662,6 +1371,51 @@
    "stored": null,
    "reason": "Described on the App Store as an on-demand delivery app for restaurants; delivery only. Not opened.",
    "url": null,
+   "plans": []
+  },
+  {
+   "country": "VA",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "VA",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "WF",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": null,
+   "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions",
+   "plans": []
+  },
+  {
+   "country": "WF",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
+   "plans": []
+  },
+  {
+   "country": "YT",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com",
+   "stored": "d03a6e1f",
+   "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+   "url": "https://www.foxifood.com/legal/country-terms/",
    "plans": []
   },
   {
