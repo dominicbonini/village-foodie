@@ -1,0 +1,48 @@
+{
+  "country": "RS",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "online naručivanje za restorane i picerije sajt sa porudžbinama \"preuzimanje u restoranu\" paket \"din mesečno\" agencija",
+    "izrada sajta za restoran sa online poručivanjem cena paketa RSD mesečno pretplata porudžbine bez provizije Srbija",
+    "\"kasa za ugostitelje\" OR \"ESIR\" softver ugostiteljstvo \"online porudžbine\" modul cenovnik dinara mesečno"
+  ],
+  "vendors": [
+    {
+      "name": "Svilenković (web developer, Leskovac)",
+      "website": "https://svilenkovic.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Freelance restaurant-website builder: custom projects priced per job in € (search result), no ordering product with a monthly price. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Zegashop",
+      "website": "https://www.zegashop.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Generic e-commerce store builder with SEO guides for Serbian cities; generic web-shop builder (never counts), no RSD price shown. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Minimax ESIR (Saop d.o.o.)",
+      "website": "https://rs-minimax.knowledgeowl.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Cloud bookkeeping with an ESIR fiscal-invoice module; no customer online ordering. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "RS counts Vitrina (RSD) only. Earlier rounds rejected FoxiFood (EUR only), doXmenu, Kafeterija, Ordera, UpMenu, Poster, Remaris, iiko and saw Orders.co, Listim, Restimo, Restaumatic, mobi2go, Monri, subger, Jotform - not re-read. Three new Serbian searches (local web agencies with ordering packages, 'izrada sajta za restoran sa online poručivanjem', ESIR / 'kasa za ugostitelje' POS with an online-ordering module) returned Glovo listings (marketplace), Jotform templates, a freelance web developer, a generic store builder (Zegashop), Minimax's ESIR docs, Anolla (never), Odoo and Poster (USD), TiramisuERP (Slovenian ERP, no Serbia), Restimo/Restaumatic (Polish, no RSD). No local agency sells an ordering product with a public RSD price. Nothing eligible; RS stays at 1. Aside: Odoo (Belgian ERP, local-currency pricing by country) has POS-restaurant online ordering but is a generic ERP / web-shop builder - not opened."
+}
