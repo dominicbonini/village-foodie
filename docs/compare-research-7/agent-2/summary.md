@@ -59,3 +59,7 @@ No endpoint. The pricing page's own HTML holds the amounts in `data-month` / `da
 - **TW:** 快一點 QuickClick eligible ('外帶 – 顧客提前預約免等待'), '$1,688/月' in bare '$' — 3rd only if accepted as TWD. 點點食: no own site.
 - **Feasty ZA:** names no country, no currency → not counted (raw/ZA-feasty.json).
 - HK, TH: nothing new (Atlas, Tablevibe 401, Ser.vi, Eats365 TH unpriced, catalogue-only HK vendors).
+
+## Pass 3 on KR, JO, LK, BD (angles: POS resellers, 'powered by', regional players)
+
+Nothing new: KR 0 (Toss still has no fee on its own site; PassOrder / 올때아아 are multi-café apps), JO 1 (Zegashop = generic builder), LK 1 (possystem.lk till; FoodChow INR only; Supaorder partner band only), BD 1 (FoodChow INR; Deonde 403 not retried).
