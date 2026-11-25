@@ -1,0 +1,12 @@
+{
+  "country": "DO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "plataforma pedidos en línea restaurantes República Dominicana \"RD$\" mensual para llevar sin comisiones menú digital",
+    "sistema POS restaurante República Dominicana tienda online pedidos pickup \"RD$\" planes precios ITBIS e-CF",
+    "menú digital con pedidos para recoger Santo Domingo restaurantes app propia precio mensual pesos dominicanos",
+    "startup dominicana software restaurantes pedidos directos WhatsApp tienda virtual \"República Dominicana\" planes RD$ 2026"
+  ],
+  "vendors": [],
+  "notes": "Count now: 1 (Gestióndo, DOP, stored — its RestaurantOS Pro is the only RD$ restaurant tool the searches found). No new vendor site surfaced to read in four new-angle searches (para llevar / pickup, POS with e-CF + tienda online, menú digital para recoger in Santo Domingo, Dominican startups with WhatsApp shops). Results: marketplaces (PedidosYa, Uber Eats, DoorDash), e-invoicing only (Facturapp, Alegra POS — USD, Odoo nexprint e-CF module), Avify (WhatsApp sales AI per message, USD — rejected in -2/-4), foreign tools with no DO presence or DOP price (MENU TIGER — agent 2, Restroworks, Square ES, Toast, Qamarero, Wix, WooCommerce, Jotform, Maspedidos MX, ChatFood), Capterra / GetApp / Software Advice listings (not sources). Earlier dead ends (Manú, POS DO, TOI events pre-order 'A medida', Meniu, ComandPOS) not re-read. Pedix (USD), OlaClick (USD), Fudo (no DO site): see raw/V-*.json. Stopped."
+}
