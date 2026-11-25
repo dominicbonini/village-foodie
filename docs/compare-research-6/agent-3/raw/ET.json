@@ -1,0 +1,23 @@
+{
+  "country": "ET",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Ethiopia restaurant online ordering pickup system Addis Ababa birr per month telebirr order ahead software ኦንላይን ትዕዛዝ ምግብ ቤት",
+    "Gobirr Yeleta online orders restaurants Ethiopia pricing plan"
+  ],
+  "vendors": [
+    {
+      "name": "Gobirr Store (Yeleta IT Consulting)",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "App Store listing only (restaurant / store owners in Addis Ababa 'start accepting online orders, manage them and deliver the same to the customer's location' — delivery wording only); no own site found by a name search, no price, no pickup / order-ahead wording. Not read",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "Count now: 0. English + Amharic search found no Amharic results; otherwise only marketplaces / delivery apps (klik, Deliver Addis, Esoora — never counted) and press. Gobirr Store: app listing only, delivery wording, no site, no price. Earlier: Ethio Bites (App Store only), NewMeda / MarakiPOS (tills), FoodChow (not mine). No ETB-priced tool; no local vendor site worth reading. Stopped."
+}
