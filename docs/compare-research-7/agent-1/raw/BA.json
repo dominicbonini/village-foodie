@@ -1,0 +1,47 @@
+{
+  "country": "BA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "aplikacija za narudžbe hrane za vaš restoran vlastita web stranica \"KM mjesečno\" OR \"KM/mj\" preuzimanje lično BiH paket",
+    "Sarajevo OR \"Banja Luka\" OR Mostar startup restaurant online ordering software own website pickup \"KM\" pricing plans"
+  ],
+  "vendors": [
+    {
+      "name": "Korpa (korpa.ba)",
+      "website": "https://korpa.ba",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Bosnian consumer delivery app (App Store in search) - a delivery marketplace, never counts. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Dostavica",
+      "website": "https://apps.apple.com/ba",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Domestic consumer food-ordering app linking many restaurants - marketplace, never counts. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Gustico",
+      "website": "https://apps.apple.com/ba/app/gustico/id1383344170",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "A single venue's own ordering app ('collect it at Gustico'), not a tool sold to food businesses. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "BA counts Vitrina (BAM) only. Earlier rounds rejected FoxiFood (EUR only), DISH, Restaumatic, FoodBooking.ba, Shopwidget and saw Delivero (€, Montenegro), AjDonesi (€, Serbia), FoodApp (€, Croatia), Remaris, Zegashop, Glovo - not re-read. Two new searches (Bosnian 'aplikacija za narudžbe ... KM mjesečno ... preuzimanje', English Sarajevo/Banja Luka/Mostar startup) found only App Store listings of consumer apps (Korpa, Dostavica, Gustico, Ordera/COrdering - rejected in RS - MyMenu/QuickServe table QR), doXmenu (QR menu, rejected), Zegashop (generic builder) and directories. No Bosnian agency or POS sells an ordering product with a KM price. Nothing eligible; BA stays at 1."
+}
