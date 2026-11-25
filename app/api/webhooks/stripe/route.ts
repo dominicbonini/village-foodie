@@ -47,6 +47,7 @@ import { getOrderDraft } from '@/lib/payments/order-drafts'
 import { keepAlive } from '@/lib/runtime/after-response'
 // A PENDING refund writes no ledger row (see the refund branch); this is how it stays visible anyway.
 import { logAction } from '@/lib/audit/actionAudit'
+import { tillHeadSeq, noteTillActor } from '@/lib/till/actor-role'   // till-pack-2: the role behind a refund / reversal the webhook records
 // ⚠️ THE ONLY OUTBOUND STRIPE CALL ON THIS ROUTE, and it exists for one measured reason: a
 // `charge.refunded` payload carries NO refunds list, so the safety-net branch has to ask. See it there.
 import Stripe from 'stripe'
@@ -701,12 +702,15 @@ export async function POST(req: NextRequest) {
       if (status === 'failed' || status === 'canceled') {
         const failureReason = typeof r.failure_reason === 'string' ? r.failure_reason : null
         let removed: Awaited<ReturnType<typeof removeFailedOnlineRefund>>
+        const tillFromSeq = await tillHeadSeq(supabase, chargeRow.truck_id as string)
         try {
           removed = await removeFailedOnlineRefund(supabase, {
             orderKey: chargeRow.order_key as string,
             truckId: chargeRow.truck_id as string,
             refundId, failureReason, eventType,
           })
+          // till-pack-2: the reversal this wrote was the system's (no person), recorded against its till entry. Best-effort.
+          await noteTillActor(supabase, { truckId: chargeRow.truck_id as string, fromSeq: tillFromSeq, orderKey: chargeRow.order_key as string, action: 'refund_failed', role: 'system' })
         } catch (revErr) {
           // 🔴 500 SO STRIPE RETRIES. Leaving a refund row standing for a refund that failed is the
           // exact false statement this branch exists to remove, so a failure to remove it must not be
@@ -771,6 +775,7 @@ export async function POST(req: NextRequest) {
       }
 
       try {
+        const tillFromSeq = await tillHeadSeq(supabase, chargeRow.truck_id as string)
         const { inserted, balance } = await recordOnlineCardRefund(supabase, {
           orderKey: chargeRow.order_key as string,
           truckId: chargeRow.truck_id as string,
@@ -782,6 +787,8 @@ export async function POST(req: NextRequest) {
           currency: typeof r.currency === 'string' ? r.currency.toUpperCase() : (chargeRow.currency as string),
         })
         if (inserted) written++
+        // till-pack-2: a refund the webhook records is the system's; its role goes with its till entry (best-effort, never a failure).
+        if (inserted) await noteTillActor(supabase, { truckId: chargeRow.truck_id as string, fromSeq: tillFromSeq, orderKey: chargeRow.order_key as string, action: 'refund', role: 'system' })
         console.log(
           `[webhook/stripe] refund ${inserted ? 'RECORDED' : 'DUPLICATE (no-op)'} order=${chargeRow.order_key} ` +
           `refund=${refundId} amount_minor=${amountMinor} -> status=${balance.status} paid_minor=${balance.paidMinor}`,

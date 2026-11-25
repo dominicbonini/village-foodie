@@ -390,6 +390,14 @@ const quiet = async f => { const e = console.error, w = console.warn, l = consol
       /role: 'system'/.test(read('app/api/orders/cancel/route.ts')) && /role: 'system'/.test(read('app/api/events/action/route.ts')) && /actor_kind: entry\.actor\.actorKind/.test(read('lib/audit/actionAudit.ts')) && !/adminAccess/.test(read('lib/audit/actionAudit.ts')))
   }
 
+  {
+    // the card processor's webhook (found by what it does, not by its path): a refund it records and a failed refund it reverses carry the 'system' role
+    const hooks = git('grep', '-l', "action: 'refund_failed', role: 'system'", '--', 'app').split('\n').filter(Boolean)
+    const src = hooks.length === 1 ? read(hooks[0]) : ''
+    t('the webhook that records online refunds and reverses failed ones records the role \'system\' for both (the head read first, best-effort)', hooks.length === 1
+      && /if \(inserted\) await noteTillActor\(supabase, \{[^}]*action: 'refund', role: 'system' \}\)/.test(src) && (src.match(/const tillFromSeq = await tillHeadSeq\(/g) || []).length === 2, hooks)
+  }
+
   // ══ I ═════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head(`I · NO SCREEN OR CUSTOMER OUTPUT CHANGED — the diff against ${START}`)
   {
