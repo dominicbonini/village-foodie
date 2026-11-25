@@ -270,3 +270,9 @@ count now: 0
 No vendor site worth reading (GT Eats, ZIP.GY marketplaces; single-restaurant pages). Nothing eligible exists with a GYD price.
 
 count now: 0
+
+## SR (SRD)
+
+No vendor site worth reading (marketplaces; a Suriname store on Take App — agent 2's, only named). Nothing eligible exists with an SRD price.
+
+count now: 0
