@@ -10,3 +10,13 @@
 Neither site mentions Liechtenstein or limits service to Switzerland on the pages read. Ordero and SwissPOS not re-read (stopped at 2).
 
 count now: 2 (food-truck: 2)
+
+## KR (South Korea, KRW)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Toss Place | nearest_local | counted earlier; re-check 404 | 0 KRW (stored); third-party doc says 3.5% + VAT per pickup order | https://tossplace.com/story/pickup_order |
+
+No second KRW tool found after 3 searches (only Naver/Kakao platform ordering, kiosk/table-order products, Wix help pages). Toss's fee needs checking.
+
+count now: 1 (food-truck: 0)

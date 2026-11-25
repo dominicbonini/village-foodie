@@ -1,0 +1,25 @@
+{
+ "country": "KR",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "매장 픽업 주문 솔루션 요금 월 원 사장님 포장주문 링크 자체 주문페이지",
+  "페이히어 오더 포장 픽업 주문 요금제 월",
+  "스마트오더 솔루션 픽업 예약주문 월 이용료 원 카페 소상공인 요금 안내"
+ ],
+ "vendors": [
+  {
+   "name": "Toss Place (토스오더 픽업주문)",
+   "website": "https://tossplace.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "already counted from compare-research-2 (0 KRW); re-check of tossplace.com/pricing returned HTTP 404, so the fee was not re-confirmed today",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://tossplace.com/pricing"
+   ]
+  }
+ ],
+ "notes": "KR: no second tool priced in KRW found. Three Korean searches returned only Naver 주문 / Kakao 챗봇 주문 (platform ordering inside Naver/Kakao, excluded as marketplace-like in compare-research-2), Wix Korean help pages (no KRW price), kiosk/tablet table-order products (table-ordering only) and freelancer listings (kmong, not vendors). Payhere: no pickup-order price found in search (its site did not resolve last round). CAUTION on Toss Place: a third-party help doc (docs.channel.io/ishopcareguide, not a source) and a search summary both say Toss Order pickup carries a 3.5% + VAT fee on the payment amount; compare-research-2 recorded it as free from Toss's own story page. Reviewer should confirm the fee before showing Toss as free. count now: 1 (unchanged)."
+}
