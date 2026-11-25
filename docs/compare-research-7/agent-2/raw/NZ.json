@@ -1,0 +1,110 @@
+{
+ "country": "NZ",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Bopple",
+   "website": "https://bopple.com",
+   "stored_id_prefix": "a8ba9459",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "AU/NZ restaurant/café online ordering with pick-up and scheduled pre-ordering; its pricing page has a '$ NZD' currency option, and the page's own code shows the same $49 for NZ (only US differs); NZD platform fee on its fees page",
+   "eligibility": {
+    "order_quote": "Scheduled pre-ordering",
+    "order_url": "https://bopple.com/pricing",
+    "country_quote": "<option value=\"NZ\">$ NZD</option>",
+    "country_url": "https://bopple.com/pricing"
+   },
+   "plans": [
+    {
+     "plan_name": "Online ordering",
+     "currency": "NZD",
+     "price_major": 49,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 2.4,
+     "per_order_fixed_major": 0.1,
+     "setup_major": null,
+     "quote": "$49 per month",
+     "url": "https://bopple.com/pricing",
+     "note": "The server HTML renders AUD by default; the NZD amount was confirmed from the pricing page's own script (https://www.bopple.com/_next/static/immutable/chunks/1clorhgaxbk9y.js, module 39826 'PricingClient'): 'let eW=\"US\"===e$?\"$29\":\"$49\"' — so with '$ NZD' selected the plan shows '$49' + 'per month' (USD shows $29). Fee: 'Platform fee by region, from 1 October 2026 … New Zealand NZD 2.4% + $0.10' (/pricing/fees). Matches compare-research-1 (49 NZD + 2.4%)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Pick-up and delivery ordering",
+     "url": "https://bopple.com/pricing"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Scheduled pre-ordering",
+     "url": "https://bopple.com/pricing"
+    },
+    {
+     "key": "capacity",
+     "value": "yes",
+     "quote": "Order limiting for busy service periods",
+     "url": "https://bopple.com/pricing"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "$49 per month",
+     "url": "https://bopple.com/pricing"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "New Zealand NZD 2.4% + $0.10",
+     "url": "https://bopple.com/pricing/fees"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://bopple.com/pricing",
+    "https://bopple.com/pricing/fees",
+    "https://www.bopple.com/_next/static/immutable/chunks/1clorhgaxbk9y.js"
+   ]
+  }
+ ],
+ "notes": "NZ count now: 3 (HungryTrucks, SmakSpace + Bopple). Bopple was stored eligible but 'unconfirmed' for NZ (compare-status-1); its pricing script settles the NZD amount. Stopped at 3."
+}
