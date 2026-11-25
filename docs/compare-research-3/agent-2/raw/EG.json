@@ -1,0 +1,55 @@
+{
+ "country": "EG",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Foodics (Foodics Online)",
+   "website": "https://www.foodics.com",
+   "stored_id_prefix": "4620b046",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Saudi restaurant POS; Foodics Online (own ordering website, pick-up, orders scheduled ahead); Egypt pricing page in EGP with 'Foodics Online Web Creation' in the Advanced Bundle",
+   "eligibility": {
+    "order_quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+    "order_url": "https://www.foodics.com/online/",
+    "country_quote": "Foodics Online Web Creation",
+    "country_url": "https://www.foodics.com/foodics-pricing-egypt/"
+   },
+   "plans": [
+    {
+     "plan_name": "Advanced Bundle",
+     "currency": "EGP",
+     "price_major": 3733.67,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "EGP 3733.67/mo",
+     "url": "https://www.foodics.com/foodics-pricing-egypt/",
+     "note": "'Billed Annually' shown under the prices; the page also shows 'EGP 3957.69/mo' and does not label which is the quarterly vs yearly tab (lower one taken as yearly). Advanced includes 'Foodics Online Web Creation'. Basic ('EGP 2848.95/mo' / 'EGP 3019.89/mo') lists 'Foodics Online Web' only as an optional add-on (price not shown)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Maximize your margins by accepting curbside, pick-up and delivery orders",
+     "url": "https://www.foodics.com/online/"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+     "url": "https://www.foodics.com/online/"
+    }
+   ],
+   "check_urls": [
+    "https://www.foodics.com/foodics-pricing-egypt/"
+   ],
+   "note": "order quotes from foodics.com/online/ as read by compare-research-2 today (not re-read)"
+  }
+ ],
+ "notes": "EG: Foodics' Egypt pricing page shows EGP. With Ordable (EGP) count now: 2. Zyda / Geidea not read (stop at 2)."
+}

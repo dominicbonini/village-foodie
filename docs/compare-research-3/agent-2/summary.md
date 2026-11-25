@@ -68,3 +68,11 @@ count now: 2 (Ordable OMR + Foodics USD)
 | Foodics | nearest_local | not_relevant (no Jordan pricing page) | — | https://www.foodics.com/foodics-pricing-jordan/ |
 
 No second tool found (marketplaces, single-restaurant apps, Zegashop blog only). count now: 1 (Ordable)
+
+## EG (Egypt, EGP)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Foodics | nearest_local | eligible | Advanced EGP 3733.67/month billed annually (includes Foodics Online Web Creation) | https://www.foodics.com/foodics-pricing-egypt/ |
+
+count now: 2 (Ordable + Foodics)
