@@ -8,3 +8,13 @@
 Toss: no tossplace.com page states the pickup fee in force today (raw/KR-toss.json). Seven Korean searches found no second tool priced in KRW
 (Naver/Kakao platform ordering, web-shop builders, table-order/kiosk, freelancer gigs only).
 count now: 0 (1 if the 2025 "0원" offer is accepted)
+
+## QA (QAR)
+| vendor | focus | verdict | price | URL |
+|---|---|---|---|---|
+| Take App | nearest_local | not_relevant (Qatar not on its countries page) | — | https://www.take.app/countries |
+| Taker | nearest_local | not_relevant (no prices; /pricing 404) | — | https://taker.io |
+| Klikit | nearest_local | not_relevant (APAC only) | — | https://klikit.io |
+| Grubtech | nearest_local | not_relevant (quote only) | — | https://grubtech.com |
+
+count now: 1 (Ordable) — nothing else in QAR found.

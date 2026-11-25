@@ -1,0 +1,39 @@
+{
+  "country": "QA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "نظام طلبات أونلاين للمطاعم قطر استلام من الفرع طلب مسبق الباقات ريال قطري",
+    "restaurant online ordering website pickup Qatar pricing \"QAR\" per month plan branch commission-free -talabat",
+    "Taker restaurant ordering app website Kuwait Bahrain Qatar pricing plans taker.io",
+    "klikit pricing plans webshop pickup Saudi Arabia Qatar Bahrain SAR QAR (site:klikit.io)",
+    "موقع طلبات خاص بالمطعم بدون عمولة استلام من الفرع قطر \"ر.ق\" شهرياً باقة",
+    "Grubtech pricing online ordering webstore pickup plans per month (site:grubtech.com)"
+  ],
+  "vendors": [
+    {
+      "name": "Take App", "website": "https://www.take.app", "stored_id_prefix": "2a58410a", "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "its countries page does not list Qatar (Middle East section: only Lebanon and Iraq, per the page reader); prices are USD anyway",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": ["https://www.take.app/countries"]
+    },
+    {
+      "name": "Taker (Taker Channels)", "website": "https://taker.io", "stored_id_prefix": null, "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Saudi-based branded web/app ordering platform; no prices on its site (taker.io/pricing returns 404; homepage shows no price); no Qatar presence read",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": ["https://taker.io/pricing", "https://taker.io"]
+    },
+    {
+      "name": "Klikit", "website": "https://klikit.io", "stored_id_prefix": "f44927e4", "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "site search (klikit.io only) shows Asia-Pacific markets and an SGD example; no Gulf country or QAR price; webshop 'Pricing on request' (search snippet only, not quoted)",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": []
+    },
+    {
+      "name": "Grubtech (gOnline)", "website": "https://grubtech.com", "stored_id_prefix": null, "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "UAE order-management platform; site search shows no published prices (terms: fees 'stated in the quote'); no QAR price",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": []
+    }
+  ],
+  "notes": "QA count now: 1 (Ordable, QAR). No second QAR-priced tool. New angles tried: Arabic searches (طلب مسبق / استلام من الفرع / ر.ق), English QAR search, Gulf regional players (Taker, Grubtech: quote-only; Klikit: APAC only; Take App: Qatar not listed). Search results otherwise: Talabat, Rafeeq/Talabat Pro (marketplaces / diner subscriptions), Pickup.qa (multi-restaurant pickup app = marketplace, not opened), khamsat freelancer gigs, MENU TIGER (USD), Zegashop blogs (no price), New Waves (custom builds, quote). Not re-read (rejected before): Zyda (KWD), Blink ($), Sapaad (quote), Foodics (USD). Stop: about 4 new vendors with nothing eligible."
+}
