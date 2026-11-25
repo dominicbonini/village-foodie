@@ -1,0 +1,67 @@
+{
+  "country": "EC",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Ecuador sistema restaurantes pedidos online \"para llevar\" o \"retiro\" tienda propia planes USD mensual Illarli OR \"Dora POS\" OR GastroEc",
+    "menú digital Ecuador restaurantes pedidos online \"retirar en el local\" o \"para recoger\" Quito Guayaquil planes \"$\" mensual sin comisiones ecuatoriano"
+  ],
+  "vendors": [
+    {
+      "name": "Illarli",
+      "website": "https://www.illarli.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Ecuadorian admin system (named on OlaClick's Ecuador page): www.illarli.com is a login page titled 'Illarli - Sistema administrativo' ('Ingresar', 'No existen tarifas disponibles') — no customer ordering, pickup or price shown; illarli.com (bare) did not connect",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.illarli.com/"
+      ]
+    },
+    {
+      "name": "Dora POS",
+      "website": "https://dorapos.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Ecuadorian POS: dorapos.com redirects to /login.php (a till login), nothing public about customer ordering or prices",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://dorapos.com/"
+      ]
+    },
+    {
+      "name": "GastroEc",
+      "website": "https://www.gastroec.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "HTTP 403 today",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.gastroec.com/"
+      ]
+    },
+    {
+      "name": "Menú Express EC / TiendaQR Ecuador / Restopedia",
+      "website": "https://menuexpress.ec",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "guessed .ec domains menuexpress.ec, tiendaqr.ec, restopedia.ec did not connect; no own site found",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://menuexpress.ec/"
+      ]
+    }
+  ],
+  "notes": "Count now: 2 (OlaClick, Pedix — both USD) — no third. Probed the Ecuadorian names that compare-research-2 had listed but not read (rows above): none readable as an ordering tool with a price. Searches otherwise returned Justo (Chilean, active in Ecuador per press — rejected in CL for no pickup wording; not re-read), MENU TIGER (agent 2), Restroworks, Wix, Hungrrr (Capterra only), marketplaces (Rappi, PedidosYa, Uber Eats) and chain apps (Pollo Campero). MenuDigital.ec / Pedir.ec (compare-research-2 rejects) not re-read. OrderEatRepeat's pricing says 'Locations in the US and everywhere else pay in USD.' ($79 USD) but names no country — not counted. Stopped."
+}
