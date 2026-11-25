@@ -125,3 +125,9 @@ count now: 0
 No vendor read today (WiEat: marketplace; TTMS = TT Menus listing, not_relevant in wave 2). Nothing eligible exists with a TTD price.
 
 count now: 0
+
+## BS (BSD)
+
+No vendor read today (only marketplaces / booking directories in results). Nothing eligible exists with a BSD price.
+
+count now: 0
