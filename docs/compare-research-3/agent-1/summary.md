@@ -115,3 +115,7 @@ None found: Restimo is EUR only, MENU TIGER is agent 2's, and Kovzy, XPOS and Po
 ## AZ (Azerbaijan, AZN)
 
 None found: only Wolt and the Dostavka.az aggregator came up; Clopos and Delever were already dead ends. count now: 0
+
+## AM (Armenia, AMD)
+
+None found: Waiterio has an Armenian translation but doesn't name Armenia, has no AMD price and no pickup wording; Glovo is a marketplace. count now: 0

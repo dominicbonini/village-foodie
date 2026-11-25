@@ -1,0 +1,11 @@
+{
+  "country": "AM",
+  "researched_on": "2026-11-25",
+  "searches": ["առցանց պատվերի համակարգ ռեստորանի համար ինքնատար նախնական պատվեր գին դրամ ամսական Երևան"],
+  "vendors": [
+    { "name": "Waiterio", "website": "https://waiterio.com/hy", "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Restaurant POS with online orders and an Armenian-language page, but Armenia isn't named, there's no AMD price (only 'All restaurants come with a Free plan that allows up to 100 orders (tables served) per month.'), and no pickup or order-ahead wording on the page. A language translation only; not counted.",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": ["https://waiterio.com/hy"] }
+  ],
+  "notes": "None found priced in AMD. The other results were Glovo pages (marketplace). Compare-research-2 dead ends weren't repeated: Kovzy (Yerevan office, no customer pickup ordering), Menu.am and Yandex Eats (marketplaces). Count: 0."
+}
