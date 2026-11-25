@@ -79,3 +79,13 @@ count now: 1
 Nothing eligible exists with a CRC price (Avify, Biko.cr, Eatsy, EDNA Foods, Justo, OlaClick, Pedix checked across waves).
 
 count now: 0
+
+## HN (HNL)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| HNMenu | nearest_local | unreadable (script-rendered, retried once) | — | https://www.hnmenu.com |
+
+Nothing eligible exists with an HNL price (also Avify, Sitec, WizPOS, Clinpays; Pedix/OlaClick USD only).
+
+count now: 0
