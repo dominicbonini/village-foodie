@@ -19,3 +19,13 @@ count now: 1
 No second DOP-priced eligible tool; TOI's RD$5,500/mes restaurant plan has no own online ordering ahead.
 
 count now: 1
+
+## SV (USD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| OlaClick | nearest_local | not_relevant here (no El Salvador presence on its own site; BORDERLINE) | US$ 9.90 / 25.00 per month billed yearly | https://pricing.olaclick.app/es |
+
+No second USD-priced eligible tool with an SV presence. TOI (DO) quotes SV from US$85/mes but has no own online ordering ahead.
+
+count now: 1

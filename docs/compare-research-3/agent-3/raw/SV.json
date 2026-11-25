@@ -1,0 +1,39 @@
+{
+  "country": "SV",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "OlaClick \"El Salvador\" restaurantes (site:olaclick.com, help.olaclick.com, olaclick.app)",
+    "El Salvador plataforma pedidos en línea restaurantes \"para llevar\" OR \"recoger en tienda\" menú digital planes \"$\" mensual salvadoreña",
+    "software restaurantes El Salvador \"pedidos en línea\" \"pick up\" OR \"pickup\" POS salvadoreño precios planes US$ mes"
+  ],
+  "vendors": [
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "USD prices fit SV, but no stated El Salvador presence: today's pricing page names no country except Cuba and Venezuela (domains), and a site search of olaclick.com found no El Salvador page (only Salvador, Brazil)",
+      "eligibility": {
+        "country_quote": "los dominios \".com\" no están disponibles en Cuba ni Venezuela.",
+        "country_url": "https://pricing.olaclick.app/es"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced", "currency": "USD", "price_major": 9.9, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "US$ 9.90/mes", "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly: \"Los precios son para suscripciones anuales pagadas al momento de la compra\". Recorded for reference; not counted in SV (no SV presence)."
+        },
+        {
+          "plan_name": "Premium", "currency": "USD", "price_major": 25, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "US$ 25.00/mes", "url": "https://pricing.olaclick.app/es", "note": "billed yearly"
+        }
+      ],
+      "answers": [],
+      "check_urls": ["https://pricing.olaclick.app/es"]
+    }
+  ],
+  "notes": "Count now: 1 (Pedix, USD, stored — its USD list names El Salvador). No second eligible USD-priced tool with an El Salvador presence. OlaClick is eligible elsewhere (help-centre pickup / scheduled orders) and USD-priced, but its own site states no El Salvador presence (pricing page: no country selector; site search: no SV page) — BORDERLINE, not counted; if Dominic accepts its generic 'América Latina' presence it would make 2. TOI (Dominican POS, web.toi.do, read for DO) gives 'El Salvador desde US$85/mes' (summary only) but that POS plan has no customer online ordering ahead — not counted. Searches otherwise returned marketplaces (PedidosYa, Uber Eats, Hugo), MENU TIGER (agent 2), Square (no SV availability), Restroworks (no price) and Capterra listings (not sources). Stopped after ~5 candidates."
+}
