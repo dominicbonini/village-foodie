@@ -1,0 +1,12 @@
+{
+  "country": "UZ",
+  "researched_on": "2026-11-25",
+  "searches": ["система онлайн заказов для ресторанов Узбекистан самовывоз предзаказ тариф сум в месяц сайт для заказов Ташкент"],
+  "vendors": [
+    { "name": "Smartomato", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Russian restaurant delivery/ordering platform ('9 countries'); no Uzbekistan presence or UZS price in the results. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] },
+    { "name": "iiko / R-Keeper", "website": null, "stored_id_prefix": null, "focus": "pos", "verdict": "not_relevant",
+      "reason": "Restaurant tills used in Uzbekistan (news articles); no online-ordering price in UZS seen. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] }
+  ],
+  "notes": "Delever (UZS) is already counted. No other tool priced in UZS was found. Results were MENU TIGER (agent 2's), Yandex Eats and Uzum (marketplaces) and an OLX freelancer ad (price on request). Poster shows Uzbekistan in USD only and FoxiFood, SumUp, Storekit and Vitrina don't list Uzbekistan (compare-research-2; Vitrina's country price-list links re-checked today, none for UZ). Count stays 1."
+}

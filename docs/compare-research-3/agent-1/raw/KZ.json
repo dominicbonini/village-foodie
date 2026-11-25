@@ -1,0 +1,21 @@
+{
+  "country": "KZ",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    { "name": "Poster", "website": "https://joinposter.kz", "stored_id_prefix": "0802a7c8", "focus": "food_truck", "verdict": "eligible",
+      "reason": "Own Kazakhstan site with a food-truck page (compare-research-2). Its ordering website is the paid Poster Site add-on, not part of any plan. Prices show the same billed-yearly ambiguity as UA, so count it only if Dominic accepts that.",
+      "eligibility": { "country_quote": "Русский (Казахстан)", "country_url": "https://joinposter.kz/pricing" },
+      "plans": [
+        { "plan_name": "Starter + Poster Site add-on", "currency": "KZT", "price_major": 8640, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "8 640 ₸9 600 ₸/мес.", "url": "https://joinposter.kz/pricing",
+          "note": "Only billing label on the page: 'Оплата за год' (no monthly label, no yearly total). 8 640 = 9 600 × 0.9, so 8 640 is likely billed yearly and 9 600 monthly-billed. The ordering website is extra: 'Стоимость — 11 400 ₸/мес.' (Poster Site, 'Сайт для заказов из вашего заведения — за 5 минут'), listed only under paid 'Расширения'." },
+        { "plan_name": "Poster Site (ordering website add-on)", "currency": "KZT", "price_major": 11400, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "Стоимость — 11 400 ₸/мес.", "url": "https://joinposter.kz/pricing", "note": "Add-on on top of a POS plan; not included in Starter/Mini/Business/Pro." }
+      ],
+      "answers": [], "check_urls": ["https://joinposter.kz/pricing"] }
+  ],
+  "notes": "Poster's KZ pricing was read once today: 'Starter 8 640 ₸9 600 ₸/мес.', 'Mini 15 660 ₸17 400 ₸/мес.', 'Business 21 060 ₸23 400 ₸/мес.', 'Pro 31 860 ₸35 400 ₸/мес.', toggle 'Оплата за год' only, the same pattern as UA. Ordering ahead is weak: only 'Доставка и самовывоз' via Poster Site, no chosen-time wording (compare-research-2). Local Kazakh tools (Paloma365, Delever's KZ presence) are agent 2's (Asian) and weren't fetched; Vitrina has no KZ price page (404 today). No search was spent here. Count: 0, or 1 if Dominic accepts Poster's KZT figure."
+}

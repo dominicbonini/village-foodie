@@ -99,3 +99,11 @@ No other tool priced in MKD: the results were only marketplaces (Wolt, Naracaj.c
 ## MD (Moldova, MDL)
 
 No other tool priced in MDL: the results were Glovo, MENU TIGER (agent 2's) and government PDFs. count now: 1 (Vitrina)
+
+## UZ (Uzbekistan, UZS)
+
+No other tool priced in UZS: Smartomato, iiko and R-Keeper show no UZS ordering price, and the rest were marketplaces, MENU TIGER (agent 2's) and an OLX ad. count now: 1 (Delever)
+
+## KZ (Kazakhstan, KZT)
+
+Poster (0802a7c8) has the same ambiguity as UA: '8 640 ₸9 600 ₸/мес.' with only the 'Оплата за год' toggle, and the ordering site is the paid add-on 'Стоимость — 11 400 ₸/мес.'. Vitrina has no KZ page (404). Local Kazakh tools are agent 2's. count now: 0 (1 if Poster's KZT price is accepted)
