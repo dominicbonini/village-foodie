@@ -4,7 +4,8 @@
   "searches": [
     "Maroc logiciel commande en ligne restaurant \"à emporter\" click and collect \"DH\" par mois site de commande sans commission marocain",
     "menu digital Maroc restaurants commande en ligne WhatsApp à emporter abonnement mensuel DH startup marocaine snack food truck",
-    "نظام طلبات أونلاين للمطاعم المغرب استلام من المطعم اشتراك شهري درهم منصة مغربية"
+    "نظام طلبات أونلاين للمطاعم المغرب استلام من المطعم اشتراك شهري درهم منصة مغربية",
+    "food truck Maroc précommande application commande à l'avance click and collect food truck Casablanca Rabat marché plateforme"
   ],
   "vendors": [
     {
@@ -22,5 +23,5 @@
       ]
     }
   ],
-  "notes": "Count now: 2 (Asila, inyad) — no third. Orika (orika-drv.pages.dev — 'cafés, restaurants, boulangeries et food trucks') is the pages.dev copy of Asila found in compare-research-3 (links to app.asila.ma) — same vendor, not a third. inyad (agent 2's) not fetched. Otherwise: Food on Demand (a single Marrakech restaurant), Fiverr / Khamsat freelancers and Avito kiosk packs (not vendors / marketplace listings), foreign tools (Innovorder, Lightspeed CA, Menu Touch FR — agent 1's; MENU TIGER, CloudWaitress, OlaClick — no Morocco / MAD), Glovo (marketplace). YouCan (generic store builder) not read. Stopped: no Moroccan ordering vendor site with a MAD price surfaced."
+  "notes": "Count now: 2 (Asila, inyad) — no third. Orika (orika-drv.pages.dev — 'cafés, restaurants, boulangeries et food trucks') is the pages.dev copy of Asila found in compare-research-3 (links to app.asila.ma) — same vendor, not a third. inyad (agent 2's) not fetched. Otherwise: Food on Demand (a single Marrakech restaurant), Fiverr / Khamsat freelancers and Avito kiosk packs (not vendors / marketplace listings), foreign tools (Innovorder, Lightspeed CA, Menu Touch FR — agent 1's; MENU TIGER, CloudWaitress, OlaClick — no Morocco / MAD), Glovo (marketplace). YouCan (generic store builder) not read. Stopped: no Moroccan ordering vendor site with a MAD price surfaced. SECOND PASS (food-truck only): no Moroccan food-truck ordering tool found: results were marketplaces (Kooul, DONE, Glovo) and press on Casablanca's 2020 food-truck rules. No vendor site to read. Count stays 2."
 }
