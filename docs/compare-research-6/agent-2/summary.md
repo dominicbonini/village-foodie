@@ -187,3 +187,8 @@ count now: 0
 
 Nothing eligible among my vendors: Talofa Eats = marketplace; US tools are agent 3's.
 count now: 0
+
+## PW (USD)
+
+None exists: only restaurant/travel listings (phone takeout).
+count now: 0
