@@ -67,3 +67,7 @@ count now: 2 (1 if Dominic rejects Asila's borderline order-ahead evidence)
 ## MC (Monaco, EUR) — strict
 
 None found. EatIn Monaco and Mr Room Service are marketplaces, UpMenu shows USD only and no Monaco page, and SumUp has no Monaco site. French EUR tools showed no Monaco presence in search. count now: 0
+
+## TN (Tunisia, EUR stored; TND checked)
+
+None found. Poslik (Tunisian till) has no online ordering and no prices; CapsaFood is a marketplace; the Linéo packs are retailer till bundles. count now: 0

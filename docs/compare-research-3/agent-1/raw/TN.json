@@ -1,0 +1,18 @@
+{
+  "country": "TN",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Tunisie plateforme commande en ligne restaurant à emporter abonnement \"DT\" OR \"TND\" par mois site de commande fast food logiciel tunisien",
+    "logiciel caisse restaurant Tunisie module commande en ligne click and collect tarif dinars mois"
+  ],
+  "vendors": [
+    { "name": "Poslik", "website": "https://www.poslik.com", "stored_id_prefix": null, "focus": "pos", "verdict": "not_relevant",
+      "reason": "Tunisian restaurant till ('Pos>lik Tunisie | Caisse Enregistreuse Connectée'); no online ordering ahead or takeaway ordering on its site (delivery only via integrations: 'Livraison : Intégrez-vous aux meilleures applications existantes.'); no prices (empty 'Abonnement' column, demo form).",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": ["https://www.poslik.com/"] },
+    { "name": "CapsaFood", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Gafsa consumer delivery marketplace (news articles only). Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] },
+    { "name": "Linéo Resto (Spacenet / Tunisianet packs)", "website": null, "stored_id_prefix": null, "focus": "pos", "verdict": "not_relevant",
+      "reason": "One-off till packs sold by retailers (e.g. 2 799 DT TTC); till only, no online ordering; retailer listings, not vendor's own site. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] }
+  ],
+  "notes": "None found (stored currency EUR; TND also checked). Compare-research-2 dead ends weren't repeated: Sinqro (eligible but borderline, no price), inyad (agent 2's, no Tunisian presence) and Carthaji. French EUR tools (Lightspeed, Innovorder, Fiducial Pointex) showed no Tunisian presence in search. Count: 0."
+}
