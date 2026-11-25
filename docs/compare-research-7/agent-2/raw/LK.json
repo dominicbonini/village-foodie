@@ -1,0 +1,26 @@
+{
+ "country": "LK",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Sri Lanka cloud POS restaurant \"online ordering\" takeaway packages LKR monthly Colombo software \"Rs.\" pricing page",
+  "Sri Lankan startup online ordering link for restaurants cafes bakeries WhatsApp orders pickup plans LKR per month free trial",
+  "CeylonEat.com restaurants online ordering takeaway pricing"
+ ],
+ "vendors": [
+  {
+   "name": "Merpacc POS",
+   "website": "https://merpacc.com",
+   "stored_id_prefix": null,
+   "focus": "pos",
+   "verdict": "not_relevant",
+   "reason": "Sri Lankan cloud till ('KOT, takeaway & table management' = in-house); no online ordering / pickup / ordering website, no prices on https://merpacc.com/pos",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://merpacc.com/pos"
+   ]
+  }
+ ],
+ "notes": "LK count now: 1 (POS Masters, LKR) — unchanged. Block 1: Eats365 has a /lk/en/ region but its pricing page shows no amounts (unpriced Expansion Module) — V-eats365.json; Take App lists Sri Lanka but USD only; uEngage / Dinehere India-only (₹); Qvian / Ewity Maldives-only (MVR); Restora POS names no Sri Lanka. Block 2: three searches found only POS Masters (stored), Option4 (till, rejected in -5), Merpacc (opened: till only), a tally.so form and saspos.duckdns.org (throwaway hosts, not relevant under V16.38), OMAK / BIGPOS (directory listings only), iasoft (one-off builds, rejected before), Deonde (403 twice in earlier rounds, not retried), Badagini (dine-in QR, news), marketplaces / consumer apps (PickMe Food, Uber Eats, SriDelivery, Pizza.lk, Eat Lanka, Eatts), Fiverr gigs. Sinhala searches were done in compare-research-5. Nothing eligible; stopped."
+}
