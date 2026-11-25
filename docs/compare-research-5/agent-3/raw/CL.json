@@ -1,0 +1,111 @@
+{
+  "country": "CL",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Toteat pickup pedidos online retiro en local clientes (site:toteat.com)",
+    "\"Toteat App\" pick up delivery menú QR clientes pedidos Chile (site:toteat.com)",
+    "Justo tienda online restaurante retiro en local pedidos programados (site:getjusto.com, justo.cl)",
+    "pedidos online retiro en local restaurante Chile precio plan mensual $ CLP sin comisión tienda online",
+    "\"tienda online para restaurantes\" Chile \"retiro en local\" planes precios mensual IVA",
+    "software pedidos online restaurantes Chile \"para retiro\" carta digital plan \"/mes\" \"+ IVA\" pesos chilenos",
+    "Weevi tienda online pedidos retiro restaurante precios Chile",
+    "\"pide y retira\" OR \"pedidos para retiro\" sistema para restaurantes Chile planes \"$\" mensuales menú online propio sin comisiones"
+  ],
+  "vendors": [
+    {
+      "name": "Toteat",
+      "website": "https://www.toteat.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Still no own-site sentence showing customers order online ahead for pickup. /precios (Chile, CLP) lists 'Toteat Pickup' and 'Toteat Delivery' only as bare bullets in Plan corporativo, and 'Delivery propio y para llevar' as a bare bullet in Plan avanzado. /es-cl/productos has no Pickup / Toteat App / tienda online page (only kiosk, Menú QR 'Tus clientes ven la carta actualizada y piden desde su celular.' = QR menu, Toteat Go = waiter app on the card terminal). A search snippet of the Mexican page mentions 'Toteat App ... delivery y pick up', but that is MX, not a Chilean page, and was not read",
+      "eligibility": {
+        "food_quote": "Ideal para pequeños comercios gastronómicos, Cafeterías, Foodtucks y otros.",
+        "food_url": "https://www.toteat.com/precios",
+        "country_quote": "Desde $39.900 /mes",
+        "country_url": "https://www.toteat.com/precios"
+      },
+      "plans": [
+        {
+          "plan_name": "Plan corporativo",
+          "currency": "CLP",
+          "price_major": 179900,
+          "period": "month",
+          "quote": "Desde $179.900 /mes",
+          "url": "https://www.toteat.com/precios",
+          "note": "re-read 25 Nov: only plan listing 'Toteat Pickup' (no description); plus '0,35% venta neta mensual + IVA'. Plan avanzado 'Desde $69.900 /mes' + '0,5% venta neta mensual + IVA' lists 'Delivery propio y para llevar'. Not usable: no ordering-ahead quote",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.toteat.com/precios",
+        "https://www.toteat.com/es-cl/productos",
+        "https://www.toteat.com/es-cl/productos/toteat-go"
+      ]
+    },
+    {
+      "name": "Justo",
+      "website": "https://www.getjusto.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Price UF only (unclear, does not count) and still no own-site pickup / retiro / scheduled-order sentence: /soluciones/restaurantes only says 'Integra todos tus canales de venta: tradicionales, online y apps de delivery en un solo lugar.' (page branded Justo México); /planes has no retiro/pickup feature line",
+      "eligibility": {
+        "order_quote": "Integra todos tus canales de venta: tradicionales, online y apps de delivery en un solo lugar.",
+        "order_url": "https://www.getjusto.com/soluciones/restaurantes",
+        "country_quote": "Compara los planes en Chile",
+        "country_url": "https://getjusto.com/planes"
+      },
+      "plans": [
+        {
+          "plan_name": "Ecom",
+          "currency": "CLF",
+          "price_major": 2,
+          "period": "month",
+          "quote": "UF 2/mes + IVA",
+          "url": "https://getjusto.com/planes",
+          "note": "unclear: true — price in UF (Unidad de Fomento, ISO CLF), not CLP; does not count. 'Precios de lista + IVA', per local; setup UF 2,5. Others: Inicia UF 0,5/mes, Apps UF 1/mes, PDV UF 3/mes, 360 UF 4/mes, Élite UF 7/mes (all + IVA). Only logistics fees are in CLP $",
+          "unclear": true,
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 2.5,
+          "vat": "excl"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.getjusto.com/soluciones/restaurantes",
+        "https://getjusto.com/planes"
+      ]
+    },
+    {
+      "name": "Tiendanube",
+      "website": "https://www.tiendanube.com/cl",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "generic web-shop builder (excluded by §91); seen in search only (Básico '$7.999 + IVA CLP /mes', pickup at 'puntos de retiro'), not read",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Weevi",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "seen only on Capterra/GetApp listings (price 'US$90,00', no own site found in search, no CLP price); not usable",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "Nothing new eligible for CL; count stays 2 (Pedix · SumUp fallback; Fudo CL unclear). Toteat: CLP prices but still no own-site order-ahead / pickup sentence ('Toteat Pickup' is a bare bullet). Justo: UF-only prices (unclear) and no pickup sentence. Other angles (Spanish searches for retiro en local / pide y retira / para retiro with CLP prices) surfaced only marketplaces (PedidosYa Pick Up, Uber Eats), a generic web-shop builder (Tiendanube), directory listings (Weevi, ChatFood, Flipdish on Capterra), old news about Orion Eat (2019, commission-based) and Flama Hub (delivery, no price). About 5 vendor angles with nothing eligible; stopped."
+}
