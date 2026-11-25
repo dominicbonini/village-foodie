@@ -1,0 +1,120 @@
+{
+  "country": "MK",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Thinker POS",
+      "website": "https://thinkerpos.com",
+      "stored_id_prefix": "e01cb953",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Skopje POS with MKD prices and a food-truck page offering online ordering so customers pre-order and pick up; online ordering = the free-choice 'Takeaway & delivery license' on Standard/Advanced (reviewer to confirm)",
+      "eligibility": {
+        "food_quote": "Whether you’re running a truck, cart, or trailer, our food truck POS is built to keep you moving",
+        "food_url": "https://thinkerpos.com/en/food-truck/",
+        "order_quote": "Enable online ordering to expand your reach, allowing customers to pre-order and pick up meals on the go",
+        "order_url": "https://thinkerpos.com/en/food-truck/",
+        "country_quote": "3.699 / month (incl. VAT) MKD",
+        "country_url": "https://thinkerpos.com/en/pricing/"
+      },
+      "plans": [
+        {
+          "plan_name": "Standard",
+          "currency": "MKD",
+          "price_major": 6295,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 30750,
+          "quote": "6.295 / month (incl. VAT) MKD",
+          "url": "https://thinkerpos.com/en/pricing/",
+          "note": "Re-read today. Standard lists a 'Free license choice (pick 1)' that includes 'Takeaway & delivery license' (also 'QR ordering system license'); implementation and training '30,750 MKD including VAT' billed separately. No monthly/yearly toggle. The pricing page never uses the words 'online ordering'; its online-ordering page says 'Create your free ordering page today' and 'set your pickup and delivery preferences' but names no plan. Basic (3.699) and 'Basic + Website' (4.990, '*Does not include ecommerce') carry no takeaway licence, so Standard is the cheapest plan that plausibly includes online ordering. Weak: reviewer to confirm."
+        },
+        {
+          "plan_name": "Advanced",
+          "currency": "MKD",
+          "price_major": 8693,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 30750,
+          "quote": "8.693 / month (incl. VAT) MKD",
+          "url": "https://thinkerpos.com/en/pricing/",
+          "note": "Free license choice (pick 2) from the same list incl. 'Takeaway & delivery license'; KDS up to 3 devices; implementation 30,750 MKD incl. VAT."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Enable online ordering to expand your reach, allowing customers to pre-order and pick up meals on the go",
+          "url": "https://thinkerpos.com/en/food-truck/"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "allowing customers to pre-order and pick up meals on the go",
+          "url": "https://thinkerpos.com/en/food-truck/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "6.295 / month (incl. VAT) MKD",
+          "url": "https://thinkerpos.com/en/pricing/"
+        }
+      ],
+      "check_urls": [
+        "https://thinkerpos.com/en/pricing/",
+        "https://thinkerpos.com/en/online-ordering-delivery/"
+      ]
+    }
+  ],
+  "notes": "MK counts Vitrina (MKD). Thinker POS (stored e01cb953, food_truck, Skopje, MKD) was recorded eligible in compare-research-5 with one doubt: which plan carries online ordering. Re-read today (pricing + online-ordering pages): the pricing page still never says 'online ordering'; Standard (6.295 MKD/month incl. VAT) and Advanced (8.693) offer a free-choice 'Takeaway & delivery license', Basic and 'Basic + Website' ('*Does not include ecommerce') do not, and the online-ordering page names no plan ('Create your free ordering page today'). If the reviewer accepts the Takeaway & delivery licence as the online-ordering module, MK reaches 2 (Thinker POS is a food-truck tool). Stopped MK there (no new search). Earlier rejects not re-read: Naracaj.com, Klikni Jadi, Dinerra, Waiterio (unreadable), FoxiFood (EUR only)."
+}
