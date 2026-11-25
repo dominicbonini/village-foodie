@@ -132,3 +132,8 @@ count now: 0
 
 Nothing eligible: Dish8Door, ZheyGo, DrukFood = marketplaces.
 count now: 0
+
+## FJ (FJD)
+
+Nothing eligible: Fiji Eats, FoodRunners, Cyber Food = marketplaces; CloudPOS (site not found), Pacific IT (retail POS).
+count now: 0
