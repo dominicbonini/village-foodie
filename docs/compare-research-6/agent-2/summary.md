@@ -237,3 +237,10 @@ count now: 0
 
 None exists: no food businesses with online ordering found.
 count now: 0
+
+# Round 4b (Caribbean, from agent 3)
+
+## VI (USD)
+
+Nothing eligible: Island Direct = marketplace; US tools are agent 3's.
+count now: 0
