@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.38
+HatchGrab Engineering Reference Manual · V16.39
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.38**
+**Version 16.39**
 
 November 2026
 
@@ -120,7 +120,7 @@ identical; a **pre-flight** before the migration runs and a **check** after it. 
 insert fail (its own exception block; on error it leaves the value NULL and logs a WARNING). Never run a proof against Pizzeria
 Gusto or any trading truck. A proof that can't be run is a stop: say so; don't apply the migration.
 
-# Open items (V16.38, 25 November 2026) — THE ONLY CURRENT LIST
+# Open items (V16.39, 25 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
@@ -346,34 +346,55 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     **Deadline (V16.38):** prices start to age out on **21 Feb 2027** (US first; all live countries by 31 Mar). The deploy and the
     re-enabling must happen **before mid-February 2027**. A keep-current plan (prices 90 days, features rarely, presence once, staggered
     due dates, within the $90 cap) follows a read-only review of how a routine check refreshes `checked_on`.
+    **V16.39 — the re-enable plan (compare-research-6 §6.7), in order, before mid-February 2027:** (1) a prompt for the workflow-file
+    change (`SUPABASE_DB_URL`, the pg runner) with a harness — goes out with the batch deploy; (2) two database-only migrations with
+    Dominic's yes: the settings and the stagger (live without a deploy, inert while disabled); (3) Dominic: add the GitHub secret
+    `SUPABASE_DB_URL`, confirm the $100 Console spend limit on the Competitor checks workspace; (4) the batch deploy (Open item 40);
+    (5) Dominic: one manual `dry_run`, then `gh workflow enable competitor-check.yml` **before 4 January**; (6) read-only verify that the
+    first runs check 2–4 a day and the live countries stay live.
 56. 🔴 **Vercel Spend Management:** confirm there is no budget with "Pause production deployments" (a pause = 503 for every page, Pizzeria
     Gusto included); keep alerts only. **Decision: Observability** events (≈ $0.13–0.31 a day) — switch off if unused.
 57. ~~**Comparison research — next waves**, in launch order (the method in §91):
     - one short: MT; IS RS KR QA SA BH JO BO DO SV GT JM UY ZA CO; AL BA MK MD UZ IN LK BD (and others in compare-research-3's table);
     - nothing eligible found: AO BS CR CV HN IL MC MZ NI PE PY SN TN TT; KZ GE AZ AM ME KG PK KH NP MN MO BN LA TZ UG ET NA BW ZM ZW DZ BZ
       GY SR; micro-territories not researched.~~
-    ⛔ **V16.38:** **Comparison research — next waves**, in launch order (the method in §91):
-    - one short, waves 1–2: MT IS RS QA BH JO BO DO SV GT JM UY CO (two rounds found nothing new for all but CO; parking proposed);
-      KR at 0 (Toss Place unclear);
-    - one short, wave 3: AL BA MK MD UZ IN LK BD;
-    - nothing eligible found: AO BS CR CV HN IL MC MZ NI PE PY SN TN TT; KZ GE AZ AM ME KG PK KH NP MN MO BN LA TZ UG ET NA BW ZM ZW DZ BZ
-      GY SR MU; micro-territories not researched.
-    - **CL** is live on SumUp's single fallback: a second real CLP tool wanted (Toteat and Justo were round-2 evidence gaps).
+    ~~⛔ **V16.38:** **Comparison research — next waves**, in launch order (the method in §91):~~
+    - ~~one short, waves 1–2: MT IS RS QA BH JO BO DO SV GT JM UY CO (two rounds found nothing new for all but CO; parking proposed);
+      KR at 0 (Toss Place unclear);~~
+    - ~~one short, wave 3: AL BA MK MD UZ IN LK BD;~~
+    - ~~nothing eligible found: AO BS CR CV HN IL MC MZ NI PE PY SN TN TT; KZ GE AZ AM ME KG PK KH NP MN MO BN LA TZ UG ET NA BW ZM ZW DZ BZ
+      GY SR MU; micro-territories not researched.~~
+    - ~~**CL** is live on SumUp's single fallback: a second real CLP tool wanted (Toteat and Justo were round-2 evidence gaps).~~
+    ⛔ **V16.39:** **Comparison research — status after compare-research-7.** Every enabled country has been researched; the one-short
+    countries two to five times.
+    - one short: MT IS RS AL BA MK MD UZ KZ JO LK BD BO DO SV JM UY CO GU VI;
+    - at 0: KR GT and the rest; the 90 territories researched once (1–4 searches each).
+    - **The remaining lever is a decision:** extend the GI rule (a parent-country tool counts unless its own site excludes the territory)
+      to JE GG IM (from GB), AX (FI), RE GP MQ GF YT BL MF PM (FR), SM VA (IT), AD (ES / FR) — evidence in compare-research-7 §5.
+    - Later: which comparison pages get search traffic (Search Console / Bing by country; Open item 50).
 58. ~~**Comparison open points (compare-research-3b §4):** Poster's "Site" add-on (kept unclear); KZ — add joinposter.kz to Poster's check
     pages; **Toss Place KR** — the fee in force (0 won "try" against the planned 3.5 % + VAT) must be confirmed on its own site before KR
     goes live.~~
-    ⛔ **V16.38:** **Comparison open points:**
-    - Poster's "Site" add-on on its own: kept unclear (an add-on needing a POS plan; counting it would show 760 ₴ on the live UA page).
-    - KZ: add joinposter.kz to Poster's check pages when KZ is next researched (it can't make KZ live alone).
-    - ~~Toss Place KR — the fee in force must be confirmed on its own site before KR goes live.~~ ⛔ V16.38: not stated on its own site →
-      plan unclear; KR at 0.
-    - **Fudo AR (live):** check whether fu.do/es-ar also says Tu Delivery needs a paid Fudo plan (as on the CO page). If so, AR's
-      ARS 0 + 1.9 % understates Fudo's price; store plan + module as for CO.
+    ~~⛔ **V16.38:** **Comparison open points:**~~
+    - ~~Poster's "Site" add-on on its own: kept unclear (an add-on needing a POS plan; counting it would show 760 ₴ on the live UA page).~~
+    - ~~KZ: add joinposter.kz to Poster's check pages when KZ is next researched (it can't make KZ live alone).~~
+    - ~~Toss Place KR — the fee in force must be confirmed on its own site before KR goes live.~~ ~~⛔ V16.38: not stated on its own site →
+      plan unclear; KR at 0.~~
+    - ~~**Fudo AR (live):** check whether fu.do/es-ar also says Tu Delivery needs a paid Fudo plan (as on the CO page). If so, AR's
+      ARS 0 + 1.9 % understates Fudo's price; store plan + module as for CO.~~
+    ⛔ **V16.39:** **Comparison open points:** Poster's "Site" add-on alone stays unclear (UA, KZ). ~~KZ check page~~ ⛔ done V16.39
+    (20261135). ~~Fudo AR~~ ⛔ done V16.39 (plan + module; the «No tiene abono mensual» flag noted). Check on a live page that Zyda's QA /
+    BH / OM / SA / EG prices read as "from" and "billed yearly".
 59. ~~**Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, Restorant NG, Menufy PR, Oddle TW, Yoveletta /
     Rent-a-Shop LI and Ordea GI (neighbour fits), Fudo AR/CL, Pedix, DISH HR/SK, Vitrina SI.~~
-    ⛔ **V16.38:** **Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, **Linkin1 SA**, Restorant NG,
+    ~~⛔ **V16.38:** **Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, **Linkin1 SA**, Restorant NG,
     Oddle TW, Yoveletta / Rent-a-Shop LI and Ordea GI (neighbour fits, terms read), Fudo AR, Pedix (quote strengthened V16.38), DISH
-    HR/SK, Vitrina SI. ⛔ V16.38: Menufy PR now has a quoted price ($179); Fudo CL is unclear.
+    HR/SK, Vitrina SI. ⛔ V16.38: Menufy PR now has a quoted price ($179); Fudo CL is unclear.~~
+    ⛔ **V16.39:** **Borderline fits counted (Dominic may take any down with Admin's switch):** Zyda QA BH OM SA EG (yearly "from" ÷ 12,
+    unnamed plan; makes QA and BH live), Asila MA, Linkin1 SA, Restorant NG, Oddle TW, Yoveletta / Rent-a-Shop LI, Ordea and Grafterr GI
+    (neighbour fits), Fudo AR / CL (an "active account" read as a paid plan), Pedix, DISH HR/SK, Vitrina SI, FoxiFood (presence from its
+    country-terms page). **Held uncounted (compare-research-7 §9):** Thinker POS MK, Quick Resto KZ (would make MK / KZ live), SumUp CO,
+    GoSufra EG, SisFood BR, GoOrder PL, Fritzy BE, QuickClick TW, Feasty ZA, Kravon IN.
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -625,6 +646,61 @@ actions, `refund`, the Manage-level token routes. 6. After two clean weeks, grou
 board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings (owner only; needs a mockup first).
 
 # Changelog
+
+## V16.39 — 25 November 2026 — **61 COMPARISON COUNTRIES LIVE (QA, BH JOIN); FOXIFOOD THE FOOD-TRUCK TOOL IN 10 MORE; SUMUP'S FALLBACK GONE FROM CL CY FI LT SI; THE COMPETITOR CHECK REVIEWED: DON'T RE-ENABLE BEFORE THE DEPLOY**
+
+- **compare-research-6** (14:15–15:01; 4 rounds; migrations `20261134` Fudo, `20261135` Poster KZ; `data/compare-research-6/` registered
+  eleventh): **59 → 59.**
+  - **Fudo AR / CL** stored as "Plan Inicial + Tu Delivery" (Dominic's decision: «Solo necesitás una cuenta activa en Fudo» and no free
+    plan = a paid plan is needed). AR ARS 23 900 /mes + 1,9 % + IVA (cap with Fudo Pagos); CL CLP 25 500 /mes sin IVA + 1,9 % + IVA.
+    Flag: AR's page still says «No tiene abono mensual», and the "/mes" figure sits under a Mensual / Semestral / Anual toggle (read as
+    monthly). **CL: Pedix · SumUp → Fudo · Pedix.**
+  - **Poster KZ:** joinposter.kz added to its check pages; Starter + Poster Site add-on counts at 21 000 ₸; the add-on alone unclear. KZ: 1.
+  - Thinker POS MK and Toteat CL: no quote found, unchanged. The 14 + 25 "nothing found" countries and all 90 never-researched territories:
+    nothing eligible and priced (near misses: ICRTouch IM, Restolabs AW, unpriced).
+  - ⚠️ The round-4 import changed Restolabs' focus to restaurant without stopping (accurate; not shown anywhere; kept).
+- **The Competitor check review (compare-research-6 §6, read-only):**
+  - An unchanged price found by a routine check **does** move `checked_on` on (publish → `decideFindings` → `acceptFinding` →
+    `touchPlanChecked`). No code change needed.
+  - A changed price is decided automatically: accepted (both checks agree, own site, plausible, ≤ 50 % move) → new price at the next
+    publish; **held** (> 50 %) → old price kept only within its 90-day interval, then the plan drops until Admin decides; rejected → the
+    old plan ages out at `checked_on + 120`.
+  - 200 of 221 active competitors carry `check_requested_at` from research imports (requests skip the daily quota); 73 have no
+    `next_check_at`. Counted plans: 504 of 708 expire in the week of 22 Mar 2027; the first (US) on 21 Feb.
+  - **Measured cost:** routine **$0.046** a competitor (not ≈ $0.19); deep $0.101; pass $0.009. With prices every 90 days for ~170
+    competitors: **≈ $2.6–11 a month**, well within the $90 cap.
+  - **Re-enabling on GitHub main (`5df925d8`) today would take most live pages down:** the old publish rule, no plausibility guard (the
+    100× risk), the 200-request backlog first, and the AE crash.
+  - **Needed before re-enabling:** the batch deploy (compare-fix-1/-2, the 25 Nov rules, the data files); **a workflow-file change** (the
+    import step runs `npx -y -p pg@8.13.1 node scripts/competitor-check/run.mjs scripts/data-import/main.ts` with a **`SUPABASE_DB_URL`**
+    secret, not yet written); two database-only migrations with Dominic's yes — (a) settings: core and secondary tiers 365 days, the deep
+    queue / quick pass / semi-deep off, daily cap $3, monthly $90; (b) the stagger: clear `check_requested_at`, `next_check_at` 4 a day
+    from 4 Jan 2027 by earliest expiry (tested read-only: 4 Jan → 13 Feb, smallest margin 40 days).
+- **compare-research-7** (15:10–16:05; migrations `20261136` Sabbor GT not relevant, `20261137` funfo's website → funfo.jp, `20261138`
+  Fritzy BE and GoOrder PL unclear, `20261139` Dinlr's display name; `data/compare-research-7/` registered twelfth): **59 → 61.**
+  - **QA** (Ordable · Zyda) and **BH** (Ordable · Zyda) join on Zyda's own country pages («Plans from 2,850 QAR a year», «Plans from
+    190 BHD a year»), stored ÷ 12 as monthly — a yearly "from" price for an unnamed plan, counted by the yearly-only precedent (Foodics OM,
+    Ewity MV). Zyda also third in OM, SA, EG. `PLANS_ONLY_IN` for Zyda: KW, QA, BH.
+  - **Third tools** for countries at 2: **FoxiFood** (food truck; 0 € + 0,45 € per order; its country-terms page names them) in IE BE HR
+    CY FI GR LT PT SI ES; **Grafterr** GI (£55, serves GI from GB); Bopple AU/NZ; funfo JP; Foodics KW; Komisyonsuz TR; Dinlr SG/MY;
+    Vitrina CZ DK RO SK; Pikit CH; OrderEatRepeat CA; Pedix PA/AR. A restaurant / till tool only makes up 2, so third restaurant tools are a
+    reserve, not shown.
+  - **Line-ups changed:** QA, BH (new); GI +Grafterr; IE +FoxiFood; **CY, FI, LT, SI: SumUp → FoxiFood**; BE, ES, GR, HR, PT: FoxiFood
+    replaces one restaurant tool; TR İletmen · Komisyonsuz; MY Klikit · Dinlr.
+  - **US territories:** Menufy counts in **GU** and **VI** (USD 179; its own Guam and Virgin Islands pages) → 1 each. Square's own terms
+    exclude the territories; Toast, Clover, ChowNow show no presence.
+  - **API-loaded prices** (the Spevdo precedent, flagged): Ocuioso AO's own /api/plans answered 500 (unpriced); GoSufra EG's own
+    /api/plans?country=EG read once (300 / 499 / 999 EGP), kept uncounted.
+  - **Territories, evidence only:** none of the counted GB, FR, FI, IT, ES tools (nor Storekit, FoxiFood, NemTakeAway) names or excludes
+    JE GG IM AX SM VA AD RE GP MQ GF YT BL MF PM FO GL, except Boom srl («Operiamo a Catania e in tutta Italia» — mainland only).
+  - `KEEP_STORED_FOCUS`: Fudo, RestroGreen, Restolabs, Wongnai POS. One process slip: migration 20261136's first commit message claimed a
+    pre-flight before it had passed (fixed in `ec956d3a`).
+  - Research stopped at 16:05: every queue empty after two or three passes, and Dominic's weekly Claude usage at 96 %.
+- **Live comparison countries (25 Nov): 61** — AR AT AU BE BG BH BR CA CH CL CY CZ DE DK EC EE EG ES FI FR GB GI GR HK HR HU ID IE IN IT JP
+  KW LI LT LU LV MA MV MY NG NL NO NZ OM PA PL PR PT QA RO SA SE SG SI SK TH TR TW UA US ZA. Verified after every load: shown = marked
+  everywhere; AE false/false; 0 of 792 plans over the ceiling; no pending or duplicate answers.
+- **OBSERVED when applying (25 Nov 2026, 16:13 UTC, read-only):** **61 live** (exactly the list above); AE `auto_publish` false,
+  `auto_live` false; the newest `data_imports` row `data/compare-research-7/competitors.json`, `ok`, 16:05:19 UTC; `DATA_FILES` holds 12 files.
 
 ## V16.38 — 25 November 2026 — **58 COMPARISON COUNTRIES LIVE (SA, ZA JOIN); TOSS PLACE KR AND FUDO CL UNCLEAR; MENUFY PR AT $179; PRICES START TO AGE OUT ON 21 FEB 2027**
 
@@ -40041,6 +40117,15 @@ Reports: `docs/enquiries-backend-1-report.md`, `docs/inbox-1-report.md`, `docs/i
   country's own page.
 - **Not a confirmed live product (V16.38):** a vendor whose only site is a throwaway host (railway.app, duckdns.org…) or that shows no
   real customers is not relevant (Resto-SaaS MU, OrderFlow BH).
+- **An unasked change in a dry run is left out (V16.39):** if an import dry run shows a stored competitor's focus or lifecycle changing,
+  or a plan superseded that wasn't meant to be, the row is left out of the build (or added to `KEEP_STORED_FOCUS`) and the dry run re-run.
+  Never import past it.
+- **Prices loaded from the vendor's own API (V16.39, the Spevdo precedent):** one read of an endpoint on the vendor's own domain, only
+  when its own pricing page calls it (shown how), with the URL stored as the source. Flagged for Dominic each time.
+- **Yearly-only "from" prices (V16.39):** where the own site gives only a yearly price, it is stored ÷ 12 with a "billed yearly" note
+  (Foodics OM, Ewity MV, Zyda). Where a monthly-billing option exists, the monthly-billing price is stored (the yearly-toggle rule).
+- **The Competitor check keeps prices current (V16.39):** an unchanged price confirmed by a routine check moves `checked_on` on through
+  the publish step; a > 50 % change is held and drops after the 90-day interval until Admin decides. Measured: $0.046 a routine check.
 
 ---
 
