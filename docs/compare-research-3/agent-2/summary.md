@@ -149,3 +149,7 @@ None found with a MOP price (mFood marketplace; Eats365 /mo price hidden). count
 | Mint (MintyPOS) | nearest_local | not_relevant (agency; no F&B ordering, no prices) | — | https://mint.com.bn/ |
 
 None exists that I could find in BND (Take App USD only). count now: 0
+
+## LA (Laos, LAK)
+
+None exists that I could find (Aldelo no price; Thai/Vietnamese tools without Laos presence). count now: 0
