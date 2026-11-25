@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Ordine creato, ma non è stato possibile salvare la registrazione del pagamento: l’incasso di questo ordine potrebbe risultare errato finché non viene corretto.",
   "payment_not_recorded": "Non è stato possibile registrare il pagamento: l’incasso di questo ordine potrebbe risultare errato finché non viene corretto.",
   "payment_not_reversed": "Non è stato possibile stornare il pagamento",
+  "sale_closed": "Questa vendita è chiusa. Registra invece un rimborso.",
   "event_not_approved": "Questo evento non è approvato",
   "event_not_open": "{status, select, closed {Questo evento è terminato. Riavvialo per ricevere ordini.} cancelled {Questo evento è stato annullato.} other {Questo evento non è aperto.}}",
   "sign_in_to_create": "Accedi come membro del team per creare un evento.",

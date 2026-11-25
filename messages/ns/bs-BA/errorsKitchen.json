@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Narudžba je kreirana, ali evidenciju plaćanja nije bilo moguće sačuvati — iznos prometa za ovu narudžbu može biti netačan dok se to ne ispravi.",
   "payment_not_recorded": "Plaćanje nije bilo moguće evidentirati — iznos prometa za ovu narudžbu može biti netačan dok se to ne ispravi.",
   "payment_not_reversed": "Plaćanje nije bilo moguće poništiti",
+  "sale_closed": "Ova prodaja je zatvorena. Umjesto toga evidentirajte povrat novca.",
   "event_not_approved": "Ovaj događaj nije odobren",
   "event_not_open": "{status, select, closed {Ovaj događaj je završen. Ponovo ga pokrenite da biste primali narudžbe.} cancelled {Ovaj događaj je otkazan.} other {Ovaj događaj nije otvoren.}}",
   "sign_in_to_create": "Prijavite se kao član tima da biste napravili događaj.",

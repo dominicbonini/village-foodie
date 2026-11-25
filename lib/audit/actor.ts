@@ -58,6 +58,9 @@ export interface ResolvedActor {
    *  turns this into a 403; the action route ignores it. This flag is the whole reason the helper returns
    *  data instead of a NextResponse. */
   foreignOperator: boolean
+  /** till-pack-2: true only when a HatchGrab admin (operators.is_admin) acts on a truck that is not theirs. actorKind stays 'owner' for
+   *  them, as before (the audit log and every gate are unchanged); only the till's role record (lib/till/actor-role.ts) reads this. */
+  adminAccess?: boolean
 }
 
 const TOKEN_ONLY: ResolvedActor = {
@@ -116,7 +119,8 @@ export async function resolveActor(
     // ownership/membership (interim — a distinct "admin view" role is backlogged).
     if (isOwner || operator?.is_admin) {
       const label = operator!.name || operator!.email || null
-      return { actorKind: 'owner', actorId: user.id, actorLabel: label, userRole: 'owner', currentUserName: label, foreignOperator: false }
+      return { actorKind: 'owner', actorId: user.id, actorLabel: label, userRole: 'owner', currentUserName: label, foreignOperator: false,
+        ...(operator?.is_admin && !isOwner ? { adminAccess: true } : {}) }
     }
 
     // Not the owner — check truck_users membership (staff/manager, or an invited user whose operators

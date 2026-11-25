@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Pöntun stofnuð, en ekki tókst að vista greiðslufærsluna — innkomutalan fyrir þessa pöntun gæti verið röng þar til þetta er lagað.",
     "payment_not_recorded": "Ekki tókst að skrá greiðsluna — innkomutalan fyrir þessa pöntun gæti verið röng þar til þetta er lagað.",
     "payment_not_reversed": "Ekki tókst að bakfæra greiðsluna",
+    "sale_closed": "Þessari sölu er lokið. Skráðu endurgreiðslu í staðinn.",
     "event_not_approved": "Þessi viðburður er ekki samþykktur",
     "event_not_open": "{status, select, closed {Þessum viðburði er lokið. Hefðu hann aftur til að taka við pöntunum.} cancelled {Þessum viðburði var aflýst.} other {Þessi viðburður er ekki opinn.}}",
     "sign_in_to_create": "Skráðu þig inn sem liðsmaður til að búa til viðburð.",

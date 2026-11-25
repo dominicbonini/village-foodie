@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Bestillingen er oprettet, men betalingen kunne ikke registreres — omsætningen for denne bestilling kan være forkert, indtil det er rettet.",
   "payment_not_recorded": "Betalingen kunne ikke registreres — omsætningen for denne bestilling kan være forkert, indtil det er rettet.",
   "payment_not_reversed": "Betalingen kunne ikke tilbageføres",
+  "sale_closed": "Dette salg er lukket. Registrer en tilbagebetaling i stedet.",
   "event_not_approved": "Arrangementet er ikke godkendt",
   "event_not_open": "{status, select, closed {Arrangementet er slut. Genstart det for at tage imod bestillinger.} cancelled {Arrangementet er aflyst.} other {Arrangementet er ikke åbent.}}",
   "sign_in_to_create": "Log ind som teammedlem for at oprette et arrangement.",

@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Sifariş yaradıldı, lakin ödəniş qeydini yadda saxlamaq mümkün olmadı — düzəldilənə qədər bu sifariş üzrə gəlir məbləği səhv ola bilər.",
   "payment_not_recorded": "Ödənişi qeydə almaq mümkün olmadı — düzəldilənə qədər bu sifariş üzrə gəlir məbləği səhv ola bilər.",
   "payment_not_reversed": "Ödənişi ləğv etmək mümkün olmadı",
+  "sale_closed": "Bu satış bağlanıb. Bunun əvəzinə geri qaytarma qeyd edin.",
   "event_not_approved": "Bu tədbir təsdiqlənməyib",
   "event_not_open": "{status, select, closed {Bu tədbir bitib. Sifariş qəbul etmək üçün yenidən başladın.} cancelled {Bu tədbir ləğv edilib.} other {Bu tədbir açıq deyil.}}",
   "sign_in_to_create": "Tədbir yaratmaq üçün komanda üzvü kimi daxil olun.",

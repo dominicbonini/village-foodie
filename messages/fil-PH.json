@@ -1005,6 +1005,7 @@
     "created_payment_not_recorded": "Nagawa ang order, pero hindi na-save ang record ng bayad — baka mali ang benta para sa order na ito hangga’t hindi naaayos.",
     "payment_not_recorded": "Hindi ma-record ang bayad — baka mali ang benta para sa order na ito hangga’t hindi naaayos.",
     "payment_not_reversed": "Hindi ma-reverse ang bayad",
+    "sale_closed": "Sarado na ang bentang ito. Mag-record na lang ng refund.",
     "event_not_approved": "Hindi pa approved ang event na ito",
     "event_not_open": "{status, select, closed {Tapos na ang event na ito. Simulan ulit ito para tumanggap ng order.} cancelled {Na-cancel ang event na ito.} other {Hindi bukas ang event na ito.}}",
     "sign_in_to_create": "Mag-log in bilang team member para gumawa ng event.",

@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Tellimus on loodud, kuid maksekirjet ei õnnestunud salvestada — selle tellimuse käive võib olla vale, kuni see parandatakse.",
     "payment_not_recorded": "Makset ei õnnestunud salvestada — selle tellimuse käive võib olla vale, kuni see parandatakse.",
     "payment_not_reversed": "Makset ei õnnestunud tühistada",
+    "sale_closed": "See müük on suletud. Registreerige selle asemel tagasimakse.",
     "event_not_approved": "See üritus pole kinnitatud",
     "event_not_open": "{status, select, closed {See üritus on lõppenud. Alusta seda uuesti, et tellimusi vastu võtta.} cancelled {See üritus on tühistatud.} other {See üritus pole avatud.}}",
     "sign_in_to_create": "Ürituse loomiseks logi sisse meeskonnaliikmena.",

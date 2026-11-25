@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Naročilo je ustvarjeno, vendar zapisa o plačilu ni bilo mogoče shraniti – znesek prometa za to naročilo je lahko napačen, dokler se ne popravi.",
   "payment_not_recorded": "Plačila ni bilo mogoče zabeležiti – znesek prometa za to naročilo je lahko napačen, dokler se ne popravi.",
   "payment_not_reversed": "Plačila ni bilo mogoče razveljaviti",
+  "sale_closed": "Ta prodaja je zaključena. Namesto tega zabeležite vračilo.",
   "event_not_approved": "Ta dogodek ni odobren",
   "event_not_open": "{status, select, closed {Ta dogodek se je končal. Znova ga začnite za sprejemanje naročil.} cancelled {Ta dogodek je bil odpovedan.} other {Ta dogodek ni odprt.}}",
   "sign_in_to_create": "Prijavite se kot član ekipe, da ustvarite dogodek.",

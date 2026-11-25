@@ -10,7 +10,8 @@
 // fetch — we only ever queue on a NATIVE app that could not REACH the server (thrown fetch). Server-side
 // rejections (400/403/409…) are returned to the caller as today, never silently queued.
 import { Preferences } from '@capacitor/preferences'
-import { isNativeApp } from '@/lib/native/device'
+import { isNativeApp, getDeviceId } from '@/lib/native/device'
+import { tillDeviceFor, webSha256Hex } from '@/lib/till/device-fingerprint'
 import { enqueue, listOps, removeOp, saveOp, deviceLetter, type OutboxKind } from '@/lib/native/outbox'
 // dashboard-auth-2: the caller's sign-in (and the kitchen-screen marker), read at SEND time — see post().
 import { staffAuthHeaders } from '@/lib/native/staffFetch'
@@ -334,6 +335,16 @@ export async function gatedAction(opts: {
     // and guarded by `kind === 'create'`, which is the only kind with that shape.
     if (mintedProvisional && kind === 'create' && queuedBody.manualOrder && typeof queuedBody.manualOrder === 'object') {
       queuedBody.manualOrder = { ...(queuedBody.manualOrder as Record<string, unknown>), provisional_id: mintedProvisional }
+    }
+    // ── 🔴 till-pack-2 (law change 8): THE DEVICE'S FINGERPRINT OF A QUEUED WALK-UP — on the QUEUED body only, like everything above.
+    // sha256 of the order's canonical content and its creation time, with this device's stable id (lib/till/device-fingerprint.ts). The
+    // server stores it before the order row, so the order's first sealed till entry carries it. ⚠️ NEVER ALLOWED TO STOP THE QUEUE: any
+    // failure (no Web Crypto, no id) sends nothing, which is exactly what an older app sends.
+    if (kind === 'create' && queuedBody.manualOrder && typeof queuedBody.manualOrder === 'object') {
+      try {
+        const tillDevice = await tillDeviceFor(order_key, queuedBody.manualOrder, getDeviceId(), webSha256Hex)
+        if (tillDevice) queuedBody.till_device = tillDevice
+      } catch { /* sent without it — as an older app */ }
     }
     await enqueue({ kind, order_key, url, body: queuedBody, provisional_id: mintedProvisional })
     return { ok: false, queued: true, provisional_id: mintedProvisional, order_key }

@@ -8,6 +8,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { LoyaltySettings, Reward, StampOrder } from './model'
 import type { ApplyResult, LoyaltyJobStore, LoyaltyTruck, ReverseResult } from './run'
 import type { LoyaltyServiceStore, RedeemResult } from './service'
+import { NETTING_COLUMNS, netted } from '@/lib/payments/reversals'   // till-pack-2
 
 type Row = Record<string, unknown>
 const s = (v: unknown) => (typeof v === 'string' ? v : null)
@@ -34,9 +35,9 @@ export function supabaseLoyaltyStore(db: SupabaseClient): LoyaltyJobStore & Loya
     const out = new Map<string, { testMode: boolean; chargedMinor: number; refundedMinor: number }>()
     for (const k of keys) out.set(k, { testMode: false, chargedMinor: 0, refundedMinor: 0 })
     for (const part of chunks(keys)) {
-      const { data, error } = await db.from('order_payments').select('order_key, kind, amount_minor, state, livemode').in('order_key', part)
+      const { data, error } = await db.from('order_payments').select(`order_key, kind, amount_minor, state, livemode, ${NETTING_COLUMNS}`).in('order_key', part)
       fail('payments', error)
-      for (const p of (data ?? []) as Row[]) {
+      for (const p of netted((data ?? []) as Row[]) as Row[]) {   // till-pack-2: a (payment, reversal) pair is nothing
         const f = out.get(String(p.order_key)); if (!f) continue
         if (p.livemode === false) f.testMode = true
         if (p.state !== 'succeeded') continue

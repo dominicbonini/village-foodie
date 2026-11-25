@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Oda imetengenezwa, lakini rekodi ya malipo haikuweza kuhifadhiwa — kiasi cha mapato cha oda hii kinaweza kuwa si sahihi hadi kirekebishwe.",
     "payment_not_recorded": "Malipo hayakuweza kurekodiwa — kiasi cha mapato cha oda hii kinaweza kuwa si sahihi hadi kirekebishwe.",
     "payment_not_reversed": "Malipo hayakuweza kubatilishwa",
+    "sale_closed": "Mauzo haya yamefungwa. Badala yake, rekodi urejeshaji wa pesa.",
     "event_not_approved": "Tukio hili halijaidhinishwa",
     "event_not_open": "{status, select, closed {Tukio hili limekwisha. Lianzishe upya ili kupokea oda.} cancelled {Tukio hili limeghairiwa.} other {Tukio hili halijafunguliwa.}}",
     "sign_in_to_create": "Ingia kama mwanatimu ili kutengeneza tukio.",

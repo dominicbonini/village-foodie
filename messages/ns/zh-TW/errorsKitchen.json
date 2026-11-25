@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "訂單已建立，但無法儲存付款記錄。在修正之前，這筆訂單的營業額數字可能有誤。",
   "payment_not_recorded": "無法記錄付款。在修正之前，這筆訂單的營業額數字可能有誤。",
   "payment_not_reversed": "無法撤銷付款",
+  "sale_closed": "此銷售已結帳。請改為記錄退款。",
   "event_not_approved": "此活動尚未核准",
   "event_not_open": "{status, select, closed {此活動已結束。重新開始以接受訂單。} cancelled {此活動已取消。} other {此活動未開放。}}",
   "sign_in_to_create": "請以團隊成員身分登入以建立活動。",

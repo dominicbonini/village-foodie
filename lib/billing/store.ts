@@ -6,6 +6,7 @@ import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { isPaymentModel, type CountryBilling, type UsageOrder, type UsageLine, type PlanHistoryRow } from '@/lib/billing/rules'
 import type { BillingStore, TruckBillingRow, UsageRow, InvoiceRow, StoredTruck, ChargeRow, BillingEmailRow } from '@/lib/billing/store-types'
+import { NETTING_COLUMNS, netted } from '@/lib/payments/reversals'   // till-pack-2
 
 type Row = Record<string, unknown>
 const num = (v: unknown, d = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : d)
@@ -212,10 +213,10 @@ export function supabaseBillingStore(db: SupabaseClient): BillingStore {
       const pays: Row[] = []
       for (let i = 0; i < keys.length; i += 200) {
         const { data: p, error: pe } = await db.from('order_payments')
-          .select('order_key, kind, amount_minor, application_fee_minor, application_fee_refunded_minor')
+          .select(`order_key, kind, amount_minor, application_fee_minor, application_fee_refunded_minor, ${NETTING_COLUMNS}`)
           .in('order_key', keys.slice(i, i + 200)).eq('channel', 'online').eq('state', 'succeeded')
         fail(`order_payments ${truckId}`, pe)
-        pays.push(...((p ?? []) as Row[]))
+        pays.push(...(netted((p ?? []) as Row[]) as Row[]))   // till-pack-2: a refund that failed (reversed) is no refund
       }
       return orders.map(({ r, placedAt }): UsageOrder => {
         const mine = pays.filter(p => String(p.order_key) === String(r.order_key))

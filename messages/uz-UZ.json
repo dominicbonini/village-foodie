@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Buyurtma yaratildi, lekin toʻlov yozuvini saqlab boʻlmadi — tuzatilmaguncha bu buyurtma boʻyicha tushum notoʻgʻri koʻrsatilishi mumkin.",
     "payment_not_recorded": "Toʻlovni qayd etib boʻlmadi — tuzatilmaguncha bu buyurtma boʻyicha tushum notoʻgʻri koʻrsatilishi mumkin.",
     "payment_not_reversed": "Toʻlovni bekor qilib boʻlmadi",
+    "sale_closed": "Bu sotuv yopilgan. Uning oʻrniga pul qaytarilishini qayd eting.",
     "event_not_approved": "Bu tadbir tasdiqlanmagan",
     "event_not_open": "{status, select, closed {Bu tadbir tugagan. Buyurtma olish uchun qayta boshlang.} cancelled {Bu tadbir bekor qilingan.} other {Bu tadbir ochiq emas.}}",
     "sign_in_to_create": "Tadbir yaratish uchun jamoa a’zosi sifatida kiring.",

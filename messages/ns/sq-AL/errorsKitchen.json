@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Porosia u krijua, por regjistrimi i pagesës nuk u ruajt dot — arkëtimet për këtë porosi mund të jenë të gabuara derisa të rregullohen.",
   "payment_not_recorded": "Pagesa nuk u regjistrua dot — arkëtimet për këtë porosi mund të jenë të gabuara derisa të rregullohen.",
   "payment_not_reversed": "Pagesa nuk u anulua dot",
+  "sale_closed": "Kjo shitje është e mbyllur. Regjistroni një rimbursim në vend të saj.",
   "event_not_approved": "Ky event nuk është miratuar",
   "event_not_open": "{status, select, closed {Ky event ka përfunduar. Rifillojeni për të marrë porosi.} cancelled {Ky event u anulua.} other {Ky event nuk është i hapur.}}",
   "sign_in_to_create": "Hyni si anëtar i ekipit për të krijuar një event.",

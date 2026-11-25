@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Tilaus on luotu, mutta maksutietoa ei voitu tallentaa — tämän tilauksen myyntisumma voi olla väärin, kunnes se korjataan.",
     "payment_not_recorded": "Maksua ei voitu kirjata — tämän tilauksen myyntisumma voi olla väärin, kunnes se korjataan.",
     "payment_not_reversed": "Maksua ei voitu peruuttaa",
+    "sale_closed": "Tämä myynti on suljettu. Kirjaa sen sijaan hyvitys.",
     "event_not_approved": "Tätä tapahtumaa ei ole hyväksytty",
     "event_not_open": "{status, select, closed {Tapahtuma on päättynyt. Käynnistä se uudelleen ottaaksesi tilauksia.} cancelled {Tapahtuma on peruttu.} other {Tapahtuma ei ole auki.}}",
     "sign_in_to_create": "Kirjaudu tiimin jäsenenä luodaksesi tapahtuman.",

@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Zamówienie utworzone, ale nie udało się zapisać płatności — utarg z tego zamówienia może być błędny, dopóki nie zostanie to naprawione.",
   "payment_not_recorded": "Nie udało się zapisać płatności — utarg z tego zamówienia może być błędny, dopóki nie zostanie to naprawione.",
   "payment_not_reversed": "Nie udało się cofnąć płatności",
+  "sale_closed": "Ta sprzedaż jest zamknięta. Zamiast tego zarejestruj zwrot.",
   "event_not_approved": "To wydarzenie nie jest zatwierdzone",
   "event_not_open": "{status, select, closed {To wydarzenie się zakończyło. Uruchom je ponownie, żeby przyjmować zamówienia.} cancelled {To wydarzenie zostało odwołane.} other {To wydarzenie nie jest otwarte.}}",
   "sign_in_to_create": "Zaloguj się jako członek zespołu, aby utworzyć wydarzenie.",

@@ -26,6 +26,9 @@ import { readEventType } from '@/lib/event-types/read'
 // Type-only would not work here: LEDGER_ROW_COLUMNS is a VALUE. This route is server-only, so pulling
 // the module in carries no browser-bundle cost (the concern noted at the top of lib/payments/ledger.ts).
 import { LEDGER_ROW_COLUMNS } from '@/lib/payments/ledger'
+// till-pack-2: a (payment, reversal) pair is nothing — netted HERE, so every browser surface (the dashboard, the KDS, the printed ticket)
+// receives exactly the rows it received when an undo deleted the payment, with exactly today's columns.
+import { NETTING_COLUMNS, netted } from '@/lib/payments/reversals'
 import { readHeldAuthorisations } from '@/lib/payments/held-authorisation'
 import { resolveBatchReservations } from '@/lib/features'
 import { truckMoneyWithOrders } from '@/lib/money-server'
@@ -400,7 +403,7 @@ export async function GET(req: NextRequest) {
         // The shared LEDGER_ROW_COLUMNS list, so this select can never drift out of step with what
         // getOrderBalance expects to receive. `order_key` (which this route groups by) and `livemode`
         // both ride in that list — do NOT re-add `order_key` here, it would be selected twice.
-        .select(LEDGER_ROW_COLUMNS)
+        .select(`${LEDGER_ROW_COLUMNS}, ${NETTING_COLUMNS}`)
         .in('order_key', visibleKeys)
         // 🔴 TEST ROWS DO NOT LEAVE THE DATABASE — EXCEPT THE ONES A TEST ACCOUNT PRODUCED. This response
         // is the ONLY route by which payment rows reach a browser — the operator's dashboard, the KDS, and
@@ -435,7 +438,8 @@ export async function GET(req: NextRequest) {
         // ⚠️ `stripeAccountLivemode` is resolved further down this route, alongside stripe_charges_enabled,
         // from the SAME operators read — no extra query.
         const accountIsTest = stripeAccountLivemode === false
-        for (const r of payRows ?? []) {
+        const visibleRows = netted(payRows ?? []) as unknown as NonNullable<typeof payRows>
+        for (const r of visibleRows) {
           // Only a TEST-ONLINE row is ever annotated. A livemode:true row is pushed untouched, so its
           // path through isLiveRow is byte-identical to before.
           const row = (accountIsTest && r.livemode === false && r.channel === 'online')

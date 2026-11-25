@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "A rendelés létrejött, de a fizetési adatot nem sikerült menteni — a rendelés bevételi adata a javításig hibás lehet.",
     "payment_not_recorded": "A fizetést nem sikerült rögzíteni — a rendelés bevételi adata a javításig hibás lehet.",
     "payment_not_reversed": "A fizetést nem sikerült visszavonni",
+    "sale_closed": "Ez az eladás le van zárva. Rögzítsen helyette visszatérítést.",
     "event_not_approved": "Ez az esemény nincs jóváhagyva",
     "event_not_open": "{status, select, closed {Ez az esemény véget ért. Indítsd újra a rendelések fogadásához.} cancelled {Ezt az eseményt lemondták.} other {Ez az esemény nincs nyitva.}}",
     "sign_in_to_create": "Jelentkezz be csapattagként az esemény létrehozásához.",

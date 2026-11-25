@@ -21,6 +21,8 @@
 //        france-notes-1: the line_notes column (see notesProofs below), before and after applying, rolled back.
 //   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --preflight-till-1 supabase/migrations/20261129_till_pack_1.sql
 //   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --till-1-check
+//   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --preflight-till-2 supabase/migrations/20261133_till_pack_2.sql
+//   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --till-2-check
 //        till-pack-1: the tamper-evident chain in observe mode (see tillProofs below), before and after applying, rolled back.
 //
 // 🔴 THE SAFEGUARDS (Dominic, 24 November 2026), each enforced below, not just promised:
@@ -984,10 +986,284 @@ end $t$`
 }
 
 
+/* ── till-pack-2 (25 November 2026, docs/till-pack-2-report.md): REVERSALS, COUNTER REFUNDS, DEVICE FINGERPRINTS, THE ACTOR'S ROLE ────────
+ *   --preflight-till-2 <migration>  ONE transaction, ROLLED BACK: 20261133_till_pack_2's statements, then every proof below in ONE DO block
+ *                                   (the DDL locks on order_payments last about a second), including the DDL-only ones.
+ *   --till-2-check                  After it is applied: the same block without the DDL-only proofs, ROLLED BACK.
+ * Demo trucks only, the till switched on for them inside the transaction (till.include_demo). The rows are written the way the new code
+ * writes them (a reversal row pointing at its payment, a counter refund with its method, the device row BEFORE the order), and every check
+ * is in the database: the chain, till_verify, the netted figures, the constraints, the grants. Exports go to docs/till-pack-2/. */
+const TILL2_OUT = path.join(REPO, 'docs/till-pack-2')
+function till2Helpers() {
+  return `create function pg_temp.rbp_reverse(p_pay uuid, p_reason text) returns uuid language sql as $f$
+  insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_by, method, livemode, reverses_payment_id, reason)
+  select p.order_key, p.truck_id, 'reversal', p.channel, p.amount_minor, p.currency, 'succeeded', null, 'rollback proof reversal', 'reversal:' || p.id, 'rbp-staff-user', p.method, p.livemode, p.id, p_reason
+  from public.order_payments p where p.id = p_pay
+  returning id $f$;
+create function pg_temp.rbp_refund(p_key uuid, p_channel text, p_method text, p_amount integer, p_reason text, p_ikey text) returns uuid language sql as $f$
+  insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_by, method, livemode, reason)
+  select o.order_key, o.truck_id, 'refund', p_channel, p_amount, o.currency, 'succeeded', null, 'rollback proof refund', p_ikey, 'rbp-staff-user', p_method, true, p_reason
+  from public.orders o where o.order_key = p_key
+  returning id $f$;
+-- getOrderBalance in SQL: the netted, live, succeeded rows; paid = charges − refunds; 'refunded' when paid 0 with a refund row.
+create function pg_temp.rbp_status(p_key uuid) returns text language sql as $f$
+  with r as (select * from public.order_payments p where p.order_key = p_key and p.state = 'succeeded' and p.livemode
+               and p.kind <> 'reversal' and not exists (select 1 from public.order_payments v where v.kind = 'reversal' and v.reverses_payment_id = p.id)),
+       s as (select coalesce(sum(case when kind = 'charge' then amount_minor else 0 end), 0) - coalesce(sum(case when kind = 'refund' then amount_minor else 0 end), 0) as paid,
+                    bool_or(kind = 'refund') as has_refund from r)
+  select case when s.paid = 0 and coalesce(s.has_refund, false) then 'refunded' when s.paid = 0 then 'unpaid' else 'paid:' || s.paid end from s $f$;
+-- a LIVE payment (rbp_pay writes test-mode rows, which getOrderBalance — and rbp_status — rightly do not count)
+create function pg_temp.rbp_pay_live(p_key uuid, p_kind text, p_channel text, p_method text, p_amount integer, p_ref text) returns uuid language sql as $f$
+  insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_by, method, livemode)
+  select o.order_key, o.truck_id, p_kind, p_channel, p_amount, o.currency, 'succeeded', p_ref, 'rollback proof — staff note', 'rbp:' || gen_random_uuid(), 'rbp-staff-user', p_method, true
+  from public.orders o where o.order_key = p_key
+  returning id $f$;
+create function pg_temp.rbp_walkup_keyed(p_key uuid, p_truck text, p_items jsonb) returns uuid language sql as $f$
+  insert into public.orders (order_key, id, truck_id, customer_name, order_type, event_date, items, subtotal, discount_amt, total, total_minor, food_minor, tax_minor,
+    tax_rate_milli, tax_inclusive, tax_label, tax_breakdown, card_fee_payer, status, payment_status, source)
+  select p_key, 'rbp-' || substr(md5(random()::text), 1, 8), p_truck, 'rollback proof', 'collection', current_date, p_items, round(z.f / 100.0, 2), 0, round(z.f / 100.0, 2), z.f, z.f, 0,
+    10000, true, 'TVA', pg_temp.rbp_bd(z.f), 'truck', 'confirmed', 'unpaid', 'manual'
+  from (select pg_temp.rbp_food(p_items) as f) z
+  returning order_key $f$;`
+}
+function till2ProofBlock(ddl) {
+  const A = lit(TRUCKS.A), B = lit(TRUCKS.B), AB = `array[${A}, ${B}]`
+  const clean = l => `perform pg_temp.rbp_clean(${lit(l)}, ${AB});`
+  const crepe = `'[{"name":"Crêpe","quantity":1,"unit_price":5}]'`
+  const ok13 = `(v ->> 'ok')::boolean`
+  return `do $proof$
+declare
+  k1 uuid; k2 uuid; k3 uuid; k4 uuid; k5 uuid; k6 uuid; k7 uuid; k8 uuid; k9 uuid; kd uuid; kd2 uuid;
+  p1 uuid; p2 uuid; p3 uuid; p4 uuid; p5 uuid; p6 uuid; p7 uuid; p8 uuid; r1 uuid; r2 uuid; r3 uuid; r4 uuid; q1 uuid; q2 uuid;
+  st text; st2 text; st3 text; st4 text; st5 text; st6 text; st7 text; v jsonb; x jsonb; y jsonb; n integer; n2 integer; hs bigint; b boolean; b2 boolean; b3 boolean;
+begin
+  perform set_config('till.include_demo', 'on', true);
+
+  -- ── T1 · the constraints: a reversal must point, only a reversal points, one reversal per payment, the reason is a word ──
+  k1 := pg_temp.rbp_walkup(${A}, current_date, ${crepe}, 'confirmed', 'rollback proof', null, null, null, null);
+  p1 := pg_temp.rbp_pay_live(k1, 'charge', 'in_person_other', 'cash', 500, null);
+  begin insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, livemode) select order_key, truck_id, 'reversal', 'in_person_other', 500, currency, 'succeeded', true from public.order_payments where id = p1; st := 'allowed'; exception when others then st := sqlstate; end;
+  begin insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, livemode, reverses_payment_id) select order_key, truck_id, 'charge', 'in_person_other', 500, currency, 'succeeded', true, p1 from public.order_payments where id = p1; st2 := 'allowed'; exception when others then st2 := sqlstate; end;
+  begin perform pg_temp.rbp_refund(k1, 'in_person_other', 'cash', 100, 'Free text, with spaces', null); st3 := 'allowed'; exception when others then st3 := sqlstate; end;
+  begin insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, livemode) select order_key, truck_id, 'void', 'in_person_other', 500, currency, 'succeeded', true from public.order_payments where id = p1; st4 := 'allowed'; exception when others then st4 := sqlstate; end;
+  r1 := pg_temp.rbp_reverse(p1, 'undo_mark_paid');
+  begin insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, livemode, reverses_payment_id) select order_key, truck_id, 'reversal', channel, amount_minor, currency, 'succeeded', true, id from public.order_payments where id = p1; st5 := 'allowed'; exception when others then st5 := sqlstate; end;
+  perform pg_temp.rbp_ok('T1 · a reversal without a pointer, a charge WITH one, a free-text reason and an unknown kind are refused (23514); a second reversal of the same payment is refused (23505); a proper reversal goes in',
+    st = '23514' and st2 = '23514' and st3 = '23514' and st4 = '23514' and st5 = '23505' and r1 is not null,
+    json_build_object('no_pointer', st, 'charge_pointer', st2, 'free_reason', st3, 'unknown_kind', st4, 'second_reversal', st5)::text);
+
+  -- ── T2 · undo "Mark paid" (as the new code does it): one reversal row, NO delete — the charge stays; status 'unpaid' exactly as after the old delete ──
+  perform pg_temp.rbp_ok('T2 · undo Mark paid: the charge row is KEPT, one reversal row points at it, nothing is deleted or logged as a would-be delete; the netted status is ''unpaid''; the chain holds both payment entries, the reversal with its pointer and reason',
+    exists (select 1 from public.order_payments where id = p1) and (select count(*) from public.order_payments where reverses_payment_id = p1) = 1
+      and pg_temp.rbp_status(k1) = 'unpaid' and pg_temp.rbp_entries(${A}, 'deletion', p1::text) = 0 and pg_temp.rbp_events(${A}, p1::text) = ''
+      and pg_temp.rbp_entries(${A}, 'payment', p1::text) = 1 and pg_temp.rbp_entries(${A}, 'payment', r1::text) = 1
+      and (select c.payload::jsonb -> 'data' ->> 'reverses_payment_id' from public.till_chain c where c.truck_id = ${A} and c.kind = 'payment' and c.ref = r1::text) = p1::text
+      and (select c.payload::jsonb -> 'data' ->> 'reason' from public.till_chain c where c.truck_id = ${A} and c.kind = 'payment' and c.ref = r1::text) = 'undo_mark_paid'
+      and (select c.payload::jsonb -> 'data' ->> 'kind' from public.till_chain c where c.truck_id = ${A} and c.kind = 'payment' and c.ref = r1::text) = 'reversal',
+    json_build_object('status', pg_temp.rbp_status(k1), 'reversals', (select count(*) from public.order_payments where reverses_payment_id = p1))::text);
+  ${clean('T2')}
+
+  -- ── T3 · undo collected: the payment first, then the status (as the route), then the undo — the reversal and the status back ──
+  k2 := pg_temp.rbp_walkup(${A}, current_date, ${crepe}, 'confirmed', 'rollback proof', null, null, null, null);
+  p2 := pg_temp.rbp_pay_live(k2, 'charge', 'in_person_other', 'card', 500, null);
+  update public.orders set status = 'collected', paid_at = now(), collected_at = now(), status_before_collected = 'confirmed' where order_key = k2;
+  hs := public.till_head_seq(${A});
+  r2 := pg_temp.rbp_reverse(p2, 'undo_collected');
+  update public.orders set status = 'confirmed', status_before_collected = null, paid_at = null, collected_at = null where order_key = k2;
+  n := public.till_record_actor(${A}, hs, k2, 'undo_collected', 'staff');
+  n2 := public.till_record_actor(${A}, hs, k2, 'undo_collected', 'owner');
+  perform pg_temp.rbp_ok('T3 · undo collected: one reversal (reason undo_collected), the charge kept, status ''unpaid'', the order back to accepted as v3 (state_change) — and no deletion entry',
+    pg_temp.rbp_status(k2) = 'unpaid' and exists (select 1 from public.order_payments where id = p2) and pg_temp.rbp_entries(${A}, 'deletion', p2::text) = 0
+      and pg_temp.rbp_reasons(${A}, k2::text) = '1:accepted:accepted,2:state_change:collected,3:state_change:accepted'
+      and (select reason from public.order_payments where id = r2) = 'undo_collected', pg_temp.rbp_reasons(${A}, k2::text));
+  perform pg_temp.rbp_ok('T9 · the actor''s ROLE: till_record_actor names exactly the two entries the undo made (the reversal and order v3) as ''staff''; a second call changes nothing (first role kept); no name or id is stored',
+    n = 2 and n2 = 0 and (select string_agg(a.role || ':' || a.action, ',' order by a.seq) from public.till_entry_actors a where a.truck_id = ${A} and a.seq > hs) = 'staff:undo_collected,staff:undo_collected'
+      and (select bool_and(c.ref in (r2::text, k2::text)) from public.till_entry_actors a join public.till_chain c on c.truck_id = a.truck_id and c.seq = a.seq where a.truck_id = ${A} and a.seq > hs),
+    json_build_object('n', n, 'n2', n2)::text);
+  begin perform public.till_record_actor(${A}, 0, k2, 'undo_collected', 'Alice Smith'); st := 'allowed'; exception when others then st := sqlstate; end;
+  begin perform public.till_record_actor(${A}, 0, k2, 'Undo by Alice', 'staff'); st2 := 'allowed'; exception when others then st2 := sqlstate; end;
+  perform pg_temp.rbp_ok('T9b · a role outside owner / staff / admin / system / unknown, or an action that is not a short word, is refused (23514) — a name cannot get in', st = '23514' and st2 = '23514', st || ' / ' || st2);
+  ${clean('T3')}
+
+  -- ── T4 · a refund that FAILED: the refund row is kept, a reversal points at it; the order reads paid again (it used to be deleted) ──
+  k3 := pg_temp.rbp_walkup(${A}, current_date, ${crepe}, 'confirmed', 'rollback proof', null, null, null, null);
+  p3 := pg_temp.rbp_pay_live(k3, 'charge', 'online', 'card', 500, 'pi_rbp_till_2');
+  p4 := pg_temp.rbp_pay_live(k3, 'refund', 'online', 'card', 500, 're_rbp_till_2');
+  st := pg_temp.rbp_status(k3);
+  r3 := pg_temp.rbp_reverse(p4, 'refund_failed');
+  perform pg_temp.rbp_ok('T4 · failed refund: ''refunded'' before, then the refund is reversed (reason refund_failed) — the refund row kept, the order ''paid:500'' again, nothing deleted',
+    st = 'refunded' and pg_temp.rbp_status(k3) = 'paid:500' and exists (select 1 from public.order_payments where id = p4) and pg_temp.rbp_entries(${A}, 'deletion', p4::text) = 0,
+    st || ' → ' || pg_temp.rbp_status(k3));
+
+  -- ── T5 · a re-collect after an undo goes in under the suffixed key; the plain key would have been swallowed ──
+  k4 := pg_temp.rbp_walkup(${A}, current_date, ${crepe}, 'confirmed', 'rollback proof', null, null, null, null);
+  insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, idempotency_key, method, livemode)
+    select order_key, truck_id, 'charge', 'in_person_other', 500, currency, 'succeeded', 'collect:' || order_key || ':0:500', 'cash', true from public.orders where order_key = k4 returning id into p5;
+  r4 := pg_temp.rbp_reverse(p5, 'undo_collected');
+  begin insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, idempotency_key, method, livemode)
+    select order_key, truck_id, 'charge', 'in_person_other', 500, currency, 'succeeded', 'collect:' || order_key || ':0:500', 'cash', true from public.orders where order_key = k4; st := 'inserted'; exception when others then st := sqlstate; end;
+  insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, idempotency_key, method, livemode)
+    select order_key, truck_id, 'charge', 'in_person_other', 500, currency, 'succeeded', 'collect:' || order_key || ':0:500:r1', 'cash', true from public.orders where order_key = k4 returning id into p6;
+  perform pg_temp.rbp_ok('T5 · collect → undo → collect again: today''s key collides (23505 — why ledger.ts suffixes it after a reversal), the suffixed key goes in, and the order reads paid once',
+    st = '23505' and p6 is not null and pg_temp.rbp_status(k4) = 'paid:500', st || ' / ' || pg_temp.rbp_status(k4));
+  ${clean('T5')}
+
+  -- ── T6 · a COUNTER refund: cash back at the truck, a refund row with its method and reason, chained ──
+  k5 := pg_temp.rbp_walkup(${A}, current_date, '[{"name":"Crêpe","quantity":2,"unit_price":5}]', 'confirmed', 'rollback proof', null, null, null, null);
+  p7 := pg_temp.rbp_pay_live(k5, 'charge', 'in_person_other', 'cash', 1000, null);
+  q1 := pg_temp.rbp_refund(k5, 'in_person_other', 'cash', 400, 'item_unavailable', 'counter_refund:' || k5 || ':0:400');
+  perform pg_temp.rbp_ok('T6 · counter refund (cash, 4.00 of 10.00): one refund row, channel in_person_other, method cash, reason item_unavailable — chained with them; the order ''paid:600''',
+    pg_temp.rbp_status(k5) = 'paid:600' and pg_temp.rbp_entries(${A}, 'payment', q1::text) = 1
+      and (select c.payload::jsonb -> 'data' ->> 'method' || '/' || (c.payload::jsonb -> 'data' ->> 'reason') from public.till_chain c where c.truck_id = ${A} and c.kind = 'payment' and c.ref = q1::text) = 'cash/item_unavailable',
+    pg_temp.rbp_status(k5));
+
+  -- ── T7 · Q5: cancelling an order paid at the counter records the counter refund for the money taken, with the original method ──
+  k6 := pg_temp.rbp_walkup(${A}, current_date, ${crepe}, 'confirmed', 'rollback proof', null, null, null, null);
+  p8 := pg_temp.rbp_pay_live(k6, 'charge', 'in_person_other', 'card', 500, null);
+  update public.orders set status = 'cancelled', cancellation_reason = 'rollback proof' where order_key = k6;
+  q2 := pg_temp.rbp_refund(k6, 'in_person_other', 'card', 500, 'order_cancelled', 'cancel_refund:' || k6 || ':card:500');
+  perform pg_temp.rbp_ok('T7 · Q5: the cancelled counter-paid order gets one refund row (card, 5.00, reason order_cancelled); the order is ''refunded'' and its v2 is the cancellation (state_change)',
+    pg_temp.rbp_status(k6) = 'refunded' and pg_temp.rbp_reasons(${A}, k6::text) = '1:accepted:accepted,2:state_change:cancelled' and (select method || '/' || reason from public.order_payments where id = q2) = 'card/order_cancelled',
+    pg_temp.rbp_reasons(${A}, k6::text) || ' ' || pg_temp.rbp_status(k6));
+  ${clean('T7')}
+
+  -- ── T8 · law change 8: the device fingerprint, stored BEFORE the order, sealed into its v1, and the till number names the device ──
+  kd := gen_random_uuid();
+  b := public.till_record_device(kd, ${A}, 'rbp-device-1', repeat('ab', 32), now() - interval '2 hours');
+  perform pg_temp.rbp_walkup_keyed(kd, ${A}, ${crepe});
+  b2 := public.till_record_device(kd, ${A}, 'rbp-device-2', repeat('cd', 32), now());
+  kd2 := pg_temp.rbp_walkup(${A}, current_date, ${crepe}, 'confirmed', 'rollback proof', null, null, null, null);
+  b3 := public.till_record_device(kd2, ${A}, 'rbp-device-3', repeat('ef', 32), now());
+  x := pg_temp.rbp_data(${A}, kd::text) -> 'data';
+  y := pg_temp.rbp_data(${A}, kd2::text) -> 'data';
+  perform pg_temp.rbp_ok('T8 · an offline walk-up''s device evidence is stored BEFORE its order, so v1 carries it ({device_id, fingerprint, created_at}) and till_id is the device id; a second call for the same order — or for an order that already exists (an older app''s sync) — stores nothing; an order without it seals as before (till_id manual, no device key)',
+    b and not b2 and not b3 and x -> 'device' ->> 'device_id' = 'rbp-device-1' and x -> 'device' ->> 'fingerprint' = repeat('ab', 32) and x ->> 'till_id' = 'rbp-device-1'
+      and y ->> 'till_id' = 'manual' and not (y ? 'device') and (select count(*) from public.till_device_fingerprints where order_key in (kd, kd2)) = 1,
+    json_build_object('first', b, 'again', b2, 'existing', b3, 'till_id', x ->> 'till_id', 'device', x -> 'device')::text);
+  perform set_config('till.include_demo', '', true);
+  b := public.till_record_device(gen_random_uuid(), ${B}, 'rbp-device-9', repeat('aa', 32), now());
+  perform set_config('till.include_demo', 'on', true);
+  perform pg_temp.rbp_ok('T8b · a truck outside the till (a demo truck, the default) stores no device row', not b, b::text);
+  ${clean('T8')}
+
+  -- ── T10 · the DEPLOYED undo (a DELETE of the charge) on a payment that has a reversal: the pair goes together (ON DELETE CASCADE), chained ──
+  k7 := pg_temp.rbp_walkup(${A}, current_date, ${crepe}, 'confirmed', 'rollback proof', null, null, null, null);
+  p1 := pg_temp.rbp_pay_live(k7, 'charge', 'in_person_other', 'cash', 500, null);
+  r1 := pg_temp.rbp_reverse(p1, 'undo_mark_paid');
+  delete from public.order_payments where id = p1;
+  v := public.till_verify(${A});
+  perform pg_temp.rbp_ok('T10 · a code rollback''s old undo (DELETE of a reversed charge) is not blocked: its reversal goes with it (cascade), both deletions chained, till_verify true',
+    not exists (select 1 from public.order_payments where id in (p1, r1)) and pg_temp.rbp_entries(${A}, 'deletion', p1::text) = 1 and pg_temp.rbp_entries(${A}, 'deletion', r1::text) = 1 and ${ok13},
+    v::text);
+
+  -- ── T11 · the two new till tables are append-only ──
+  begin update public.till_device_fingerprints set device_id = 'x' where order_key = kd; st := 'allowed'; exception when others then st := sqlstate; end;
+  begin delete from public.till_device_fingerprints where order_key = kd; st2 := 'allowed'; exception when others then st2 := sqlstate; end;
+  begin update public.till_entry_actors set role = 'owner' where truck_id = ${A}; st3 := 'allowed'; exception when others then st3 := sqlstate; end;
+  begin delete from public.till_entry_actors where truck_id = ${A}; st4 := 'allowed'; exception when others then st4 := sqlstate; end;
+${ddl ? `  begin truncate public.till_device_fingerprints; st5 := 'allowed'; exception when others then st5 := sqlstate; end;
+  begin truncate public.till_entry_actors; st6 := 'allowed'; exception when others then st6 := sqlstate; end;` : `  st5 := 'HGT01'; st6 := 'HGT01';`}
+  perform pg_temp.rbp_ok('T11 · till_device_fingerprints and till_entry_actors refuse UPDATE / DELETE${ddl ? ' / TRUNCATE' : ''} (HGT01)',
+    st = 'HGT01' and st2 = 'HGT01' and st3 = 'HGT01' and st4 = 'HGT01' and st5 = 'HGT01' and st6 = 'HGT01', concat_ws(' ', st, st2, st3, st4, st5, st6));
+
+  -- ── T12 · backward compatible: every order without device evidence and every payment without a pointer or a reason seals exactly as before ──
+  perform pg_temp.rbp_ok('T12 · an order with no device row seals exactly till-pack-1b''s 37 keys; a payment with no pointer and no reason exactly the 12 — so no entry written before this migration stops matching',
+    not exists (select 1 from public.till_chain c where c.truck_id = ${A} and c.kind = 'order' and c.ref <> kd::text and (select count(*) from jsonb_object_keys(c.payload::jsonb -> 'data')) <> 37)
+      and (select count(*) from jsonb_object_keys(pg_temp.rbp_data(${A}, kd::text) -> 'data')) = 38
+      and not exists (select 1 from public.till_chain c join public.order_payments p on p.id::text = c.ref where c.truck_id = ${A} and c.kind = 'payment' and p.reverses_payment_id is null and p.reason is null
+                        and (select count(*) from jsonb_object_keys(c.payload::jsonb -> 'data')) <> 12), null);
+
+  -- ── T13 · till_verify at the end: ok in every respect ──
+  v := public.till_verify(${A});
+  perform pg_temp.rbp_ok('T13 · till_verify(truck A) at the end: ok — chain, identity references, versions, deltas, till_id, VAT reconciliation; every row matches its sealed form',
+    ${ok13} and (v ->> 'mismatch_count')::int = 0, v::text);
+  ${clean('T13')}
+  perform pg_temp.rbp_ok('T14 · after every step, every order and payment row of both trucks carries this transaction''s own xid — no till trigger wrote one',
+    (select count(*) from _till_clean) >= 6 and not exists (select 1 from _till_clean where bad is not null), (select string_agg(label || ': ' || coalesce(bad, '-'), ' | ') from _till_clean));
+${ddl ? `  perform pg_temp.rbp_ok('T14b · the probe trigger saw no INSERT or UPDATE of orders / order_payments issued from inside another trigger (only the FK cascades'' DELETEs)',
+    not exists (select 1 from _till_nested where op <> 'DELETE'), (select string_agg(tbl || ':' || op || ':' || depth, ', ') from _till_nested));
+` : ''}end
+$proof$`
+}
+const TILL2_STATIC = `select
+  (select string_agg(column_name || ':' || is_nullable || ':' || coalesce(column_default, 'none') || ':' || data_type, ',' order by column_name) from information_schema.columns where table_schema = 'public' and table_name = 'order_payments' and column_name in ('reverses_payment_id', 'reason')) as new_columns,
+  (select pg_get_constraintdef(oid) from pg_constraint where conrelid = 'public.order_payments'::regclass and conname = 'order_payments_kind_chk') as kind_chk,
+  (select confdeltype from pg_constraint where conrelid = 'public.order_payments'::regclass and contype = 'f' and confrelid = 'public.order_payments'::regclass) as self_fk_delete,
+  (select bool_and(relrowsecurity) from pg_class where relnamespace = 'public'::regnamespace and relname in ('till_device_fingerprints', 'till_entry_actors')) as rls_on,
+  has_table_privilege('anon', 'public.till_entry_actors', 'SELECT') or has_table_privilege('authenticated', 'public.till_device_fingerprints', 'SELECT') as api_reads,
+  (select bool_or(has_table_privilege('service_role', t, p)) from unnest(array['public.till_device_fingerprints', 'public.till_entry_actors']) t, unnest(array['INSERT', 'UPDATE', 'DELETE']) p) as service_writes,
+  has_function_privilege('service_role', 'public.till_record_device(uuid,text,text,text,timestamptz)', 'EXECUTE') and has_function_privilege('service_role', 'public.till_record_actor(text,bigint,uuid,text,text)', 'EXECUTE') and has_function_privilege('service_role', 'public.till_head_seq(text)', 'EXECUTE') as service_calls,
+  has_function_privilege('anon', 'public.till_record_device(uuid,text,text,text,timestamptz)', 'EXECUTE') or has_function_privilege('authenticated', 'public.till_record_actor(text,bigint,uuid,text,text)', 'EXECUTE') or has_function_privilege('anon', 'public.till_head_seq(text)', 'EXECUTE') as api_calls,
+  md5(pg_get_functiondef('public.place_order_atomic_v2(jsonb,text,text,uuid,text,date,jsonb)'::regprocedure)) as v2_md5`
+function checkStatic2(s) {
+  ok('U1 · order_payments.reverses_payment_id (uuid) and reason (text): nullable, no default', s.new_columns === 'reason:YES:none:text,reverses_payment_id:YES:none:uuid', s.new_columns)
+  ok('U2 · the kind check is widened to charge | refund | reversal; the pointer cascades on delete', /'charge'::text, 'refund'::text, 'reversal'::text/.test(s.kind_chk || '') && s.self_fk_delete === 'c', s)
+  ok('U3 · the two new till tables have RLS on; anon / authenticated cannot read them; the service role cannot write them', s.rls_on === true && s.api_reads === false && s.service_writes === false, s)
+  ok('U4 · the service role may call till_record_device, till_record_actor and till_head_seq; anon / authenticated may not', s.service_calls === true && s.api_calls === false, s)
+  ok('U5 · place_order_atomic_v2 untouched: md5 e4b273abcf8e7609c6ca54033ed59332', s.v2_md5 === 'e4b273abcf8e7609c6ca54033ed59332', s.v2_md5)
+}
+async function till2Export(c, tag, mode) {
+  await q(c, tag, "set local timezone = 'UTC'")
+  const chain = (await q(c, tag, 'select truck_id, seq, kind, ref, version, payload, payload_hash, prev_hash, hash, software_version from public.till_chain where truck_id = $1 order by seq', [TRUCKS.A])).rows
+  const orders = (await q(c, tag, 'select row_to_json(o)::text as row, public.till_sealed_order(o)::text as sealed, (select row_to_json(d)::text from public.till_device_fingerprints d where d.order_key = o.order_key) as device from public.orders o where o.truck_id = $1 order by o.created_at, o.order_key', [TRUCKS.A])).rows
+  const payments = (await q(c, tag, 'select row_to_json(p)::text as row, public.till_sealed_payment(p)::text as sealed from public.order_payments p where p.truck_id = $1 order by p.created_at, p.id', [TRUCKS.A])).rows
+  fs.mkdirSync(TILL2_OUT, { recursive: true })
+  fs.writeFileSync(path.join(TILL2_OUT, `chain-${mode}.jsonl`), chain.map(r => JSON.stringify({ ...r, seq: Number(r.seq) })).join('\n') + '\n')
+  fs.writeFileSync(path.join(TILL2_OUT, `rows-${mode}.json`), JSON.stringify({ truck_id: TRUCKS.A, note: 'demo truck rows inside a rolled-back transaction (row_to_json text, TimeZone UTC), the sealed form the database computed for each, and each order\'s device row', orders, payments }, null, 1) + '\n')
+  say(`  exported ${chain.length} chain entries, ${orders.length} orders and ${payments.length} payments to docs/till-pack-2/chain-${mode}.jsonl / rows-${mode}.json`)
+}
+async function till2Counts(label) {
+  const base = await tillCounts(label)
+  const extra = await inRollback(`till2-counts-${label}`, async c => {
+    await q(c, `till2-counts-${label}`, 'set transaction read only')
+    const has = (await q(c, `till2-counts-${label}`, "select to_regclass('public.till_entry_actors') is not null as has")).rows[0].has
+    if (!has) return { till2: 'not applied' }
+    return (await q(c, `till2-counts-${label}`, `select (select count(*) from public.till_device_fingerprints where truck_id = any($1))::int as device_rows,
+        (select count(*) from public.till_entry_actors where truck_id = any($1))::int as actor_rows,
+        (select count(*) from public.order_payments where kind = 'reversal')::int as reversals_anywhere`, [IDS])).rows[0]
+  })
+  say(`  till-pack-2 counts ${label}: ${JSON.stringify(extra)}`)
+  return { ...base, ...extra }
+}
+async function till2Proofs(file) {
+  let body = null
+  if (file) {
+    const rel = path.relative(REPO, path.resolve(REPO, file)).split(path.sep).join('/')
+    if (!/^supabase\/migrations\/[^/]+\.sql$/.test(rel)) die(`${rel} is not a migration file`)
+    body = fs.readFileSync(path.join(REPO, rel), 'utf8').replace(/--[^\n]*/g, '').replace(/^\s*set lock_timeout[^;]*;/im, '').replace(/^\s*begin;\s*$/im, '').replace(/^\s*commit;\s*$/im, '').replace(/^\s*notify pgrst[^;]*;/im, '')
+    if (/^\s*(begin|commit|rollback)\s*;/im.test(body) || /\bcommit\b/i.test(body)) die('the migration body still has a transaction statement after stripping')
+    say(`\n══ PRE-FLIGHT — ${rel} inside ONE transaction that is ROLLED BACK ══`)
+  } else say('\n══ TILL-PACK-2, LIVE — every transaction ROLLED BACK ══')
+  const mode = file ? 'preflight' : 'check'
+  const before = await till2Counts('before')
+  const tag = file ? 'preflight2' : 'till2'
+  await inRollback(tag, async c => {
+    await guard(c)
+    const t0 = Date.now()
+    let wrote = null
+    if (body) {
+      await q(c, tag, body)
+      wrote = (await q(c, tag, TILL_WROTE)).rows[0]
+    }
+    await q(c, tag, tillHelpers() + '\n' + till2Helpers() + (body ? '\n' + tillProbe() : ''))
+    await q(c, tag, till2ProofBlock(!!file))
+    const held = Date.now() - t0
+    for (const r of (await q(c, tag, 'select label, ok, detail from _till_proof order by n')).rows) ok(r.label, r.ok, r.ok ? undefined : r.detail)
+    if (wrote) ok('U0 · the migration itself wrote NO row of orders, order_payments, action_audit_log or trucks (no row carries this transaction\'s xid after it)', Object.values(wrote).every(n => n === 0), wrote)
+    checkStatic2((await q(c, tag, TILL2_STATIC)).rows[0])
+    await till2Export(c, tag, mode)
+    say(`  ${body ? 'the migration and ' : ''}the proofs ran in ${held} ms${body ? ' (the DDL locks on order_payments, orders, trucks and action_audit_log are held until the rollback below)' : ''}`)
+  })
+  const after = await till2Counts('after')
+  ok('the demo trucks\' counts (orders, payments, audit rows, counters, the till tables, the new till tables) are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
+}
+
 async function main() {
   const args = process.argv.slice(2)
   URL_ = dbUrl()
-  if (args[0] === '--preflight-till-1' && args[1]) await tillProofs(args[1])
+  if (args[0] === '--preflight-till-2' && args[1]) await till2Proofs(args[1])
+  else if (args[0] === '--till-2-check') await till2Proofs(null)
+  else if (args[0] === '--preflight-till-1' && args[1]) await tillProofs(args[1])
   else if (args[0] === '--till-1-check') await tillProofs(null)
   else if (args[0] === '--preflight-notes' && args[1]) await notesProofs(args[1])
   else if (args[0] === '--notes-check') await notesProofs(null)
@@ -996,7 +1272,7 @@ async function main() {
   else if (args[0] === '--preflight' && args[1]) await preflight(args[1])
   else if (args[0] === '--concurrency') await concurrency()
   else if (args[0] === '--old-style-call') await oldStyleCall()
-  else die('usage: --preflight <migration.sql> | --concurrency | --old-style-call | --preflight-regime <migration.sql> | --regime-check | --preflight-notes <migration.sql> | --notes-check | --preflight-till-1 <migration.sql> | --till-1-check')
+  else die('usage: --preflight <migration.sql> | --concurrency | --old-style-call | --preflight-regime <migration.sql> | --regime-check | --preflight-notes <migration.sql> | --notes-check | --preflight-till-1 <migration.sql> | --till-1-check | --preflight-till-2 <migration.sql> | --till-2-check')
   say(failed ? `\n🔴 ${failed} proof(s) FAILED` : '\n✅ every proof passed')
   process.exit(failed ? 1 : 0)
 }

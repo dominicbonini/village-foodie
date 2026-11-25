@@ -294,8 +294,11 @@ const NOT_SEALED_PAYMENT = ['note', 'created_by', 'idempotency_key', 'applicatio
     const appCode = ['lib', 'app'].flatMap(d => { const out = []; const walk = p => { for (const f of fs.readdirSync(p, { withFileTypes: true })) { const q = path.join(p, f.name); if (f.isDirectory()) walk(q); else if (/\.(ts|tsx)$/.test(f.name)) out.push(q) } }; walk(path.join(REPO, d)); return out })
     const writesAudit = appCode.filter(f => /from\(\s*['"`]action_audit_log['"`]\s*\)\s*\.\s*(update|upsert|delete)\b/.test(fs.readFileSync(f, 'utf8')))
     t('no code updates, upserts or deletes action_audit_log (so append-only blocks no path that works today)', writesAudit.length === 0, writesAudit.map(f => path.relative(REPO, f)))
-    const tillInCode = appCode.filter(f => /\btill_(chain|settings|failures|guard_events|chain_heads|order_seals|verify|baseline|append|write|seal)\b|sealed_(at|version)/.test(fs.readFileSync(f, 'utf8')))
-    t('no route, screen, email or ticket code names the till (nothing customer- or operator-facing changes)', tillInCode.length === 0, tillInCode.map(f => path.relative(REPO, f)))
+    // RE-PINNED by till-pack-2 (25 November 2026, docs/till-pack-2-report.md): till-pack-2 adds the till's server-side helpers on purpose
+    // (lib/till/* — the guard's 409, the actor's role, the device fingerprint — calling only till-pack-2's RPCs). The rule this check keeps:
+    // no OTHER app code names the till's tables or writers.
+    const tillInCode = appCode.filter(f => !path.relative(REPO, f).startsWith('lib/till/') && /\btill_(chain|settings|failures|guard_events|chain_heads|order_seals|verify|baseline|append|write|seal)\b|sealed_(at|version)/.test(fs.readFileSync(f, 'utf8')))
+    t('no route, screen, email or ticket code names the till\'s tables or writers (lib/till/* aside — till-pack-2\'s helpers)', tillInCode.length === 0, tillInCode.map(f => path.relative(REPO, f)))
     const dt = read('lib/delete-truck.ts')
     t('lib/delete-truck.ts (deleteTruckCascade: the demo-cleanup cron and Admin › delete truck) is untouched by this work and names no till table — its orders-first order is what keeps demo deletes outside the guard',
       !/till_|action_audit_log/.test(code(dt)) && /'orders',\s+\/\/ the guaranteed blocker/.test(dt))

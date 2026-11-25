@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Comanda a fost creată, dar înregistrarea plății nu a putut fi salvată — totalul încasărilor pentru această comandă poate fi greșit până la remediere.",
   "payment_not_recorded": "Plata nu a putut fi înregistrată — totalul încasărilor pentru această comandă poate fi greșit până la remediere.",
   "payment_not_reversed": "Plata nu a putut fi anulată",
+  "sale_closed": "Această vânzare este închisă. Înregistrați în schimb o rambursare.",
   "event_not_approved": "Acest eveniment nu este aprobat",
   "event_not_open": "{status, select, closed {Acest eveniment s-a încheiat. Reporniți-l ca să primiți comenzi.} cancelled {Acest eveniment a fost anulat.} other {Acest eveniment nu este deschis.}}",
   "sign_in_to_create": "Autentificați-vă ca membru al echipei pentru a crea un eveniment.",

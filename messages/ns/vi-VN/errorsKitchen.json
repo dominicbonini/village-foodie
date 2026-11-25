@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Đã tạo đơn nhưng không lưu được bản ghi thanh toán — doanh thu của đơn này có thể sai cho đến khi được sửa.",
   "payment_not_recorded": "Không ghi nhận được thanh toán — doanh thu của đơn này có thể sai cho đến khi được sửa.",
   "payment_not_reversed": "Không hủy được thanh toán",
+  "sale_closed": "Giao dịch bán này đã đóng. Hãy ghi nhận hoàn tiền thay vào đó.",
   "event_not_approved": "Sự kiện này chưa được duyệt",
   "event_not_open": "{status, select, closed {Sự kiện này đã kết thúc. Bắt đầu lại để nhận đơn.} cancelled {Sự kiện này đã bị hủy.} other {Sự kiện này chưa mở.}}",
   "sign_in_to_create": "Đăng nhập với tư cách thành viên nhóm để tạo sự kiện.",

@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Užsakymas sukurtas, bet mokėjimo įrašo išsaugoti nepavyko – kol tai nebus ištaisyta, šio užsakymo pajamų suma gali būti neteisinga.",
     "payment_not_recorded": "Nepavyko užregistruoti mokėjimo – kol tai nebus ištaisyta, šio užsakymo pajamų suma gali būti neteisinga.",
     "payment_not_reversed": "Nepavyko atšaukti mokėjimo",
+    "sale_closed": "Šis pardavimas uždarytas. Vietoj to užregistruokite grąžinimą.",
     "event_not_approved": "Šis renginys nepatvirtintas",
     "event_not_open": "{status, select, closed {Šis renginys baigėsi. Pradėkite jį iš naujo, kad priimtumėte užsakymus.} cancelled {Šis renginys atšauktas.} other {Šis renginys neatidarytas.}}",
     "sign_in_to_create": "Prisijunkite kaip komandos narys, kad sukurtumėte renginį.",

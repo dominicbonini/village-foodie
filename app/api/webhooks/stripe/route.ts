@@ -730,7 +730,8 @@ export async function POST(req: NextRequest) {
           beforeState: { refund_id: refundId, payment_intent_id: piId, event_type: eventType, resolves: 'refund_pending' },
           afterState: {
             stripe_status: status, failure_reason: failureReason,
-            ledger_row: removed.outcome === 'removed' ? 'removed (had been recorded as succeeded)' : 'none was ever written',
+            // till-pack-2: the refund row is now REVERSED (kept, with a reversal row), never deleted.
+            ledger_row: removed.outcome === 'removed' ? 'reversed (had been recorded as succeeded)' : 'none was ever written',
             meaning: 'THE CUSTOMER HAS NOT BEEN REFUNDED. Stripe returned the money to the truck. Only '
                    + 'the truck can arrange another way to pay them back.',
           },
@@ -741,7 +742,7 @@ export async function POST(req: NextRequest) {
         console.error(
           `[webhook/stripe] 🔴 REFUND ${String(status).toUpperCase()} refund=${refundId} order_key=` +
           `${chargeRow.order_key} amount_minor=${amountMinor} reason=${failureReason ?? 'unknown'}. ` +
-          `${removed.outcome === 'removed' ? 'The ledger row has been REMOVED and the order reads paid again. ' : 'No ledger row existed. '}` +
+          `${removed.outcome === 'removed' ? 'The ledger row has been REVERSED and the order reads paid again. ' : 'No ledger row existed. '}` +
           `THE CUSTOMER EXPECTED THIS MONEY BACK AND DID NOT GET IT — only the truck can retry it.`,
         )
         failed++

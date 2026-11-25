@@ -20,6 +20,8 @@ import { readEventRegion } from '@/lib/event-region-read'
 import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
 import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
+import { refundCounterOnCancel } from '@/lib/payments/refund'   // till-pack-2 (Q5)
+import { tillHeadSeq, noteTillActor } from '@/lib/till/actor-role'   // till-pack-2
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -417,6 +419,14 @@ export async function POST(req: NextRequest) {
             paymentStatus: order.paid_at ? 'paid' : null,
           })
         }
+      }
+      // ── 🔴 till-pack-2, Q5: each cancelled order's counter money is recorded as refunded, with its original method — after the emails
+      // above, which are therefore exactly as before. Online card money is not touched here. The role is 'system' (the event's cancellation
+      // cancelled them, not a person's correction of each order).
+      for (const o of affectedOrders as { order_key: string }[]) {
+        const fromSeq = await tillHeadSeq(supabase, truck.id)
+        const q5 = await refundCounterOnCancel(supabase, { orderKey: o.order_key, truckId: truck.id })
+        if (q5.refunded.length) await noteTillActor(supabase, { truckId: truck.id, fromSeq, orderKey: o.order_key, action: 'event_cancel_counter_refund', role: 'system' })
       }
     }
 

@@ -63,7 +63,11 @@ import { recordCollectionPayment, reverseCollectionPayment, recalcOrderPayment, 
 import { captureOnConfirmation } from '@/lib/payments/capture'
 // 🔴 EVERY REFUND GUARD LIVES IN THAT MODULE, NOT HERE. This route validates the request's shape and
 // renders the outcome; the amount, the already-refunded figure and the fit are decided there.
-import { refundOrder, REFUND_REASONS } from '@/lib/payments/refund'
+import { refundOrder, REFUND_REASONS, refundCounterOnCancel } from '@/lib/payments/refund'
+// till-pack-2: the guard's refusals as one 409, the actor's role behind a correction, an offline walk-up's device fingerprint.
+import { isTillGuardError } from '@/lib/till/guard-errors'
+import { tillRoleOf, tillHeadSeq, noteTillActor } from '@/lib/till/actor-role'
+import { parseTillDevice } from '@/lib/till/device-fingerprint'
 // 🔴 THE HOLD BEHIND A CANCELLED ORDER. Release only — it cannot capture and it refuses a captured order.
 import { releaseHoldForTerminalOrder } from '@/lib/payments/release-hold'
 // 🔴 THE REJECT PATH, EXTRACTED. It releases a card hold, so it must have exactly one implementation —
@@ -332,6 +336,13 @@ export async function POST(req: NextRequest) {
     // null actor_id — so the log distinguishes "a shared token acted" from "we failed to ask".
     const actor = await resolveActorSafe(req, supabase, truck)
     const actorSource = resolveActorSource(req, body)
+    // ── till-pack-2: THE TILL'S VIEW OF A CORRECTION ──────────────────────────────────────────────────────────────────────
+    // The truck's chain head BEFORE a correction (edit, undo, refund, cancel), so the role of whoever made it is linked to exactly the entries
+    // it made (lib/till/actor-role.ts) — best-effort, never a refusal; one cheap read on those five actions only. And the guard's refusal
+    // (a sealed sale after its close — till-pack-3's enforce mode; nothing raises in observe mode) answers 409 with one short message.
+    const tillRole = tillRoleOf(actor)
+    const tillFromSeq = ['cancel', 'undo_collected', 'undo_mark_paid', 'edit', 'refund'].includes(String(action)) ? await tillHeadSeq(supabase, truck.id) : 0
+    const tillClosed = async (e: unknown) => (isTillGuardError(e) ? NextResponse.json(await kErr('sale_closed'), { status: 409 }) : null)
     // ── dashboard-auth-2: THE MEMBER GATE, IN LOG MODE (lib/auth/require-member.ts) ─────────────────────────────────
     // Records — after the response, never refusing — a write (or read) the planned "signed-in team members only" rule
     // would refuse. Reuses `actor` above, so it adds no lookup. Flipping AUTH_MODE for a group makes this line refuse.
@@ -462,7 +473,8 @@ export async function POST(req: NextRequest) {
       // and the resolver would then answer 'hatch' — "Pay at the truck on collection" — to a customer
       // whose order has just been cancelled. One read, one answer, used by the email below.
       const cancelPaymentState = await resolveEmailPaymentState(supabase, orderKey)
-      await supabase.from('orders').update({ status: 'cancelled', cancellation_reason: cancellationReason || null }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      const { error: cancelErr } = await supabase.from('orders').update({ status: 'cancelled', cancellation_reason: cancellationReason || null }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      { const refusal = await tillClosed(cancelErr); if (refusal) return refusal }
       // france-records-1: the cancellation, in action_audit_log (best-effort — never stops the cancel).
       await logOrderEvent(supabase, { action: 'order_cancelled', truckId: truck.id, orderKey, before: order, after: { ...order, status: 'cancelled' }, note: { by: 'operator' }, actor, source: actorSource })
       // ── 🔴 THE ORDER IS CANCELLED FIRST, AND THE HOLD IS RELEASED AFTER. ────────────────────────
@@ -529,6 +541,10 @@ export async function POST(req: NextRequest) {
           + `${cancellationReason ? ' ' + cancellationReason : ''}${cancelMoney.text}`
           + ` ${tCancel('common.sorry')} ${tCancel('common.poweredByText')} ${privacyFooterText(tCancel as never)}`)
       }
+      // ── 🔴 till-pack-2, Q5: money taken AT THE COUNTER is recorded as refunded, with its original method — AFTER the email above, which
+      // is therefore exactly as before. Online card money is not touched here (its refund is the operator's, through Stripe, as before).
+      const q5 = await refundCounterOnCancel(supabase, { orderKey, truckId: truck.id, createdBy: actor.actorId })
+      await noteTillActor(supabase, { truckId: truck.id, fromSeq: tillFromSeq, orderKey, action: q5.refunded.length ? 'cancel_counter_refund' : 'cancel', role: tillRole })
       return NextResponse.json({ success: true, status: 'cancelled' })
     }
 
@@ -681,6 +697,7 @@ export async function POST(req: NextRequest) {
         actor, source: actorSource,
       })
       const { error: collectErr } = await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now, ...(fromStatus ? { status_before_collected: fromStatus } : {}) }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      { const refusal = await tillClosed(collectErr); if (refusal) return refusal }
       if (collectErr) {
         // Still fail-CLOSED, and correctly so: this is the FULFILMENT write, not the accounting one. If
         // it fails the order genuinely is not collected, so there is nothing to fail open about — the
@@ -742,7 +759,7 @@ export async function POST(req: NextRequest) {
       // the path the outbox replays through and fails to a WRONG VALUE rather than a crash; keeping this
       // column off it is why this change carries no 42703 exposure.
       const splitPaidStep = (await paidStepFor(truck, (order as any)?.event_id)).completionPresses === 'two'
-      let reversal: 'deleted' | 'refunded' | 'none' = 'none'
+      let reversal: 'reversed' | 'refunded' | 'none' = 'none'
       try {
         if (splitPaidStep) {
           // Status-only revert. Nothing is destroyed, so there is nothing to capture before the fact.
@@ -753,14 +770,16 @@ export async function POST(req: NextRequest) {
             actor, source: actorSource,
           })
         } else {
+        // till-pack-2: the charge is REVERSED (a reversal row points at it), never deleted — the audit write still comes first and still
+        // aborts the undo if it fails. Nothing reads ledger_row_deleted; the after-state now says what happened.
         const res = await reverseCollectionPayment(supabase, {
-          orderKey, truckId: truck.id, createdBy: actor.actorId,
-          beforeDelete: async (deletedRow) => {
+          orderKey, truckId: truck.id, createdBy: actor.actorId, reason: 'undo_collected',
+          beforeReverse: async (reversedRow) => {
             await logActionOrThrow(supabase, {
               action: 'undo_collected', truckId: truck.id, orderKey,
-              amountMinor: deletedRow.amount_minor,
-              beforeState: { ledger_row: deletedRow, status: 'collected' },
-              afterState: { ledger_row: null, ledger_row_deleted: true, status: revertTo },
+              amountMinor: reversedRow.amount_minor,
+              beforeState: { ledger_row: reversedRow, status: 'collected' },
+              afterState: { ledger_row_reversed: true, status: revertTo },
               actor, source: actorSource,
             })
           },
@@ -768,14 +787,15 @@ export async function POST(req: NextRequest) {
         reversal = res.reversal
         }
       } catch (err) {
-        console.error(`[undo_collected] REFUSED for order_key=${orderKey} truck_id=${truck.id} — ledger reversal or its audit write failed; the payment row was NOT deleted and the order was NOT reverted:`, err)
+        console.error(`[undo_collected] REFUSED for order_key=${orderKey} truck_id=${truck.id} — ledger reversal or its audit write failed; the payment was NOT reversed and the order was NOT reverted:`, err)
+        { const refusal = await tillClosed(err); if (refusal) return refusal }
         return NextResponse.json({ error: err instanceof Error ? err.message : translatorFor(await localeForTruck(truck), 'errorsKitchen')('payment_not_reversed') }, { status: 500 })
       }
       // The 'deleted' path already logged inside beforeDelete (it HAD to, before the row vanished), and
       // the split-paid-step path logged its status-only revert above. The other two destroy nothing —
       // 'refunded' appends a compensating row, 'none' found nothing to reverse — so they log here,
       // best-effort, purely so that EVERY undo appears in the trail.
-      if (!splitPaidStep && reversal !== 'deleted') {
+      if (!splitPaidStep && reversal !== 'reversed') {
         await logAction(supabase, {
           action: 'undo_collected', truckId: truck.id, orderKey, amountMinor: null,
           beforeState: { status: 'collected' },
@@ -789,6 +809,7 @@ export async function POST(req: NextRequest) {
       // an order that was never paid. payment_status is now canonical; paid_at remains only as a
       // compatibility timestamp, so it must not be left contradicting the ledger.
       const { error: undoErr } = await supabase.from('orders').update({ status: revertTo, status_before_collected: null, paid_at: null, collected_at: null }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      { const refusal = await tillClosed(undoErr); if (refusal) return refusal }
       if (undoErr) {
         console.error('[undo_collected] status update failed after the ledger was reversed:', undoErr)
         return NextResponse.json({ error: undoErr.message }, { status: 500 })
@@ -800,6 +821,7 @@ export async function POST(req: NextRequest) {
       if (order?.event_date) {
         await rebuildProductionSlotUsage(supabase, truck.id, order.event_date)
       }
+      await noteTillActor(supabase, { truckId: truck.id, fromSeq: tillFromSeq, orderKey, action: 'undo_collected', role: tillRole })
       return NextResponse.json({ success: true, status: revertTo })
     }
 
@@ -1026,6 +1048,7 @@ export async function POST(req: NextRequest) {
       const editSplit = splitLineNotes(editPatch.items, editPatch.deals)   // france-notes-1: notes → line_notes (cleared once none is left)
       const editStored = { ...editPatch, items: editSplit.items, deals: editSplit.deals, ...(editSplit.line_notes || orderRow?.line_notes != null ? { line_notes: editSplit.line_notes } : {}) }
       const { error: updateErr } = await supabase.from('orders').update(editStored).eq('order_key', orderKey).eq('truck_id', truck.id)
+      { const refusal = await tillClosed(updateErr); if (refusal) return refusal }
       if (updateErr) {
         console.error('[edit] order update failed:', updateErr.message, updateErr.details, updateErr.hint)
         return NextResponse.json(await kErr('edit_save_failed'), { status: 500 })
@@ -1229,6 +1252,7 @@ export async function POST(req: NextRequest) {
           truckName: truck.name,
         })
       }
+      await noteTillActor(supabase, { truckId: truck.id, fromSeq: tillFromSeq, orderKey, action: 'edit', role: tillRole })
       return NextResponse.json({
         success: true,
         status: 'modified',
@@ -1261,9 +1285,14 @@ export async function POST(req: NextRequest) {
       if (!Number.isFinite(amountMinor) || amountMinor <= 0) {
         return NextResponse.json(await kErr('refund_amount_invalid'), { status: 400 })
       }
+      // till-pack-2: a COUNTER refund (API only — no screen sends this yet): `refund_channel: 'in_person'` with `method` 'cash' | 'card'.
+      // Absent, the refund is the online card refund exactly as before. A counter refund sends no customer email (no customer output changes).
+      const inPerson = body.refund_channel === 'in_person' && (body.method === 'cash' || body.method === 'card') ? { method: body.method as 'cash' | 'card' } : null
+      if (body.refund_channel === 'in_person' && !inPerson) return NextResponse.json(await kErr('refund_amount_invalid'), { status: 400 })
       const outcome = await refundOrder(supabase, {
-        orderKey, truckId: truck.id, amountMinor, reason, note: note || null, actor, source: actorSource,
+        orderKey, truckId: truck.id, amountMinor, reason, note: note || null, actor, source: actorSource, inPerson,
       })
+      if (outcome.status === 'refunded') await noteTillActor(supabase, { truckId: truck.id, fromSeq: tillFromSeq, orderKey, action: inPerson ? 'counter_refund' : 'refund', role: tillRole })
       // ── 🔴 TELL THE CUSTOMER, AND ONLY WHEN THE MONEY HAS ACTUALLY MOVED. ───────────────────────
       // ⚠️ NOT WHEN THIS REFUND IS PART OF A CANCELLATION. The cancellation email says what happened to
       // the money in its own sentence, so sending this too would be two emails about one event. The
@@ -1271,7 +1300,7 @@ export async function POST(req: NextRequest) {
       // ⚠️ AND NOT ON A PENDING REFUND. Stripe has accepted it and nothing has left the account; an
       // email saying "refunded" would be the false-success class in the customer's inbox, where it
       // cannot be corrected. The webhook settles it later and the operator sees the pending sentence.
-      if (outcome.status === 'refunded' && body.refund_context !== 'cancellation') {
+      if (outcome.status === 'refunded' && body.refund_context !== 'cancellation' && !inPerson) {
         const { data: refundedOrder } = await supabase
           .from('orders').select('id, customer_name, customer_email, currency, country').eq('order_key', orderKey).eq('truck_id', truck.id).single()
         if (refundedOrder?.customer_email && !isDemoIdentifier(truck.id)) {
@@ -2067,6 +2096,17 @@ export async function POST(req: NextRequest) {
         let manualOrderRow: { order_key: string } | null = null
         let insertErr: { message?: string; details?: string; hint?: string } | null = null
         if (clientOrderKey) {
+          // ── till-pack-2 (law change 8): an OFFLINE walk-up's device fingerprint, stored BEFORE the order row so its first sealed till entry
+          // carries it (and the till number names the device). Sent only by a queued create (lib/native/orderGate.ts); an older app sends
+          // none and nothing here runs. Best-effort: it can never fail the sale.
+          const tillDevice = parseTillDevice(body?.till_device)
+          if (tillDevice) {
+            try {
+              const { error: devErr } = await supabase.rpc('till_record_device', { p_order_key: clientOrderKey, p_truck: truck.id, p_device_id: tillDevice.device_id,
+                p_fingerprint: tillDevice.fingerprint, p_device_created_at: tillDevice.created_at })
+              if (devErr) console.warn('[manual] till device fingerprint not stored (the order goes ahead):', devErr.message)
+            } catch (e) { console.warn('[manual] till device fingerprint not stored (the order goes ahead):', e instanceof Error ? e.message : e) }
+          }
           const up = await supabase.from('orders').upsert(storedPayload, { onConflict: 'order_key', ignoreDuplicates: true }).select('order_key').maybeSingle()
           insertErr = up.error; manualOrderRow = up.data
           if (!manualOrderRow && !insertErr) {
@@ -2890,22 +2930,25 @@ export async function POST(req: NextRequest) {
     // no log of the erasure is the exact state action_audit_log exists to prevent.
     if (action === 'undo_mark_paid') {
       try {
+        // till-pack-2: reversed, never deleted (see undo_collected).
         await reverseCollectionPayment(supabase, {
-          orderKey, truckId: truck.id, createdBy: actor.actorId,
-          beforeDelete: async (deletedRow) => {
+          orderKey, truckId: truck.id, createdBy: actor.actorId, reason: 'undo_mark_paid',
+          beforeReverse: async (reversedRow) => {
             await logActionOrThrow(supabase, {
               action: 'undo_mark_paid', truckId: truck.id, orderKey,
-              amountMinor: deletedRow.amount_minor,
-              beforeState: { ledger_row: deletedRow },
-              afterState: { ledger_row: null, ledger_row_deleted: true },
+              amountMinor: reversedRow.amount_minor,
+              beforeState: { ledger_row: reversedRow },
+              afterState: { ledger_row_reversed: true },
               actor, source: actorSource,
             })
           },
         })
       } catch (err) {
-        console.error(`[undo_mark_paid] REFUSED for order_key=${orderKey} truck_id=${truck.id} — the payment row was NOT deleted:`, err)
+        console.error(`[undo_mark_paid] REFUSED for order_key=${orderKey} truck_id=${truck.id} — the payment was NOT reversed:`, err)
+        { const refusal = await tillClosed(err); if (refusal) return refusal }
         return NextResponse.json({ error: err instanceof Error ? err.message : translatorFor(await localeForTruck(truck), 'errorsKitchen')('payment_not_reversed') }, { status: 500 })
       }
+      await noteTillActor(supabase, { truckId: truck.id, fromSeq: tillFromSeq, orderKey, action: 'undo_mark_paid', role: tillRole })
       return NextResponse.json({ success: true })
     }
 
@@ -3216,6 +3259,8 @@ export async function POST(req: NextRequest) {
 
   } catch (err: any) {
     console.error('Dashboard action error:', err)
+    // till-pack-2: the till guard refusing a write (till-pack-3's enforce mode) is a 409 with one short message, never a 500.
+    if (isTillGuardError(err)) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'sale_closed'), { status: 409 })
     return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'something_went_wrong'), { status: 500 })
   }
 }

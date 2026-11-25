@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Encomenda criada, mas não foi possível guardar o registo de pagamento — o valor faturado desta encomenda pode estar errado até ser corrigido.",
     "payment_not_recorded": "Não foi possível registar o pagamento — o valor faturado desta encomenda pode estar errado até ser corrigido.",
     "payment_not_reversed": "Não foi possível anular o pagamento",
+    "sale_closed": "Esta venda está fechada. Registe antes um reembolso.",
     "event_not_approved": "Este evento não está aprovado",
     "event_not_open": "{status, select, closed {Este evento terminou. Reinicie-o para receber pedidos.} cancelled {Este evento foi cancelado.} other {Este evento não está aberto.}}",
     "sign_in_to_create": "Inicie sessão como membro da equipa para criar um evento.",

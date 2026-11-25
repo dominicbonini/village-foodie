@@ -20,7 +20,7 @@
 // is a 23505 no-op. There is no second shape and no second writer.
 import type { SupabaseClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
-import { readLedger, type OrderBalance, readOrderBalance } from '@/lib/payments/ledger'
+import { readLedger, type OrderBalance, readOrderBalance, recordPaymentEvent, type LedgerRow } from '@/lib/payments/ledger'
 import { recordOnlineCardRefund, onlinePaymentIdempotencyKey } from '@/lib/payments/online'
 import { ledgerCurrency } from '@/lib/payments/currency'
 import { moneyFormatForOrder } from '@/lib/money-server'
@@ -135,8 +135,12 @@ export async function refundOrder(
     note: string | null
     actor: Pick<ResolvedActor, 'actorKind' | 'actorId' | 'actorLabel'>
     source: 'web' | 'native' | 'offline_replay' | 'system'
+    /** till-pack-2: a COUNTER refund — the money goes back at the truck, in cash or on the truck's own card machine, and only a ledger row
+     *  is written (no Stripe call). API only; absent = the online card refund, exactly as before. */
+    inPerson?: { method: 'cash' | 'card' } | null
   },
 ): Promise<RefundOutcome> {
+  if (args.inPerson) return refundAtCounter(supabase, { ...args, inPerson: args.inPerson })
   const account = await stripeAccountForTruck(supabase, args.truckId)
   if (!account) {
     return { status: 'failed', ...ours('refund_no_account') }
@@ -321,4 +325,129 @@ export async function refundOrder(
   try { balance = await readOrderBalance(supabase, args.orderKey) } catch { balance = null }
   console.log(`[refund] REFUNDED re=${refund.id} order_key=${args.orderKey} amount_minor=${args.amountMinor} -> status=${balance?.status ?? 'unknown'}`)
   return { status: 'refunded', refundId: refund.id, amountMinor: args.amountMinor, balance }
+}
+
+// ── 🔴 till-pack-2: COUNTER REFUNDS (docs/till-pack-2-report.md) ───────────────────────────────────────────────────────────────────
+// Money taken at the counter (channel 'in_person_other': cash, or the truck's own card machine) goes back at the counter. Nothing is
+// sent to Stripe; the record is a `kind = 'refund'` row with the method it went back by. The ledger (netted, so an undone collection
+// counts for nothing) says how much counter money there is to give back: Σ counter charges − Σ counter refunds.
+
+/** The counter money still held for an order: Σ in-person (in_person_other) charges − Σ in-person refunds, per method. */
+export function counterHeld(rows: readonly LedgerRow[]): { totalMinor: number; byMethod: { method: 'cash' | 'card' | null; minor: number }[] } {
+  const live = rows.filter(r => r.state === 'succeeded' && r.livemode === true && r.channel === 'in_person_other')
+  const methods: ('cash' | 'card' | null)[] = []
+  for (const r of live) { const m = r.method === 'cash' || r.method === 'card' ? r.method : null; if (!methods.includes(m)) methods.push(m) }
+  const byMethod = methods.map(m => {
+    const of = (k: string) => live.filter(r => r.kind === k && ((r.method === 'cash' || r.method === 'card' ? r.method : null) === m)).reduce((s, r) => s + Math.round(r.amount_minor), 0)
+    return { method: m, minor: of('charge') - of('refund') }
+  })
+  const charged = live.filter(r => r.kind === 'charge').reduce((s, r) => s + Math.round(r.amount_minor), 0)
+  const refunded = live.filter(r => r.kind === 'refund').reduce((s, r) => s + Math.round(r.amount_minor), 0)
+  return { totalMinor: Math.max(0, charged - refunded), byMethod }
+}
+
+async function currencyOf(supabase: SupabaseClient, orderKey: string): Promise<string> {
+  const { data, error } = await supabase.from('orders').select('currency').eq('order_key', orderKey).maybeSingle()
+  if (error || !data?.currency) throw new Error(`[refund] no currency for order_key=${orderKey}: ${error?.message ?? 'not found'}`)
+  return String(data.currency)
+}
+
+async function refundAtCounter(
+  supabase: SupabaseClient,
+  args: Parameters<typeof refundOrder>[1] & { inPerson: { method: 'cash' | 'card' } },
+): Promise<RefundOutcome> {
+  if (!Number.isInteger(args.amountMinor) || args.amountMinor <= 0) {
+    return { status: 'refused', reason: 'invalid_amount', remainingMinor: 0, ...ours('refund_amount_invalid') }
+  }
+  let rows: LedgerRow[]
+  try { rows = await readLedger(supabase, args.orderKey) } catch (err) {
+    console.error(`[refund] 🔴 could not read the ledger for a counter refund on order_key=${args.orderKey}:`, err instanceof Error ? err.message : err)
+    return { status: 'failed', ...ours('refund_check_failed') }
+  }
+  const held = counterHeld(rows)
+  if (args.amountMinor > held.totalMinor) {
+    return {
+      status: 'refused', reason: 'exceeds_remaining', remainingMinor: held.totalMinor,
+      ...(held.totalMinor === 0
+        ? ours('refund_fully_refunded')
+        : ours('refund_only_left', { amount: formatMinorOrBare(held.totalMinor, await orderFormatFor(supabase, args.orderKey), 'refund refusal') })),
+    }
+  }
+  const refundedBefore = rows.filter(r => r.kind === 'refund' && r.channel === 'in_person_other' && r.state === 'succeeded').reduce((s, r) => s + Math.round(r.amount_minor), 0)
+  const idempotencyKey = `counter_refund:${args.orderKey}:${refundedBefore}:${args.amountMinor}`
+  let balance: OrderBalance
+  try {
+    const out = await recordPaymentEvent(supabase, {
+      orderKey: args.orderKey,
+      truckId: args.truckId,
+      kind: 'refund',
+      channel: 'in_person_other',
+      amountMinor: args.amountMinor,
+      state: 'succeeded',
+      note: `Counter refund (${args.inPerson.method})`,
+      idempotencyKey,
+      createdBy: args.actor.actorId ?? null,
+      method: args.inPerson.method,
+      currency: await currencyOf(supabase, args.orderKey),
+      livemode: true,
+      reason: args.reason,
+    })
+    balance = out.balance
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err)
+    console.error(`[refund] 🔴 counter refund NOT recorded for order_key=${args.orderKey}:`, detail)
+    return { status: 'failed', detail }
+  }
+  await logAction(supabase, {
+    action: 'refund_issued',
+    truckId: args.truckId,
+    orderKey: args.orderKey,
+    amountMinor: args.amountMinor,
+    beforeState: { counter_held_minor: held.totalMinor },
+    afterState: { channel: 'in_person_other', method: args.inPerson.method, reason: args.reason, note: args.note ?? null,
+      meaning: 'money given back at the truck; the ledger row is written (no card processor involved)' },
+    actor: args.actor,
+    source: args.source,
+  })
+  return { status: 'refunded', refundId: idempotencyKey, amountMinor: args.amountMinor, balance }
+}
+
+/**
+ * 🔴 Q5 (Dominic, 25 November 2026): CANCELLING AN ORDER PAID AT THE COUNTER RECORDS THE COUNTER REFUND for the money taken, with the
+ * original method — one refund row per method still held. Online card money is NOT touched here (its refund goes through Stripe, as
+ * before). Call it AFTER the cancellation's own reads and emails, so they are exactly as before. Never throws: a failure is logged and the
+ * cancellation stands. Returns the rows it wrote.
+ */
+export async function refundCounterOnCancel(
+  supabase: SupabaseClient,
+  args: { orderKey: string; truckId: string; createdBy?: string | null },
+): Promise<{ refunded: { method: 'cash' | 'card' | null; minor: number }[] }> {
+  try {
+    const rows = await readLedger(supabase, args.orderKey)
+    const held = counterHeld(rows).byMethod.filter(m => m.minor > 0)
+    if (!held.length) return { refunded: [] }
+    const currency = await currencyOf(supabase, args.orderKey)
+    for (const m of held) {
+      await recordPaymentEvent(supabase, {
+        orderKey: args.orderKey,
+        truckId: args.truckId,
+        kind: 'refund',
+        channel: 'in_person_other',
+        amountMinor: m.minor,
+        state: 'succeeded',
+        note: 'Counter refund recorded on cancellation',
+        idempotencyKey: `cancel_refund:${args.orderKey}:${m.method ?? 'none'}:${m.minor}`,
+        createdBy: args.createdBy ?? null,
+        method: m.method,
+        currency,
+        livemode: true,
+        reason: 'order_cancelled',
+      })
+    }
+    console.log(`[refund] Q5 counter refund on cancel order_key=${args.orderKey}: ${held.map(m => `${m.method ?? 'no method'} ${m.minor}`).join(', ')}`)
+    return { refunded: held }
+  } catch (err) {
+    console.error(`[refund] 🔴 Q5 counter refund on cancel NOT recorded for order_key=${args.orderKey} (the cancellation stands):`, err instanceof Error ? err.message : err)
+    return { refunded: [] }
+  }
 }

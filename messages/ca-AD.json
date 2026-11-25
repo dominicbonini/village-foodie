@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Comanda creada, però no s’ha pogut desar el registre del pagament: la recaptació d’aquesta comanda pot ser incorrecta fins que es corregeixi.",
     "payment_not_recorded": "No s’ha pogut registrar el pagament: la recaptació d’aquesta comanda pot ser incorrecta fins que es corregeixi.",
     "payment_not_reversed": "No s’ha pogut anul·lar el pagament",
+    "sale_closed": "Aquesta venda està tancada. Registra un reemborsament.",
     "event_not_approved": "Aquest esdeveniment no està aprovat",
     "event_not_open": "{status, select, closed {Aquest esdeveniment ha acabat. Reinicia’l per rebre comandes.} cancelled {Aquest esdeveniment s’ha cancel·lat.} other {Aquest esdeveniment no està obert.}}",
     "sign_in_to_create": "Inicia la sessió com a membre de l’equip per crear un esdeveniment.",

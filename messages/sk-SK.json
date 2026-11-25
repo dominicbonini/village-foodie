@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Objednávka je vytvorená, ale záznam o platbe sa nepodarilo uložiť — tržba za túto objednávku môže byť nesprávna, kým sa to neopraví.",
     "payment_not_recorded": "Platbu sa nepodarilo zaznamenať — tržba za túto objednávku môže byť nesprávna, kým sa to neopraví.",
     "payment_not_reversed": "Platbu sa nepodarilo stornovať",
+    "sale_closed": "Tento predaj je uzavretý. Namiesto toho zaznamenajte vrátenie peňazí.",
     "event_not_approved": "Táto akcia nie je schválená",
     "event_not_open": "{status, select, closed {Táto akcia skončila. Spustite ju znova, aby ste mohli prijímať objednávky.} cancelled {Táto akcia bola zrušená.} other {Táto akcia nie je otvorená.}}",
     "sign_in_to_create": "Prihláste sa ako člen tímu, aby ste mohli vytvoriť akciu.",

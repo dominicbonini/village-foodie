@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Commande créée, mais l’enregistrement du paiement n’a pas pu être sauvegardé — le montant encaissé pour cette commande peut être erroné jusqu’à sa correction.",
   "payment_not_recorded": "Le paiement n’a pas pu être enregistré — le montant encaissé pour cette commande peut être erroné jusqu’à sa correction.",
   "payment_not_reversed": "Le paiement n’a pas pu être annulé",
+  "sale_closed": "Cette vente est clôturée. Enregistrez plutôt un remboursement.",
   "event_not_approved": "Cet événement n’est pas approuvé",
   "event_not_open": "{status, select, closed {Cet événement est terminé. Redémarrez-le pour prendre des commandes.} cancelled {Cet événement a été annulé.} other {Cet événement n’est pas ouvert.}}",
   "sign_in_to_create": "Connectez-vous en tant que membre de l’équipe pour créer un événement.",

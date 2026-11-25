@@ -4,6 +4,7 @@ import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { delayMinutesOf } from './model'
 import type { ReviewStore, ReviewTruck, ReviewOrder, RequestRow } from './run'
+import { NETTING_COLUMNS, netted } from '@/lib/payments/reversals'   // till-pack-2
 
 type Row = Record<string, unknown>
 const s = (v: unknown) => (typeof v === 'string' ? v : null)
@@ -30,10 +31,11 @@ export function supabaseReviewStore(db: SupabaseClient): ReviewStore {
     const keys = rows.map(r => String(r.order_key))
     const eventIds = [...new Set(rows.map(r => s(r.event_id)).filter((x): x is string => !!x))]
     const [{ data: refunds }, { data: events }] = await Promise.all([
-      db.from('order_payments').select('order_key').in('order_key', keys).eq('kind', 'refund').eq('state', 'succeeded'),
+      // till-pack-2: the reversals too, so a refund that failed (reversed — it used to be deleted) does not count as a refund.
+      db.from('order_payments').select(`order_key, kind, ${NETTING_COLUMNS}`).in('order_key', keys).in('kind', ['refund', 'reversal']).eq('state', 'succeeded'),
       eventIds.length ? db.from('truck_events').select('id, closed_at').in('id', eventIds) : Promise.resolve({ data: [] as Row[] }),
     ])
-    const refunded = new Set((refunds ?? []).map(r => String((r as Row).order_key)))
+    const refunded = new Set(netted((refunds ?? []) as Row[]).filter(r => (r as Row).kind === 'refund').map(r => String((r as Row).order_key)))
     const closed = new Map((events ?? []).map(e => [String((e as Row).id), s((e as Row).closed_at)]))
     return rows.map(o => ({
       orderKey: String(o.order_key), truckId: String(o.truck_id), status: s(o.status), collectedAt: s(o.collected_at), customerEmail: s(o.customer_email),

@@ -23,7 +23,7 @@
 // ⚠️ THIS FILE IS lib/payments. THE MONEY-PATH INVARIANT APPLIES: exercised against real rows before
 // deploying, never merely typechecked.
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { recordPaymentEvent, recalcOrderPayment } from './ledger'
+import { recordPaymentEvent, type PaymentChannel } from './ledger'
 // A failed refund DESTROYS a money row, so its audit write must be the strict one: a failed log aborts
 // the delete. Same rule undo_collected follows.
 import { logActionOrThrow } from '@/lib/audit/actionAudit'
@@ -192,7 +192,11 @@ export async function recordOnlineCardRefund(
  * reads REFUNDED forever for a refund that never happened — the worst direction, because it tells an
  * operator a customer has been made whole when they have not.
  *
- * ── DELETE, NEVER COMPENSATE, AND THE PRECEDENT IS reverseCollectionPayment ────────────────────
+ * ── 🔴 till-pack-2: REVERSE, NEVER DELETE (docs/till-pack-2-report.md) ─────────────────────────────
+ * The refund row is now KEPT and a `kind = 'reversal'` row pointing at it is inserted (reason 'refund_failed'). Every reader nets the
+ * pair to nothing (lib/payments/reversals.ts), so the order reads exactly as it did when the row was deleted. A redelivered
+ * refund.failed finds the reversal already there and writes nothing more.
+ * ── (before till-pack-2) DELETE, NEVER COMPENSATE, AND THE PRECEDENT WAS reverseCollectionPayment ───
  * That function deletes rather than compensates when the row "represents no money", and this is the
  * same case read the other way: the refund row asserts money went back, and it came back. A
  * compensating `charge` row would inflate Sigma-visible takings by an amount nobody was ever paid.
@@ -218,7 +222,13 @@ export async function removeFailedOnlineRefund(
   if (error) throw new Error(`[online-refund] could not read the refund row for ${args.refundId}: ${error.message}`)
   if (!row) return { outcome: 'none', amountMinor: 0 }
 
-  // 🔴 AUDIT BEFORE THE DELETE, AND A FAILED AUDIT ABORTS IT. logActionOrThrow, not logAction.
+  // Already reversed (a redelivered refund.failed): nothing more to write; the order already reads paid again.
+  const { data: already, error: alreadyErr } = await supabase
+    .from('order_payments').select('id').eq('kind', 'reversal').eq('reverses_payment_id', row.id).maybeSingle()
+  if (alreadyErr) throw new Error(`[online-refund] could not check for a reversal of ${row.id}: ${alreadyErr.message}`)
+  if (already) return { outcome: 'removed', amountMinor: typeof row.amount_minor === 'number' ? row.amount_minor : 0 }
+
+  // 🔴 AUDIT BEFORE THE REVERSAL, AND A FAILED AUDIT ABORTS IT. logActionOrThrow, not logAction.
   await logActionOrThrow(supabase, {
     action: 'refund_reversed_failed',
     truckId: args.truckId,
@@ -226,19 +236,29 @@ export async function removeFailedOnlineRefund(
     amountMinor: typeof row.amount_minor === 'number' ? row.amount_minor : null,
     beforeState: { ...row, refund_id: args.refundId, event_type: args.eventType },
     afterState: {
-      deleted: true,
+      reversed: true,
       failure_reason: args.failureReason,
       meaning: 'Stripe reported this refund FAILED after we had recorded it. The money came back to the '
-             + 'truck, so the ledger row asserting a refund is removed and the order reads paid again.',
+             + 'truck, so the ledger row asserting a refund is reversed (kept, with a reversal row) and the order reads paid again.',
     },
     actor: { actorKind: 'unknown', actorId: null, actorLabel: null },
     source: 'web',
   })
 
-  const { error: delErr } = await supabase.from('order_payments').delete().eq('id', row.id)
-  if (delErr) throw new Error(`[online-refund] could not delete the failed refund row ${row.id}: ${delErr.message}`)
-
-  // The cache is derived and the ledger just moved. This is the only writer of payment_status.
-  await recalcOrderPayment(supabase, args.orderKey)
+  // till-pack-2: the reversal row (the refund row stays). recordPaymentEvent recalcs, the only writer of payment_status.
+  await recordPaymentEvent(supabase, {
+    orderKey: args.orderKey,
+    truckId: args.truckId,
+    kind: 'reversal',
+    channel: row.channel as PaymentChannel,
+    amountMinor: Math.round(Number(row.amount_minor)),
+    state: 'succeeded',
+    note: 'Reversal of a refund Stripe reported as failed',
+    idempotencyKey: `reversal:${row.id}`,
+    currency: String(row.currency ?? ''),
+    livemode: row.livemode !== false,
+    reversesPaymentId: String(row.id),
+    reason: 'refund_failed',
+  })
   return { outcome: 'removed', amountMinor: typeof row.amount_minor === 'number' ? row.amount_minor : 0 }
 }

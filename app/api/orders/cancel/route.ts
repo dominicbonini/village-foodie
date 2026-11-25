@@ -7,6 +7,8 @@ import { eventTimeInstant } from '@/lib/event-window'
 // RELEASE ONLY. It cannot capture and it refuses an order whose money was already taken; see the module.
 import { releaseHoldForTerminalOrder } from '@/lib/payments/release-hold'
 import { resolveEmailPaymentState } from '@/lib/payments/email-payment-state'
+import { refundCounterOnCancel } from '@/lib/payments/refund'   // till-pack-2 (Q5)
+import { tillHeadSeq, noteTillActor } from '@/lib/till/actor-role'   // till-pack-2
 import {
   removeOrderFromProductionSlot,
   buildItemCatMap,
@@ -180,6 +182,15 @@ export async function POST(req: NextRequest) {
 
     // `paymentState` (additive, 19 October 2026 — US dress rehearsal Finding 5): the cancelled screen says
     // "any refund is handled by the truck" only when a card paid or was authorised.
+    // ── 🔴 till-pack-2, Q5: money the truck took AT THE COUNTER is recorded as refunded, with its original method — after the email and
+    // with the response unchanged (paymentState was resolved above). Online card money is not touched (its refund goes through Stripe).
+    // The refund is recorded by the system on the customer's cancellation; the till records its role as 'system'.
+    {
+      const fromSeq = await tillHeadSeq(supabase, String(order.truck_id))
+      const q5 = await refundCounterOnCancel(supabase, { orderKey: order.order_key, truckId: String(order.truck_id) })
+      if (q5.refunded.length) await noteTillActor(supabase, { truckId: String(order.truck_id), fromSeq, orderKey: order.order_key, action: 'customer_cancel_counter_refund', role: 'system' })
+    }
+
     return NextResponse.json({ ok: true, paymentState })
   } catch (err) {
     console.error('[customer-cancel] error:', err)

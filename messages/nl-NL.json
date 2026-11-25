@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Bestelling aangemaakt, maar de betaling kon niet worden geregistreerd — de omzet van deze bestelling kan onjuist zijn tot dit is hersteld.",
     "payment_not_recorded": "De betaling kon niet worden geregistreerd — de omzet van deze bestelling kan onjuist zijn tot dit is hersteld.",
     "payment_not_reversed": "De betaling kon niet worden teruggedraaid",
+    "sale_closed": "Deze verkoop is afgesloten. Registreer in plaats daarvan een terugbetaling.",
     "event_not_approved": "Dit evenement is niet goedgekeurd",
     "event_not_open": "{status, select, closed {Dit evenement is afgelopen. Herstart het om bestellingen aan te nemen.} cancelled {Dit evenement is geannuleerd.} other {Dit evenement is niet open.}}",
     "sign_in_to_create": "Log in als teamlid om een evenement te maken.",

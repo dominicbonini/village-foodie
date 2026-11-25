@@ -56,8 +56,11 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { toMinor, fromMinor } from '@/lib/order-repricing'
 import { ledgerCurrency } from '@/lib/payments/currency'
 import { chargesForHatchSwitch, ORDER_CHARGE_COLUMNS, type StoredCharges } from '@/lib/order-charges'
+import { NETTING_COLUMNS, withoutReversals, netted, reversalCount } from '@/lib/payments/reversals'
 
-export type PaymentKind = 'charge' | 'refund'
+/** till-pack-2: 'reversal' cancels the payment row its `reverses_payment_id` points at (lib/payments/reversals.ts). Every reader nets the
+ *  pair away, so a reversal is never money in its own right. */
+export type PaymentKind = 'charge' | 'refund' | 'reversal'
 export type PaymentChannel = 'online' | 'in_person_stripe' | 'in_person_other'
 export type PaymentEventState = 'pending' | 'succeeded' | 'failed'
 /** HOW the money physically arrived. ORTHOGONAL to channel — see the migration header. Null = not
@@ -221,7 +224,9 @@ export function getOrderBalance(order: BalanceableOrder, ledgerRows: LedgerRow[]
   // them. Both layers, deliberately.
   // ⚠️ IT IS A FILTER, NEVER A TERM. Nothing below changes: paid is still Σcharges − Σrefunds. This only
   // decides which rows are eligible to be summed, exactly as `state === 'succeeded'` already does.
-  const succeeded = (ledgerRows ?? []).filter(r => isLiveRow(r) && r.state === 'succeeded')
+  // till-pack-2: a (payment, reversal) pair is nothing — the netting every reader does, done here too so a hand-built or un-netted set
+  // cannot count a reversed payment. With no reversal in the set this is the set itself, so every figure below is unchanged.
+  const succeeded = withoutReversals(ledgerRows ?? []).filter(r => isLiveRow(r) && r.state === 'succeeded')
   const chargeMinor = succeeded.filter(r => r.kind === 'charge').reduce((s, r) => s + Math.round(r.amount_minor), 0)
   const refundMinor = succeeded.filter(r => r.kind === 'refund').reduce((s, r) => s + Math.round(r.amount_minor), 0)
 
@@ -333,8 +338,11 @@ export function hasUnrecordedPayment(
  * INSTEAD: recordCollectionPayment carries an expected-vs-actual detector that makes any residual
  * collision LOUD rather than silent. Read that before changing this function.
  */
-export function collectIdempotencyKey(orderKey: string, paidBeforeMinor: number, balanceMinor: number): string {
-  return `collect:${orderKey}:${paidBeforeMinor}:${balanceMinor}`
+export function collectIdempotencyKey(orderKey: string, paidBeforeMinor: number, balanceMinor: number, reversals = 0): string {
+  // till-pack-2: an undo no longer DELETES the charge (it is reversed), so the reversed charge keeps its key. Without this suffix a re-collect
+  // after an undo would derive the SAME key from the same ledger position and be swallowed as a duplicate. With no reversal on the order
+  // the key is exactly today's.
+  return `collect:${orderKey}:${paidBeforeMinor}:${balanceMinor}${reversals > 0 ? `:r${reversals}` : ''}`
 }
 
 // 🔴 EXPORTED FOR lib/payments/refund, AND FOR THAT REASON ONLY. A refund needs the ONLINE CHARGE ROWS
@@ -343,9 +351,16 @@ export function collectIdempotencyKey(orderKey: string, paidBeforeMinor: number,
 // order_key scope filter and its runtime assertion, the widened mode filter, and annotateTestAccountRows.
 // ⚠️ VISIBILITY ONLY. Not one character of the body changed.
 export async function readLedger(supabase: SupabaseClient, orderKey: string): Promise<LedgerRow[]> {
+  return (await readLedgerAll(supabase, orderKey)).rows
+}
+
+/** readLedger, plus how many of the order's payments a reversal cancels (the collect key needs it). till-pack-2: the rows come back
+ *  NETTED — every (payment, reversal) pair removed and the two netting columns dropped — so every caller sees what it saw when an undo
+ *  deleted the row. */
+async function readLedgerAll(supabase: SupabaseClient, orderKey: string): Promise<{ rows: LedgerRow[]; reversals: number }> {
   const { data, error } = await supabase
     .from('order_payments')
-    .select(LEDGER_ROW_COLUMNS)
+    .select(`${LEDGER_ROW_COLUMNS}, ${NETTING_COLUMNS}`)
     // ── 🔴 TWO FILTERS. BOTH MANDATORY. NEITHER REPLACES THE OTHER. ─────────────────────────────────
     // THIS IS THE 7 AUGUST INCIDENT, WRITTEN AT THE SCENE. On 7 August commit 3a1d082 added the
     // `livemode` filter below by REPLACING the `order_key` filter above it. Every balance was then
@@ -389,16 +404,17 @@ export async function readLedger(supabase: SupabaseClient, orderKey: string): Pr
   // and made it inert: `order_key` was not in LEDGER_ROW_COLUMNS, so every row's value was `undefined`
   // and every row passed. Comparing strictly means a row whose order_key was not SELECTED also fails —
   // so the guard catches its own precondition being removed, which is the only way it stays alive.
-  const rows = (data ?? []) as unknown as (LedgerRow & { order_key?: string })[]
-  const strays = rows.filter(r => r.order_key !== orderKey).length
+  const raw = (data ?? []) as unknown as (LedgerRow & { order_key?: string; id?: string | null; reverses_payment_id?: string | null })[]
+  const strays = raw.filter(r => r.order_key !== orderKey).length
   if (strays > 0) {
     throw new Error(
-      `[ledger] SCOPE VIOLATION reading order_payments for ${orderKey}: ${strays} of ${rows.length} rows ` +
+      `[ledger] SCOPE VIOLATION reading order_payments for ${orderKey}: ${strays} of ${raw.length} rows ` +
       `belong to a DIFFERENT order. The order_key filter is missing or wrong — every balance computed ` +
       `from this read would be the sum of other orders' money. Refusing to return it.`,
     )
   }
-  return annotateTestAccountRows(supabase, rows as LedgerRow[])
+  const rows = netted(raw) as LedgerRow[]
+  return { rows: await annotateTestAccountRows(supabase, rows), reversals: reversalCount(raw) }
 }
 
 /**
@@ -604,6 +620,10 @@ export async function recordPaymentEvent(
      *  units. ABSENT on every row written before billing is switched on — the insert below is then exactly as before. */
     applicationFeeMinor?: number | null
     applicationFeeRefundedMinor?: number | null
+    /** till-pack-2: on a 'reversal' row, the payment row it cancels. Absent on every other row — the insert is then exactly as before. */
+    reversesPaymentId?: string | null
+    /** till-pack-2: why a reversal or a refund was recorded — a short machine word (the column refuses anything else). */
+    reason?: string | null
   },
 ): Promise<{ inserted: boolean; balance: OrderBalance }> {
   if (!Number.isInteger(event.amountMinor) || event.amountMinor <= 0) {
@@ -633,6 +653,8 @@ export async function recordPaymentEvent(
     // billing-1: named only when given, so a row without a fee is the same insert it always was.
     ...(typeof event.applicationFeeMinor === 'number' && event.applicationFeeMinor > 0 ? { application_fee_minor: event.applicationFeeMinor } : {}),
     ...(typeof event.applicationFeeRefundedMinor === 'number' && event.applicationFeeRefundedMinor > 0 ? { application_fee_refunded_minor: event.applicationFeeRefundedMinor } : {}),
+    ...(event.reversesPaymentId ? { reverses_payment_id: event.reversesPaymentId } : {}),
+    ...(event.reason ? { reason: event.reason } : {}),
   })
 
   let inserted = true
@@ -642,7 +664,8 @@ export async function recordPaymentEvent(
     // know what the caller expected). Callers that intend a specific amount must check the resulting
     // balance; see recordCollectionPayment's expected-vs-actual detector.
     if (error.code === '23505') inserted = false
-    else throw new Error(`[ledger] insert failed for ${event.orderKey}: ${error.message}`)
+    // till-pack-2: the error keeps its sqlstate, so a route can tell the till guard's refusal (HGT…) from any other failure.
+    else throw Object.assign(new Error(`[ledger] insert failed for ${event.orderKey}: ${error.message}`), { code: error.code })
   }
   // billing-1: THE WEBHOOK MAY HAVE WRITTEN THIS ROW FIRST (payment_intent.succeeded carries the same key and no fee). The
   // fee the capture took is then added to that row — only where it is still empty, so a replay can never change it.
@@ -676,7 +699,8 @@ export async function recordCollectionPayment(
   supabase: SupabaseClient,
   opts: { orderKey: string; truckId: string; createdBy?: string | null; method?: PaymentMethod | null },
 ): Promise<{ inserted: boolean; balance: OrderBalance; chargedMinor: number }> {
-  const [read, rows] = await Promise.all([readOrder(supabase, opts.orderKey), readLedger(supabase, opts.orderKey)])
+  const [read, all] = await Promise.all([readOrder(supabase, opts.orderKey), readLedgerAll(supabase, opts.orderKey)])
+  const rows = all.rows
   let order = read
   let before = getOrderBalance(order, rows)
   // Phase 3: nothing paid yet → drop any online-only charges before the hatch collects (D25).
@@ -699,7 +723,7 @@ export async function recordCollectionPayment(
     channel: 'in_person_other',
     amountMinor: before.balanceMinor,
     state: 'succeeded',
-    idempotencyKey: collectIdempotencyKey(opts.orderKey, before.paidMinor, before.balanceMinor),
+    idempotencyKey: collectIdempotencyKey(opts.orderKey, before.paidMinor, before.balanceMinor, all.reversals),
     note: 'Mark paid & done — taken at the hatch',
     createdBy: opts.createdBy ?? null,
     method: opts.method ?? null,
@@ -742,20 +766,17 @@ export async function recordCollectionPayment(
 }
 
 /**
- * Undo of "Mark paid & done" — reverse the payment this order's collect booked.
+ * Undo of "Mark paid & done" / "Mark paid" — cancel the payment this order's collect booked.
  *
- * DELETE when no real money moved; REVERSE when it did. Concretely: delete the row only when
- * `external_ref is null` AND `state = 'succeeded'` AND `channel != 'online'`; otherwise insert a
- * compensating refund.
+ * 🔴 till-pack-2 (docs/till-pack-2-report.md): REVERSE, NEVER DELETE. When no real money moved through a processor (`external_ref is null`
+ * AND `state = 'succeeded'` AND `channel != 'online'` — the 7-second mis-tap case), the charge row is KEPT and a `kind = 'reversal'` row
+ * pointing at it is inserted. Every reader nets the pair to nothing (lib/payments/reversals.ts), so the order reads exactly as it did when
+ * the row was deleted: paid 0, no refund row, payment status 'unpaid'. The record of the tap and of its undo both survive, chained by the
+ * till (a deleted payment is what the guard refuses once it enforces).
+ * When `external_ref` IS set, money genuinely moved and its counterpart is a REFUND, exactly as before — unchanged.
  *
- * WHY: "Mark paid & done" carries a 7-second undo toast (app/dashboard/[token]/page.tsx:~1258), so the
- * overwhelming majority of undos are mis-taps seconds after the fact. Writing a charge AND a refund for a
- * mis-tap records two money events that never happened — a ledger claiming a refund was issued when
- * nothing was ever taken is actively misleading to the operator reading it back, and it would corrupt the
- * 0.99%/allowance figures §37 depends on. Deleting a row that represents no real-world event loses
- * nothing. The moment `external_ref` is set, money genuinely moved through a processor, the row has an
- * external counterpart, and it must be reversed and never deleted — which is why the rule keys on
- * external_ref rather than on elapsed time or on channel alone.
+ * The charge it picks is the latest in-person, live charge that no reversal already cancels, so a second undo never reverses the same row
+ * twice (and the database's one-reversal-per-payment index refuses it anyway).
  */
 export async function reverseCollectionPayment(
   supabase: SupabaseClient,
@@ -763,68 +784,64 @@ export async function reverseCollectionPayment(
     orderKey: string
     truckId: string
     createdBy?: string | null
+    /** Which undo this is — written as the reversal's `reason`. */
+    reason: 'undo_collected' | 'undo_mark_paid'
     /**
-     * Called with the FULL contents of the collect row immediately BEFORE it is deleted, and awaited.
-     * 🔴 IF THIS THROWS, THE DELETE DOES NOT HAPPEN and the error propagates to the caller.
-     * That is the point: the row is about to stop existing, so this is the last moment its contents can
-     * be captured. The route passes the append-only audit write here, so a payment record can never be
-     * erased without a log of the erasure. Not called on the 'refunded' or 'none' paths — nothing is
-     * destroyed there.
+     * Called with the FULL contents of the charge row immediately BEFORE its reversal is written, and awaited.
+     * 🔴 IF THIS THROWS, NO REVERSAL IS WRITTEN and the error propagates to the caller (the route passes the append-only audit write here,
+     * as it did before the delete). Not called on the 'refunded' or 'none' paths.
      */
-    beforeDelete?: (row: DeletedCollectRow) => Promise<void>
+    beforeReverse?: (row: DeletedCollectRow) => Promise<void>
   },
-): Promise<{ reversal: 'deleted' | 'refunded' | 'none'; balance: OrderBalance }> {
-  // ── LOOK UP BY SHAPE, NEVER BY IDEMPOTENCY KEY ─────────────────────────────────────────────────
-  // 🔴 LIVE-DATA COMPATIBILITY REQUIREMENT, not a tidy-up. This used to match
-  // `.eq('idempotency_key', 'collect:{order_key}')`. The key format changed (see
-  // collectIdempotencyKey), so a key-based lookup would silently fail to find any row written under
-  // the OLD format — every payment taken before this deploy would become un-undoable, and undo would
-  // report 'none' while leaving the money on the order.
-  // Matching on the row's SHAPE instead is format-agnostic: it finds old-format rows, new-format rows
-  // and (once refunds exist) rows with no key at all. `channel != 'online'` preserves the original
-  // intent — only an in-person charge is a candidate for the delete-vs-compensate rule below.
-  // Newest first: with successive part-payments, undo reverses the one just taken, matching what the
-  // 7-second toast and the paid-chip affordance both mean by "undo".
+): Promise<{ reversal: 'reversed' | 'refunded' | 'none'; balance: OrderBalance; reversalOf?: string; reversalId?: string | null }> {
   const { data: rows, error } = await supabase
     .from('order_payments')
-    // `livemode` is in this list for TWO reasons, and the second is the load-bearing one: it feeds
-    // `row.livemode` on the compensating-refund path below, AND this exact row shape is what gets
-    // written to action_audit_log.before_state before a delete. That log has to be enough to
-    // reconstruct the destroyed row completely — a reconstruction that could not say whether the
-    // payment was real would be worthless for the six-year record it exists to protect.
-    .select('id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_at, created_by, livemode')
+    .select('id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_at, created_by, livemode, method')
     .eq('order_key', opts.orderKey)
     .eq('kind', 'charge')
     .neq('channel', 'online')
-    // 🔴 A TEST ROW MUST NEVER BE THE ROW AN UNDO PICKS. This query takes the NEWEST matching charge, so
-    // without the filter a test row written after a real collection would be selected instead of it —
-    // and the two failure modes are both bad in the same direction: the operator taps undo, a row that
-    // represents no money is deleted, and the REAL payment is left standing on an order the operator now
-    // believes is unpaid. Filtered in SQL because this is a `[0]` pick, not a sum: getOrderBalance never
-    // sees these rows, so the chokepoint cannot save this one. It has to be right here.
     .eq('livemode', true)
     .order('created_at', { ascending: false })
   if (error) throw new Error(`[ledger] could not read the collect row for ${opts.orderKey}: ${error.message}`)
 
-  const row = (rows ?? [])[0] as DeletedCollectRow | undefined
+  // The charges a reversal already cancels are not candidates.
+  const { data: revs, error: revErr } = await supabase
+    .from('order_payments')
+    .select('reverses_payment_id')
+    .eq('order_key', opts.orderKey)
+    .eq('kind', 'reversal')
+  if (revErr) throw new Error(`[ledger] could not read the reversals for ${opts.orderKey}: ${revErr.message}`)
+  const done = new Set((revs ?? []).map(r => String((r as { reverses_payment_id?: string | null }).reverses_payment_id ?? '')))
+
+  const row = ((rows ?? []) as DeletedCollectRow[]).find(r => !done.has(String(r.id)))
   if (!row) {
-    // Nothing to reverse (never collected, or already undone). Recalc anyway so the cache is correct.
     return { reversal: 'none', balance: await recalcOrderPayment(supabase, opts.orderKey) }
   }
 
   const noRealMoneyMoved = row.external_ref == null && row.state === 'succeeded' && row.channel !== 'online'
 
   if (noRealMoneyMoved) {
-    // CAPTURE BEFORE DESTROY. Awaited, and deliberately NOT wrapped in try/catch — a throw here must
-    // abort the delete, leaving the ledger row intact and the undo refused.
-    if (opts.beforeDelete) await opts.beforeDelete(row)
-    const { error: delErr } = await supabase.from('order_payments').delete().eq('id', row.id)
-    if (delErr) throw new Error(`[ledger] could not delete the collect row for ${opts.orderKey}: ${delErr.message}`)
-    return { reversal: 'deleted', balance: await recalcOrderPayment(supabase, opts.orderKey) }
+    if (opts.beforeReverse) await opts.beforeReverse(row)
+    const { balance } = await recordPaymentEvent(supabase, {
+      orderKey: opts.orderKey,
+      truckId: opts.truckId,
+      kind: 'reversal',
+      channel: row.channel,
+      amountMinor: Math.round(row.amount_minor),
+      state: 'succeeded',
+      note: opts.reason === 'undo_collected' ? 'Reversal of "Mark paid & collected" (undo)' : 'Reversal of "Mark paid" (undo)',
+      idempotencyKey: `reversal:${row.id}`,
+      createdBy: opts.createdBy ?? null,
+      method: (row.method === 'cash' || row.method === 'card') ? row.method : null,
+      currency: row.currency as string,
+      livemode: row.livemode ?? true,
+      reversesPaymentId: row.id,
+      reason: opts.reason,
+    })
+    const { data: written } = await supabase.from('order_payments').select('id').eq('idempotency_key', `reversal:${row.id}`).maybeSingle()
+    return { reversal: 'reversed', balance, reversalOf: row.id, reversalId: (written as { id?: string } | null)?.id ?? null }
   }
 
-  // Real money moved — compensate, never delete. No idempotency key: a second undo of a genuinely
-  // processed payment is a distinct money event and must not be silently swallowed by a key collision.
   const { balance } = await recordPaymentEvent(supabase, {
     orderKey: opts.orderKey,
     truckId: opts.truckId,
@@ -834,14 +851,7 @@ export async function reverseCollectionPayment(
     state: 'succeeded',
     note: 'Reversal of "Mark paid & done" (undo) — original payment had an external reference',
     createdBy: opts.createdBy ?? null,
-    // Inherited from the row being reversed, like livemode below: a reversal is in the money it reverses.
     currency: row.currency as string,
-    // Inherited from the row being reversed, never assumed. A compensating refund must sit on the same
-    // side of the live/test line as the charge it cancels — a live refund against a test charge would
-    // subtract money that was never taken, and a test refund against a live charge would leave the real
-    // money standing while appearing to have reversed it. The lookup above already restricts this path
-    // to livemode=true rows, so this reads `true` today; sourcing it from `row` rather than writing the
-    // literal is what keeps it correct if that filter is ever widened.
     livemode: row.livemode ?? true,
   })
   return { reversal: 'refunded', balance }

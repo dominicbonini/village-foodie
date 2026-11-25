@@ -292,16 +292,18 @@ function vatOf(row) {
     summary: G.map(g => ({ vat_rate_milli: rOut(g.rate), food_minor: nOut(g.food), excl_vat_minor: nOut(g.excl), vat_minor: nOut(g.vat) })),
   }
 }
-/** till_till_id */
-function tillId(row) {
+/** till_till_id. `device` (till-pack-2) = the order's till_device_fingerprints row, or null: an offline walk-up names its device. */
+function tillId(row, device = null) {
   if (col(row, 'van_id') !== null) return String(col(row, 'van_id'))
   const s = col(row, 'source')
   if (s === 'web') return 'web'
+  if (device && device.device_id) return String(device.device_id)
   const t = s === null ? '' : String(s).replace(/^ +| +$/g, '')
   return t || 'unrecorded'
 }
-/** till_sealed_order(row) as a value (jsonbText() gives the database's text). `row` = parseRaw(row_to_json(o)::text). */
-function sealedOrder(row) {
+/** till_sealed_order(row) as a value (jsonbText() gives the database's text). `row` = parseRaw(row_to_json(o)::text). `device` (till-pack-2)
+ *  = the order's till_device_fingerprints row ({ device_id, fingerprint, device_created_at }) or null — it adds `device` only when present. */
+function sealedOrder(row, device = null) {
   const o = {}
   const v = vatOf(row)
   for (const f of ORDER_FIELDS) {
@@ -310,17 +312,20 @@ function sealedOrder(row) {
     else if (f === 'items') { const si = sealedLines(col(row, 'items'), 'item'); o[f] = Array.isArray(si) ? si.map((e, i) => (isObj(e) ? { ...e, ...(v.items[i] || {}) } : e)) : si }
     else if (f === 'deals') { const sd = sealedLines(col(row, 'deals'), 'deal'); o[f] = Array.isArray(sd) ? sd.map((e, i) => (isObj(e) ? { ...e, vat_parts: v.deals[i] || [] } : e)) : sd }
     else if (f === 'fiscal_state') o[f] = fiscalState(col(row, 'status'))
-    else if (f === 'till_id') o[f] = tillId(row)
+    else if (f === 'till_id') o[f] = tillId(row, device)
     else if (f === 'vat_basis') o[f] = v.basis
     else if (f === 'vat_summary') o[f] = v.summary
     else o[f] = col(row, f)
   }
+  if (device) o.device = { device_id: device.device_id, fingerprint: device.fingerprint, created_at: tillTs(device.device_created_at) }
   return o
 }
-/** till_sealed_payment(row) as a value. */
+/** till_sealed_payment(row) as a value. till-pack-2: plus reverses_payment_id / reason on a row that has them. */
 function sealedPayment(row) {
   const p = {}
   for (const f of PAYMENT_FIELDS) p[f] = f === 'created_at' ? tillTs(col(row, 'created_at')) : col(row, f)
+  if (col(row, 'reverses_payment_id') !== null) p.reverses_payment_id = col(row, 'reverses_payment_id')
+  if (col(row, 'reason') !== null) p.reason = col(row, 'reason')
   return p
 }
 

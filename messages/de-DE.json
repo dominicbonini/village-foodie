@@ -1011,6 +1011,7 @@
     "created_payment_not_recorded": "Bestellung erstellt, aber der Zahlungseintrag konnte nicht gespeichert werden – der Umsatz für diese Bestellung ist möglicherweise falsch, bis das behoben ist.",
     "payment_not_recorded": "Die Zahlung konnte nicht erfasst werden – der Umsatz für diese Bestellung ist möglicherweise falsch, bis das behoben ist.",
     "payment_not_reversed": "Die Zahlung konnte nicht rückgängig gemacht werden",
+    "sale_closed": "Dieser Verkauf ist abgeschlossen. Erfassen Sie stattdessen eine Erstattung.",
     "event_not_approved": "Dieses Event ist nicht freigegeben",
     "event_not_open": "{status, select, closed {Dieses Event ist beendet. Neu starten, um Bestellungen anzunehmen.} cancelled {Dieses Event wurde abgesagt.} other {Dieses Event ist nicht geöffnet.}}",
     "sign_in_to_create": "Melde dich als Teammitglied an, um ein Event zu erstellen.",

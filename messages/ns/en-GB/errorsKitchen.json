@@ -68,6 +68,7 @@
   "created_payment_not_recorded": "Order created, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.",
   "payment_not_recorded": "Payment could not be recorded — the takings figure for this order may be wrong until it is repaired.",
   "payment_not_reversed": "Payment could not be reversed",
+  "sale_closed": "This sale is closed. Record a refund instead.",
   "event_not_approved": "This event isn’t approved",
   "event_not_open": "{status, select, closed {This event has finished. Restart it to take orders.} cancelled {This event was cancelled.} other {This event isn’t open.}}",
   "sign_in_to_create": "Log in as a team member to create an event.",
