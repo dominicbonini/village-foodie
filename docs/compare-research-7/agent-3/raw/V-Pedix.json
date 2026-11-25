@@ -1,0 +1,9 @@
+{
+  "vendor": "Pedix",
+  "stored_id_prefix": "c615e67d",
+  "countries": [],
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "notes": "Pedix price list re-read today (https://ayuda.pedix.app/es/article/precios-pedix). Sections: 'Argentina (ARS)', 'Chile (CLP)', 'México (MXN)', 'Brasil (BRL)', 'Uruguay (UYU)' (Mensual $400 / $660 / $950) and one USD section 'Estados Unidos, resto de países de Latinoamérica (Bolivia, Ecuador, Guyana, Paraguay, Perú, Surinam, Venezuela) y los de Centroamérica (Belice, Costa Rica, El Salvador, Guatemala, Honduras, Nicaragua, Panamá, Cuba, República Dominicana)' (Mensual $9 / $16 / $23; Anual $90 / $160 / $230 'con 2 meses bonificados'). Already counts in SV (USD) and UY (UYU): skipped. BO, DO, GT: priced only in USD, not the stored currency (BOB, DOP, GTQ) -> does not count. JM and CO: not named anywhere on the list -> does not count. No new country rows."
+}
