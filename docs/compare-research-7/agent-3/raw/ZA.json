@@ -3,7 +3,9 @@
   "researched_on": "2026-11-25",
   "searches": [
     "South Africa online ordering system for restaurants \"collection\" \"per month\" rand own website no commission food truck order ahead \"R\" pricing",
-    "\"click and collect\" ordering platform South African coffee shops restaurants \"R\" \"/month\" pre-order skip the queue local startup"
+    "\"click and collect\" ordering platform South African coffee shops restaurants \"R\" \"/month\" pre-order skip the queue local startup",
+    "South Africa food truck pre-order app order ahead collect food truck markets \"food truck\" ordering platform Cape Town Johannesburg vendors QR order and collect",
+    "Feasty food truck management platform digital storefront QR ordering pricing"
   ],
   "vendors": [
     {
@@ -39,5 +41,5 @@
       ]
     }
   ],
-  "notes": "Count now: 2 (Bizzfo, Resto) — no third. YUMBI (mine): still unpriced (raw/B3-YUMBI.json). SERVA: unpriced (row above). Supaorder (supaorder.com/pricing/south-africa) was read by agent 2 in compare-research-4 — agent 2's vendor, not fetched. The search otherwise returned only Capterra ZA listings priced in GBP / EUR / USD (Tekeats, MyFoodFast, Foodiv, UpMenu, Restolabs, Wiiz Eat, Orders2Me, Bite2u, Menue, SuiteDish, OrdraFood, RestApp, RestroSuite — not sources, none South African). Not re-read: Ordev, WebOrder (no pickup wording, -3), Yoco (till), Coffee Monster (closed), Orderin (403 in -2; a delivery marketplace), Aura NextGen POS (till), Wangu (18% commission, press only). Second search: only consumer multi-merchant order-ahead apps (Coffee Monster — closed; Zapper Order Ahead — a payments app's consumer marketplace; 'Click and Collect SA', mypreorder — App Store only), chains (McDonald's, TotalEnergies) and GetEat (Capterra) — none read. Stopped."
+  "notes": "Count now: 2 (Bizzfo, Resto) — no third. YUMBI (mine): still unpriced (raw/B3-YUMBI.json). SERVA: unpriced (row above). Supaorder (supaorder.com/pricing/south-africa) was read by agent 2 in compare-research-4 — agent 2's vendor, not fetched. The search otherwise returned only Capterra ZA listings priced in GBP / EUR / USD (Tekeats, MyFoodFast, Foodiv, UpMenu, Restolabs, Wiiz Eat, Orders2Me, Bite2u, Menue, SuiteDish, OrdraFood, RestApp, RestroSuite — not sources, none South African). Not re-read: Ordev, WebOrder (no pickup wording, -3), Yoco (till), Coffee Monster (closed), Orderin (403 in -2; a delivery marketplace), Aura NextGen POS (till), Wangu (18% commission, press only). Second search: only consumer multi-merchant order-ahead apps (Coffee Monster — closed; Zapper Order Ahead — a payments app's consumer marketplace; 'Click and Collect SA', mypreorder — App Store only), chains (McDonald's, TotalEnergies) and GetEat (Capterra) — none read. Stopped. SECOND PASS (food-truck only): no South African food-truck ordering tool found. Feasty (food-truck QR / storefront ordering, USD, listed on Capterra ZA) is already in agent 2's compare-research-7 SG.json — agent 2's vendor, not fetched; its home market and any ZA presence are for agent 2. Otherwise: Time Out Market Cape Town app (a single market's own app), a Cape Town pizza truck's WhatsApp-alert service (one business), Pekkish / Order Kasi / Mr D / Uber Eats (marketplaces / delivery), Eat Out food-truck lists (press). No local vendor site to read. Count stays 2."
 }
