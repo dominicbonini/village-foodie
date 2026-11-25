@@ -1,0 +1,64 @@
+{
+ "country": "CO",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "notes": "COORDINATOR MERGE (no new read): agent-3's two Fudo CO plans (raw/CO.json) as ONE monthly price — the Tu Delivery module is added to a paid Fudo plan («Necesitas una cuenta activa en Fudo y sumar el módulo Tu Delivery a tu plan.»), so the cheapest whole price is Plan Inicial $62.900 + Tu Delivery $110.900 = COP 173.800/mes sin IVA, both figures quoted from fu.do/es-co.",
+ "vendors": [
+  {
+   "name": "Fudo (Tu Delivery)",
+   "website": "https://fu.do",
+   "stored_id_prefix": "7e12931c",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "clarified today: Tu Delivery is a module added to a Fudo plan ('Necesitas una cuenta activa en Fudo y sumar el módulo Tu Delivery a tu plan.') at COP 110.900/mes sin IVA, no per-sale commission; customers order online with 'Para retirar' (pickup) beside delivery. Cheapest total = base plan + module.",
+   "eligibility": {
+    "order_quote": "al momento de la entrega o retiro en el local",
+    "order_url": "https://fu.do/es-co/delivery/",
+    "country_quote": "Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.",
+    "country_url": "https://fu.do/es-co/delivery/"
+   },
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Horario de entrega: Lo antes posible",
+     "url": "https://fu.do/es-co/delivery/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Precio fijo por mes, sin comisiones por venta",
+     "url": "https://fu.do/es-co/delivery/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "No pagas comisiones por venta: el precio es el mismo vendas lo que vendas.",
+     "url": "https://fu.do/es-co/delivery/"
+    }
+   ],
+   "check_urls": [
+    "https://fu.do/es-co/delivery/"
+   ],
+   "plans": [
+    {
+     "plan_name": "Plan Inicial + Tu Delivery",
+     "currency": "COP",
+     "price_major": 173800,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "$62.900 /mes · Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.",
+     "url": "https://fu.do/es-co/delivery/",
+     "note": "Plan Inicial $62.900/mes (fu.do/es-co/precios/) + the Tu Delivery module $110.900/mes (fu.do/es-co/delivery/), both sin IVA; no commission per sale."
+    }
+   ]
+  }
+ ]
+}

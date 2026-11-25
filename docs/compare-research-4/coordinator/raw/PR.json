@@ -1,0 +1,50 @@
+{
+ "country": "PR",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "notes": "COORDINATOR MERGE (no new read): Menufy PR's monthly price from agent-3's top-up (raw/topups.json, restaurant.menufy.com/pricing, read 25 Nov) — corrects the stored plan 'Menufy online ordering' (USD 0 → 179, monthly billing); eligibility as stored (compare-research-3 agent-3 raw/PR.json).",
+ "vendors": [
+  {
+   "name": "Menufy",
+   "website": "https://restaurant.menufy.com",
+   "stored_id_prefix": "832a682c",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "restaurant online ordering with scheduled pickup; a Puerto Rico page",
+   "eligibility": {
+    "order_quote": "gives them the opportunity to schedule their order ahead of time.",
+    "order_url": "https://restaurant.menufy.com/article/online-ordering-features",
+    "country_quote": "Puerto Rico, Order Food Online!",
+    "country_url": "https://www.menufy.com/PR"
+   },
+   "plans": [
+    {
+     "plan_name": "Menufy online ordering",
+     "currency": "USD",
+     "price_major": 179,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Menufy is $179 a month month-to-month, or $149 a month on a 12-month agreement, which saves you $360 a year and includes equipment.",
+     "url": "https://restaurant.menufy.com/pricing",
+     "note": "$149 a month on a 12-month agreement; month-to-month (monthly billing) $179."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "gives them the opportunity to schedule their order ahead of time.",
+     "url": "https://restaurant.menufy.com/article/online-ordering-features"
+    }
+   ],
+   "check_urls": [
+    "https://restaurant.menufy.com/pricing",
+    "https://restaurant.menufy.com/article/online-ordering-features",
+    "https://www.menufy.com/PR"
+   ]
+  }
+ ]
+}

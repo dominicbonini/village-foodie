@@ -1,0 +1,968 @@
+{
+ "$comment": "compare-research-4 (25 Nov 2026): competitors read on their OWN websites by three Claude Code agents, one request at a time each (docs/compare-research-4-report.md; built by docs/compare-research-4/build.cjs). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import/). Every row source research, UNVERIFIED (35.an-1). Each answer carries the vendor’s verbatim quote and its page (35.an-4); \"no\" only with a quote saying it is not offered, silence is not_mentioned (35.ao-7). monthly_minor is MINOR units, converted from the page’s amount with lib/money-format.ts toMinorUnits (the 100× guard). request_check sets check_requested_at. \"evidence\" and \"not_relevant\" are for the reviewer; the import does not read them (the importer cannot mark a competitor not relevant).",
+ "id": "compare-research-4",
+ "checked_on": "2026-11-25",
+ "competitors": [
+  {
+   "id": "afe2f58d-df5f-5b96-9a77-5a8bd4f08cc7",
+   "name": "Resto",
+   "website": "https://resto.co.za",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-4 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: ZA.",
+   "check_urls": [
+    "https://resto.co.za/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Resto is a software service that allows restaurants to take online orders, for either delivery or collection.",
+     "source_url": "https://resto.co.za/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "R1000/month for a shop",
+     "source_url": "https://resto.co.za/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "We do not take any type of commission.",
+     "source_url": "https://resto.co.za/"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "26c4e040-6975-574e-ba17-0b9957845dc9",
+   "name": "Linkin1",
+   "website": "https://linkin1.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-4 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: SA.",
+   "check_urls": [
+    "https://linkin1.com/en/e-menu"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Your customer can order over WhatsApp, or order directly from the menu and choose curbside pickup, home delivery or dine-in.",
+     "source_url": "https://linkin1.com/en/e-menu"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "yes",
+     "quote": "Your customer can order over WhatsApp, or order directly from the menu and choose curbside pickup, home delivery or dine-in.",
+     "source_url": "https://linkin1.com/en/e-menu"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Try the E-Menu free with Linkin1 PRO, or subscribe directly from SAR 59 a month.",
+     "source_url": "https://linkin1.com/en/e-menu"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "Orders paid online carry a selling fee of just 1.5%, and cash on delivery has no fees at all.",
+     "source_url": "https://linkin1.com/en/e-menu"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "name": "Fudo",
+   "website": "https://fu.do",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-4 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: CO.",
+   "check_urls": [
+    "https://fu.do/es-co/delivery/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Horario de entrega: Lo antes posible",
+     "source_url": "https://fu.do/es-co/delivery/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Precio fijo por mes, sin comisiones por venta",
+     "source_url": "https://fu.do/es-co/delivery/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "No pagas comisiones por venta: el precio es el mismo vendas lo que vendas.",
+     "source_url": "https://fu.do/es-co/delivery/"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "718f6290-64f8-521d-ba5f-6a1902826690",
+   "name": "Menüpp",
+   "website": "https://home.menupp.co",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-4 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: CO.",
+   "check_urls": [
+    "https://home.menupp.co/",
+    "https://home.menupp.co/faq",
+    "https://home.menupp.co/pedidos-en-linea-para-restaurantes"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Activa tu canal directo de ventas a domicilio, para recoger o en mesa, para vender sin intermediarios",
+     "source_url": "https://home.menupp.co/pedidos-en-linea-para-restaurantes",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "partial",
+     "quote": "Según el plan, puedes pagar una tarifa fija mensual o un valor por pedido exitoso",
+     "source_url": "https://home.menupp.co/faq"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "832a682c-2814-5f0a-8fa7-b45d3b76dd08",
+   "name": "Menufy",
+   "website": "https://restaurant.menufy.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-4 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: PR.",
+   "check_urls": [
+    "https://restaurant.menufy.com/pricing",
+    "https://restaurant.menufy.com/article/online-ordering-features",
+    "https://www.menufy.com/PR"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "gives them the opportunity to schedule their order ahead of time.",
+     "source_url": "https://restaurant.menufy.com/article/online-ordering-features"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "e58df279-6eee-59fd-ba34-bf7b642dc655",
+   "name": "OrderFlow",
+   "request_check": false,
+   "set_lifecycle": {
+    "value": "not_relevant",
+    "reason": "not a confirmed live product: its only site is a dynamic-DNS (duckdns.org) address — the compare-research-3b standard for Resto-SaaS (compare-research-4, 25 Nov)",
+    "source_url": "https://aporederbot.duckdns.org/"
+   }
+  }
+ ],
+ "plans": [
+  {
+   "id": "3427846a-f147-5802-858e-8c33cbd635c3",
+   "competitor_id": "afe2f58d-df5f-5b96-9a77-5a8bd4f08cc7",
+   "country_code": "ZA",
+   "plan_name": "Shop",
+   "currency": "ZAR",
+   "price_hidden": false,
+   "monthly_minor": 100000,
+   "monthly_major": 1000,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://resto.co.za/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-4, read 25 Nov 2026: \"Resto's simple pricing - R1000/month\" — Also on the page: 'R1000/month for a shop'. Optional 'R5000 White label (once off)' add-on (not a setup fee). No commission: 'We do not take any type of commission.' VAT not stated."
+  },
+  {
+   "id": "db7b3e9c-2b1c-5562-a470-62eb3568ab90",
+   "competitor_id": "26c4e040-6975-574e-ba17-0b9957845dc9",
+   "country_code": "SA",
+   "plan_name": "Linkin1 PRO (E-Menu)",
+   "currency": "SAR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 150,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://linkin1.com/en/e-menu",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-4, read 25 Nov 2026: \"Try the E-Menu free with Linkin1 PRO, or subscribe directly from SAR 59 a month.\" — Monthly-billing price. Yearly: SAR 479 a year (page reader paraphrase of the FAQ sentence, which also says prices exclude VAT, 'which applies to customers inside Saudi Arabia only'). 1.5% selling fee only on orders paid online; cash on delivery no fee. 'no setup fees' (reader excerpt). CAUTION for reviewer: ordering ahead is shown as online order + curbside pickup (click and collect from the car); no 'schedule'/'advance' wording. Company: Saudi indicators (SAR, Saudi VAT, +966, CR number), no explicit statement. Linkin1 is also a link-in-bio product; the E-Menu is its restaurant ordering module."
+  },
+  {
+   "id": "3a230cb4-6c79-5f99-baad-0b062faab71e",
+   "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "country_code": "CO",
+   "plan_name": "Plan Inicial + Tu Delivery",
+   "currency": "COP",
+   "price_hidden": false,
+   "monthly_minor": 17380000,
+   "monthly_major": 173800,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://fu.do/es-co/delivery/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-4, read 25 Nov 2026: \"$62.900 /mes · Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.\" — Plan Inicial $62.900/mes (fu.do/es-co/precios/) + the Tu Delivery module $110.900/mes (fu.do/es-co/delivery/), both sin IVA; no commission per sale."
+  },
+  {
+   "id": "c37eaddb-401e-556f-83c6-32d7b0306742",
+   "competitor_id": "718f6290-64f8-521d-ba5f-6a1902826690",
+   "country_code": "CO",
+   "plan_name": "Plan (not shown)",
+   "currency": "COP",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "hidden",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://home.menupp.co/faq",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-4, read 25 Nov 2026: \"Según el plan, puedes pagar una tarifa fija mensual o un valor por pedido exitoso\" — no amounts on the site; 'Agenda tu sesión gratis' demo only. FAQ also says it has active restaurants in México, Puerto Rico, Panamá, República Dominicana, Nicaragua, Costa Rica, Ecuador, Venezuela y España — but with no price it counts nowhere."
+  },
+  {
+   "id": "73e475be-ce33-504a-b9c5-72dccdf03da1",
+   "competitor_id": "832a682c-2814-5f0a-8fa7-b45d3b76dd08",
+   "country_code": "PR",
+   "plan_name": "Menufy online ordering",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 17900,
+   "monthly_major": 179,
+   "yearly_only": false,
+   "correct": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://restaurant.menufy.com/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-4, read 25 Nov 2026: \"Menufy is $179 a month month-to-month, or $149 a month on a 12-month agreement, which saves you $360 a year and includes equipment.\" — $149 a month on a 12-month agreement; month-to-month (monthly billing) $179."
+  }
+ ],
+ "entries": [
+  {
+   "id": "891ba17f-e629-5672-9e5c-2fc1e39bca9f",
+   "country_code": "ZA",
+   "competitor_id": "afe2f58d-df5f-5b96-9a77-5a8bd4f08cc7",
+   "primary_plan_id": "3427846a-f147-5802-858e-8c33cbd635c3",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "4bfb563c-b314-512f-8692-ee11c106b268",
+   "country_code": "SA",
+   "competitor_id": "26c4e040-6975-574e-ba17-0b9957845dc9",
+   "primary_plan_id": "db7b3e9c-2b1c-5562-a470-62eb3568ab90",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "5daa185b-cdb6-5ec6-8f47-2311cf206faa",
+   "country_code": "CO",
+   "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "primary_plan_id": "3a230cb4-6c79-5f99-baad-0b062faab71e",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "4e54dc6c-1bf6-5ded-824f-f4251c8fff8d",
+   "country_code": "CO",
+   "competitor_id": "718f6290-64f8-521d-ba5f-6a1902826690",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "4939c54f-8734-59d6-a45d-badce5aa12b5",
+   "country_code": "PR",
+   "competitor_id": "832a682c-2814-5f0a-8fa7-b45d3b76dd08",
+   "primary_plan_id": "73e475be-ce33-504a-b9c5-72dccdf03da1",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  }
+ ],
+ "evidence": [
+  {
+   "name": "Resto",
+   "evidence": [
+    {
+     "country": "ZA",
+     "order_quote": "Resto is a software service that allows restaurants to take online orders, for either delivery or collection.",
+     "order_url": "https://resto.co.za/",
+     "reason": "South African restaurant online-ordering shop for delivery or collection, no commissions; ZAR price now quoted verbatim ('Resto's simple pricing - R1000/month')"
+    }
+   ]
+  },
+  {
+   "name": "Linkin1",
+   "evidence": [
+    {
+     "country": "SA",
+     "order_quote": "Your customer can order over WhatsApp, or order directly from the menu and choose curbside pickup, home delivery or dine-in.",
+     "order_url": "https://linkin1.com/en/e-menu",
+     "country_quote": "Try the E-Menu free with Linkin1 PRO, or subscribe directly from SAR 59 a month.",
+     "country_url": "https://linkin1.com/en/e-menu",
+     "reason": "Saudi restaurant e-menu with online ordering: customers order from the menu and choose curbside pickup, delivery or dine-in; SAR prices, Saudi VAT"
+    }
+   ]
+  },
+  {
+   "name": "Fudo",
+   "evidence": [
+    {
+     "country": "CO",
+     "order_quote": "al momento de la entrega o retiro en el local",
+     "order_url": "https://fu.do/es-co/delivery/",
+     "country_quote": "Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.",
+     "country_url": "https://fu.do/es-co/delivery/",
+     "reason": "clarified today: Tu Delivery is a module added to a Fudo plan ('Necesitas una cuenta activa en Fudo y sumar el módulo Tu Delivery a tu plan.') at COP 110.900/mes sin IVA, no per-sale commission; customers order online with 'Para retirar' (pickup) beside delivery. Cheapest total = base plan + module."
+    },
+    {
+     "country": "CO",
+     "order_quote": "al momento de la entrega o retiro en el local",
+     "order_url": "https://fu.do/es-co/delivery/",
+     "country_quote": "Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.",
+     "country_url": "https://fu.do/es-co/delivery/",
+     "reason": "clarified today: Tu Delivery is a module added to a Fudo plan ('Necesitas una cuenta activa en Fudo y sumar el módulo Tu Delivery a tu plan.') at COP 110.900/mes sin IVA, no per-sale commission; customers order online with 'Para retirar' (pickup) beside delivery. Cheapest total = base plan + module."
+    }
+   ]
+  },
+  {
+   "name": "Menüpp",
+   "evidence": [
+    {
+     "country": "CO",
+     "order_quote": "Activa tu canal directo de ventas a domicilio, para recoger o en mesa, para vender sin intermediarios",
+     "order_url": "https://home.menupp.co/pedidos-en-linea-para-restaurantes",
+     "country_quote": "Menüpp funciona en todo Colombia y en Latinoamérica (excepto Brasil) .",
+     "country_url": "https://home.menupp.co/faq",
+     "reason": "Colombian restaurant platform (digital menu, own online-ordering channel with delivery, pickup and table orders, reservations); no price anywhere on its site (home, FAQ, ordering page; demo booking only) — hidden price, does not count."
+    }
+   ]
+  },
+  {
+   "name": "Menufy",
+   "evidence": [
+    {
+     "country": "PR",
+     "order_quote": "gives them the opportunity to schedule their order ahead of time.",
+     "order_url": "https://restaurant.menufy.com/article/online-ordering-features",
+     "country_quote": "Puerto Rico, Order Food Online!",
+     "country_url": "https://www.menufy.com/PR",
+     "reason": "restaurant online ordering with scheduled pickup; a Puerto Rico page"
+    }
+   ]
+  }
+ ],
+ "not_relevant": [
+  {
+   "country": "IS",
+   "name": "Noona",
+   "website": "https://noona.app",
+   "stored": null,
+   "reason": "Icelandic restaurant software, but what search shows is table reservations (ISK price) and QR ordering at the table (demo only); no online ordering ahead / pickup product found. Not opened.",
+   "url": "https://noona.app",
+   "plans": []
+  },
+  {
+   "country": "IS",
+   "name": "Munu",
+   "website": "https://munu.cloud",
+   "stored": null,
+   "reason": "Nordic webshop with pickup and pre-orders, but it names only Norway, Sweden and Finland ('perfect for restaurant groups operating across Norway, Sweden, and Finland'), no Iceland and no prices.",
+   "url": "https://munu.cloud/product/webshop/",
+   "plans": []
+  },
+  {
+   "country": "IS",
+   "name": "Glaze",
+   "website": null,
+   "stored": null,
+   "reason": "Icelandic fintech for in-venue self-payment / self-service (e.g. Aska Cafe at Lava Centre), per search results; no online ordering ahead or price found. Own site not found, not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "MT",
+   "name": "UpMenu",
+   "website": "https://www.upmenu.com",
+   "stored": "ef9dcbd8",
+   "reason": "Strict MT rule: its own pricing page shows no Malta (currency toggle USD/CAD/EUR/CHF/GBP only, no country list); the only Malta link is an App Store listing (Kups Malta app by UpMenu), which is not the vendor's own site.",
+   "url": "https://www.upmenu.com/pricing/",
+   "plans": []
+  },
+  {
+   "country": "MT",
+   "name": "Choice",
+   "website": "https://choiceqr.com",
+   "stored": "70b34967",
+   "reason": "Search of its site found no Malta/Gozo page or Malta presence (strict MT rule); not opened.",
+   "url": "https://choiceqr.com",
+   "plans": []
+  },
+  {
+   "country": "MT",
+   "name": "Flipdish",
+   "website": "https://www.flipdish.com",
+   "stored": "5b50f4e3",
+   "reason": "Search found only Irish/UK/US/global Flipdish pages, no Malta page (strict MT rule); not opened.",
+   "url": "https://www.flipdish.com",
+   "plans": []
+  },
+  {
+   "country": "RS",
+   "name": "Poster",
+   "website": "https://joinposter.com",
+   "stored": "0802a7c8",
+   "reason": "No Serbia on its own pricing page: the selector lists only languages (English, Español, Қазақша, Русский, Русский (Казахстан), Українська), and prices are in $ ('$26$29/mo'), not RSD.",
+   "url": "https://joinposter.com/en/pricing",
+   "plans": []
+  },
+  {
+   "country": "RS",
+   "name": "Remaris",
+   "website": null,
+   "stored": null,
+   "reason": "Ex-Yugoslav hospitality POS; a search for a Serbian online-ordering module or price returned nothing from its own site. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "RS",
+   "name": "iiko",
+   "website": null,
+   "stored": null,
+   "reason": "Russian restaurant POS with a delivery/online-orders module, priced in RUB on Russian sites; the search found no Serbian site, partner page or RSD price. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "BH",
+   "name": "OrderFlow",
+   "website": "https://aporederbot.duckdns.org/",
+   "stored": null,
+   "reason": "not a confirmed live product: its only site is a dynamic-DNS (duckdns.org) address — the compare-research-3b standard for Resto-SaaS (compare-research-4, 25 Nov)",
+   "url": "https://aporederbot.duckdns.org/",
+   "reviewHost": "aporederbot.duckdns.org"
+  },
+  {
+   "country": "BH",
+   "name": "Take App",
+   "website": "https://www.take.app",
+   "stored": "2a58410a",
+   "reason": "its countries page does not list Bahrain (Middle East: Lebanon, Iraq only)",
+   "url": "https://www.take.app/countries",
+   "plans": []
+  },
+  {
+   "country": "JO",
+   "name": "Mnasati",
+   "website": "https://mnasati.com",
+   "stored": null,
+   "reason": "Kuwaiti e-commerce store builder (country selector incl. Jordan, JD prices on /en/pricing) but its plans are QR Code / Basic / Premium web-store plans; the restaurant page and pricing page show no pickup, takeaway or order-ahead wording (generic web-shop builder + QR menu)",
+   "url": "https://mnasati.com/en/restaurant",
+   "plans": []
+  },
+  {
+   "country": "JO",
+   "name": "Supaorder (Devkart Technologies)",
+   "website": "https://www.supaorder.com",
+   "stored": null,
+   "reason": "per-market pricing, but Jordan (and QA, SA, BH, KR, KW) not in its market list or country pricing pages; no order-ahead sentence on the pricing page",
+   "url": "https://www.supaorder.com/pricing",
+   "plans": []
+  },
+  {
+   "country": "JO",
+   "name": "Take App",
+   "website": "https://www.take.app",
+   "stored": "2a58410a",
+   "reason": "its countries page does not list Jordan (Middle East: Lebanon, Iraq only)",
+   "url": "https://www.take.app/countries",
+   "plans": []
+  },
+  {
+   "country": "QA",
+   "name": "Take App",
+   "website": "https://www.take.app",
+   "stored": "2a58410a",
+   "reason": "its countries page does not list Qatar (Middle East section: only Lebanon and Iraq, per the page reader); prices are USD anyway",
+   "url": "https://www.take.app/countries",
+   "plans": []
+  },
+  {
+   "country": "QA",
+   "name": "Taker (Taker Channels)",
+   "website": "https://taker.io",
+   "stored": null,
+   "reason": "Saudi-based branded web/app ordering platform; no prices on its site (taker.io/pricing returns 404; homepage shows no price); no Qatar presence read",
+   "url": "https://taker.io/pricing",
+   "plans": []
+  },
+  {
+   "country": "QA",
+   "name": "Klikit",
+   "website": "https://klikit.io",
+   "stored": "f44927e4",
+   "reason": "site search (klikit.io only) shows Asia-Pacific markets and an SGD example; no Gulf country or QAR price; webshop 'Pricing on request' (search snippet only, not quoted)",
+   "url": "https://klikit.io",
+   "plans": []
+  },
+  {
+   "country": "QA",
+   "name": "Grubtech (gOnline)",
+   "website": "https://grubtech.com",
+   "stored": null,
+   "reason": "UAE order-management platform; site search shows no published prices (terms: fees 'stated in the quote'); no QAR price",
+   "url": "https://grubtech.com",
+   "plans": []
+  },
+  {
+   "country": "SA",
+   "name": "Qoyod Flavours (قيود فليفرز)",
+   "website": "https://www.qoyod.com/q-flavours/",
+   "stored": null,
+   "reason": "restaurant POS linked to delivery apps; no own online-ordering store or pickup shown (search result only, site not opened)",
+   "url": "https://www.qoyod.com/q-flavours/",
+   "plans": []
+  },
+  {
+   "country": "SA",
+   "name": "Taker (Taker Channels)",
+   "website": "https://taker.io",
+   "stored": null,
+   "reason": "Saudi-based branded web/app ordering; no prices on its site (taker.io/pricing 404, homepage no price) — read for QA, same today",
+   "url": "https://taker.io/pricing",
+   "plans": []
+  },
+  {
+   "country": "SA",
+   "name": "Take App",
+   "website": "https://www.take.app",
+   "stored": "2a58410a",
+   "reason": "its countries page does not list Saudi Arabia (Middle East: Lebanon, Iraq only); USD prices",
+   "url": "https://www.take.app/countries",
+   "plans": []
+  },
+  {
+   "country": "CO",
+   "name": "Loggro Restobar",
+   "website": "https://www.loggro.com",
+   "stored": null,
+   "reason": "Colombian restaurant POS (COP plans, e.g. Básico $120.990/mes); its 'Menú Digital' is a QR menu ('Puedes tener un código QR por mesa o para pedidos online.') with orders sent to the till; no pickup / para llevar / scheduled-order wording; delivery only via marketplace integrations (Rappi). QR-menu-only for our rule.",
+   "url": "https://www.loggro.com/restobar/",
+   "plans": []
+  },
+  {
+   "country": "DO",
+   "name": "Meniu",
+   "website": "https://meniuapp.com",
+   "stored": null,
+   "reason": "digital menu with WhatsApp orders; home page shows only 'Takeout or pickup order management' (no customer ordering ahead stated), no price text (script-rendered), no country / Dominican presence; /es-DO/plans answered 404. Home market unknown (search found nothing) — a search snippet showed a Business plan in MXN.",
+   "url": "https://meniuapp.com/en",
+   "plans": []
+  },
+  {
+   "country": "JM",
+   "name": "YaadBooks POS",
+   "website": "https://yaadbooks.com",
+   "stored": null,
+   "reason": "Jamaican till / accounting POS with JMD support; its POS page has no online ordering, online store, order-ahead or pickup wording (till-only); price stated as ≈J$ but 'billed in US dollars'.",
+   "url": "https://yaadbooks.com/pos-system-jamaica",
+   "plans": []
+  },
+  {
+   "country": "SV",
+   "name": "Kioskito",
+   "website": "https://kioskito.app",
+   "stored": "04a0ed24",
+   "reason": "USD prices ($5 / $10 / $15 per month) but Panama only on its own home page; no El Salvador presence, no country pages; the FAQ '¿Kioskito funciona solo en Panamá?' has its answer script-loaded (not in the page text). Home page also shows no pickup wording (its restaurant page in PA has 'retiro en el local').",
+   "url": "https://kioskito.app",
+   "plans": []
+  }
+ ],
+ "unreadable": [
+  {
+   "country": "IS",
+   "name": "Yonoton",
+   "website": "https://www.yonoton.com",
+   "stored": null,
+   "reason": "Finnish self-service ordering (kiosk, online store, phone) with an 'enters the Icelandic market' news page (sold via Origo, per round 2); the page answered 403 to both tries, so nothing could be quoted and no ISK price seen."
+  },
+  {
+   "country": "MT",
+   "name": "MENU.mt (MENU GPS, OmnSoft)",
+   "website": "https://menu.mt",
+   "stored": null,
+   "reason": "Maltese menu-finder app (App Store: 'All of Malta & Gozo: hundreds of restaurants, cafes, bars and street-food spots'; version notes 'Order right from the menu!'). Its own site is a script-only app: the fetched HTML has no text about pickup, ordering ahead, business plans or prices, so nothing can be quoted. Looks like a consumer menu directory, not a business ordering tool."
+  },
+  {
+   "country": "KR",
+   "name": "Toss Place (토스오더 픽업주문)",
+   "website": "https://tossplace.com",
+   "stored": "87b9b92a",
+   "reason": "left out on review: its own site does not state the pickup-order fee in force today (compare-research-4 agent 2, raw/KR-toss.json); the stored KR plan is marked unclear by migration 20261133"
+  },
+  {
+   "country": "SA",
+   "name": "Deonde",
+   "website": "https://deonde.co",
+   "stored": null,
+   "reason": "Saudi page https://deonde.co/saudi-arabia/online-ordering-and-delivery-system.shtml returned HTTP 403; not retried"
+  }
+ ],
+ "not_needed": []
+}

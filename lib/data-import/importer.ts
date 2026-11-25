@@ -28,6 +28,8 @@ export const DATA_FILES = [
   { path: 'data/compare-research-2b/competitors.json', label: 'Comparison research 2, wave 2 (25 Nov)', kind: 'research' },
   // compare-research-3 (25 Nov 2026): Dominic's §6 decisions and a third research wave in launch order (docs/compare-research-3/build.cjs).
   { path: 'data/compare-research-3/competitors.json', label: 'Comparison research 3 (25 Nov)', kind: 'research' },
+  // compare-research-4 (25 Nov 2026): one-short countries (MT, languages-world-1's) and three evidence top-ups (docs/compare-research-4/build.cjs).
+  { path: 'data/compare-research-4/competitors.json', label: 'Comparison research 4 (25 Nov)', kind: 'research' },
 ] as const
 export type DataFile = (typeof DATA_FILES)[number]
 
