@@ -1,0 +1,134 @@
+{
+  "country": "CH",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Pikit",
+      "country": "CH",
+      "website": "https://pikit.ch",
+      "stored_id_prefix": "2cbec3e7",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Swiss (French-language) takeaway ordering site for restaurants (stored 2cbec3e7): customers choose dishes and pickup time; CHF prices incl. Swiss VAT, re-read today. Restaurant tool.",
+      "eligibility": {
+        "order_quote": "Vos clients choisissent leurs plats et leur heure de retrait sur votre site.",
+        "order_url": "https://pikit.ch/",
+        "country_quote": "TVA suisse, export comptable et comptes pour toute l’équipe",
+        "country_url": "https://pikit.ch/tarifs"
+      },
+      "plans": [
+        {
+          "plan_name": "Essentiel",
+          "currency": "CHF",
+          "price_major": 89,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "89.00 CHF/ mois",
+          "url": "https://pikit.ch/tarifs",
+          "note": "'Facturé chaque mois · TVA incluse'. Mensuel/Annuel toggle ('1 mois offert' on yearly; structured data 979.00 CHF a year). 'Pas de commission par commande.' Set-up 'CHF 0'. 'Créneaux de retrait calés sur vos horaires et votre capacité' in all plans."
+        },
+        {
+          "plan_name": "Plus",
+          "currency": "CHF",
+          "price_major": 139,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "139.00 CHF/ mois",
+          "url": "https://pikit.ch/tarifs",
+          "note": "Monthly billing; yearly 1529.00 CHF (structured data)."
+        },
+        {
+          "plan_name": "Max",
+          "currency": "CHF",
+          "price_major": 199,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "199.00 CHF/ mois",
+          "url": "https://pikit.ch/tarifs",
+          "note": "Monthly billing; yearly 2189.00 CHF (structured data)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Vos clients choisissent leurs plats et leur heure de retrait sur votre site.",
+          "url": "https://pikit.ch/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Créneaux de retrait calés sur vos horaires et votre capacité",
+          "url": "https://pikit.ch/tarifs"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "89.00 CHF/ mois",
+          "url": "https://pikit.ch/tarifs"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Pas de commission par commande.",
+          "url": "https://pikit.ch/tarifs"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://pikit.ch/tarifs",
+        "https://pikit.ch/"
+      ]
+    }
+  ],
+  "notes": "CH counts Yoveletta and Rent-a-Shop. Third: Pikit (stored 2cbec3e7, restaurant tool) - tarifs re-read today: Essentiel 89.00 CHF/ mois 'Facturé chaque mois · TVA incluse', 0 % commission, CHF 0 set-up, pickup slots with capacity; the 'heure de retrait' quote is from its home page (compare-research-1, 24 Nov). Other CHF candidates in evidence: SwissPOS (CHF 39/Monat, pickup but no time wording; event pre-ordering 'In Entwicklung'), Ordero (CHF 229), Vitrina (CHF price page 'Switzerland and Liechtenstein (CHF)'). Pikit does not count for LI (no Liechtenstein, compare-research-1). Stopped at 3."
+}
