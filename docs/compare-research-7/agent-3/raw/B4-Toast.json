@@ -1,0 +1,8 @@
+{
+  "vendor": "Toast",
+  "stored_id_prefix": "757fad52",
+  "countries": [],
+  "researched_on": "2026-11-25",
+  "vendors": [],
+  "notes": "Does not count in GU, MP, AS or VI: no own-site statement that Toast sells there. A site search of toasttab.com for Guam / Puerto Rico / U.S. Virgin Islands found no page naming them; its terms (search snippet of https://pos.toasttab.com/terms) say only 'At this time, Toast's technology is only available to Merchants in certain regions.' without listing them. https://pos.toasttab.com/llms.txt answered HTTP 403 (one try). Presence cannot be quoted -> not counted."
+}
