@@ -1884,6 +1884,80 @@
    "set_focus": false
   },
   {
+   "id": "647628e6-7d0b-56a7-9869-c71fe7c13e3e",
+   "name": "Eats365",
+   "website": "https://www.eats365pos.com/th",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-7 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: TH.",
+   "check_urls": [
+    "https://www.eats365pos.com/th/pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
    "id": "f695c133-bbbc-5874-861f-ae6376c29492",
    "name": "Komisyonsuz",
    "website": "https://partner.komisyonsuz.com",
@@ -4618,7 +4692,7 @@
    "overage_fixed_minor": null,
    "vat": "unknown",
    "status": "counted",
-   "unclear": false,
+   "unclear": true,
    "second_hand": false,
    "source": "research",
    "source_url": "https://www.quickclick.cc/pricing/",
@@ -5469,6 +5543,16 @@
    "verified_by": null
   },
   {
+   "id": "d19e77db-049e-5dcd-81cd-bcdbaf923ac1",
+   "country_code": "TH",
+   "competitor_id": "647628e6-7d0b-56a7-9869-c71fe7c13e3e",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
    "id": "4cffea72-95f9-5300-85d9-4ae37c3986de",
    "country_code": "TR",
    "competitor_id": "f695c133-bbbc-5874-861f-ae6376c29492",
@@ -5492,7 +5576,7 @@
    "id": "93a8e314-e122-521e-b6ab-74ac89f88157",
    "country_code": "TW",
    "competitor_id": "4a3a8b99-76b9-5493-b0d7-2beadc32235c",
-   "primary_plan_id": "f8961c2f-5512-5c34-8a14-45857834e146",
+   "primary_plan_id": null,
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -6048,6 +6132,15 @@
    ]
   },
   {
+   "name": "Eats365",
+   "evidence": [
+    {
+     "country": "TH",
+     "reason": "has a Thailand region; raw HTML of https://www.eats365pos.com/th/pricing contains no ฿ / บาท / THB amount — Online Ordering module unpriced (as in KR, LK, SG)"
+    }
+   ]
+  },
+  {
    "name": "Komisyonsuz",
    "evidence": [
     {
@@ -6350,6 +6443,15 @@
    "plans": []
   },
   {
+   "country": "IS",
+   "name": "Viska Vef ehf",
+   "website": "https://apps.apple.com/us/developer/viska-vef-ehf/id1715633077",
+   "stored": null,
+   "reason": "Icelandic developer behind the Pizzan ordering app (pickup or delivery) and Te & Kaffi's app (App Store, used only to find the vendor); no own website or price found - custom app builds, not a priced ordering product. Not opened.",
+   "url": "https://apps.apple.com/us/developer/viska-vef-ehf/id1715633077",
+   "plans": []
+  },
+  {
    "country": "KZ",
    "name": "Starter (starterapp)",
    "website": "https://crmindex.ru/services/starterapp",
@@ -6383,6 +6485,15 @@
    "stored": null,
    "reason": "Maltese reseller of Lightspeed and Storekit (Storekit's own partner page); a reseller, not a vendor with its own ordering product. Storekit itself still has £ prices only (see V-Storekit.json). Not opened.",
    "url": "https://storekit.com/strategic-partner/sixteen",
+   "plans": []
+  },
+  {
+   "country": "MT",
+   "name": "MobiRest",
+   "website": "https://www.capterra.com/p/10035585/MobiRest/",
+   "stored": null,
+   "reason": "Cloud restaurant POS listing online ordering (Capterra only); no own site found, no Malta presence, no price. Not opened.",
+   "url": "https://www.capterra.com/p/10035585/MobiRest/",
    "plans": []
   },
   {
