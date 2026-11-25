@@ -40,3 +40,13 @@ count now: 0
 
 nothing eligible exists: Arabic + French searches (طلب مسبق / استلام / click and collect / précommande / sans commission / disponible en Tunisie).
 count now: 0
+
+## IL (ILS)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Foody POS | pos | not_relevant (no real customers shown; synthetic demo data) | Foody Online 590 ₪/month excl. VAT (per reader) | https://foody-pos.co.il/he/pricing |
+| Wix Restaurants Orders | nearest_local | unreadable (plans page renders title only) | — | https://www.wix.com/upgrade/website |
+
+nothing eligible exists: Hebrew searches (הזמנה מראש / איסוף עצמי / מערכת הזמנות אונליין למסעדות / פוד טראק) are saturated by Wix help pages and USD tools.
+count now: 0

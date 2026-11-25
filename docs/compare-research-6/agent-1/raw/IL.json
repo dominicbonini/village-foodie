@@ -1,0 +1,32 @@
+{
+  "country": "IL",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "אתר הזמנות למסעדה איסוף עצמי הזמנה מראש מחירים ₪ לחודש מערכת הזמנות אונליין לעסקי מזון",
+    "מערכת הזמנות אונליין למסעדות וטייק אווי ישראלית \"איסוף עצמי\" מחירון חבילות ללא עמלות הזמנה",
+    "פוד טראק הזמנה מראש אונליין מערכת הזמנות לדוכני אוכל ושווקים איסוף עצמי",
+    "Israeli company online ordering system for restaurants own app pickup takeaway \"₪\" per month plans Hebrew site",
+    "Foody מערכת קופה והזמנות אונליין למסעדות 299 ₪",
+    "\"אתר הזמנות\" ממותג למסעדה \"איסוף עצמי\" \"לחודש\" ש\"ח לקוחות מסעדות ישראל",
+    "Tel Aviv startup restaurants direct online ordering pickup commission-free platform for restaurant owners Israel pricing"
+  ],
+  "vendors": [
+    {
+      "name": "Foody POS", "website": "https://foody-pos.co.il", "stored_id_prefix": null, "focus": "pos", "verdict": "not_relevant",
+      "reason": "Israeli POS + online ordering with ILS prices (pricing page per reader: 'Foody Online' 590 ₪ לחודש before VAT, incl. 'איסוף עצמי וטייק אוויי'; setup 1,090 ₪), but it shows no real customers (V16.38): no names, logos or testimonials; its about page says demos use synthetic data and 'הדוגמאות המספריות אינן תוצאות של לקוחות'. No address. Directory prices (299 ₪ Starter, $149) don't match its own page.",
+      "eligibility": {
+        "order_quote": "הזמנות לאיסוף, למשלוח וב־QR באתר ממותג, שמגיעות ישירות לתהליך העבודה שלכם.",
+        "order_url": "https://foody-pos.co.il/"
+      },
+      "plans": [], "answers": [],
+      "check_urls": ["https://foody-pos.co.il/", "https://foody-pos.co.il/he/pricing", "https://foody-pos.co.il/he/about"]
+    },
+    {
+      "name": "Wix (Wix Restaurants Orders)", "website": "https://www.wix.com", "stored_id_prefix": null, "focus": "nearest_local", "verdict": "unreadable",
+      "reason": "Third attempt: https://he.wix.com/upgrade/website redirects to https://www.wix.com/upgrade/website, which rendered only its title ('Wix Pricing Information | Upgrade to a Premium Plan | Wix.com'); no ILS price obtainable. Also a generic website builder.",
+      "eligibility": {}, "plans": [], "answers": [],
+      "check_urls": ["https://www.wix.com/upgrade/website"]
+    }
+  ],
+  "notes": "Nothing eligible exists that I could find (round 2). Hebrew searches for הזמנה מראש / איסוף עצמי / מערכת הזמנות אונליין למסעדות / פוד טראק return almost only Wix help pages, Shopify app listings (Zapiet Eats, USD), MENU TIGER /he/ (USD) and Capterra Israel listings. Foody POS is the only Israeli tool with an own-site ILS price for pickup ordering, but it shows no real customers (not relevant under V16.38; a reviewer may want to re-check later). Not re-read: Tabit, Beecomm (compare-research-2). Paidit (Israeli catering, news only) not opened. Marketplaces never counted: Wolt, 10bis, Mishloha. Count: 0."
+}
