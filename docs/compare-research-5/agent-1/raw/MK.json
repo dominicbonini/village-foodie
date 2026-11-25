@@ -1,0 +1,153 @@
+{
+  "country": "MK",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "онлајн нарачка подигни во ресторан систем за нарачки сопствена веб страна цена денари месечно (Glovo, Wolt, App Store, Zegashop blocked)",
+    "POS систем за угостителство Македонија онлајн нарачки нарачај однапред подигнување цена ден месечно пакет"
+  ],
+  "vendors": [
+    {
+      "name": "Thinker POS",
+      "website": "https://thinkerpos.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Skopje POS (MKD prices, +389, MK-language site) with a food-truck page offering online ordering so customers pre-order and pick up; the price page does not name which plan carries online ordering (see note)",
+      "eligibility": {
+        "food_quote": "Whether you’re running a truck, cart, or trailer, our food truck POS is built to keep you moving",
+        "food_url": "https://thinkerpos.com/en/food-truck/",
+        "order_quote": "Enable online ordering to expand your reach, allowing customers to pre-order and pick up meals on the go",
+        "order_url": "https://thinkerpos.com/en/food-truck/",
+        "country_quote": "Basic: 3.699 / month (incl. VAT) MKD",
+        "country_url": "https://thinkerpos.com/en/pricing/"
+      },
+      "plans": [
+        {
+          "plan_name": "Standard",
+          "currency": "MKD",
+          "price_major": 6295,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 30750,
+          "quote": "6.295 / month (incl. VAT) MKD",
+          "url": "https://thinkerpos.com/en/pricing/",
+          "note": "Implementation and training separate: '30,750 MKD including VAT'. The Standard card lets you pick free licences incl. 'Takeaway & delivery license' and 'QR ordering system license'; the words 'online ordering' appear in no plan card (only in the Products menu). Treat as the cheapest plan that plausibly carries online ordering — reviewer to confirm."
+        },
+        {
+          "plan_name": "Advanced",
+          "currency": "MKD",
+          "price_major": 8693,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 30750,
+          "quote": "8.693 / month (incl. VAT) MKD",
+          "url": "https://thinkerpos.com/en/pricing/",
+          "note": "same licence list as Standard ('Takeaway & delivery license'); implementation 30,750 MKD incl. VAT"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Enable online ordering to expand your reach, allowing customers to pre-order and pick up meals on the go",
+          "url": "https://thinkerpos.com/en/food-truck/"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Enable online ordering to expand your reach, allowing customers to pre-order and pick up meals on the go",
+          "url": "https://thinkerpos.com/en/food-truck/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "6.295 / month (incl. VAT) MKD",
+          "url": "https://thinkerpos.com/en/pricing/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://thinkerpos.com/en/pricing/",
+        "https://thinkerpos.com/en/online-ordering-delivery/",
+        "https://thinkerpos.com/en/food-truck/"
+      ]
+    },
+    {
+      "name": "Dinerra",
+      "website": "https://dinerra.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Macedonian QR digital menu (MKD prices) whose only ordering is guests sending the order on Viber; no pickup or ordering ahead",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://dinerra.com/"
+      ]
+    },
+    {
+      "name": "Waiterio",
+      "website": "https://www.waiterio.com/mk/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Macedonian-language online-ordering page shows website orders into its POS but no ordering ahead; /mk/pricing/ shows no plan amounts or currency in the page text (rendered by script)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.waiterio.com/mk/restaurant-online-ordering/",
+        "https://www.waiterio.com/mk/pricing/"
+      ]
+    }
+  ],
+  "notes": "Vitrina (MKD) already counted. Thinker POS (thinkerpos.com, Skopje) is a new food-truck-page POS priced in MKD whose food-truck page says customers can 'pre-order and pick up'. Two doubts for the reviewer: (1) its pricing page never says which plan includes online ordering — Standard/Advanced include a choosable 'Takeaway & delivery license' and 'Basic + Website' says '*Does not include ecommerce'; I recorded Standard 6,295 and Advanced 8,693 MKD/month incl. VAT; (2) its English product pages are written as 'Ecash' ('Ecash POS comes packaged with features tailored for food truck operations.'), apparently template text from another product. If both are accepted the count is 2; otherwise 1. Not opened (EUR prices in the snippets, so they cannot count): eBar (ebar.mk, € packages), EasyOffer (easyoffer.mk, from €13), Order This / Antoris (€50–100, QR), Facturino (retail POS), Accent easyPOS (2,500 ден/month but only Wolt order sync in the snippet), Shopwidget (Serbian, €25, generic widget — read for BA), restaurantmanage.com (QR room service), Restorani.mk (directory). Not re-read: FoxiFood (EUR only), Naracaj, Klikni Jadi."
+}
