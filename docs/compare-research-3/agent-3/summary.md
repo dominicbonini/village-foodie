@@ -223,3 +223,9 @@ count now: 1
 Nothing eligible exists with an NAD price (YUMBI unpriced).
 
 count now: 0
+
+## BW (BWP)
+
+No vendor site worth reading (only marketplaces and chain apps). Nothing eligible exists with a BWP price (YUMBI unpriced).
+
+count now: 0
