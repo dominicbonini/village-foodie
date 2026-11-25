@@ -1,0 +1,11 @@
+{
+  "country": "UY",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Uruguay plataforma pedidos online restaurantes \"retiro en el local\" menú digital planes pesos uruguayos mensual sin comisión",
+    "Reorder plataforma restaurantes página propia pedidos Uruguay sitio oficial reorder",
+    "software gastronómico Uruguay punto de venta módulo pedidos online tienda web retiro precios \"por mes\" Montevideo"
+  ],
+  "vendors": [],
+  "notes": "Count now: 1 (Pedix, UYU, stored; its 'Uruguay (UYU)' section re-read today: raw/V-Pedix.json). Block 1 today: Fudo's Uruguayan page is still 'Precios en dólares.' (Avanzado USD 35, Pro USD 45, Tu Delivery USD 30 /mes) -> does not count; Ojapo shows ARS only and 'Hecho en Argentina' -> does not count (raw/V-Fudo.json, raw/V-Ojapo.json). Three new-angle searches (retiro en el local + UYU, Reorder's own site, Uruguayan POS with an online-ordering module) found no new vendor site: Reorder still has no own website in results (press only: Portafolio, Forbes AR, Ecosistema Startup — delivery-led, ~11% commission; delivery-only would not count anyway); Orion Eat (Chilean 2019 press, no Uruguay presence) not read; otherwise PedidosYa (marketplace; Plus is a consumer subscription), FNC/BEES (supplier ordering), Lightspeed Order Anywhere (no Uruguay statement, price on request — not re-read), Siigo CO, Mercado Pago MX, SumUp PE, Capterra directories (not sources). Earlier dead ends (Dixtra, OrderEAT, Tiendanube, LogiKom, MVD Punto de Venta) not re-read. Stopped."
+}
