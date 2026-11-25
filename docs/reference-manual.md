@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.36
+HatchGrab Engineering Reference Manual · V16.37
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.36**
+**Version 16.37**
 
 November 2026
 
@@ -120,7 +120,7 @@ identical; a **pre-flight** before the migration runs and a **check** after it. 
 insert fail (its own exception block; on error it leaves the value NULL and logs a WARNING). Never run a proof against Pizzeria
 Gusto or any trading truck. A proof that can't be run is a stop: say so; don't apply the migration.
 
-# Open items (V16.36, 24 November 2026) — THE ONLY CURRENT LIST
+# Open items (V16.37, 25 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
@@ -256,9 +256,11 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 34. **Walk-up-only events** (events-create-1 D3 b) — only if trucks ask.
 
 **Added V16.34 (plans everywhere, post-pay terms, deploys):**
-35. ⛔ **Mostly done V16.35 by vercel-cost-1** (`5df925d8`, not deployed; §48 "Marketing pages refresh only on demand"). **Left:**
-    after the next deploy check that `POST /api/revalidate` answers **401**; set Vercel **Ignored Build Step** for pushes touching
-    only `docs/`, `supabase/migrations` or `*.md` (dashboard setting); look at Vercel → Usage after a week.
+35. ⛔ **V16.37: vercel-cost-1 deployed 24 Nov** (`5df925d8`; §48 "Marketing pages refresh only on demand"). **Left:** the 401 / pages /
+    test-kitchen checks (Dominic, 25 Nov: `POST /api/revalidate` with no secret → **401**; /uk, /mt, /fr load; `/trucks/test-kitchen/order`
+    loads); Vercel **Ignored Build Step** for pushes touching only `docs/`, `supabase/migrations` or `*.md` (dashboard setting); Vercel →
+    Usage after a week. ~~⛔ **Mostly done V16.35 by vercel-cost-1** (`5df925d8`, not deployed). **Left:** after the next deploy check that
+    `POST /api/revalidate` answers **401**; set Vercel **Ignored Build Step**; look at Vercel → Usage after a week.~~
     ~~🔴 **Vercel cost: build less on each deploy.** 7 country page types × ~210 countries (~1,470 pages) are built ahead on every
     deploy, and the country, features and FAQ pages regenerate every 5 minutes (`revalidate = 300`) whenever visited — including by
     Googlebot. Review: build ahead only the busiest countries and the rest on first visit; a much longer `revalidate` with an
@@ -277,8 +279,11 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 **Added V16.35 (marketing pages, the Inbox, VAT per dish, France records):**
 40. 🔴 **Before the next deploy: move main forward to `france-vat-1`** (fast-forward, locally; everything since `59ae6161` is there).
     Dominic deploys. ~~OBSERVED 24 Nov 10:12 UTC: origin/main `f2e2b4ab`, main `59ae6161` (10 ahead of origin/main), france-vat-1
-    `56ce9d7d` (17 ahead of main), checked out.~~ ⛔ **OBSERVED 24 Nov 21:32 UTC (V16.36):** origin/main `f2e2b4ab`, main
-    `59ae6161` (10 ahead of origin/main), france-vat-1 `bafd1495` (36 ahead of main), checked out.
+    `56ce9d7d` (17 ahead of main), checked out.~~ ~~⛔ **OBSERVED 24 Nov 21:32 UTC (V16.36):** origin/main `f2e2b4ab`, main
+    `59ae6161` (10 ahead of origin/main), france-vat-1 `bafd1495` (36 ahead of main), checked out.~~ ⛔ **OBSERVED 25 Nov 13:17 UTC
+    (V16.37):** origin/main **`5df925d8`** (vercel-cost-1, pushed and deployed by Dominic on 24 Nov), main `59ae6161` (2 ahead of
+    origin/main), france-vat-1 `cde49a32` (146 ahead of main), checked out. **Keep:** the full batch (france-*, enquiries, inbox,
+    compare-fix, till) is on `france-vat-1` and goes out in ONE deploy after Dominic has tested it on localhost.
 41. 🔴 **Switch on the Inbox's drafting and intake, in this order:** (a) a Claude API key for drafting — a **separate Anthropic
     workspace with its own low spend limit**, key added to Vercel as `ANTHROPIC_API_KEY` (Dominic); (b) **privacy policy section 6**:
     add "Anthropic (Claude) — Translating messages you send us and helping draft our replies — United States" and "Namecheap — Our
@@ -320,8 +325,9 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 50. **Channels research:** Search Console and Bing (Performance by country; Indexing › Pages trend; URL Inspection of /de, /es,
     /it) and PostHog (visits and sources per country page), France against two or three others; ask new customers how they found
     HatchGrab (possibly a line in the Inbox's first reply).
-51. **Decision: switch on the German comparison page** (`/de/vergleich/foodtruck-bestellsystem`, built, admin-only) and one per
-    country where Search Console shows interest.
+51. ~~**Decision: switch on the German comparison page** (`/de/vergleich/foodtruck-bestellsystem`, built, admin-only) and one per
+    country where Search Console shows interest.~~ ⛔ **Superseded V16.37:** comparison pages publish automatically from the evidence
+    (§91); DE is live.
 
 **Added V16.36 (France receipts, line notes, one privacy policy):**
 52. **Enquiry reply wording for France is out of date after the next deploy.** The 23 Nov drafts (facts / gaps / guidance on
@@ -332,6 +338,22 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     0 messages, 0 unpromoted drafts.)~~ ⛔ Done V16.36 (france-privacy-2): both, as decided by Dominic 24 Nov
 54. **A native read of the privacy wording** (france-privacy-1 §4): the "regulator" and "breach" terms, and the plural "those
     documents" in the country-terms intro in mn-MN, km-KH and lo-LA.
+
+**Added V16.37 (comparison pages, Vercel):**
+55. 🔴 **Competitor check workflow: re-enable only after the deploy that puts compare-fix-1/-2 and the 25 Nov rules on GitHub `main`.**
+    Until then it stays disabled (it can't spend before 1 Dec anyway). After re-enabling: prices re-checked every 90 days as decided.
+    OBSERVED 25 Nov 13:17 UTC: `Competitor check  disabled_manually`.
+56. 🔴 **Vercel Spend Management:** confirm there is no budget with "Pause production deployments" (a pause = 503 for every page, Pizzeria
+    Gusto included); keep alerts only. **Decision: Observability** events (≈ $0.13–0.31 a day) — switch off if unused.
+57. **Comparison research — next waves**, in launch order (the method in §91):
+    - one short: MT; IS RS KR QA SA BH JO BO DO SV GT JM UY ZA CO; AL BA MK MD UZ IN LK BD (and others in compare-research-3's table);
+    - nothing eligible found: AO BS CR CV HN IL MC MZ NI PE PY SN TN TT; KZ GE AZ AM ME KG PK KH NP MN MO BN LA TZ UG ET NA BW ZM ZW DZ BZ
+      GY SR; micro-territories not researched.
+58. **Comparison open points (compare-research-3b §4):** Poster's "Site" add-on (kept unclear); KZ — add joinposter.kz to Poster's check
+    pages; **Toss Place KR** — the fee in force (0 won "try" against the planned 3.5 % + VAT) must be confirmed on its own site before KR
+    goes live.
+59. **Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, Restorant NG, Menufy PR, Oddle TW, Yoveletta /
+    Rent-a-Shop LI and Ordea GI (neighbour fits), Fudo AR/CL, Pedix, DISH HR/SK, Vitrina SI.
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -583,6 +605,57 @@ actions, `refund`, the Manage-level token routes. 6. After two clean weeks, grou
 board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings (owner only; needs a mockup first).
 
 # Changelog
+
+## V16.37 — 24–25 November 2026 — **56 COMPARISON COUNTRIES LIVE (FROM 5); THE COMPARISON RULES; AN ALL-OR-NOTHING IMPORTER WITH ROLLED-BACK DRY RUNS ON THE LIVE DATA; VERCEL-COST-1 DEPLOYED ON ITS OWN**
+
+- **Deploy (Dominic, 24 Nov evening):** the local branch `deploy-vercel-cost-1` (= `5df925d8`, prepared by deploy-prep-1) was pushed to
+  GitHub `main`: **origin/main = `5df925d8`**. It holds vercel-cost-1 and the 7 commits before it (languages-switch-4/5, the store-listing
+  files, manual V16.34) — **no** france-*, enquiries, inbox, compare-fix or till work. Ordering and app paths byte-identical to the
+  previous production build (deploy-prep-1). Checks Dominic is doing on 25 Nov: `POST /api/revalidate` with no secret → **401**;
+  /uk, /mt, /fr load; `/trucks/test-kitchen/order` loads. Local `main` is at `59ae6161` and the work branch is `france-vat-1`.
+- **Vercel cost (24 Nov, from the usage export):** billing cycle **13 Nov – 12 Dec**; **$16.53** usage by 24 Nov. ISR writes 32 %, build
+  CPU 20 %, Fluid active CPU 17 %, Observability events 13 %, origin transfer 9 %. **Deploy days cost $1.60–3.00, quiet days $0.50–1.00.**
+  Projection ≈ $27 for the cycle (≈ $7 over the $20 credit, billed on demand). Over the credit = on-demand billing; **a Spend
+  Management budget with "Pause production deployments" would answer 503 on the whole site (Pizzeria Gusto included)** — Dominic to
+  confirm no such pause is set (alerts only). Observability events ($0.13–0.31 a day) are a setting Dominic may switch off if unused.
+- **compare-status-1 (read-only review, 24 Nov):** only **5** comparison pages were live (FR, IE, IT, JP, US; IE showed HatchGrab
+  alone). **The publish step had crashed at AE after every checker run since 10 Nov** (its upsert broke `comparison_publish_never_ae`),
+  so 166 countries were never evaluated. **14 stored plans were 100× too high** (amounts already in minor units multiplied again).
+  **Aphelios is not a food-truck ordering system** (a business suite with a QR menu). The checker stopped on 20 Nov (credit, then the
+  workspace limit until 1 Dec); its own November cost record $35.42.
+- **Dominic's comparison rules (24–25 Nov), now in `lib/comparison-publish.ts` — see §91:** eligibility = the vendor's own site shows
+  online ordering ahead; food-truck tools first, restaurant / till players only to make up 2; at most 4; **live = at least 2 eligible
+  competitors with a price on their own site, one check**, features may be "not stated"; SumUp's generic shop only as the single
+  fallback beside a real food tool; Anolla never; second accepted currencies (RO EUR; PA USD; KW KWD; BH BHD; OM OMR; JO JOD) —
+  **`country_settings.currency` is never changed** (it is HatchGrab's own price currency); neighbouring markets: LI from CH (CHF), GI
+  from GB (GBP), MT strict; a yearly-billing toggle → store the monthly-billing price; AE never publishes.
+- **compare-research-1 (Claude Code, 41 countries)**, **-1b** (Spevdo's prices from its own API, one GET Dominic allowed),
+  **-1c** (raw evidence kept so a rebuild reproduces it).
+- **compare-fix-1** (`81b756e6`): the AE crash fixed (AE written with `auto_publish = false`; one country's failure logged and skipped);
+  **price units explicit end to end** plus a per-currency plausibility guard; importer instructions (not relevant, back to active, not
+  sold in, focus, corrected plans, quoted answers replace bare ones); the rules above; account-level API errors never count as a
+  competitor's failed check.
+- **The failed import (24 Nov 17:17:50 UTC):** the data file listed two competitors twice and the importer was not atomic — it superseded
+  500 answers, inserted 500, then stopped (322 answers left with no current value, some on live pages). **Undone by migration
+  `20261128`** (Dominic's option B) after a rolled-back proof.
+- **compare-fix-2** (`1223de95`, `e6c3b6c8`, `a44db765`, report `ff4b3f90`): **the import is all-or-nothing** (one transaction per file; new
+  rows written before old ones are superseded); the validator mirrors every unique index and constraint the importer writes against
+  (`docs/compare-fix-2/db-rules.json`) and "each competitor once per file"; **`--dry-run` = the real import (or publish) on the live
+  database, rolled back**; both entry points connect through `scripts/comparison-db.ts`, which takes the connection only from
+  `scripts/db-migrate.cjs`'s `dbUrl()` (no agent reads `.env`); every SQL statement printed (no row values).
+  `scripts/compare-db-proofs.cjs` (rolled-back proofs on competitor tables; `--preflight` for any competitor-data migration). **28 live.**
+- **compare-research-2** (2 waves, 7 agents; migration `20261130`: Oddle's website corrected to oddle.me): **44 live.**
+- **compare-research-3** (Dominic's decisions a–g; 3 waves strictly in launch order; migrations `20261131`, `20261132`): **55 live.**
+  **compare-research-3b** (Poster UA/KZ at monthly-billing prices; Resto-SaaS MU not relevant): **56 live.**
+- **Live comparison countries (25 Nov): 56** — AR AT AU BE BG BR CA CH CL CY CZ DE DK EC EE EG ES FI FR GB GI GR HK HR HU ID IE IT JP KW
+  LI LT LU LV MA MV MY NG NL NO NZ OM PA PL PR PT RO SE SG SI SK TH TR TW UA US. **The October wave: all except MT** (one short) and AE.
+- **The Competitor check workflow is DISABLED** (`gh workflow disable competitor-check.yml`, Dominic, 24 Nov). GitHub's `main` doesn't
+  have compare-fix-1/-2 or the 25 Nov rules, so its publish step (which runs even when the API is limited) would undo the live pages.
+- **OBSERVED when applying (25 Nov 2026, 13:17 UTC, read-only):** origin/main `5df925d8`, main `59ae6161` (2 ahead), france-vat-1
+  `cde49a32` (146 ahead of main), checked out; `Competitor check  disabled_manually`; **56 live** (the list above, exactly); AE
+  `auto_publish` false, `auto_live` false; the 6 newest `data_imports` rows all `ok` (data/compare-research-3 ×5, 12:15–12:57 UTC;
+  data/compare-research-2b 10:42 UTC); competitors 216 active, 31 candidate, 25 not relevant; 8 files registered in `DATA_FILES`.
+- till-pack-1/1b and france-privacy-2: see their reports; recorded by the France chat.
 
 ## V16.36 — 24 November 2026 — **RECEIPTS CARRY THE RECEIPT NUMBER, DATE OF SALE AND BUSINESS DETAILS; FRANCHISE EN BASE SELLS AT 0 % ("TVA NON APPLICABLE"); LINE NOTES LIVE OUTSIDE THE ORDER LINES; ACCOUNT DELETION CLEARS CUSTOMERS' NOTES; ONE PRIVACY POLICY FOR EVERY COUNTRY; THE FRANCE DECISIONS AND THE LAW AS RESEARCHED**
 
@@ -38668,6 +38741,8 @@ repo files. compare-de-1 and competitor-check-1 were built from the briefs' word
 
 ## 86.6 Imports (competitor-check-2, 29 October 2026)
 
+⛔ *V16.37: the importer is now all-or-nothing with rolled-back dry runs, and the publish rule (eligibility, one check, food-truck first, at most 4) replaced "both checks confirmed" — see §91.*
+
 - **Why the German import failed:**
   - In `data/compare-de-1/competitors.json`, five plans had `price_hidden: true`, no price, and `status: 'counted'`:
     - OrderFront Starter, Premium and Multi;
@@ -39261,6 +39336,8 @@ Compare link and no column). **jp-nav-1 (the Japanese nav button and "Doesn't ap
   phone. The reported "only the feature column renders on phones" could not be reproduced, before or after, in either engine.
 
 ## 88.4 Admin banner on comparison pages
+
+⛔ *V16.37: "pass the checks" now means §91's rule (eligible, a price on its own site, one check; at most 4 shown) — see §91.*
 
 - **One compact line:** the status — "Live via auto-publish", "Live · public and indexable", or "Admins only — {why}" where why is
   "{n} of {total} competitors pass the checks" or "auto-publish is off" — then "{n} shown", "What the public sees" and "Open the Pricing
@@ -39876,6 +39953,32 @@ Reports: `docs/enquiries-backend-1-report.md`, `docs/inbox-1-report.md`, `docs/i
 - **Enquiries are deleted 24 months after their last message** (the order-retention job, §43).
 - Harnesses: `scripts/enquiries-backend-1.cjs`, `scripts/inbox-1.cjs` (164/0), `scripts/inbox-2.cjs` (46/0) — fixtures and a fake
   mail transport only, never the real mailboxes.
+
+# 91. Comparison pages from 24 November (V16.37 — compare-status-1 to compare-research-3b, 24–25 November 2026)
+
+**Rules, data, and how to change them.** Live on 25 Nov: 56 countries (changelog V16.37). Sources: `docs/compare-fix-1-report.md`,
+`docs/compare-fix-2-report.md`, `docs/compare-research-2-report.md`, `docs/compare-research-3-report.md`, `docs/compare-research-3b-report.md`.
+
+- **Eligibility** (who may be shown): the vendor's own website shows customers can order online ahead (pre-order / click and collect /
+  order for a time), with the quote and URL stored. Preference: `food_truck` focus first; `restaurant` and `pos` only to make up 2 in a
+  country; never QR-menu-only, till-only, booking-only, delivery marketplaces, or a site that isn't the vendor's own. SumUp's generic web
+  shop: only as the single fallback beside an eligible food or restaurant tool. Anolla: never. Neighbour fits: LI from CH (CHF), GI from
+  GB (GBP), recorded as "serves <territory> from <neighbour>" with the quote; MT strict.
+- **Price:** a monthly price in the country's currency or its second accepted currency (`ALSO_ACCEPTED_CURRENCY`: RO EUR, PA USD,
+  KW KWD, BH BHD, OM OMR, JO JOD), with a source on the vendor's own site, checked within its interval + 30 days; one check is enough;
+  Admin-verified counts. Price on request = hidden plan. A yearly toggle → the monthly-billing price, the yearly one in the note; if it
+  can't be stated exactly → unclear. **Amounts are major units end to end** (the 100× guard rejects implausible ones as unclear).
+- **Live:** at least 2 eligible priced competitors, at most 4 shown, auto-publish on, Admin not off, not AE. Features may be
+  "not stated". `country_settings.comparison_status` stays `off` for auto-published countries; Admin's per-country switch wins.
+- **Data in:** research goes into `data/<workstream>/competitors.json` in the importer's format, built by a script from raw evidence
+  (so a rebuild reproduces it), each competitor once (by id, name and domain), validated with the database's own rules and the 100×
+  check, registered in `lib/data-import/importer.ts` (8 files at 25 Nov). **Load = rolled-back import dry run → import → rolled-back
+  publish dry run → publish → read-only verify.** Competitor-data migrations: `scripts/compare-db-proofs.cjs --preflight` first.
+- **Research method:** vendors' own sites only (app stores for app facts), one request at a time per agent, never two agents on the same
+  vendor; key features only (ahead, preorder, capacity, schedule, whatsapp, social, kds, offline, walkup, vans, domain, monthly,
+  perorder, cardfee); "no" only with a quote; nothing about card readers or tills at the hatch.
+- **The page** (deployed code) reads stored data only: `comparison_publish`, the auto-verified marks and `comparison_status`; each
+  competitor amount is shown in its plan's own currency. So publishing needs no deploy.
 
 ---
 
