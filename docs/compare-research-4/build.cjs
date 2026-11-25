@@ -43,6 +43,8 @@ const NOT_SOLD_IN = { /* filled after review */ }
 // STORED not-relevant competitors the research found eligible → set_lifecycle active.
 const REVIVE = [/* filled after review */]
 // A research plan whose name differs from the stored plan it corrects.
+// compare-research-4: stored competitors whose focus this research must not change (Fudo stays food_truck, as Dominic kept it; §59 borderline list)
+const KEEP_STORED_FOCUS = ['7e12931c']
 const RENAME = { 'afe2f58d|ZA|resto shop': 'Shop' }   // compare-research-4: agent 1's "Resto shop" is the stored plan "Shop"
 const CORRECT_EVEN_IF_NOT_RELEVANT = []
 // Coordinator review (25 Nov 2026): plans recorded by the agents that must never be published as a stated monthly price — the page
@@ -221,7 +223,7 @@ function build() {
       id, name: m.name, website: m.website, focus: m.focus, lifecycle: 'active', payment_providers: null,
       features_checked_on: CHECKED_ON, features_verified_at: null,
       notes: `compare-research-4 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in "evidence"). Countries: ${cs.join(', ')}.`,
-      check_urls: [...m.check_urls].slice(0, 10), request_check: true, answers, set_focus: true,
+      check_urls: [...m.check_urls].slice(0, 10), request_check: true, answers, set_focus: !(m.prefix && KEEP_STORED_FOCUS.includes(m.prefix)),
     }
     if (m.prefix && REVIVE.includes(m.prefix)) row.set_lifecycle = { value: 'active', reason: `eligible: ${clip(ev?.order_quote ?? m.evidence[0]?.reason ?? '', 240)}`, source_url: ev?.order_url ?? m.website }
     if (m.prefix && NOT_SOLD_IN[m.prefix]) row.not_sold_in = notSoldInRows(m.prefix)
