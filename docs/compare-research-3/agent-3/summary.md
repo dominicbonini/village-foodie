@@ -49,3 +49,13 @@ count now: 1
 No second JMD-priced eligible tool (Take App: agent 2, only named).
 
 count now: 1
+
+## UY (UYU)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Fudo (Tu Delivery) | food_truck | not_relevant here (USD only, no pickup wording on UY page) | USD 30/mes add-on (+ USD 35/45 plan) | https://fu.do/es-uy/precios/ |
+
+No second UYU-priced eligible tool (Reorder: no own site).
+
+count now: 1

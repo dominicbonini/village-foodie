@@ -1,0 +1,35 @@
+{
+  "country": "UY",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Uruguay tienda online para restaurantes pedidos \"retiro en el local\" OR \"take away\" plataforma uruguaya planes \"$U\" OR \"UYU\" por mes",
+    "Reorder sitio de pedidos propio para marcas gastronómicas Uruguay Colombia planes"
+  ],
+  "vendors": [
+    {
+      "name": "Fudo (Tu Delivery)",
+      "website": "https://fu.do",
+      "stored_id_prefix": "7e12931c",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Uruguayan price page exists but shows USD only ('Precios en dólares.'; Plan Avanzado USD 35/mes, Plan Pro USD 45/mes, Tu Delivery add-on USD 30/mes) and no retiro / pickup wording; no UYU price",
+      "eligibility": {
+        "food_quote": "Movilidad para food trucks y ferias",
+        "food_url": "https://fu.do/es-uy/precios/",
+        "country_quote": "Precios en dólares.",
+        "country_url": "https://fu.do/es-uy/precios/"
+      },
+      "plans": [
+        {
+          "plan_name": "Tu Delivery (add-on)", "currency": "USD", "price_major": 30, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "USD 30 /mes", "url": "https://fu.do/es-uy/precios/",
+          "note": "USD, not UYU — does not count in UY; on top of Plan Avanzado 'USD 35 /mes' or Plan Pro 'USD 45 /mes'"
+        }
+      ],
+      "answers": [],
+      "check_urls": ["https://fu.do/es-uy/precios/"]
+    }
+  ],
+  "notes": "Count now: 1 (Pedix, UYU, stored). No second eligible UYU-priced tool. Fudo's Uruguayan price page is USD-only with no pickup wording (its /es-uy/delivery/ page was 404 in wave 2). Reorder (Uruguayan own-ordering-site startup, ~10–12% per press) still has no own website found — press only, not counted. Tiendanube (generic Latin-American store builder, food page in ARS) is not a food tool and shows no UYU price in results — not read. BEES (FNC/AB InBev supplier ordering for shops) is not a customer ordering tool. PedidosYa / Uber Eats: marketplaces. OlaClick USD-only. Stopped after ~5 candidates."
+}
