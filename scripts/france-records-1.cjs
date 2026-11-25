@@ -252,7 +252,10 @@ function extract(ref) {
   fs.writeFileSync(path.join(REPO, 'docs/france-records-1/daily-totals-sample.csv'), csv)
   const MR = read('app/api/manage/route.ts')
   t('get_daily_totals reads the orders PLACED in the period, the refunds MADE in it, and the cancellations (audit rows, else updated_at), in pages; never for staff',
-    /if \(action === 'get_daily_totals'\) \{\s*if \(requestingUserRole === 'staff'\)/.test(MR) && /\.eq\('kind', 'refund'\)\.eq\('state', 'succeeded'\)\.gte\('created_at', startIso\)/.test(MR) && /\.eq\('action', 'order_cancelled'\)\.gte\('created_at', startIso\)/.test(MR) && /\.eq\('status', 'cancelled'\)\.gte\('updated_at', startIso\)/.test(MR))
+    // RE-PINNED by till-pack-4 (25 November 2026, docs/till-pack-4-report.md §1): the route reads its rows through
+    // lib/accounts/daily-inputs.ts (shared with the till's day close), so the reads are checked THERE; the staff refusal stays in the route.
+    /if \(action === 'get_daily_totals'\) \{\s*if \(requestingUserRole === 'staff'\)/.test(MR) && /await loadDailyInputs\(supabase, \{ truckId: truck\.id, startIso, endIso, from, to \}\)/.test(MR)
+      && ((DI) => /\.gte\('created_at', startIso\)\.lt\('created_at', endIso\)\.order\('created_at'\)\.order\('order_key'\)\.range\(a, b\)/.test(DI) && /\.eq\('kind', 'refund'\)\.eq\('state', 'succeeded'\)\.gte\('created_at', startIso\)/.test(DI) && /\.eq\('action', 'order_cancelled'\)\.gte\('created_at', startIso\)/.test(DI) && /\.eq\('status', 'cancelled'\)\.gte\('updated_at', startIso\)/.test(DI))(read('lib/accounts/daily-inputs.ts')))
 
   // ══ D ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('D · THE AUDIT LOG — edit (before and after), cancel and reject through the real route; placement on every path')

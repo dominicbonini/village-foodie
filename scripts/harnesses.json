@@ -308,6 +308,7 @@
         "_plans-catalog-fixture.cjs",
         "_lp-billing-1.cjs",
         "_lp-till-pack-2.cjs",
+        "_lp-till-pack-4.cjs",
         "_lp-pricing-copy-1.cjs",
         "_lp-pricing-copy-2.cjs",
         "_lp-pricing-copy-4.cjs",

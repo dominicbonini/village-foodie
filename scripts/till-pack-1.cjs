@@ -297,7 +297,13 @@ const NOT_SEALED_PAYMENT = ['note', 'created_by', 'idempotency_key', 'applicatio
     // RE-PINNED by till-pack-2 (25 November 2026, docs/till-pack-2-report.md): till-pack-2 adds the till's server-side helpers on purpose
     // (lib/till/* — the guard's 409, the actor's role, the device fingerprint — calling only till-pack-2's RPCs). The rule this check keeps:
     // no OTHER app code names the till's tables or writers.
-    const tillInCode = appCode.filter(f => !path.relative(REPO, f).startsWith('lib/till/') && /\btill_(chain|settings|failures|guard_events|chain_heads|order_seals|verify|baseline|append|write|seal)\b|sealed_(at|version)/.test(fs.readFileSync(f, 'utf8')))
+    // RE-PINNED by till-pack-4 (25 November 2026, docs/till-pack-4-report.md §5 B3): admin delete-truck COUNTS till_chain /
+    // till_order_seals rows (head-only selects) to refuse deleting a till truck. A read that refuses, never a write — so it is set aside
+    // here only while that is all it does: no till table is named there in anything but a count.
+    const tillAside = f => path.relative(REPO, f) === 'app/api/admin/delete-truck/route.ts'
+      && (fs.readFileSync(f, 'utf8').match(/\btill_[a-z_]+\b/g) || []).every(x => x === 'till_chain' || x === 'till_order_seals' || x === 'till_records_present' || x === 'till_check_failed')
+      && /from\('till_chain'\)\.select\('seq', \{ count: 'exact', head: true \}\)/.test(fs.readFileSync(f, 'utf8'))
+    const tillInCode = appCode.filter(f => !tillAside(f) && !path.relative(REPO, f).startsWith('lib/till/') && /\btill_(chain|settings|failures|guard_events|chain_heads|order_seals|verify|baseline|append|write|seal)\b|sealed_(at|version)/.test(fs.readFileSync(f, 'utf8')))
     t('no route, screen, email or ticket code names the till\'s tables or writers (lib/till/* aside — till-pack-2\'s helpers)', tillInCode.length === 0, tillInCode.map(f => path.relative(REPO, f)))
     const dt = read('lib/delete-truck.ts')
     t('lib/delete-truck.ts (deleteTruckCascade: the demo-cleanup cron and Admin › delete truck) is untouched by this work and names no till table — its orders-first order is what keeps demo deletes outside the guard',

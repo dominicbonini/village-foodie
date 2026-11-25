@@ -686,7 +686,10 @@ function census() {
   t('send_from_address is set by lib/inbox/send.ts alone (and read by the envelope)', JSON.stringify(ALL.filter(f => /send_from_address/.test(noComments(read(f)))).sort()) === JSON.stringify(['lib/inbox/send.ts', 'lib/outreach-mail-envelope.ts']))
   const crons = ALL.filter(f => f.startsWith('app/api/cron/') || f === 'lib/outreach-mail-poll.ts' || /scheduler|schedule/.test(f))
   t('🔴 nothing scheduled reaches it: no cron route, the reply poll or a scheduler imports lib/inbox (drafting or send) or the Inbox route', crons.every(f => !/@\/lib\/inbox\/(send|drafting|read-model|model-server)|api\/admin\/inbox/.test(read(f))), crons.filter(f => /@\/lib\/inbox/.test(read(f))))
-  t('no new Vercel cron (vercel.json unchanged since BASE)', git('show', `${BASE}:vercel.json`) === read('vercel.json'))
+  // RE-PINNED by till-pack-4 (25 November 2026, docs/till-pack-4-report.md §1): vercel.json gains till-pack-4's hourly /api/cron/till-close
+  // — that one entry aside, it must still equal BASE.
+  const vjNoTill = (s => { const j = JSON.parse(s); j.crons = (j.crons || []).filter(c => c.path !== '/api/cron/till-close'); return JSON.stringify(j) })
+  t('no new Vercel cron for this work (vercel.json unchanged since BASE, till-pack-4\'s till-close entry aside)', vjNoTill(git('show', `${BASE}:vercel.json`)) === vjNoTill(read('vercel.json')))
   const SEND_PKG = /from ['"](nodemailer|imapflow)['"]|@\/lib\/outreach-mail-deliver|@\/lib\/outreach-mail-box|createTransport|sendMail\(|appendToSent/
   const others = [...mine()].filter(f => /\.(ts|tsx)$/.test(f) && f !== 'lib/inbox/send.ts')
   t('every other file of this work (read model, drafting, the page, the route\'s other actions) names no mail transport, mailbox or deliver', others.every(f => !SEND_PKG.test(noComments(read(f)))), others.filter(f => SEND_PKG.test(noComments(read(f)))))

@@ -705,7 +705,10 @@ function census() {
     && /readBodies\(client, m\.uid\)/.test(section) && !/client\.(fetchOne|search|messageFlags|mailboxOpen|append)/.test(section))
   t('🔴 the whole poll file still has no mailbox write call (the existing census, re-run)', !/messageFlags(Add|Remove|Set)\(|messageMove\(|messageCopy\(|messageDelete\(|expunge\(/.test(noComments(poll)))
   t('the enquiry step is called LAST in runReplyPoll — after housekeeping, inside the lock', /catch \(err\) \{ fail\('housekeeping', err\) \}\n[^\n]*\n    await enquiriesAfterPoll\(supabase, accounts, dir, now, summary\)\n  \} catch \(err\) \{/.test(poll))
-  t('no new Vercel cron: vercel.json unchanged and still one /api/cron/outreach-replies entry', git('show', `${BASE}:vercel.json`) === read('vercel.json') && (read('vercel.json').match(/\/api\/cron\/outreach-replies/g) || []).length === 1)
+  // RE-PINNED by till-pack-4 (25 November 2026, docs/till-pack-4-report.md §1): vercel.json gains till-pack-4's hourly /api/cron/till-close
+  // — that one entry aside, it must still equal BASE.
+  const vjNoTill = (s => { const j = JSON.parse(s); j.crons = (j.crons || []).filter(c => c.path !== '/api/cron/till-close'); return JSON.stringify(j) })
+  t('no new Vercel cron for this work: vercel.json unchanged (till-pack-4\'s till-close entry aside) and still one /api/cron/outreach-replies entry', vjNoTill(git('show', `${BASE}:vercel.json`)) === vjNoTill(read('vercel.json')) && (read('vercel.json').match(/\/api\/cron\/outreach-replies/g) || []).length === 1)
   t('the enquiry code reads no file and no secret but the Claude key the poll checks (process.env.ANTHROPIC_API_KEY, only when switched on)',
     !/readFileSync|process\.env/.test(enqSrc) && (section.match(/process\.env\.[A-Z_]+/g) || []).every(x => x === 'process.env.ANTHROPIC_API_KEY'))
 }

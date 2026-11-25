@@ -67,7 +67,8 @@ const tracked = (args) => execFileSync('git', args, { cwd: REPO, maxBuffer: 1 <<
  *  pages cannot read the host). `changedSince(rev, paths, { cwv2: true })` compares proxy.ts with exactly that block taken out. */
 const CWV2_PROXY_BLOCK = /\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/
 const G2 = require('./_lp-gsc-index-2.cjs')
-const TP2 = require('./_lp-till-pack-2.cjs')   // till-pack-2 (25 November 2026): its named edits, taken back exactly — the newest layer, FIRST
+const TP4 = require('./_lp-till-pack-4.cjs')   // till-pack-4 (25 November 2026): its named edits, taken back exactly — the newest layer, FIRST
+const TP2 = require('./_lp-till-pack-2.cjs')   // till-pack-2 (25 November 2026): its named edits, taken back exactly
 const B1 = require('./_lp-billing-1.cjs')   // billing-1 (10 November 2026): its named edits, taken back exactly
 const P2 = require('./_named-partners-2.cjs')   // partners-2
 const TC1 = require('./_lp-trial-column-1.cjs')   // trial-column-1 (16 November 2026): its recorded code edits, taken back exactly
@@ -106,6 +107,11 @@ function changedSince(rev, paths, { cwv2 = false } = {}) {
     // edits (reversals instead of deletes in the ledger, the netting in every payment reader, the counter refunds and Q5, the device
     // fingerprint, the actor's role, the 409) are reverse-applied exactly FIRST (scripts/_lp-till-pack-2.cjs asBefore; it throws if they are
     // not there exactly), so every older undo — billing-1's reverse patch on the ledger among them — meets the text it was made against.
+    // ⚠️ RE-PINNED (till-pack-4, 25 November 2026; docs/till-pack-4-report.md §8): against a revision from before till-pack-4, its committed
+    // edits (the undo pre-check, the delete-truck till refusal, daily-totals' Q3 dating and the shared loader, the cron entry) are taken back
+    // exactly FIRST (scripts/_lp-till-pack-4.cjs asBefore; it throws if they are not there exactly), so till-pack-2's reverse patch then
+    // meets the text it was made against.
+    if (cur && TP4.LANDED && TP4.FILES.includes(f) && show(rev, 'lib/till/close.ts') === null) { const b = TP4.asBefore(f, Buffer.from(cur, 'latin1').toString('utf8')); cur = b === null ? null : Buffer.from(b, 'utf8').toString('latin1') }
     if (cur && TP2.LANDED && TP2.FILES.includes(f) && show(rev, 'lib/payments/reversals.ts') === null) { const b = TP2.asBefore(f, Buffer.from(cur, 'latin1').toString('utf8')); cur = b === null ? null : Buffer.from(b, 'utf8').toString('latin1') }
     if (cur && P2.CODE_FILES.includes(f) && show(rev, 'scripts/_named-partners-2.cjs') === null) { const u = P2.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     if (cur && TC1.CODE_FILES.includes(f) && show(rev, 'scripts/_lp-trial-column-1.cjs') === null) { const u = TC1.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }

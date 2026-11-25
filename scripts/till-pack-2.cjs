@@ -412,14 +412,20 @@ const quiet = async f => { const e = console.error, w = console.warn, l = consol
       return J(before) !== J(after)
     })
     t(`the ${msgs.length} message files change by exactly one key — errorsKitchen.sale_closed — and nothing else`, msgs.length === 60 && otherThanKey.length === 0, otherThanKey)
-    const untouched = ['lib/accounts/ledger.ts', 'lib/accounts/daily-totals.ts', 'lib/printing/mapOrderToTicket.ts', 'lib/payments/email-payment-state.ts', 'components/dashboard/OrderCard.tsx', 'app/(app)/dashboard/[token]/page.tsx', 'app/(app)/dashboard/[token]/kds/page.tsx']
+    // RE-PINNED by till-pack-4 (25 November 2026, docs/till-pack-4-report.md §1): lib/accounts/daily-totals.ts now dates a sale by its
+    // trading day (Q3, Dominic's decision) — it still only ever sees netted rows (its loader, checked below); till-pack-4's H1–H3 prove
+    // the change against START. It leaves this list; every other file stays pinned.
+    const untouched = ['lib/accounts/ledger.ts', 'lib/printing/mapOrderToTicket.ts', 'lib/payments/email-payment-state.ts', 'components/dashboard/OrderCard.tsx', 'app/(app)/dashboard/[token]/page.tsx', 'app/(app)/dashboard/[token]/kds/page.tsx']
     t('the accountant ledger, the daily totals, the ticket, the email payment state, the order card and the dashboard / KDS pages are byte-identical to START — they see netted rows from their readers', untouched.every(f => !changed.includes(f)), untouched.filter(f => changed.includes(f)))
+    // RE-PINNED by till-pack-4: get_daily_totals reads through lib/accounts/daily-inputs.ts (the loader the till's day close shares), so
+    // the daily read's netting and the reversed-refund filter are checked THERE, and the route must call it.
+    const dailyInputs = read('lib/accounts/daily-inputs.ts')
     const readers = { dashboard: read('app/api/dashboard/route.ts'), manage: read('app/api/manage/route.ts'), loyalty: read('lib/loyalty/store.ts'), billing: read('lib/billing/store.ts'), reviews: read('lib/reviews/store.ts'), ledger: read('lib/payments/ledger.ts') }
     const wiredReaders = {
       dashboard: /\.select\(`\$\{LEDGER_ROW_COLUMNS\}, \$\{NETTING_COLUMNS\}`\)/.test(readers.dashboard) && /const visibleRows = netted\(payRows \?\? \[\]\)/.test(readers.dashboard),
-      manage_daily: /select\(`order_key, kind, amount_minor, state, created_at, \$\{NETTING_COLUMNS\}`\)[^\n]+\n[^\n]+\n\s+payments\.push\(\.\.\.netted\(data \?\? \[\]\)\)/.test(readers.manage),
+      manage_daily: /await loadDailyInputs\(supabase, \{ truckId: truck\.id, startIso, endIso, from, to \}\)/.test(readers.manage) && /`order_key, kind, amount_minor, state, created_at, \$\{NETTING_COLUMNS\}`/.test(dailyInputs) && /payments\.push\(\.\.\.\(netted\(rows as never\[\]\)/.test(dailyInputs),
       manage_accounts: /select\(`order_key, kind, channel, amount_minor, state, \$\{NETTING_COLUMNS\}`\)[^\n]+\n[^\n]+\n\s+payments\.push\(\.\.\.\(netted\(pays \?\? \[\]\)/.test(readers.manage),
-      manage_refunds_in_period: /reversedRefunds\.has\(r\.id\)/.test(readers.manage),
+      manage_refunds_in_period: /reversedRefunds\.has\(r\.id\)/.test(dailyInputs),
       loyalty: /netted\(\(data \?\? \[\]\) as Row\[\]\)/.test(readers.loyalty), billing: /netted\(\(p \?\? \[\]\) as Row\[\]\)/.test(readers.billing),
       reviews: /\.in\('kind', \['refund', 'reversal'\]\)/.test(readers.reviews) && /netted\(\(refunds \?\? \[\]\) as Row\[\]\)\.filter\(r => \(r as Row\)\.kind === 'refund'\)/.test(readers.reviews),
       readLedger: /const rows = netted\(raw\) as LedgerRow\[\]/.test(readers.ledger), getOrderBalance: /const succeeded = withoutReversals\(ledgerRows \?\? \[\]\)\.filter/.test(readers.ledger),
