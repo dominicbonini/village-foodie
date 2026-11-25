@@ -25,3 +25,7 @@ count now: 2
 Nothing else eligible exists after 5 vendors: no other tool's own site shows it sells in Malta with an EUR price.
 
 count now: 1
+
+## SE decision check: Yabie Express (5f613b54)
+
+includes_online_ordering: **false** (not shown). The Express plan's list of what it includes (cloud system, all payment methods, automatic reporting, 24/7 support, back office) has no online ordering. The same page describes Yabie Online ("Låt dina kunder beställa online…", "Inget krångel eller extra kostnad…") without tying it to the 899 kr plan. https://yabie.com/kassasystem/yabie-express/
