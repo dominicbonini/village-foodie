@@ -1,0 +1,59 @@
+{
+ "vendor": "Restolabs",
+ "stored_id_prefix": "1c3ade45",
+ "country": "AW",
+ "researched_on": "2026-11-25",
+ "endpoint": null,
+ "verdict": "no endpoint — the amounts are in the pricing page's own HTML; USD only, so still not counted in AW (AWG needed)",
+ "how_confirmed": "Downloaded the raw HTML of https://www.restolabs.com/pricing once (HTTP 200, 337 KB). The only fetch() calls in it go to https://ipapi.co/json/ (IP location for the demo form) — no endpoint on restolabs.com or anywhere else loads prices. The '$00' placeholders are <span class=\"price_number\" data-year=\"55\" data-month=\"69\">00</span>; an inline jQuery/GSAP script ('INITIAL PRICE SETUP') replaces the text with data-year (default 'Billed Annually') and switches to data-month on the toggle. The same amounts are also in the page's schema.org JSON-LD 'offers' with priceCurrency USD.",
+ "plans": [
+  {
+   "plan_name": "Basic plan",
+   "currency": "USD",
+   "price_major": 69,
+   "period": "month",
+   "vat": "unknown",
+   "per_order_pct": null,
+   "per_order_fixed_major": null,
+   "setup_major": null,
+   "quote": "<span data-year=\"55\" data-month=\"69\" class=\"price_number\">00<",
+   "url": "https://www.restolabs.com/pricing",
+   "note": "monthly-billing price (data-month); billed annually $55/month (data-year). From the page's own HTML, not an endpoint."
+  },
+  {
+   "plan_name": "Growth Plan",
+   "currency": "USD",
+   "price_major": 99,
+   "period": "month",
+   "vat": "unknown",
+   "per_order_pct": null,
+   "per_order_fixed_major": null,
+   "setup_major": null,
+   "quote": "<span data-year=\"79\" data-month=\"99\" class=\"price_number\">00<",
+   "url": "https://www.restolabs.com/pricing",
+   "note": "monthly-billing price (data-month); billed annually $79/month (data-year). From the page's own HTML, not an endpoint."
+  },
+  {
+   "plan_name": "Pro Plan",
+   "currency": "USD",
+   "price_major": 199,
+   "period": "month",
+   "vat": "unknown",
+   "per_order_pct": null,
+   "per_order_fixed_major": null,
+   "setup_major": null,
+   "quote": "<span data-year=\"159\" data-month=\"199\" class=\"price_number\">00<",
+   "url": "https://www.restolabs.com/pricing",
+   "note": "monthly-billing price (data-month); billed annually $159/month (data-year). From the page's own HTML, not an endpoint."
+  }
+ ],
+ "jsonld_offers_verbatim": [
+  "Basic Plan - monthly billing: \"Basic plan on month-to-month billing. $69/month.\" (price 69.00 USD)",
+  "Basic Plan - annual billing: \"$55/month billed annually.\" (55.00 USD)",
+  "Growth Plan - monthly billing: \"Growth plan on month-to-month billing. $99/month.\" (99.00 USD)",
+  "Growth Plan - annual billing: \"$79/month billed annually.\" (79.00 USD)",
+  "Pro Plan - monthly billing: \"Pro plan on month-to-month billing. $199/month.\" (199.00 USD)",
+  "Pro Plan - annual billing: \"$159/month billed annually.\" (159.00 USD)"
+ ],
+ "notes": "Basic plan JSON-LD description: 'Pickup and in-house delivery, 50+ payment gateways, order management app, loyalty suite, and real-time analytics.' No AWG / Afl anywhere on the page and no currency selector, so Restolabs stays uncounted in AW (USD). The JSON-LD areaServed lists US CA GB FI ES FR DE IT CH AE AU CL EC BR (not AW; Aruba presence is from its case study). Caveat: the visible amounts are script-filled from HTML attributes; the plain-text quotes are from JSON-LD (machine-readable, not visible text)."
+}
