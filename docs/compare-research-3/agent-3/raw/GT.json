@@ -1,0 +1,24 @@
+{
+  "country": "GT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Quantika POS Guatemala tienda en línea restaurantes precios Q",
+    "Guatemala menú digital pedidos \"para recoger\" OR \"recoger en tienda\" OR \"pick up\" restaurantes plataforma guatemalteca planes \"Q\" al mes",
+    "\"Guatemala\" sistema de pedidos online sin comisiones restaurantes \"a domicilio o para recoger\" precio quetzales mensual"
+  ],
+  "vendors": [
+    {
+      "name": "Midelivery Food",
+      "website": "https://www.mideliveryfood.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "re-read today (wave-2 BORDERLINE): GTQ prices (Q199 / Q399 / Q1,199 per month) but still no pickup / para llevar / scheduling wording anywhere on the one-page site (no other pages linked)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://www.mideliveryfood.com"]
+    }
+  ],
+  "notes": "Count now: 1 (Sabbor, GTQ, stored). No second eligible GTQ-priced tool. Quantika POS (wave-2 snippet, 'tienda en línea' Q520/mes): a search found no own website, only Klikit blog pages (Klikit: owned by agent 2, not read). Midelivery Food still shows no pickup wording. Go4us (Guatemalan food-court multi-restaurant pickup app, per a Microsoft news page) is a consumer multi-restaurant app — marketplace, not read, not counted. Neolo's Guatemala page is a free QR menu (no ordering ahead). Searches otherwise returned marketplaces (Uber Eats, PedidosYa), MENU TIGER (agent 2, USD), Jotform (generic forms). Pedix / OlaClick USD-only (do not count). Stopped after ~5 candidates."
+}

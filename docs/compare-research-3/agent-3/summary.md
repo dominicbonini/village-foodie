@@ -29,3 +29,13 @@ count now: 1
 No second USD-priced eligible tool with an SV presence. TOI (DO) quotes SV from US$85/mes but has no own online ordering ahead.
 
 count now: 1
+
+## GT (GTQ)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Midelivery Food | nearest_local | not_relevant (no pickup wording, re-read) | Q199 / Q399 / Q1,199 per month | https://www.mideliveryfood.com |
+
+No second GTQ-priced eligible tool (Quantika: no own site found; Go4us: marketplace app).
+
+count now: 1
