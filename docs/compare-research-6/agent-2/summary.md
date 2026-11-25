@@ -249,3 +249,8 @@ count now: 0
 
 Nothing eligible: Order Up = delivery marketplace; restaurants take takeout by phone.
 count now: 0
+
+## VG (USD)
+
+Nothing eligible: Deliver VI, Dash Me = delivery marketplaces.
+count now: 0
