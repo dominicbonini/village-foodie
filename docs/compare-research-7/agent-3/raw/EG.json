@@ -4,8 +4,146 @@
   "searches": [
     "Egypt restaurant online ordering website pickup \"EGP\" per month commission-free Egyptian startup own ordering link cafes",
     "منصة مصرية لإنشاء موقع طلبات للمطاعم بدون عمولة استلام من الفرع باقات شهرية جنيه منيو إلكتروني طلب",
-    "Egypt food truck pre-order app order ahead pickup food trucks Cairo ordering platform \"food truck\" عربية طعام طلب مسبق تطبيق"
+    "Egypt food truck pre-order app order ahead pickup food trucks Cairo ordering platform \"food truck\" عربية طعام طلب مسبق تطبيق",
+    "Egyptian restaurant POS online ordering website module pickup \"EGP\" monthly price Cairo cashier system \"online ordering\" restaurants Egypt local software company"
   ],
-  "vendors": [],
-  "notes": "Count now: 2 (Ordable, Foodics) — no third from local vendors. Zyda (agent 2's; agent 2 recorded it at 'Plans from 27,000 EGP a year.') not fetched. Egyptian names in results, not read: Ordera (Cairo pickup / drive-thru ordering app, press: earns a commission per order from partner restaurants — a consumer multi-restaurant app, marketplace-like), Koinz (loyalty + ordering via its consumer platform, subscription + commission per press — loyalty-led / marketplace-like), OneOrder (B2B restaurant supplies). DineNorder (Qatari), Grubtech (UAE), Geidea (Saudi) — not mine. Otherwise Talabat (marketplace), Zapiet Eats (Shopify app), MENU TIGER, Khamsat / Upwork freelancers. Wuilt (generic store builder, -2) not re-read. Stopped: no Egyptian own-ordering vendor site with an EGP price surfaced. SECOND PASS (food-truck only): no Egyptian food-truck ordering tool found: the order-ahead apps are consumer multi-restaurant apps (Via Drive-Thru, EZeats, Hurryapp, Foodzi, Sofara, Akelni, Otlob, elmenus — marketplaces), plus Yellow Pages EG (directory) and press on food-truck licensing. No vendor site to read. Count stays 2."
+  "vendors": [
+    {
+      "name": "GoSufra",
+      "website": "https://gosufra.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Egyptian (Giza) restaurant OS with its own commission-free ordering website: customers 'order and collect' (pickup), delivery or table; EGP prices for Egypt from its pricing page's own plans endpoint. BORDERLINE on two points: (a) the pickup sentence has no chosen-time wording; (b) the EGP amounts are script-loaded — the pricing page shows them only to visitors in Egypt (it calls /api/plans with country=EG), so the quote is the endpoint's JSON, as in Block 3",
+      "eligibility": {
+        "order_quote": "Customers can order and collect, or order from the table with a QR menu .",
+        "order_url": "https://gosufra.com/en/blog/commission-free-online-ordering/",
+        "country_quote": "Monthly or annual billing · EGP in Egypt, USD elsewhere",
+        "country_url": "https://gosufra.com/en/pricing/"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "EGP",
+          "price_major": 300.0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "\"name\": \"Starter\", \"price\": 300.0, \"currency\": \"EGP\", \"billingCycle\": \"Monthly\"",
+          "url": "https://gosufra.com/api/plans?lang=en&country=EG",
+          "note": "Starter: 1 branch, 'maxOrdersPerMonth': 150 in the endpoint; the blog says 'The ordering website is on Starter , the entry plan, for one branch and up to 500 orders a month.' (order cap differs: 150 vs 500). Endpoint features for Starter don't list the ordering website; 'Powered by GoSufra branding'."
+        },
+        {
+          "plan_name": "Basic",
+          "currency": "EGP",
+          "price_major": 499.0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "\"name\": \"Basic\", \"price\": 499.0, \"currency\": \"EGP\", \"billingCycle\": \"Monthly\"",
+          "url": "https://gosufra.com/api/plans?lang=en&country=EG",
+          "note": "adds KDS, unlimited orders, no GoSufra branding"
+        },
+        {
+          "plan_name": "Growth",
+          "currency": "EGP",
+          "price_major": 999.0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "\"name\": \"Growth\", \"price\": 999.0, \"currency\": \"EGP\", \"billingCycle\": \"Monthly\"",
+          "url": "https://gosufra.com/api/plans?lang=en&country=EG",
+          "note": "endpoint features: 'All Apps (POS + KDS + Waiter + Driver + Customer)' — the first plan that names the Customer (ordering) app explicitly"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Customers can order and collect, or order from the table with a QR menu .",
+          "url": "https://gosufra.com/en/blog/commission-free-online-ordering/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "The order lands on the POS and on the kitchen display at once, with prep timers and Rush and VIP lanes.",
+          "url": "https://gosufra.com/en/"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "POS, kitchen display, online ordering, delivery, inventory, recipe costing, HR, payroll and full double-entry accounting — connected in real time, working offline",
+          "url": "https://gosufra.com/en/"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Dine-in, takeaway and delivery in one flow",
+          "url": "https://gosufra.com/en/"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Monthly or annual billing · EGP in Egypt, USD elsewhere",
+          "url": "https://gosufra.com/en/pricing/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "A guest orders from your restaurant's own app or website — no marketplace in the middle, no commission taken off the bill.",
+          "url": "https://gosufra.com/en/"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Paymob and Fawry for Egyptian pounds — you pay the gateway’s normal fee, with no extra commission from GoSufra.",
+          "url": "https://gosufra.com/en/blog/commission-free-online-ordering/"
+        }
+      ],
+      "check_urls": [
+        "https://gosufra.com/en/",
+        "https://gosufra.com/en/pricing/",
+        "https://gosufra.com/en/blog/commission-free-online-ordering/",
+        "https://gosufra.com/api/plans?lang=en&country=EG",
+        "https://gosufra.com/_astro/Pricing.astro_astro_type_script_index_0_lang.S_jHFGV_.js",
+        "https://gosufra.com/_astro/pricing-region.Da9p1x_X.js"
+      ],
+      "endpoint_confirmation": "/en/pricing/ loads /_astro/Pricing.astro_astro_type_script_index_0_lang.S_jHFGV_.js, which runs fetch(`/api/plans?${e(i)}`) (a relative URL on gosufra.com); e() in /_astro/pricing-region.Da9p1x_X.js builds URLSearchParams({lang}) and sets country=EG when the browser time zone is Africa/Cairo (or the language region is EG). Read once: https://gosufra.com/api/plans?lang=en&country=EG -> HTTP 200 JSON, plans Starter 300 / Basic 499 / Growth 999 / Pro 2499 / Enterprise 8999, all 'currency': 'EGP', 'billingCycle': 'Monthly'."
+    }
+  ],
+  "notes": "Count now: 2 (Ordable, Foodics) — no third from local vendors. Zyda (agent 2's; agent 2 recorded it at 'Plans from 27,000 EGP a year.') not fetched. Egyptian names in results, not read: Ordera (Cairo pickup / drive-thru ordering app, press: earns a commission per order from partner restaurants — a consumer multi-restaurant app, marketplace-like), Koinz (loyalty + ordering via its consumer platform, subscription + commission per press — loyalty-led / marketplace-like), OneOrder (B2B restaurant supplies). DineNorder (Qatari), Grubtech (UAE), Geidea (Saudi) — not mine. Otherwise Talabat (marketplace), Zapiet Eats (Shopify app), MENU TIGER, Khamsat / Upwork freelancers. Wuilt (generic store builder, -2) not re-read. Stopped: no Egyptian own-ordering vendor site with an EGP price surfaced. SECOND PASS (food-truck only): no Egyptian food-truck ordering tool found: the order-ahead apps are consumer multi-restaurant apps (Via Drive-Thru, EZeats, Hurryapp, Foodzi, Sofara, Akelni, Otlob, elmenus — marketplaces), plus Yellow Pages EG (directory) and press on food-truck licensing. No vendor site to read. Count stays 2. THIRD PASS (restaurant tools): NEW GoSufra (Giza, Egypt) — eligible, EGP 300 / 499 / 999 per month from its own plans endpoint (BORDERLINE: script-loaded price, and which plan carries the ordering website — blog says Starter, endpoint names the Customer app from Growth). If accepted, EG count = 3. Also seen: Deyafa POS (Egyptian, '500 EGP' per SourceForge; guessed domains did not connect — not read), Geidea / Foodics / BIM POS / Fawry POS (others' or tills)."
 }
