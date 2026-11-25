@@ -1,0 +1,22 @@
+{
+ "country": "ZA",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Feasty",
+   "website": "https://feasty.co",
+   "stored_id_prefix": null,
+   "focus": "food_truck",
+   "verdict": "not_relevant",
+   "reason": "food-truck / cart / stall platform with order-and-pick-up ('Customers scan, order from their phone, and pick up when it's ready.'), free ('No subscriptions. No setup fees.', 'Free forever. No card required.'; card fees 'as low as ~1.6%', catering '1% fee'), but its own site names no country at all — no South Africa / ZA / Rand / R — and no currency; it does not show it sells in ZA",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://feasty.co"
+   ]
+  }
+ ],
+ "notes": "Feasty read once (home page; no pricing page linked). Not counted in ZA: no ZA presence and no ZAR price on its own site. (Its Capterra listings mention QuickBooks / TurboTax exports, which point to the US.)"
+}
