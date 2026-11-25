@@ -5,7 +5,8 @@
   "ระบบสั่งอาหารออนไลน์ ร้านอาหาร สั่งล่วงหน้า รับเองที่ร้าน เว็บไซต์ของร้าน ไม่เก็บค่า GP ราคา บาท/เดือน แพ็กเกจ",
   "POS ร้านอาหาร ระบบสั่งออนไลน์ ลูกค้าสั่งล่วงหน้า มารับที่ร้าน (pickup) ราคาแพ็กเกจ บาทต่อเดือน POSPOS OR Eats365 OR Qashier OR Zort",
   "What the Truk app Thailand food truck order ahead",
-  "ฟู้ดทรัค รถขายอาหาร ตลาดนัด สั่งล่วงหน้า มารับเอง แอป ระบบสั่งออนไลน์ สำหรับร้านค้า ราคา"
+  "ฟู้ดทรัค รถขายอาหาร ตลาดนัด สั่งล่วงหน้า มารับเอง แอป ระบบสั่งออนไลน์ สำหรับร้านค้า ราคา",
+  "ระบบรับออเดอร์ออนไลน์ ร้านอาหาร ลิงก์สั่งอาหารของร้าน ลูกค้ามารับเอง ไม่มีค่า GP ค่าบริการรายเดือน บาท ทดลองใช้ฟรี"
  ],
  "vendors": [
   {
@@ -142,7 +143,21 @@
    "check_urls": [
     "https://www.wongnai.com/pos-articles/wongnaipos-order-pay"
    ]
+  },
+  {
+   "name": "Eats365",
+   "website": "https://www.eats365pos.com/th",
+   "stored_id_prefix": "647628e6",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "has a Thailand region; raw HTML of https://www.eats365pos.com/th/pricing contains no ฿ / บาท / THB amount — Online Ordering module unpriced (as in KR, LK, SG)",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.eats365pos.com/th/pricing"
+   ]
   }
  ],
- "notes": "TH count now: 2 (Klikit, StoreHub) — unchanged unless Dominic accepts Wongnai POS (borderline: pickup via LINE MINI Eats, package inclusion unstated — the same doubts as compare-research-1, which is why it was never counted). Ocha POS still script-only. The Thai search found only MENU TIGER (USD, rejected), Toast (US), FlowAccount blog, Restolabs / Capterra / WordPress plugin / Popmenu (foreign or not sources). Earlier rejects not re-read: GloriaFood, Take App, Qashier TH (in-store QR only), Hato Hub (delivery), Loyverse (till), Restolabs (no Thai presence). Stopped. Extra round: Wongnai POS Order & Pay is in-store QR (per-day price) — not relevant; Kasikorn Food Solution (bank bundle 'เริ่มต้น 550 บาท/เดือน', snippet only) is a partner-POS bundle page, not a vendor's own ordering product. PASS 2 (food-truck only): 'What The Truk' (found in the Thai App Store) is What The Truk LLC, a US food-truck finder / order-ahead app naming no Thai coverage; the Thai food-truck search returned foreign tools (GetSauce, Menufy, UpMenu, Toast, Restolabs — no Thai presence, none of them mine except Restolabs, rejected for TH in compare-research-1), Sharetribe, MENU TIGER (USD) and a Chulalongkorn thesis on a food-truck web app. No Thai food-truck ordering tool with an own site and THB price. Count stays 2."
+ "notes": "TH count now: 2 (Klikit, StoreHub) — unchanged unless Dominic accepts Wongnai POS (borderline: pickup via LINE MINI Eats, package inclusion unstated — the same doubts as compare-research-1, which is why it was never counted). Ocha POS still script-only. The Thai search found only MENU TIGER (USD, rejected), Toast (US), FlowAccount blog, Restolabs / Capterra / WordPress plugin / Popmenu (foreign or not sources). Earlier rejects not re-read: GloriaFood, Take App, Qashier TH (in-store QR only), Hato Hub (delivery), Loyverse (till), Restolabs (no Thai presence). Stopped. Extra round: Wongnai POS Order & Pay is in-store QR (per-day price) — not relevant; Kasikorn Food Solution (bank bundle 'เริ่มต้น 550 บาท/เดือน', snippet only) is a partner-POS bundle page, not a vendor's own ordering product. PASS 2 (food-truck only): 'What The Truk' (found in the Thai App Store) is What The Truk LLC, a US food-truck finder / order-ahead app naming no Thai coverage; the Thai food-truck search returned foreign tools (GetSauce, Menufy, UpMenu, Toast, Restolabs — no Thai presence, none of them mine except Restolabs, rejected for TH in compare-research-1), Sharetribe, MENU TIGER (USD) and a Chulalongkorn thesis on a food-truck web app. No Thai food-truck ordering tool with an own site and THB price. Count stays 2. ROUND 3 (restaurant tools): Thai search for own-link ordering with pickup and a THB monthly fee returned only foreign USD tools (MENU TIGER, GloriaFood — rejected; Toast US; Restolabs / FitSmallBusiness blogs). Eats365 TH unpriced. Dinlr (found for SG/MY) has only SG, MY, US sites. Count stays 2."
 }
