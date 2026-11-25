@@ -91,3 +91,7 @@ No other tool priced in ALL: doXmenu is a QR menu, logic.al is a POS with loyalt
 ## BA (Bosnia and Herzegovina, BAM)
 
 No other tool priced in BAM: the search returned only Glovo marketplace pages. count now: 1 (Vitrina)
+
+## MK (North Macedonia, MKD)
+
+No other tool priced in MKD: the results were only marketplaces (Wolt, Naracaj.com, Klikni Jadi). count now: 1 (Vitrina)

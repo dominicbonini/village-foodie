@@ -1,0 +1,12 @@
+{
+  "country": "MK",
+  "researched_on": "2026-11-25",
+  "searches": ["систем за онлајн нарачки ресторани подигање во локал цена денари месечно Македонија нарачај однапред"],
+  "vendors": [
+    { "name": "Naracaj.com", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Consumer ordering app listing many restaurants (marketplace), App Store only. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] },
+    { "name": "Klikni Jadi", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Delivery marketplace ('170 ресторани'), App Store only. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] }
+  ],
+  "notes": "Vitrina (MKD) is already counted. No other tool priced in MKD was found: the results were Wolt and two local marketplaces. FoxiFood has a Macedonian site but is EUR only (compare-research-2). Count stays 1."
+}
