@@ -36,3 +36,11 @@ With Klikit (counted earlier). count now: 2 (food-truck: 0)
 | Foodics | nearest_local | eligible; currency NOT shown on KSA page | Advanced 765/month (8448/year), the only plan with the online website | https://www.foodics.com/ar/foodics-pricing-ksa/ |
 
 count now: 1 confirmed (Ordable); 2 if the KSA page is accepted as SAR. No other SAR food ordering tool found.
+
+## QA (Qatar, QAR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Foodics | nearest_local | eligible but USD only (does not count) | Advanced USD 1,500/year | https://www.foodics.com/foodics-pricing-qatar/ |
+
+No QAR-priced second tool found (Blink $, QFOODTECH / Zegashop no price). count now: 1 (Ordable)

@@ -1,0 +1,50 @@
+{
+ "country": "QA",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Qatar restaurant online ordering website pickup commission-free pricing QAR per month"
+ ],
+ "vendors": [
+  {
+   "name": "Foodics (Foodics Online)",
+   "website": "https://www.foodics.com",
+   "stored_id_prefix": "4620b046",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Saudi restaurant POS with its own ordering website (eligibility: compare-research-2 SA file); its Qatar pricing page is priced in USD only, so it does not count in QAR",
+   "eligibility": {
+    "country_quote": "USD 1,500/year",
+    "country_url": "https://www.foodics.com/foodics-pricing-qatar/"
+   },
+   "plans": [
+    {
+     "plan_name": "Advanced Bundle",
+     "currency": "USD",
+     "price_major": 1500,
+     "period": "year",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "USD 1,500/year",
+     "url": "https://www.foodics.com/foodics-pricing-qatar/",
+     "note": "USD, not QAR. 'Billed Annually'. Only Advanced lists 'Website'. Starter 'USD 684/year', Basic 'USD 900/year'."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.foodics.com/foodics-pricing-qatar/"
+   ]
+  }
+ ],
+ "notes": "QA: Foodics Qatar page is USD only (not counted in QAR). Search for a Qatari ordering tool priced in QAR found only marketplace diner subscriptions (Rafeeq, Talabat), USD tools (GloriaFood: agent 1; Blink $; Weevi unclear currency), QFOODTECH (no price) and Zegashop blog (no price). Nothing else in QAR found. count now: 1 (Ordable)."
+}
