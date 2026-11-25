@@ -7,7 +7,11 @@
     "eeltellimus järjekorrata kohvik toiduauto rakendus ettevõtetele liitu hind kuutasu Eesti tellimine ette",
     "toiduauto tellimine ette veebis järeletulek \"food truck\" Eesti tänavatoidu festival eeltellimine süsteem",
     "Tallinn Food Truck Festival vendors cashless app order ahead \"telli\" app organiser DK Entertainment ordering",
-    "play.google.com toiduauto eeltellimus rakendus Eesti \"food truck\" telli ette ja võta kaasa"
+    "play.google.com toiduauto eeltellimus rakendus Eesti \"food truck\" telli ette ja võta kaasa",
+    "veebitellimused restoranile kaasa tellimus \"tellimine ette\" süsteem hinnakiri kuu € restoran kohvik Eesti platvorm",
+    "Erply OR \"POS24\" OR Hansab OR \"Smartbox\" restoran online tellimused kaasa järele tulemine moodul hind",
+    "Tallinn startup online ordering platform for restaurants cafes own website takeaway pickup pricing € per month Estonia \"OÜ\"",
+    "Fudy Estonia order platform restaurants pricing pickup takeaway fudy.eu OR fudy.ee"
   ],
   "vendors": [
     {
@@ -36,7 +40,69 @@
       "plans": [],
       "answers": [],
       "check_urls": []
+    },
+    {
+      "name": "Snakk (app.snakk.ee)",
+      "website": "https://app.snakk.ee",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "TalTech student project: table-QR ordering only. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Erply",
+      "website": "https://erply.ee",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Estonian retail/restaurant POS; its pages in search mention only connecting a webshop by API ('start a sale online and complete it in the store'), no own ordering product or price. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Fudy",
+      "website": "https://news.err.ee/1608732007/wolt-bolt-food-courier-apps-say-do-not-fear-new-competitor-fudy",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Estonian consumer delivery app (Wolt/Bolt competitor, ending restaurant delivery per ERR) - marketplace, never counts. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Ordly",
+      "website": "https://gust.com/companies/ordly",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Tallinn growth-management platform for restaurants and hotels (directory listing) - not an ordering tool shown. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "resOS (takeaway)",
+      "website": "https://resos.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Danish booking system with a takeaway module; https://resos.com/takeaway-pricing/ answered HTTP 410 Gone (unreadable in NO earlier too).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://resos.com/takeaway-pricing/"
+      ]
     }
   ],
-  "notes": "EE counts FoxiFood and Jitmeal. No third found. Earlier evidence not counted: Poster (Estonia page, USD only - its Estonia ad page in today's search again shows '$24 per month'), Storekit (GBP only), SumUp (generic web shop - the single-fallback type, eligible EUR 0 in compare-research-2), EestiPOS, Tellikohe, Kassahaldus (rejected/unreadable). One Estonian search returned Wolt (marketplace), Subger, Restimo (Polish; no Estonia presence shown), TalTech theses and Capterra. EE stays at 2 (3 only if the coordinator lets SumUp's web shop count as a third). Second pass: Restimo (Polish, € prices, shows up in many countries' searches) read - no pickup / order-ahead wording, so not eligible anywhere on its own pages; Erply/Tickett/Smartpos did not surface. EE stays at 2. Third pass (Estonian 'eeltellimus ... toiduauto'): only Uber Eats for Business, Wolt, Telli Toit (consumer app), Sigosoft and Kavapp (custom dev / RU). After about 6 new sites, nothing. Second pass (coordinator, food-truck angles): festival organisers (Tallinn Food Truck Festival, Tallinn Street Food Festival, DK Entertainment) name no ordering tool; Estonian food-truck / Google Play searches find only Wolt (LIT truck's scheduled orders on the marketplace), Telli Toit (consumer app), Ticket Fairy blog (US) and ERR news. No new vendor site worth opening. EE stays at 2."
+  "notes": "EE counts FoxiFood and Jitmeal. No third found. Earlier evidence not counted: Poster (Estonia page, USD only - its Estonia ad page in today's search again shows '$24 per month'), Storekit (GBP only), SumUp (generic web shop - the single-fallback type, eligible EUR 0 in compare-research-2), EestiPOS, Tellikohe, Kassahaldus (rejected/unreadable). One Estonian search returned Wolt (marketplace), Subger, Restimo (Polish; no Estonia presence shown), TalTech theses and Capterra. EE stays at 2 (3 only if the coordinator lets SumUp's web shop count as a third). Second pass: Restimo (Polish, € prices, shows up in many countries' searches) read - no pickup / order-ahead wording, so not eligible anywhere on its own pages; Erply/Tickett/Smartpos did not surface. EE stays at 2. Third pass (Estonian 'eeltellimus ... toiduauto'): only Uber Eats for Business, Wolt, Telli Toit (consumer app), Sigosoft and Kavapp (custom dev / RU). After about 6 new sites, nothing. Second pass (coordinator, food-truck angles): festival organisers (Tallinn Food Truck Festival, Tallinn Street Food Festival, DK Entertainment) name no ordering tool; Estonian food-truck / Google Play searches find only Wolt (LIT truck's scheduled orders on the marketplace), Telli Toit (consumer app), Ticket Fairy blog (US) and ERR news. No new vendor site worth opening. EE stays at 2. Third pass (restaurant tools, coordinator): four Estonian/English searches found Wolt listings, TalTech theses (Snakk table QR), Erply (webshop API only), Fudy (marketplace), Ordly (growth platform), Choice (blocked; snippet 'from 40 €/month' not on a readable own page), Poster (USD), resOS (takeaway pricing page 410). EE stays at 2."
 }
