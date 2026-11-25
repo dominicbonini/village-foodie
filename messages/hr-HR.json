@@ -7629,5 +7629,9 @@
       "allSet": "Sve je spremno: paket {plan} počinje {date}.",
       "charge": "Kad probno razdoblje završi, naplatit ćemo {amount} za ostatak mjeseca ({month})."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Vaša arhiva prodaje za {period} je spremna",
+    "body": "Vaša HatchGrab arhiva prodaje za {period} je spremna. Preuzmite je ovdje: {link} (poveznica vrijedi 7 dana). Spremite kopiju: u nekim zemljama, primjerice u Francuskoj, evidenciju prodaje morate čuvati 10 godina. Digitalni otisak arhive: {hash}. Ništa drugo ne morate učiniti."
   }
 }

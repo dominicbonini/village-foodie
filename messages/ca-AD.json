@@ -7629,5 +7629,9 @@
       "allSet": "Ja està tot a punt: el pla {plan} comença el {date}.",
       "charge": "Quan acabi la prova, et cobrarem {amount} per la resta del mes ({month})."
     }
+  },
+  "emailTillArchive": {
+    "subject": "El teu arxiu de vendes del període {period} ja està a punt",
+    "body": "El teu arxiu de vendes de HatchGrab del període {period} ja està a punt. Descarrega’l aquí: {link} (l’enllaç funciona durant 7 dies). Guarda’n una còpia: en alguns països, com ara França, cal conservar els registres de vendes durant 10 anys. Empremta digital de l’arxiu: {hash}. No cal que facis res més."
   }
 }

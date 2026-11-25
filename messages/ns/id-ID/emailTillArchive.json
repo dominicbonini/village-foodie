@@ -1,0 +1,4 @@
+{
+  "subject": "Arsip penjualan Anda untuk {period} sudah siap",
+  "body": "Arsip penjualan HatchGrab Anda untuk {period} sudah siap. Unduh di sini: {link} (tautan berlaku selama 7 hari). Simpan salinannya: di beberapa negara, seperti Prancis, catatan penjualan wajib disimpan selama 10 tahun. Sidik jari arsip: {hash}. Anda tidak perlu melakukan apa pun lagi."
+}

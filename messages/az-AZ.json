@@ -7629,5 +7629,9 @@
       "allSet": "Hər şey hazırdır: plan {date} tarixində başlayır — {plan}.",
       "charge": "Sınaq müddətiniz bitəndə {month} ayının qalan hissəsi üçün {amount} tutacağıq."
     }
+  },
+  "emailTillArchive": {
+    "subject": "{period} üzrə satış arxiviniz hazırdır",
+    "body": "{period} üzrə HatchGrab satış arxiviniz hazırdır. Buradan yükləyin: {link} (keçid 7 gün ərzində işləyir). Bir nüsxəsini saxlayın: bəzi ölkələrdə, məsələn, Fransada satış qeydlərini 10 il saxlamaq məcburidir. Arxivin rəqəmsal izi: {hash}. Başqa heç nə etməyinizə ehtiyac yoxdur."
   }
 }

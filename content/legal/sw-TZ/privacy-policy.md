@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Sera ya Faragha
 
 **Ilisasishwa mwisho:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Huduma yetu inapokua tunaweza kuongeza watoa huduma, akiwemo mtoa huduma wa SMS.
 - **Oda za kadi mtandaoni ambazo hazikukamilika** (zilizoanzishwa lakini hazikuwekwa kamwe): zinafutwa ndani ya siku moja baada ya muda wake kuisha. Ikiwa malipo ya kadi yalikuwa bado yameshikiliwa, zinafutwa ndani ya siku moja baada ya pesa hizo zilizoshikiliwa kuachiliwa.
 - **Ujumbe wa WhatsApp ambao wateja wako wanatuma kwa food truck, na majibu yetu ya kiotomatiki:** miezi 12.
 - **Data za oda na mauzo zisizomtambulisha mtu:** zinahifadhiwa bila kikomo cha muda, ili food truck zibaki na historia yao ya biashara. Data hizi haziwezi kuhusishwa tena na mtu binafsi.
-- **Rekodi za kihasibu:** miaka sita kuanzia mwisho wa mwaka wa fedha husika, kama sheria ya kodi ya Uingereza inavyotaka.
+- **Rekodi za kihasibu:** angalau miaka sita kuanzia mwisho wa mwaka wa fedha husika, na miaka kumi pale sheria inapotaka hivyo.
 - **Mawasiliano ya usaidizi:** miezi 24.
 - **Kumbukumbu za kiufundi na za usalama (logs):** siku 90.
 - **Data za majaribio (demo):** saa 24, au siku 14 ukiomba tuhifadhi majaribio yako; hadi siku 30 ukijisajili kutoka kwayo, au kwa majaribio tunayoandaa kwa ajili ya food truck tuliyowasiliana nayo (tazama sehemu ya 5).

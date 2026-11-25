@@ -7629,5 +7629,9 @@
       "allSet": "Her şey hazır: {plan} paketi {date} tarihinde başlıyor.",
       "charge": "Denemeniz bittiğinde {month} ayının kalanı için {amount} tahsil edeceğiz."
     }
+  },
+  "emailTillArchive": {
+    "subject": "{period} dönemine ait satış arşiviniz hazır",
+    "body": "{period} dönemine ait HatchGrab satış arşiviniz hazır. Buradan indirebilirsiniz: {link} (bağlantı 7 gün geçerlidir). Bir kopyasını saklayın: Fransa gibi bazı ülkelerde satış kayıtlarının 10 yıl saklanması zorunludur. Arşivin parmak izi: {hash}. Başka bir şey yapmanıza gerek yok."
   }
 }

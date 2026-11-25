@@ -1,0 +1,558 @@
+{
+ "content/legal/privacy-policy.md": [
+  [
+   "**Last updated:** 25 November 2026",
+   "**Last updated:** 24 November 2026"
+  ],
+  [
+   "- **Accounting records:** at least six years from the end of the relevant financial year, and ten years where the law requires it.",
+   "- **Accounting records:** six years from the end of the relevant financial year, as UK tax law requires."
+  ]
+ ],
+ "lib/legal.ts": [
+  [
+   "export const PRIVACY_UPDATED = '25 November 2026'",
+   "export const PRIVACY_UPDATED = '24 November 2026'"
+  ]
+ ],
+ "content/legal/am-ET/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **የሂሳብ መዝገቦች፦** የሚመለከተው የሂሳብ ዓመት ካበቃ ጀምሮ ቢያንስ ለስድስት ዓመታት፣ ሕጉ በሚጠይቅበት ሁኔታ ደግሞ ለአሥር ዓመታት።",
+   "- **የሂሳብ መዝገቦች፦** የዩኬ የግብር ሕግ በሚጠይቀው መሠረት፣ የሚመለከተው የሂሳብ ዓመት ካበቃ ጀምሮ ለስድስት ዓመታት።"
+  ]
+ ],
+ "content/legal/ar-AE/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **السجلات المحاسبية:** ست سنوات على الأقل من نهاية السنة المالية المعنية، وعشر سنوات حيثما يقتضي القانون ذلك.",
+   "- **السجلات المحاسبية:** ست سنوات من نهاية السنة المالية المعنية، وفقًا لما يقتضيه قانون الضرائب في المملكة المتحدة."
+  ]
+ ],
+ "content/legal/az-AZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Mühasibat qeydləri:** müvafiq maliyyə ilinin sonundan ən azı altı il, qanunun tələb etdiyi hallarda isə on il.",
+   "- **Mühasibat qeydləri:** Birləşmiş Krallığın vergi qanunvericiliyinin tələb etdiyi kimi, müvafiq maliyyə ilinin sonundan altı il."
+  ]
+ ],
+ "content/legal/bg-BG/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Счетоводни документи:** най-малко шест години от края на съответната финансова година и десет години, когато законът го изисква.",
+   "- **Счетоводни документи:** шест години от края на съответната финансова година, както изисква данъчното законодателство на Обединеното кралство."
+  ]
+ ],
+ "content/legal/bn-BD/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **হিসাবের রেকর্ড:** সংশ্লিষ্ট অর্থবছর শেষ হওয়ার পর থেকে অন্তত ছয় বছর, এবং আইন যেখানে দাবি করে সেখানে দশ বছর।",
+   "- **হিসাবের রেকর্ড:** সংশ্লিষ্ট অর্থবছর শেষ হওয়ার পর থেকে ছয় বছর, যেমনটি UK-এর কর আইন দাবি করে।"
+  ]
+ ],
+ "content/legal/bs-BA/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Računovodstveni zapisi:** najmanje šest godina od kraja odnosne finansijske godine, a deset godina kada to zakon zahtijeva.",
+   "- **Računovodstveni zapisi:** šest godina od kraja odnosne finansijske godine, kako zahtijeva britanski poreski zakon."
+  ]
+ ],
+ "content/legal/ca-AD/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Registres comptables:** almenys sis anys des del final de l’exercici corresponent, i deu anys quan la llei ho exigeixi.",
+   "- **Registres comptables:** sis anys des del final de l’exercici corresponent, tal com exigeix la legislació fiscal del Regne Unit."
+  ]
+ ],
+ "content/legal/cs-CZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Účetní záznamy:** nejméně šest let od konce příslušného účetního roku a deset let tam, kde to vyžaduje zákon.",
+   "- **Účetní záznamy:** šest let od konce příslušného účetního roku, jak vyžadují britské daňové předpisy."
+  ]
+ ],
+ "content/legal/da-DK/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Regnskabsmateriale:** mindst seks år fra udgangen af det pågældende regnskabsår og ti år, hvor loven kræver det.",
+   "- **Regnskabsmateriale:** seks år fra udgangen af det pågældende regnskabsår, som britisk skattelovgivning kræver."
+  ]
+ ],
+ "content/legal/de-DE/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Buchhaltungsunterlagen:** mindestens sechs Jahre ab dem Ende des betreffenden Geschäftsjahres und zehn Jahre, soweit das Gesetz dies vorschreibt.",
+   "- **Buchhaltungsunterlagen:** sechs Jahre ab dem Ende des betreffenden Geschäftsjahres, wie es das Steuerrecht des Vereinigten Königreichs vorschreibt."
+  ]
+ ],
+ "content/legal/el-GR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Λογιστικά αρχεία:** τουλάχιστον έξι έτη από το τέλος του σχετικού οικονομικού έτους και δέκα έτη όπου το απαιτεί ο νόμος.",
+   "- **Λογιστικά αρχεία:** έξι έτη από το τέλος του σχετικού οικονομικού έτους, όπως απαιτεί η φορολογική νομοθεσία του Ηνωμένου Βασιλείου."
+  ]
+ ],
+ "content/legal/es-ES/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Registros contables:** al menos seis años desde el final del ejercicio correspondiente, y diez años cuando la ley lo exija.",
+   "- **Registros contables:** seis años desde el final del ejercicio correspondiente, como exige la legislación tributaria del Reino Unido."
+  ]
+ ],
+ "content/legal/et-EE/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Raamatupidamisdokumendid:** vähemalt kuus aastat asjaomase majandusaasta lõpust ja kümme aastat, kui seadus seda nõuab.",
+   "- **Raamatupidamisdokumendid:** kuus aastat asjaomase majandusaasta lõpust, nagu nõuab Ühendkuningriigi maksuseadus."
+  ]
+ ],
+ "content/legal/fi-FI/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Kirjanpitoaineisto:** vähintään kuusi vuotta kyseisen tilikauden päättymisestä ja kymmenen vuotta, jos laki sitä edellyttää.",
+   "- **Kirjanpitoaineisto:** kuusi vuotta kyseisen tilikauden päättymisestä, kuten Yhdistyneen kuningaskunnan verolainsäädäntö edellyttää."
+  ]
+ ],
+ "content/legal/fr-FR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Documents comptables :** au moins six ans à compter de la fin de l’exercice concerné, et dix ans lorsque la loi l’exige.",
+   "- **Documents comptables :** six ans à compter de la fin de l’exercice concerné, comme l’exige le droit fiscal britannique."
+  ]
+ ],
+ "content/legal/he-IL/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **רשומות חשבונאיות:** שש שנים לפחות מתום שנת הכספים הרלוונטית, ועשר שנים כאשר החוק מחייב זאת.",
+   "- **רשומות חשבונאיות:** שש שנים מתום שנת הכספים הרלוונטית, כנדרש בדיני המס של הממלכה המאוחדת."
+  ]
+ ],
+ "content/legal/hr-HR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Računovodstvena evidencija:** najmanje šest godina od kraja odnosne financijske godine, a deset godina kada to zahtijeva zakon.",
+   "- **Računovodstvena evidencija:** šest godina od kraja odnosne financijske godine, kako to zahtijeva porezno zakonodavstvo Ujedinjene Kraljevine."
+  ]
+ ],
+ "content/legal/hu-HU/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Számviteli nyilvántartások:** az adott pénzügyi év végétől számított legalább hat évig, illetve tíz évig, ahol ezt jogszabály előírja.",
+   "- **Számviteli nyilvántartások:** az adott pénzügyi év végétől számított hat évig, ahogyan azt az egyesült királysági adójog előírja."
+  ]
+ ],
+ "content/legal/hy-AM/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Հաշվապահական գրառումներ՝** համապատասխան ֆինանսական տարվա ավարտից առնվազն վեց տարի, իսկ օրենքով պահանջվող դեպքերում՝ տասը տարի։",
+   "- **Հաշվապահական գրառումներ՝** համապատասխան ֆինանսական տարվա ավարտից վեց տարի, ինչպես պահանջում է Միացյալ Թագավորության հարկային օրենսդրությունը։"
+  ]
+ ],
+ "content/legal/id-ID/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Catatan akuntansi:** sekurang-kurangnya enam tahun sejak akhir tahun buku yang bersangkutan, dan sepuluh tahun apabila diwajibkan oleh hukum.",
+   "- **Catatan akuntansi:** enam tahun sejak akhir tahun buku yang bersangkutan, sebagaimana diwajibkan oleh hukum perpajakan Britania Raya."
+  ]
+ ],
+ "content/legal/is-IS/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Bókhaldsgögn:** að minnsta kosti sex ár frá lokum viðkomandi fjárhagsárs og tíu ár þar sem lög krefjast þess.",
+   "- **Bókhaldsgögn:** sex ár frá lokum viðkomandi fjárhagsárs, eins og bresk skattalög krefjast."
+  ]
+ ],
+ "content/legal/it-IT/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Scritture contabili:** almeno sei anni dalla fine dell'esercizio finanziario di riferimento, e dieci anni ove richiesto dalla legge.",
+   "- **Scritture contabili:** sei anni dalla fine dell'esercizio finanziario di riferimento, come richiesto dalla normativa fiscale del Regno Unito."
+  ]
+ ],
+ "content/legal/ja-JP/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **会計記録:** 該当する会計年度の終了から少なくとも六年間、法律が求める場合は十年間。",
+   "- **会計記録:** 英国の税法の定めに従い、該当する会計年度の終了から六年間。"
+  ]
+ ],
+ "content/legal/ka-GE/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **ბუღალტრული ჩანაწერები:** სულ მცირე ექვსი წელი შესაბამისი ფინანსური წლის დასრულებიდან, ხოლო ათი წელი, როცა ამას კანონი მოითხოვს.",
+   "- **ბუღალტრული ჩანაწერები:** ექვსი წელი შესაბამისი ფინანსური წლის დასრულებიდან, როგორც ამას გაერთიანებული სამეფოს საგადასახადო კანონმდებლობა მოითხოვს."
+  ]
+ ],
+ "content/legal/kk-KZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Бухгалтерлік жазбалар:** тиісті қаржы жылының соңынан бастап кемінде алты жыл, ал заң талап ететін жағдайларда — он жыл.",
+   "- **Бухгалтерлік жазбалар:** Ұлыбританияның салық заңнамасы талап ететіндей, тиісті қаржы жылының соңынан бастап алты жыл."
+  ]
+ ],
+ "content/legal/km-KH/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **កំណត់ត្រាគណនេយ្យ៖** យ៉ាងហោចណាស់ប្រាំមួយឆ្នាំគិតចាប់ពីចុងឆ្នាំហិរញ្ញវត្ថុពាក់ព័ន្ធ និងដប់ឆ្នាំក្នុងករណីដែលច្បាប់តម្រូវ។",
+   "- **កំណត់ត្រាគណនេយ្យ៖** ប្រាំមួយឆ្នាំគិតចាប់ពីចុងឆ្នាំហិរញ្ញវត្ថុពាក់ព័ន្ធ ដូចដែលច្បាប់ពន្ធរបស់ចក្រភពអង់គ្លេសតម្រូវ។"
+  ]
+ ],
+ "content/legal/ko-KR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **회계 기록:** 해당 회계연도 종료일부터 최소 육 년간, 법률이 요구하는 경우에는 십 년간.",
+   "- **회계 기록:** 영국 세법이 요구하는 바에 따라 해당 회계연도 종료일부터 육 년간."
+  ]
+ ],
+ "content/legal/lo-LA/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **ບັນທຶກທາງບັນຊີ:** ຢ່າງໜ້ອຍຫົກປີ ນັບແຕ່ທ້າຍປີການເງິນທີ່ກ່ຽວຂ້ອງ ແລະ ສິບປີ ໃນກໍລະນີທີ່ກົດໝາຍກຳນົດ.",
+   "- **ບັນທຶກທາງບັນຊີ:** ຫົກປີ ນັບແຕ່ທ້າຍປີການເງິນທີ່ກ່ຽວຂ້ອງ ຕາມທີ່ກົດໝາຍພາສີຂອງສະຫະລາຊະອານາຈັກກຳນົດ."
+  ]
+ ],
+ "content/legal/lt-LT/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Apskaitos įrašai:** ne trumpiau kaip šešerius metus nuo atitinkamų finansinių metų pabaigos ir dešimt metų, kai to reikalauja įstatymai.",
+   "- **Apskaitos įrašai:** šešerius metus nuo atitinkamų finansinių metų pabaigos, kaip reikalauja JK mokesčių įstatymai."
+  ]
+ ],
+ "content/legal/lv-LV/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Grāmatvedības ieraksti:** vismaz sešus gadus no attiecīgā finanšu gada beigām un desmit gadus, ja to prasa tiesību akti.",
+   "- **Grāmatvedības ieraksti:** sešus gadus no attiecīgā finanšu gada beigām, kā to prasa Apvienotās Karalistes nodokļu tiesību akti."
+  ]
+ ],
+ "content/legal/mk-MK/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Сметководствени записи:** најмалку шест години од крајот на соодветната финансиска година, а десет години кога тоа го бара законот.",
+   "- **Сметководствени записи:** шест години од крајот на соодветната финансиска година, како што бара даночното право на Обединетото Кралство."
+  ]
+ ],
+ "content/legal/mn-MN/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Нягтлан бодох бүртгэлийн баримт:** холбогдох санхүүгийн жил дууссанаас хойш дор хаяж зургаан жил, хуульд заасан тохиолдолд арван жил.",
+   "- **Нягтлан бодох бүртгэлийн баримт:** Их Британийн татварын хуульд заасны дагуу холбогдох санхүүгийн жил дууссанаас хойш зургаан жил."
+  ]
+ ],
+ "content/legal/ms-MY/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Rekod perakaunan:** sekurang-kurangnya enam tahun dari akhir tahun kewangan yang berkenaan, dan sepuluh tahun jika dikehendaki oleh undang-undang.",
+   "- **Rekod perakaunan:** enam tahun dari akhir tahun kewangan yang berkenaan, sebagaimana yang dikehendaki oleh undang-undang cukai UK."
+  ]
+ ],
+ "content/legal/nb-NO/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Regnskapsmateriale:** minst seks år fra utgangen av det aktuelle regnskapsåret, og ti år der loven krever det.",
+   "- **Regnskapsmateriale:** seks år fra utgangen av det aktuelle regnskapsåret, slik britisk skattelovgivning krever."
+  ]
+ ],
+ "content/legal/ne-NP/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **लेखाका रेकर्डहरू:** सम्बन्धित आर्थिक वर्ष सकिएदेखि कम्तीमा छ वर्षसम्म, र कानुनले आवश्यक पारेको अवस्थामा दस वर्षसम्म।",
+   "- **लेखाका रेकर्डहरू:** बेलायतको कर कानुनले आवश्यक पारेअनुसार, सम्बन्धित आर्थिक वर्ष सकिएदेखि छ वर्षसम्म।"
+  ]
+ ],
+ "content/legal/nl-NL/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Boekhoudkundige gegevens:** ten minste zes jaar vanaf het einde van het betreffende boekjaar, en tien jaar waar de wet dat vereist.",
+   "- **Boekhoudkundige gegevens:** zes jaar vanaf het einde van het betreffende boekjaar, zoals de Britse belastingwetgeving vereist."
+  ]
+ ],
+ "content/legal/pl-PL/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Dokumentacja księgowa:** co najmniej sześć lat od końca danego roku obrotowego, a dziesięć lat, jeżeli wymaga tego prawo.",
+   "- **Dokumentacja księgowa:** sześć lat od końca danego roku obrotowego, zgodnie z wymogami brytyjskiego prawa podatkowego."
+  ]
+ ],
+ "content/legal/pt-BR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Registros contábeis:** no mínimo seis anos a partir do fim do exercício financeiro correspondente, e dez anos quando a lei exigir.",
+   "- **Registros contábeis:** seis anos a partir do fim do exercício financeiro correspondente, conforme exige a legislação tributária do Reino Unido."
+  ]
+ ],
+ "content/legal/pt-PT/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Registos contabilísticos:** pelo menos seis anos a contar do fim do exercício financeiro em causa, e dez anos quando a lei o exija.",
+   "- **Registos contabilísticos:** seis anos a contar do fim do exercício financeiro em causa, conforme exige a legislação fiscal do Reino Unido."
+  ]
+ ],
+ "content/legal/ro-RO/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Evidențele contabile:** cel puțin șase ani de la sfârșitul exercițiului financiar respectiv și zece ani în cazurile în care legea impune acest lucru.",
+   "- **Evidențele contabile:** șase ani de la sfârșitul exercițiului financiar respectiv, conform cerințelor legislației fiscale din Regatul Unit."
+  ]
+ ],
+ "content/legal/ru-KZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Бухгалтерские записи:** не менее шести лет с конца соответствующего финансового года, а в случаях, предусмотренных законом, — десять лет.",
+   "- **Бухгалтерские записи:** шесть лет с конца соответствующего финансового года, как того требует налоговое законодательство Великобритании."
+  ]
+ ],
+ "content/legal/si-LK/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **ගිණුම්කරණ වාර්තා:** අදාළ මූල්‍ය වර්ෂය අවසන් වූ දින සිට අවම වශයෙන් වසර හයක්, සහ නීතියෙන් අවශ්‍ය වන අවස්ථාවල වසර දහයක්.",
+   "- **ගිණුම්කරණ වාර්තා:** එක්සත් රාජධානියේ බදු නීතියට අනුව, අදාළ මූල්‍ය වර්ෂය අවසන් වූ දින සිට වසර හයක්."
+  ]
+ ],
+ "content/legal/sk-SK/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Účtovné záznamy:** najmenej šesť rokov od konca príslušného účtovného roka a desať rokov, ak to vyžaduje zákon.",
+   "- **Účtovné záznamy:** šesť rokov od konca príslušného účtovného roka, ako to vyžadujú daňové predpisy Spojeného kráľovstva."
+  ]
+ ],
+ "content/legal/sl-SI/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Računovodske evidence:** najmanj šest let od konca zadevnega poslovnega leta in deset let, kadar to zahteva zakon.",
+   "- **Računovodske evidence:** šest let od konca zadevnega poslovnega leta, kot zahteva davčna zakonodaja Združenega kraljestva."
+  ]
+ ],
+ "content/legal/sq-AL/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Regjistrimet kontabël:** të paktën gjashtë vjet nga fundi i vitit financiar përkatës, dhe dhjetë vjet kur e kërkon ligji.",
+   "- **Regjistrimet kontabël:** gjashtë vjet nga fundi i vitit financiar përkatës, siç kërkon ligji tatimor i Mbretërisë së Bashkuar."
+  ]
+ ],
+ "content/legal/sr-RS/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Računovodstvena evidencija:** najmanje šest godina od kraja odnosne finansijske godine, a deset godina kada to zahteva zakon.",
+   "- **Računovodstvena evidencija:** šest godina od kraja odnosne finansijske godine, kako to zahtevaju poreski propisi Ujedinjenog Kraljevstva."
+  ]
+ ],
+ "content/legal/sv-SE/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Bokföringsunderlag:** minst sex år från utgången av det aktuella räkenskapsåret, och tio år där lagen kräver det.",
+   "- **Bokföringsunderlag:** sex år från utgången av det aktuella räkenskapsåret, enligt kraven i brittisk skattelagstiftning."
+  ]
+ ],
+ "content/legal/sw-TZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Rekodi za kihasibu:** angalau miaka sita kuanzia mwisho wa mwaka wa fedha husika, na miaka kumi pale sheria inapotaka hivyo.",
+   "- **Rekodi za kihasibu:** miaka sita kuanzia mwisho wa mwaka wa fedha husika, kama sheria ya kodi ya Uingereza inavyotaka."
+  ]
+ ],
+ "content/legal/th-TH/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **บันทึกทางบัญชี:** อย่างน้อยหกปีนับแต่สิ้นปีบัญชีที่เกี่ยวข้อง และสิบปีในกรณีที่กฎหมายกำหนด",
+   "- **บันทึกทางบัญชี:** หกปีนับแต่สิ้นปีบัญชีที่เกี่ยวข้อง ตามที่กฎหมายภาษีของสหราชอาณาจักรกำหนด"
+  ]
+ ],
+ "content/legal/tr-TR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Muhasebe kayıtları:** ilgili mali yılın sonundan itibaren en az altı yıl, kanunun gerektirdiği durumlarda ise on yıl.",
+   "- **Muhasebe kayıtları:** Birleşik Krallık vergi mevzuatının gerektirdiği şekilde, ilgili mali yılın sonundan itibaren altı yıl."
+  ]
+ ],
+ "content/legal/uk-UA/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Бухгалтерські записи:** щонайменше шість років від кінця відповідного фінансового року, а у випадках, передбачених законом, — десять років.",
+   "- **Бухгалтерські записи:** шість років від кінця відповідного фінансового року, як цього вимагає податкове законодавство Великої Британії."
+  ]
+ ],
+ "content/legal/uz-UZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **Buxgalteriya yozuvlari:** tegishli moliya yili tugaganidan keyin kamida olti yil, qonun talab qilgan hollarda esa oʻn yil.",
+   "- **Buxgalteriya yozuvlari:** Buyuk Britaniya soliq qonunchiligi talab qilganidek, tegishli moliya yili tugaganidan keyin olti yil."
+  ]
+ ],
+ "content/legal/zh-HK/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **會計紀錄：** 由有關財政年度結束起計最少六年，如法律有所規定，則為十年。",
+   "- **會計紀錄：** 按英國稅務法律規定，由有關財政年度結束起計六年。"
+  ]
+ ],
+ "content/legal/zh-TW/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->",
+   "<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->"
+  ],
+  [
+   "- **會計紀錄：** 自相關會計年度結束起至少六年，如法律有規定，則為十年。",
+   "- **會計紀錄：** 依英國稅法規定，自相關會計年度結束起六年。"
+  ]
+ ]
+}

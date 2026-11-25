@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Política de Privacidade
 
 **Última atualização:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Também podemos divulgar dados quando formos obrigados por lei, ou para estabele
 - **Pedidos online com cartão não concluídos** (iniciados, mas nunca finalizados): excluídos no prazo de um dia após expirarem. Se ainda houver uma pré-autorização de pagamento com cartão, são excluídos no prazo de um dia após a liberação dessa pré-autorização.
 - **Mensagens de WhatsApp que os seus clientes enviam a um food truck e as nossas respostas automáticas:** 12 meses.
 - **Dados anonimizados de pedidos e vendas:** mantidos por tempo indeterminado, para que os food trucks conservem o seu histórico de vendas. Esses dados não podem ser associados a uma pessoa física.
-- **Registros contábeis:** seis anos a partir do fim do exercício financeiro correspondente, conforme exige a legislação tributária do Reino Unido.
+- **Registros contábeis:** no mínimo seis anos a partir do fim do exercício financeiro correspondente, e dez anos quando a lei exigir.
 - **Correspondência de suporte:** 24 meses.
 - **Registros (logs) técnicos e de segurança:** 90 dias.
 - **Dados de demonstração:** 24 horas, ou 14 dias se você pedir que mantenhamos a sua demonstração; até 30 dias se você se cadastrar a partir dela, ou no caso de demonstrações que preparamos para um food truck com o qual entramos em contato (consulte a seção 5).

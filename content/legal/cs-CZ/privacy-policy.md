@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Zásady ochrany osobních údajů
 
 **Poslední aktualizace:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ S růstem naší služby můžeme přidat další poskytovatele, včetně poskyt
 - **Nedokončené online objednávky placené kartou** (zahájené, ale nikdy nezadané): smazány do jednoho dne od vypršení. Pokud byla platba kartou ještě blokována, smažou se do jednoho dne od uvolnění této blokace.
 - **Zprávy WhatsApp, které vaši zákazníci posílají food trucku, a naše automatické odpovědi:** 12 měsíců.
 - **Anonymizované údaje o objednávkách a prodejích:** uchovávány na dobu neurčitou, aby si food trucky zachovaly historii svého prodeje. Tyto údaje nelze zpětně spojit s konkrétní osobou.
-- **Účetní záznamy:** šest let od konce příslušného účetního roku, jak vyžadují britské daňové předpisy.
+- **Účetní záznamy:** nejméně šest let od konce příslušného účetního roku a deset let tam, kde to vyžaduje zákon.
 - **Korespondence s podporou:** 24 měsíců.
 - **Technické a bezpečnostní záznamy:** 90 dnů.
 - **Údaje dema:** 24 hodin, nebo 14 dnů, pokud nás požádáte o uchování vašeho dema; až 30 dnů, pokud se z něj zaregistrujete, nebo u dem, která připravíme pro food truck, který jsme oslovili (viz oddíl 5).

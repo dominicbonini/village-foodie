@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Política de privadesa
 
 **Última actualització:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ A mesura que el nostre servei creixi, podem afegir proveïdors, inclòs un prove
 - **Comandes en línia amb targeta no finalitzades** (iniciades però mai enviades): s’eliminen en un dia des que caduquen. Si encara hi havia un import retingut a la targeta, s’eliminen en un dia des que s’allibera la retenció.
 - **Missatges de WhatsApp que els teus clients envien a un food truck, i les nostres respostes automàtiques:** 12 mesos.
 - **Dades anonimitzades de comandes i vendes:** es conserven indefinidament, perquè els food trucks mantinguin el seu historial de vendes. Aquestes dades no es poden vincular amb cap persona.
-- **Registres comptables:** sis anys des del final de l’exercici corresponent, tal com exigeix la legislació fiscal del Regne Unit.
+- **Registres comptables:** almenys sis anys des del final de l’exercici corresponent, i deu anys quan la llei ho exigeixi.
 - **Correspondència d’assistència:** 24 mesos.
 - **Registres tècnics i de seguretat:** 90 dies.
 - **Dades de demostració:** 24 hores, o 14 dies si ens demanes que conservem la teva demostració; fins a 30 dies si et registres des de la demostració, o en el cas de les demostracions que preparem per a un food truck amb qui hem contactat (consulta l’apartat 5).

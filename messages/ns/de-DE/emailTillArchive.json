@@ -1,0 +1,4 @@
+{
+  "subject": "Ihr Umsatzarchiv für {period} ist bereit",
+  "body": "Ihr HatchGrab-Umsatzarchiv für {period} ist bereit. Laden Sie es hier herunter: {link} (der Link ist 7 Tage gültig). Bewahren Sie eine Kopie auf: In manchen Ländern, etwa in Frankreich, müssen Verkaufsaufzeichnungen 10 Jahre lang aufbewahrt werden. Digitaler Fingerabdruck des Archivs: {hash}. Sie müssen sonst nichts tun."
+}

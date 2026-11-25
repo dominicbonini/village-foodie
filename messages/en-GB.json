@@ -7602,5 +7602,9 @@
       "allSet": "You’re all set: {plan} starts on {date}.",
       "charge": "We’ll charge {amount} for the rest of {month} when your trial ends."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Your sales archive for {period} is ready",
+    "body": "Your HatchGrab sales archive for {period} is ready. Download it here: {link} (the link works for 7 days). Keep a copy: in some countries, such as France, you must keep sales records for 10 years. Archive fingerprint: {hash}. You don't need to do anything else."
   }
 }

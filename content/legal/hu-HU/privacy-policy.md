@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Adatvédelmi tájékoztató
 
 **Utolsó frissítés:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Szolgáltatásunk bővülésével újabb szolgáltatókat vehetünk igénybe, k�
 - **Befejezetlen online kártyás rendelések** (elkezdett, de soha le nem adott rendelések): lejáratukat követő egy napon belül töröljük őket. Ha egy kártyás fizetés összege még zárolva volt, a zárolás feloldását követő egy napon belül töröljük őket.
 - **A vásárlói által egy food trucknak küldött WhatsApp-üzenetek és az automatikus válaszaink:** 12 hónap.
 - **Anonimizált rendelési és értékesítési adatok:** korlátlan ideig megőrizzük, hogy a food truckok megtarthassák értékesítési előzményeiket. Ezek az adatok nem kapcsolhatók vissza egyetlen személyhez sem.
-- **Számviteli nyilvántartások:** az adott pénzügyi év végétől számított hat évig, ahogyan azt az egyesült királysági adójog előírja.
+- **Számviteli nyilvántartások:** az adott pénzügyi év végétől számított legalább hat évig, illetve tíz évig, ahol ezt jogszabály előírja.
 - **Ügyfélszolgálati levelezés:** 24 hónap.
 - **Technikai és biztonsági naplók:** 90 nap.
 - **Demóadatok:** 24 óra, vagy 14 nap, ha kéri, hogy őrizzük meg a demóját; legfeljebb 30 nap, ha a demóból regisztrál, illetve az általunk megkeresett food truckok számára készített demók esetében (lásd az 5. pontot).

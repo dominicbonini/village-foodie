@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Dasar Privasi
 
 **Kemas kini terakhir:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Seiring dengan perkembangan perkhidmatan kami, kami mungkin menambah pembekal, t
 - **Pesanan kad dalam talian yang tidak selesai** (dimulakan tetapi tidak pernah dibuat): dipadam dalam tempoh sehari selepas tamat tempoh. Jika pembayaran kad masih ditahan, pesanan tersebut dipadam dalam tempoh sehari selepas penahanan itu dilepaskan.
 - **Mesej WhatsApp yang dihantar oleh pelanggan anda kepada trak, dan balasan automatik kami:** 12 bulan.
 - **Data pesanan dan jualan yang telah dianonimkan:** disimpan selama-lamanya, supaya trak dapat mengekalkan sejarah dagangan mereka. Data ini tidak boleh dikaitkan semula dengan mana-mana individu.
-- **Rekod perakaunan:** enam tahun dari akhir tahun kewangan yang berkenaan, sebagaimana yang dikehendaki oleh undang-undang cukai UK.
+- **Rekod perakaunan:** sekurang-kurangnya enam tahun dari akhir tahun kewangan yang berkenaan, dan sepuluh tahun jika dikehendaki oleh undang-undang.
 - **Surat-menyurat sokongan:** 24 bulan.
 - **Log teknikal dan keselamatan:** 90 hari.
 - **Data demo:** 24 jam, atau 14 hari jika anda meminta kami menyimpan demo anda; sehingga 30 hari jika anda mendaftar daripadanya, atau bagi demo yang kami sediakan untuk food truck yang telah kami hubungi (lihat seksyen 5).

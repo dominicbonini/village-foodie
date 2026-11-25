@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Persónuverndarstefna
 
 **Síðast uppfært:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Eftir því sem þjónusta okkar vex kunnum við að bæta við veitendum, þar 
 - **Ókláraðar kortapantanir á netinu** (hafnar en aldrei lagðar inn): eytt innan sólarhrings frá því að þær renna út. Ef kortagreiðsla var enn tekin frá er þeim eytt innan sólarhrings frá því að fráteknu fjárhæðinni er sleppt.
 - **WhatsApp-skilaboð sem viðskiptavinir þínir senda matarvagni og sjálfvirk svör okkar:** 12 mánuðir.
 - **Ópersónugreinanleg pöntunar- og sölugögn:** geymd ótímabundið svo að matarvagnar haldi söluferli sínum. Ekki er hægt að rekja þessi gögn aftur til einstaklings.
-- **Bókhaldsgögn:** sex ár frá lokum viðkomandi fjárhagsárs, eins og bresk skattalög krefjast.
+- **Bókhaldsgögn:** að minnsta kosti sex ár frá lokum viðkomandi fjárhagsárs og tíu ár þar sem lög krefjast þess.
 - **Samskipti við þjónustuver:** 24 mánuðir.
 - **Tækni- og öryggisannálar:** 90 dagar.
 - **Gögn sýnidæma:** 24 klukkustundir, eða 14 dagar ef þú biður okkur um að geyma sýnidæmið; allt að 30 dagar ef þú skráir þig í gegnum það, eða fyrir sýnidæmi sem við útbúum fyrir matarvagn sem við höfum haft samband við (sjá 5. kafla).

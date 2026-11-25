@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Politika privatnosti
 
 **Posljednje ažuriranje:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Kako naša usluga raste, možemo dodati pružaoce usluga, uključujući pružaoc
 - **Nedovršene online narudžbe s plaćanjem karticom** (započete, ali nikada poslane): brišu se u roku od jednog dana nakon isteka. Ako je plaćanje karticom još bilo rezervisano, brišu se u roku od jednog dana nakon što se ta rezervacija oslobodi.
 - **WhatsApp poruke koje vaši kupci šalju food trucku i naši automatski odgovori:** 12 mjeseci.
 - **Anonimizirani podaci o narudžbama i prodaji:** čuvaju se neograničeno, kako bi food truckovi zadržali historiju prodaje. Ovi podaci se ne mogu povezati s pojedincem.
-- **Računovodstveni zapisi:** šest godina od kraja odnosne finansijske godine, kako zahtijeva britanski poreski zakon.
+- **Računovodstveni zapisi:** najmanje šest godina od kraja odnosne finansijske godine, a deset godina kada to zakon zahtijeva.
 - **Korespondencija s podrškom:** 24 mjeseca.
 - **Tehnički i sigurnosni zapisi (logovi):** 90 dana.
 - **Podaci demoa:** 24 sata ili 14 dana ako zatražite da zadržimo vaš demo; do 30 dana ako se iz njega registrujete ili za demoe koje pripremimo za food truck koji smo kontaktirali (pogledajte odjeljak 5).

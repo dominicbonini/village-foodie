@@ -7629,5 +7629,9 @@
       "allSet": "Allt klárt: áskriftarleiðin {plan} hefst {date}.",
       "charge": "Við gjaldfærum {amount} fyrir það sem eftir er af {month} þegar prufunni lýkur."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Söluskjalasafnið þitt fyrir {period} er tilbúið",
+    "body": "HatchGrab-söluskjalasafnið þitt fyrir {period} er tilbúið. Sæktu það hér: {link} (tengillinn virkar í 7 daga). Geymdu afrit: í sumum löndum, svo sem Frakklandi, þarf að geyma sölugögn í 10 ár. Fingrafar safnsins: {hash}. Þú þarft ekki að gera neitt annað."
   }
 }

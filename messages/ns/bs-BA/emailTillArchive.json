@@ -1,0 +1,4 @@
+{
+  "subject": "Vaša arhiva prodaje za {period} je spremna",
+  "body": "Vaša HatchGrab arhiva prodaje za {period} je spremna. Preuzmite je ovdje: {link} (link vrijedi 7 dana). Sačuvajte kopiju: u nekim zemljama, kao što je Francuska, evidenciju prodaje morate čuvati 10 godina. Digitalni otisak arhive: {hash}. Ne morate ništa drugo raditi."
+}

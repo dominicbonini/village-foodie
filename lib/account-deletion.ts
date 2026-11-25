@@ -38,6 +38,9 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { deleteTruckPaperwork } from '@/lib/paperwork/store'
 import { deleteTruckLoyalty } from '@/lib/loyalty/retention'
 import { notesPatch } from '@/lib/order-retention'   // france-privacy-1: the notes are cleared exactly as the 12-month retention clears them
+import { finalArchivesFor, supabaseArchiveStorage } from '@/lib/till/archive'   // till-pack-5: the final archive, FIRST
+import { brevoArchiveMailer } from '@/lib/till/archive-mailer'
+import { loadSigningKey } from '@/lib/till/signing'
 
 /** The pending window. Stored on the operator row at request time so changing this never moves an
  *  already-running countdown. */
@@ -81,6 +84,21 @@ export interface AccountDeletionResult {
   loyalty: { cards: number; settings: number }
   /** 🔴 Always 0 by construction. Reported so the invariant is visible in the response, not just asserted. */
   paymentsDeleted: 0
+  /** till-pack-5: the final till archive of each of the account's trucks that has till records — made, stored, chained and emailed to
+   *  the owner BEFORE step 2 (an empty list when no truck is in the till). */
+  tillArchives: { truckId: string; archiveId: string; manifestSha256: string }[]
+}
+
+/** till-pack-5: how the final till archives are made (injected by the proofs; the default is the real one — lib/till/archive.ts). */
+export interface AccountDeletionOptions {
+  finalArchive?: (supabase: SupabaseClient, truckIds: string[]) => Promise<{ truckId: string; archiveId: string; manifestSha256: string }[]>
+}
+
+async function realFinalArchive(supabase: SupabaseClient, truckIds: string[]) {
+  let signingKey = null
+  try { signingKey = loadSigningKey() } catch { console.error('[account-deletion] TILL_SIGNING_KEY is set but is not an Ed25519 private key — the final archive is unsigned') }
+  const r = await finalArchivesFor({ db: supabase, storage: supabaseArchiveStorage(supabase), signingKey, mailer: brevoArchiveMailer(), log: m => console.error(m) }, truckIds)
+  return r.map(x => ({ truckId: x.truckId, archiveId: x.archiveId, manifestSha256: x.manifestSha256 }))
 }
 
 /**
@@ -96,6 +114,7 @@ export interface AccountDeletionResult {
 export async function executeAccountDeletion(
   supabase: SupabaseClient,
   operatorId: string,
+  options: AccountDeletionOptions = {},
 ): Promise<AccountDeletionResult> {
   // ── 1. Resolve the account's scope ───────────────────────────────────────────────────────────────
   const { data: operator, error: opErr } = await supabase
@@ -117,6 +136,17 @@ export async function executeAccountDeletion(
     .eq('operator_id', operatorId)
   if (trucksErr) throw new AccountDeletionError('load_trucks', trucksErr.message)
   const truckIds = (trucks ?? []).map(t => t.id as string)
+
+  // ── 1b. 🔴 THE FINAL TILL ARCHIVE (till-pack-5, 25 November 2026, docs/till-pack-5-6-report.md) — BEFORE ANYTHING IS ANONYMISED ──────
+  // Every truck of the account with till records gets its final archive (from its till start to today): stored in the private bucket,
+  // chained, and its link emailed to the owner — while the owner's email still exists. If any of it fails, the deletion STOPS here, with
+  // nothing anonymised, under the named step `till_final_archive`; re-running is safe (another final archive is simply made).
+  let tillArchives: AccountDeletionResult['tillArchives']
+  try {
+    tillArchives = await (options.finalArchive ?? realFinalArchive)(supabase, truckIds)
+  } catch (e) {
+    throw new AccountDeletionError('till_final_archive', e instanceof Error ? e.message : String(e))
+  }
 
   // ── 2. ANONYMISE ORDERS — the three personal columns, nothing else ───────────────────────────────
   // 🔴 THE ROWS SURVIVE. Totals, payment status, line items and timestamps are the financial record and
@@ -282,5 +312,5 @@ export async function executeAccountDeletion(
     authUsersDeleted++
   }
 
-  return { operatorId, truckIds, ordersAnonymised, notesCleared, whatsappDeleted, draftsAnonymised, staffRemoved, authUsersDeleted, paperwork, loyalty, paymentsDeleted: 0 }
+  return { operatorId, truckIds, ordersAnonymised, notesCleared, whatsappDeleted, draftsAnonymised, staffRemoved, authUsersDeleted, paperwork, loyalty, paymentsDeleted: 0, tillArchives }
 }

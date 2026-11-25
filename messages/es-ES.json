@@ -7629,5 +7629,9 @@
       "allSet": "Todo listo: el plan {plan} empieza el {date}.",
       "charge": "Cuando termine tu prueba, te cobraremos {amount} por lo que queda de {month}."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Tu archivo de ventas del periodo {period} ya está listo",
+    "body": "Tu archivo de ventas de HatchGrab del periodo {period} ya está listo. Descárgalo aquí: {link} (el enlace funciona durante 7 días). Guarda una copia: en algunos países, como Francia, es obligatorio conservar los registros de ventas durante 10 años. Huella digital del archivo: {hash}. No tienes que hacer nada más."
   }
 }

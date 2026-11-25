@@ -1,0 +1,4 @@
+{
+  "subject": "Jūsu pārdošanas arhīvs par periodu {period} ir gatavs",
+  "body": "Jūsu HatchGrab pārdošanas arhīvs par periodu {period} ir gatavs. Lejupielādējiet to šeit: {link} (saite derīga 7 dienas). Saglabājiet kopiju: dažās valstīs, piemēram, Francijā, pārdošanas uzskaites dati jāglabā 10 gadus. Arhīva digitālais nospiedums: {hash}. Neko citu darīt nav nepieciešams."
+}

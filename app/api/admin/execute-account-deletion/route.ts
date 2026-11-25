@@ -103,6 +103,12 @@ export async function POST(req: NextRequest) {
       // Not transactional — name the failing step so the partial state is diagnosable, and re-running is
       // safe because every step is idempotent.
       console.error(`[execute-account-deletion] failed at "${err.step}" for ${operatorId}:`, err.message)
+      // till-pack-5: the final till archive comes BEFORE anything is anonymised, so a failure there leaves the account untouched.
+      if (err.step === 'till_final_archive') {
+        return NextResponse.json(
+          { error: `The final till archive could not be made, so nothing was deleted or anonymised. ${err.message}`, code: 'till_final_archive_failed', failedStep: err.step, partial: false }, { status: 500 },
+        )
+      }
       return NextResponse.json(
         { error: err.message, code: 'deletion_failed', failedStep: err.step, partial: true }, { status: 500 },
       )

@@ -7629,5 +7629,9 @@
       "allSet": "Vše je připraveno: tarif {plan} začne platit {date}.",
       "charge": "Po skončení zkušebního období naúčtujeme {amount} za zbytek měsíce {month}."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Váš archiv prodejů za {period} je připraven",
+    "body": "Váš archiv prodejů HatchGrab za {period} je připraven. Stáhněte si ho zde: {link} (odkaz platí 7 dní). Uložte si kopii: v některých zemích, například ve Francii, musíte záznamy o prodejích uchovávat 10 let. Otisk archivu: {hash}. Nic dalšího dělat nemusíte."
   }
 }

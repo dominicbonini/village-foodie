@@ -11,6 +11,8 @@ import { isDemoIdentifier } from '@/lib/demo'
 import { loadChargeRules } from '@/lib/order-charge-rules'
 import { runTillCloses } from '@/lib/till/close-run'
 import { loadSigningKey } from '@/lib/till/signing'
+import { buildTillArchive, signPendingArchives, supabaseArchiveStorage, type ArchiveDeps } from '@/lib/till/archive'
+import { brevoArchiveMailer } from '@/lib/till/archive-mailer'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -29,9 +31,13 @@ export async function GET(req: NextRequest) {
   let signingKey = null
   try { signingKey = loadSigningKey() }
   catch { console.error('[till-close] TILL_SIGNING_KEY is set but is not an Ed25519 private key — the closes are written unsigned') }
+  // till-pack-5: after a year close, its archive (stored in the private bucket, chained, emailed to the owner); archives written unsigned are signed.
+  const archiveDeps: ArchiveDeps = { db, storage: supabaseArchiveStorage(db), signingKey, mailer: brevoArchiveMailer(), log: m => console.error(m) }
   try {
     const r = await runTillCloses(db, {
       signingKey,
+      archiveYear: (truckId, start, end) => buildTillArchive(archiveDeps, { truckId, reason: 'year', from: start, to: end, requestedBy: 'system' }),
+      signArchives: truckId => signPendingArchives(archiveDeps, truckId),
       isDemo: isDemoIdentifier,
       log: m => console.error(m),
       taxOf: async (truckId) => {
@@ -43,7 +49,7 @@ export async function GET(req: NextRequest) {
     })
     return NextResponse.json({
       ok: r.failed === 0, signing: signingKey ? 'on' : 'unsigned', failed: r.failed,
-      trucks: r.trucks.map(t => ({ days: t.days, scanned: t.scanned, months: t.months, years: t.years, signed: t.signed, stopped: t.stopped ?? null, verify_ok: t.verifyOk ?? null })),
+      trucks: r.trucks.map(t => ({ days: t.days, scanned: t.scanned, months: t.months, years: t.years, signed: t.signed, archives: t.archives, archives_failed: t.archivesFailed, archives_signed: t.archivesSigned, stopped: t.stopped ?? null, verify_ok: t.verifyOk ?? null })),
     })
   } catch (e) {
     console.error('[till-close] the close run stopped (the next run retries):', e instanceof Error ? e.message : e)

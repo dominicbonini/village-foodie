@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Privatumo politika
 
 **Paskutinį kartą atnaujinta:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Plečiantis mūsų paslaugai, galime pridėti naujų teikėjų, įskaitant SMS p
 - **Nebaigti internetiniai užsakymai, apmokami kortele** (pradėti, bet niekada nepateikti): ištrinami per parą nuo jų galiojimo pabaigos. Jei mokėjimas kortele dar buvo rezervuotas, jie ištrinami per parą nuo tos rezervacijos panaikinimo.
 - **WhatsApp žinutės, kurias jūsų klientai siunčia furgonui, ir mūsų automatiniai atsakymai:** 12 mėnesių.
 - **Nuasmeninti užsakymų ir pardavimų duomenys:** saugomi neribotą laiką, kad furgonai išsaugotų savo prekybos istoriją. Šių duomenų negalima susieti su konkrečiu asmeniu.
-- **Apskaitos įrašai:** šešerius metus nuo atitinkamų finansinių metų pabaigos, kaip reikalauja JK mokesčių įstatymai.
+- **Apskaitos įrašai:** ne trumpiau kaip šešerius metus nuo atitinkamų finansinių metų pabaigos ir dešimt metų, kai to reikalauja įstatymai.
 - **Susirašinėjimas su pagalbos tarnyba:** 24 mėnesius.
 - **Techniniai ir saugumo žurnalai:** 90 dienų.
 - **Demonstracinės versijos duomenys:** 24 valandas arba 14 dienų, jei paprašote išsaugoti savo demonstracinę versiją; iki 30 dienų, jei iš jos užsiregistruojate, arba demonstracinių versijų, kurias parengiame food truck, su kuriuo susisiekėme, atveju (žr. 5 skyrių).

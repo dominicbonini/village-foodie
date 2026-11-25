@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Zásady ochrany osobných údajov
 
 **Naposledy aktualizované:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ S rastom našej služby môžeme pridať ďalších poskytovateľov vrátane pos
 - **Nedokončené online objednávky s platbou kartou** (začaté, ale nikdy nezadané): vymažú sa do jedného dňa od uplynutia ich platnosti. Ak bola platba kartou ešte blokovaná, vymažú sa do jedného dňa od uvoľnenia tejto blokácie.
 - **Správy WhatsApp, ktoré vaši zákazníci posielajú food trucku, a naše automatické odpovede:** 12 mesiacov.
 - **Anonymizované údaje o objednávkach a predajoch:** uchovávajú sa neobmedzene, aby si food trucky zachovali históriu svojho predaja. Tieto údaje nemožno spätne priradiť konkrétnej osobe.
-- **Účtovné záznamy:** šesť rokov od konca príslušného účtovného roka, ako to vyžadujú daňové predpisy Spojeného kráľovstva.
+- **Účtovné záznamy:** najmenej šesť rokov od konca príslušného účtovného roka a desať rokov, ak to vyžaduje zákon.
 - **Korešpondencia s podporou:** 24 mesiacov.
 - **Technické a bezpečnostné záznamy:** 90 dní.
 - **Údaje ukážky:** 24 hodín alebo 14 dní, ak nás požiadate, aby sme vašu ukážku ponechali; najviac 30 dní, ak sa z nej zaregistrujete, alebo pri ukážkach, ktoré pripravíme pre food truck, ktorý sme oslovili (pozrite si oddiel 5).

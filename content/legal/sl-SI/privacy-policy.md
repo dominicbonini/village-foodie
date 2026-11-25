@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Politika zasebnosti
 
 **Zadnja posodobitev:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Z rastjo naše storitve lahko dodamo ponudnike, vključno s ponudnikom storitev 
 - **Nedokončana spletna naročila s kartico** (začeta, a nikoli oddana): izbrišejo se v enem dnevu po izteku. Če je bilo plačilo s kartico še zadržano, se izbrišejo v enem dnevu po sprostitvi tega zadržanja.
 - **Sporočila WhatsApp, ki jih vaše stranke pošljejo food trucku, in naši samodejni odgovori:** 12 mesecev.
 - **Anonimizirani podatki o naročilih in prodaji:** hranijo se za nedoločen čas, da food trucki ohranijo zgodovino svoje prodaje. Teh podatkov ni mogoče povezati s posameznikom.
-- **Računovodske evidence:** šest let od konca zadevnega poslovnega leta, kot zahteva davčna zakonodaja Združenega kraljestva.
+- **Računovodske evidence:** najmanj šest let od konca zadevnega poslovnega leta in deset let, kadar to zahteva zakon.
 - **Korespondenca s podporo:** 24 mesecev.
 - **Tehnični in varnostni dnevniki:** 90 dni.
 - **Podatki predstavitve:** 24 ur ali 14 dni, če nas prosite, da vašo predstavitev ohranimo; do 30 dni, če se iz nje registrirate, ali za predstavitve, ki jih pripravimo za food truck, s katerim smo stopili v stik (glejte razdelek 5).

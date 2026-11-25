@@ -2,6 +2,12 @@
 // scripts/till-verify.cjs — till-pack-1 / till-pack-1b (24–25 November 2026, docs/till-pack-1b-report.md): VERIFY A TILL CHAIN EXPORT OFFLINE.
 //
 //   node scripts/till-verify.cjs <chain.jsonl> [--json]
+//   node scripts/till-verify.cjs --archive <archive.zip> [--pub <public key, SPKI DER base64>] [--json]
+//        till-pack-5 (25 November 2026, docs/till-pack-5-6-report.md): a DOWNLOADED ARCHIVE, offline — every file's sha256 against
+//        manifest.json (and nothing unlisted), the manifest's Ed25519 signature (manifest.sig.json; with --pub, against THAT key — the
+//        one in docs/till-signing-public-key.md — else against the key the archive itself names, reported as self-declared), the chain
+//        (every check below), each close (its chain entry, its chain head, its signature), each earlier archive (its chain entry, its
+//        signature), the chain head the manifest covers, and each day's chain head (Q14). Reads the zip with Node's zlib only.
 //
 // Reads a chain.jsonl export (one entry per line, exactly: truck_id, seq, kind, ref, version, payload, payload_hash, prev_hash, hash, software_version — the
 // till_chain columns, as till-pack-5's archive will hold them and scripts/db-rollback-proofs.cjs exports them) and checks, per truck:
@@ -128,10 +134,153 @@ function verifyText(text, memo) {
   return r
 }
 
-module.exports = { verifyEntries, verifyText, entryProblems, sha256, GENESIS }
+
+// ══ till-pack-5: AN ARCHIVE, OFFLINE ════════════════════════════════════════════════════════════════════════════════════════════════
+const zlib = require('zlib')
+/** The entries of a ZIP (stored or deflated), by name — Node's zlib only. Throws on anything it cannot read. */
+function readZip(buf) {
+  let eocd = -1
+  for (let i = buf.length - 22; i >= Math.max(0, buf.length - 65557); i--) if (buf.readUInt32LE(i) === 0x06054b50) { eocd = i; break }
+  if (eocd < 0) throw new Error('not a zip (no end of central directory)')
+  const count = buf.readUInt16LE(eocd + 10), cdOff = buf.readUInt32LE(eocd + 16)
+  const out = {}
+  let p = cdOff
+  for (let n = 0; n < count; n++) {
+    if (buf.readUInt32LE(p) !== 0x02014b50) throw new Error('bad central directory')
+    const method = buf.readUInt16LE(p + 10), csize = buf.readUInt32LE(p + 20), usize = buf.readUInt32LE(p + 24)
+    const nlen = buf.readUInt16LE(p + 28), xlen = buf.readUInt16LE(p + 30), clen = buf.readUInt16LE(p + 32), lho = buf.readUInt32LE(p + 42)
+    const name = buf.slice(p + 46, p + 46 + nlen).toString('utf8')
+    if (buf.readUInt32LE(lho) !== 0x04034b50) throw new Error(`bad local header for ${name}`)
+    const start = lho + 30 + buf.readUInt16LE(lho + 26) + buf.readUInt16LE(lho + 28)
+    const raw = buf.slice(start, start + csize)
+    const data = method === 0 ? raw : method === 8 ? zlib.inflateRawSync(raw) : null
+    if (!data) throw new Error(`${name}: compression method ${method} not supported`)
+    if (data.length !== usize) throw new Error(`${name}: size differs from the directory`)
+    if (name in out) throw new Error(`${name}: twice in the zip`)
+    out[name] = data
+    p += 46 + nlen + xlen + clen
+  }
+  return out
+}
+/** RFC 4180 CSV (the archive's: UTF-8 with a BOM, CRLF) → array of objects. */
+function parseCsv(text) {
+  const t = text.replace(/^﻿/, ''), rows = []
+  let row = [], cell = '', q = false
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i]
+    if (q) { if (c === '"') { if (t[i + 1] === '"') { cell += '"'; i++ } else q = false } else cell += c }
+    else if (c === '"') q = true
+    else if (c === ',') { row.push(cell); cell = '' }
+    else if (c === '\r') { /* CRLF */ }
+    else if (c === '\n') { row.push(cell); rows.push(row); row = []; cell = '' }
+    else cell += c
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row) }
+  const [head, ...body] = rows
+  return body.map(r => Object.fromEntries(head.map((h, i) => [h, r[i] ?? ''])))
+}
+function verifySig(pubB64, hashHex, sigB64) {
+  try { return crypto.verify(null, Buffer.from(hashHex, 'utf8'), crypto.createPublicKey({ key: Buffer.from(pubB64, 'base64'), format: 'der', type: 'spki' }), Buffer.from(sigB64, 'base64')) } catch { return false }
+}
+/** 🔴 Verify a downloaded archive. Returns { ok, problems: [...], summary }. `opts.publicKey` = the trusted key (else the archive's own). */
+function verifyArchive(zipBuf, opts = {}) {
+  const problems = []
+  const bad = (what, detail) => problems.push(detail === undefined ? what : `${what}: ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`)
+  let files
+  try { files = readZip(zipBuf) } catch (e) { return { ok: false, problems: [`zip: ${e.message}`], summary: null } }
+  if (!files['manifest.json']) return { ok: false, problems: ['no manifest.json'], summary: null }
+  const manifestText = files['manifest.json'].toString('utf8')
+  const manifestSha = sha256(manifestText)
+  let m
+  try { m = JSON.parse(manifestText) } catch (e) { return { ok: false, problems: [`manifest.json is not JSON (${e.message})`], summary: null } }
+  // 1 · every file's sha256 and size; nothing unlisted
+  const listed = new Set(m.files.map(f => f.name))
+  for (const f of m.files) {
+    const b = files[f.name]
+    if (!b) { bad('missing file', f.name); continue }
+    if (crypto.createHash('sha256').update(b).digest('hex') !== f.sha256) bad('file hash differs from the manifest', f.name)
+    if (b.length !== f.bytes) bad('file size differs from the manifest', f.name)
+  }
+  for (const n of Object.keys(files)) if (!listed.has(n) && n !== 'manifest.json' && n !== 'manifest.sig.json') bad('file not in the manifest', n)
+  // 2 · the manifest's signature
+  const trustedKey = opts.publicKey || null
+  const archiveKey = m.signing ? m.signing.public_key_spki_der_base64 : null
+  const key = trustedKey || archiveKey
+  let signature = 'unsigned'
+  if (files['manifest.sig.json']) {
+    let sig
+    try { sig = JSON.parse(files['manifest.sig.json'].toString('utf8')) } catch { bad('manifest.sig.json is not JSON') }
+    if (sig) {
+      if (sig.manifest_sha256 !== manifestSha) bad('manifest.sig.json names another manifest hash')
+      if (!key) bad('a signature but no public key to check it')
+      else if (!verifySig(key, manifestSha, sig.signature)) bad('the manifest signature does not verify', trustedKey ? 'with the given public key' : 'with the archive\'s own public key')
+      else signature = trustedKey ? 'verified with the given key' : 'verified with the archive\'s own key (self-declared — check it against HatchGrab\'s published key)'
+      if (trustedKey && archiveKey && archiveKey !== trustedKey) bad('the archive names a different public key from the one given')
+    }
+  } else if (opts.signature) {
+    signature = key && verifySig(key, manifestSha, opts.signature) ? 'verified (signature given separately)' : (bad('the given signature does not verify'), 'bad')
+  }
+  // 3 · the chain
+  const chainText = files['chain.jsonl'] ? files['chain.jsonl'].toString('utf8') : ''
+  let cv
+  try { cv = verifyText(chainText) } catch (e) { cv = { problems: [`the chain cannot be read (${e.message})`] } }
+  for (const p of cv.problems.slice(0, 50)) bad('chain', p)
+  // a damaged file is a PROBLEM to report, never a crash
+  const parseLines = (name, text) => text.split('\n').filter(Boolean).flatMap((l, i) => { try { return [JSON.parse(l)] } catch { bad(`${name} line ${i + 1} is not JSON`); return [] } })
+  const chain = parseLines('chain.jsonl', chainText)
+  const bySeq = new Map(chain.map(e => [Number(e.seq), e]))
+  const last = chain[chain.length - 1]
+  if (!last || Number(last.seq) !== m.chain.last_seq || last.hash !== m.chain.head_hash) bad('the manifest\'s chain head is not the last entry of chain.jsonl')
+  const isEntry = (seq, hash, kind) => { const e = bySeq.get(Number(seq)); return !!e && e.hash === hash && (!kind || e.kind === kind) }
+  // 4 · each day's chain head
+  for (const d of m.day_heads || []) if (!isEntry(d.seq, d.hash)) bad('day head is not a chain entry', d)
+  // 5 · closes and their signatures
+  const closes = files['closes.jsonl'] ? parseLines('closes.jsonl', files['closes.jsonl'].toString('utf8')) : []
+  const closeSigs = new Map((files['close_signatures.csv'] ? parseCsv(files['close_signatures.csv'].toString('utf8')) : []).map(r => [Number(r.seq), r]))
+  let closesSigned = 0
+  for (const c of closes) {
+    if (!isEntry(c.seq, c.hash, 'close')) bad('close is not its chain entry', `${c.period_type} ${c.period_start}`)
+    if (!isEntry(c.chain_head_seq, c.chain_head_hash)) bad('close names a chain head that is not in the chain', `${c.period_type} ${c.period_start}`)
+    const s = closeSigs.get(Number(c.seq))
+    if (s) { if (key && verifySig(key, c.hash, s.signature)) closesSigned++; else bad('close signature does not verify', `${c.period_type} ${c.period_start}`) }
+  }
+  // 6 · earlier archives
+  const archives = files['archives.csv'] ? parseCsv(files['archives.csv'].toString('utf8')) : []
+  let archivesSigned = 0
+  for (const a of archives) {
+    if (!isEntry(a.seq, a.hash, 'archive')) bad('earlier archive is not its chain entry', a.archive_id)
+    else {
+      let pl = null
+      try { pl = JSON.parse(bySeq.get(Number(a.seq)).payload).data } catch { /* reported by the chain check */ }
+      if (!pl || pl.manifest_sha256 !== a.manifest_sha256) bad('earlier archive\'s manifest hash is not the one chained', a.archive_id)
+    }
+    if (a.signature) { if (key && verifySig(key, a.manifest_sha256, a.signature)) archivesSigned++; else bad('earlier archive signature does not verify', a.archive_id) }
+  }
+  const summary = { truck_id: m.truck_id, reason: m.reason, period: m.period, accounting_year: m.accounting_year, software: m.software, manifest_sha256: manifestSha,
+    files: m.files.length, chain_entries: chain.length, head: m.chain, day_heads: (m.day_heads || []).length, closes: closes.length, closes_signed: closesSigned,
+    earlier_archives: archives.length, earlier_archives_signed: archivesSigned, signature }
+  return { ok: problems.length === 0, problems, summary }
+}
+
+module.exports = { verifyEntries, verifyText, entryProblems, sha256, GENESIS, readZip, parseCsv, verifyArchive }
 
 if (require.main === module) {
   const args = process.argv.slice(2)
+  if (args.includes('--archive')) {
+    const at = args.indexOf('--archive'), zipFile = args[at + 1]
+    const pub = args.includes('--pub') ? args[args.indexOf('--pub') + 1] : null
+    if (!zipFile) { console.error('usage: node scripts/till-verify.cjs --archive <archive.zip> [--pub <base64>] [--json]'); process.exit(2) }
+    let buf
+    try { buf = fs.readFileSync(zipFile) } catch (e) { console.error(`till-verify: cannot read ${zipFile}: ${e.message}`); process.exit(2) }
+    const r = verifyArchive(buf, { publicKey: pub })
+    if (args.includes('--json')) console.log(JSON.stringify(r))
+    else {
+      if (r.summary) console.log(JSON.stringify(r.summary, null, 2))
+      for (const p of r.problems.slice(0, 50)) console.log(`  ✗ ${p}`)
+      console.log(r.ok ? '✅ the archive verifies' : `🔴 ${r.problems.length} problem(s)`)
+    }
+    process.exit(r.ok ? 0 : 1)
+  }
   const file = args.find(a => !a.startsWith('--'))
   if (!file) { console.error('usage: node scripts/till-verify.cjs <chain.jsonl> [--json]'); process.exit(2) }
   let text

@@ -21,6 +21,7 @@ import { addDaysYmd, instantOfLocal } from '@/lib/time-utils'
 import { computeDayClose, computePeriodClose, dueCloses, fiscalYearEnd, fiscalYearOf, hasActivity, ZERO_GT,
   type CloseOrder, type ClosePayment, type CloseTotals, type GrandTotals, type PeriodType } from '@/lib/till/close'
 import { signHash, type SigningKey } from '@/lib/till/signing'
+import { dueYearArchives } from '@/lib/till/archive'
 
 interface CloseRow { type: PeriodType; period_start: string; period_end: string; seq: number; hash: string; totals: CloseTotals; signed: boolean }
 interface Context {
@@ -28,7 +29,7 @@ interface Context {
   fiscal_year_end: { month: number | null; day: number | null } | null; country_tax_year_start: { month: number | null; day: number | null } | null
   days_scanned_through: string | null; signing_key_id: string | null; closes: CloseRow[]
 }
-export interface TruckRunResult { truck: string; days: number; scanned: number; months: number; years: number; signed: number; stopped?: string; verifyOk?: boolean }
+export interface TruckRunResult { truck: string; days: number; scanned: number; months: number; years: number; signed: number; archives: number; archivesFailed: number; archivesSigned: number; stopped?: string; verifyOk?: boolean }
 export interface RunOptions {
   /** The truck's VAT fallback (orders without their own rates): lib/order-charge-rules loadChargeRules → { taxInclusive, taxRateMilli }. */
   taxOf: (truckId: string) => Promise<{ inclusive: boolean; rateMilli: number | null }>
@@ -42,6 +43,11 @@ export interface RunOptions {
    *  run. The cron never passes them. */
   fromDay?: string
   untilDay?: string
+  /** till-pack-5: make the yearly archive of a closed year (lib/till/archive.ts buildTillArchive, reason 'year'). Asked for every year close
+   *  that has no 'year' archive yet — so a failed one is retried by the next run. */
+  archiveYear?: (truckId: string, start: string, end: string) => Promise<unknown>
+  /** till-pack-5: sign the truck's archives written unsigned (lib/till/archive.ts signPendingArchives); returns how many. */
+  signArchives?: (truckId: string) => Promise<number>
   log?: (msg: string) => void
 }
 
@@ -56,7 +62,7 @@ async function rpc<T>(db: SupabaseClient, fn: string, args: Record<string, unkno
 
 /** 🔴 ONE TRUCK. */
 export async function runTruckCloses(db: SupabaseClient, truck: string, opts: RunOptions): Promise<TruckRunResult> {
-  const out: TruckRunResult = { truck, days: 0, scanned: 0, months: 0, years: 0, signed: 0 }
+  const out: TruckRunResult = { truck, days: 0, scanned: 0, months: 0, years: 0, signed: 0, archives: 0, archivesFailed: 0, archivesSigned: 0 }
   let ctx = await rpc<Context>(db, 'till_close_context', { p_truck: truck })
   if (!ctx.applies || !ctx.till_started_at) { out.stopped = ctx.applies ? 'no till start' : 'outside the till'; return out }
   const tz = ctx.time_zone
@@ -136,6 +142,17 @@ export async function runTruckCloses(db: SupabaseClient, truck: string, opts: Ru
   if (key) for (const c of closes.filter(x => !x.signed)) {
     try { if (await rpc<boolean>(db, 'till_sign_close', { p_truck: truck, p_seq: c.seq, p_key_id: key.keyId, p_signature: signHash(key, c.hash) })) out.signed++; c.signed = true }
     catch (e) { opts.log?.(`[till-close] ${truck}: signing seq ${c.seq} failed (${codeOf(e) || 'error'})`); break }
+  }
+
+  // 5. THE YEARLY ARCHIVE (till-pack-5) — after the year close; then the archives written unsigned are signed.
+  if (opts.archiveYear) {
+    for (const y of await dueYearArchives(db, truck)) {
+      try { await opts.archiveYear(truck, y.start, y.end); out.archives++ }
+      catch (e) { out.archivesFailed++; opts.log?.(`[till-close] ${truck}: the ${y.start} – ${y.end} archive failed (${e instanceof Error ? e.message : String(e)}) — the next run retries`) }
+    }
+  }
+  if (opts.signArchives) {
+    try { out.archivesSigned = await opts.signArchives(truck) } catch (e) { opts.log?.(`[till-close] ${truck}: signing archives failed (${e instanceof Error ? e.message : String(e)})`) }
   }
   return out
 }

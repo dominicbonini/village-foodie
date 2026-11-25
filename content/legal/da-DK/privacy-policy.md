@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Privatlivspolitik
 
 **Senest opdateret:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Efterhånden som vores tjeneste vokser, kan vi tilføje udbydere, herunder en SM
 - **Ufærdige online-kortbestillinger** (påbegyndt, men aldrig afgivet): slettes inden for et døgn efter udløb. Hvis en kortbetaling stadig var reserveret, slettes de inden for et døgn efter, at reservationen er frigivet.
 - **WhatsApp-beskeder, som dine kunder sender en foodtruck, og vores automatiske svar:** 12 måneder.
 - **Anonymiserede bestillings- og salgsdata:** opbevares på ubestemt tid, så foodtrucks bevarer deres salgshistorik. Disse data kan ikke føres tilbage til en enkeltperson.
-- **Regnskabsmateriale:** seks år fra udgangen af det pågældende regnskabsår, som britisk skattelovgivning kræver.
+- **Regnskabsmateriale:** mindst seks år fra udgangen af det pågældende regnskabsår og ti år, hvor loven kræver det.
 - **Supportkorrespondance:** 24 måneder.
 - **Tekniske logfiler og sikkerhedslogfiler:** 90 dage.
 - **Demodata:** 24 timer eller 14 dage, hvis du beder os om at beholde din demo; op til 30 dage, hvis du tilmelder dig fra den, eller for demoer, som vi forbereder til en foodtruck, vi har kontaktet (se afsnit 5).

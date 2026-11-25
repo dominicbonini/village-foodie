@@ -7629,5 +7629,9 @@
       "allSet": "Kila kitu kiko tayari: kifurushi {plan} kinaanza tarehe {date}.",
       "charge": "Tutatoza {amount} kwa sehemu iliyobaki ya {month} jaribio lako litakapoisha."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Faili lako la kumbukumbu za mauzo la {period} liko tayari",
+    "body": "Faili lako la kumbukumbu za mauzo la HatchGrab la {period} liko tayari. Lipakue hapa: {link} (kiungo kinafanya kazi kwa siku 7). Hifadhi nakala: katika baadhi ya nchi, kama vile Ufaransa, ni lazima kuhifadhi kumbukumbu za mauzo kwa miaka 10. Alama ya kidijitali ya faili: {hash}. Huhitaji kufanya kitu kingine chochote."
   }
 }

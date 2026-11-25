@@ -89,7 +89,7 @@ export const COUNTRY_TERMS_PATH = '/country-terms'
  *  🔴 THESE MIRROR THE `**Last updated:**` LINE INSIDE content/legal/*.md, WHICH IS THE SOURCE OF TRUTH.
  *  The pages render the document's own line; these exist for anywhere else that needs the date without
  *  parsing the file. ⚠️ If you amend a document, change BOTH — the .md line is what a reader sees. */
-export const PRIVACY_UPDATED = '24 November 2026'
+export const PRIVACY_UPDATED = '25 November 2026'
 export const TERMS_UPDATED = '19 November 2026'
 export const COUNTRY_TERMS_UPDATED = '24 November 2026'
 

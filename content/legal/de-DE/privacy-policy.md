@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Datenschutzerklärung
 
 **Zuletzt aktualisiert:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Wenn unser Dienst wächst, können wir weitere Anbieter hinzufügen, darunter ei
 - **Nicht abgeschlossene Online-Kartenbestellungen** (begonnen, aber nie aufgegeben): innerhalb eines Tages nach ihrem Ablauf gelöscht. Wenn eine Kartenzahlung noch reserviert war, werden sie innerhalb eines Tages nach Freigabe dieser Reservierung gelöscht.
 - **WhatsApp-Nachrichten, die Ihre Kunden an einen Foodtruck senden, und unsere automatischen Antworten:** 12 Monate.
 - **Anonymisierte Bestell- und Umsatzdaten:** unbefristet aufbewahrt, damit Foodtrucks ihre Verkaufshistorie behalten. Diese Daten können keiner einzelnen Person zugeordnet werden.
-- **Buchhaltungsunterlagen:** sechs Jahre ab dem Ende des betreffenden Geschäftsjahres, wie es das Steuerrecht des Vereinigten Königreichs vorschreibt.
+- **Buchhaltungsunterlagen:** mindestens sechs Jahre ab dem Ende des betreffenden Geschäftsjahres und zehn Jahre, soweit das Gesetz dies vorschreibt.
 - **Support-Korrespondenz:** 24 Monate.
 - **Technische und Sicherheitsprotokolle:** 90 Tage.
 - **Demo-Daten:** 24 Stunden oder 14 Tage, wenn Sie uns bitten, Ihre Demo aufzubewahren; bis zu 30 Tage, wenn Sie sich daraus registrieren, oder bei Demos, die wir für einen von uns kontaktierten Foodtruck vorbereiten (siehe Abschnitt 5).

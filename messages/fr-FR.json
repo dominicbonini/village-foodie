@@ -7629,5 +7629,9 @@
       "allSet": "Tout est prêt : l’offre {plan} commence le {date}.",
       "charge": "À la fin de votre essai, nous facturerons {amount} jusqu’à fin {month}."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Votre archive des ventes pour la période {period} est prête",
+    "body": "Votre archive des ventes HatchGrab pour la période {period} est prête. Téléchargez-la ici : {link} (le lien est valable 7 jours). Conservez-en une copie : dans certains pays, comme la France, vous devez conserver vos données de vente pendant 10 ans. Empreinte de l’archive : {hash}. Vous n’avez rien d’autre à faire."
   }
 }

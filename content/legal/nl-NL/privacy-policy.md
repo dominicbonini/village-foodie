@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Privacybeleid
 
 **Laatst bijgewerkt:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Naarmate onze dienst groeit, kunnen wij aanbieders toevoegen, waaronder een sms-
 - **Onvoltooide online kaartbestellingen** (gestart maar nooit geplaatst): verwijderd binnen een dag nadat ze zijn verlopen. Als een kaartbetaling nog werd vastgehouden, worden ze verwijderd binnen een dag nadat die blokkering is opgeheven.
 - **WhatsApp-berichten die uw klanten een truck sturen, en onze automatische antwoorden:** 12 maanden.
 - **Geanonimiseerde bestel- en verkoopgegevens:** voor onbepaalde tijd bewaard, zodat trucks hun verkoopgeschiedenis behouden. Deze gegevens kunnen niet aan een individu worden teruggekoppeld.
-- **Boekhoudkundige gegevens:** zes jaar vanaf het einde van het betreffende boekjaar, zoals de Britse belastingwetgeving vereist.
+- **Boekhoudkundige gegevens:** ten minste zes jaar vanaf het einde van het betreffende boekjaar, en tien jaar waar de wet dat vereist.
 - **Supportcorrespondentie:** 24 maanden.
 - **Technische en beveiligingslogs:** 90 dagen.
 - **Demogegevens:** 24 uur, of 14 dagen als u ons vraagt uw demo te bewaren; maximaal 30 dagen als u zich vanuit de demo aanmeldt, of voor demo's die wij voorbereiden voor een foodtruck waarmee wij contact hebben opgenomen (zie onderdeel 5).

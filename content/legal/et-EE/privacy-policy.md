@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Privaatsuspoliitika
 
 **Viimati uuendatud:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Teenuse kasvades võime lisada teenuseosutajaid, sealhulgas SMS-teenuse pakkuja.
 - **Lõpetamata veebikaardi tellimused** (alustatud, kuid kunagi esitamata): kustutatakse ühe päeva jooksul pärast aegumist. Kui kaardimakse summa oli veel broneeritud, kustutatakse need ühe päeva jooksul pärast broneeringu vabastamist.
 - **WhatsAppi sõnumid, mida teie kliendid toiduautole saadavad, ja meie automaatsed vastused:** 12 kuud.
 - **Anonüümitud tellimuste ja müügi andmed:** säilitatakse tähtajatult, et toiduautodele jääks alles nende müügiajalugu. Neid andmeid ei saa üksikisikuga seostada.
-- **Raamatupidamisdokumendid:** kuus aastat asjaomase majandusaasta lõpust, nagu nõuab Ühendkuningriigi maksuseadus.
+- **Raamatupidamisdokumendid:** vähemalt kuus aastat asjaomase majandusaasta lõpust ja kümme aastat, kui seadus seda nõuab.
 - **Kasutajatoe kirjavahetus:** 24 kuud.
 - **Tehnilised ja turvalogid:** 90 päeva.
 - **Demoandmed:** 24 tundi või 14 päeva, kui palute meil oma demo säilitada; kuni 30 päeva, kui registreerute demo kaudu, või demode puhul, mille me koostame toiduautole, kellega oleme ühendust võtnud (vt jaotis 5).

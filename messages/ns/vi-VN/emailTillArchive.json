@@ -1,0 +1,4 @@
+{
+  "subject": "Bản lưu trữ doanh số kỳ {period} của bạn đã sẵn sàng",
+  "body": "Bản lưu trữ doanh số HatchGrab kỳ {period} của bạn đã sẵn sàng. Tải xuống tại đây: {link} (liên kết có hiệu lực trong 7 ngày). Hãy giữ một bản sao: ở một số quốc gia, như Pháp, bạn phải lưu giữ hồ sơ bán hàng trong 10 năm. Dấu vân tay của bản lưu trữ: {hash}. Bạn không cần làm gì thêm."
+}

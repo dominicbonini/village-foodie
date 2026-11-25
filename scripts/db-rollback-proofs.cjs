@@ -27,6 +27,10 @@
 //   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --preflight-till-4 supabase/migrations/20261140_till_pack_4.sql
 //   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --till-4-check
 //        till-pack-4: the closes, signed, and Part B (see till4Proofs below) — the real close run inside the rolled-back transaction.
+//   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --preflight-till-5 supabase/migrations/20261150_till_pack_5_6.sql
+//   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --till-5-check
+//   node scripts/db-rollback-proofs.cjs --bucket-privacy <project url> <anon key>
+//        till-pack-5-6: the archive's database parts and the version (see till5Proofs), and the bucket seen from outside (anonymous, reads only).
 //
 // 🔴 THE SAFEGUARDS (Dominic, 24 November 2026), each enforced below, not just promised:
 //   • DEMO TRUCKS ONLY — every truck it touches is in TRUCKS, and it refuses to start unless each one exists, is NOT a customer, and
@@ -1583,10 +1587,229 @@ async function till4Proofs(file) {
   ok('the demo trucks\' counts and every till table\'s counts are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
 }
 
+// ══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// till-pack-5-6 (25 November 2026, docs/till-pack-5-6-report.md): THE ARCHIVE'S DATABASE PARTS, AND THE VERSION.
+/**
+ *   --preflight-till-5 <migration>  ONE transaction, ROLLED BACK: the demo truck's till is started FIRST (so the migration's version event has
+ *                                   a truck to stamp), then 20261150_till_pack_5_6's statements, then the proofs below.
+ *   --till-5-check                  After it is applied: the same proofs (less the migration's own), ROLLED BACK.
+ * THE REAL ARCHIVE CODE (lib/till/archive.ts → archive-files.ts, signing.ts, the email) runs INSIDE the rolled-back transaction through the
+ * pgDb adapter (till-pack-4's), with an IN-MEMORY bucket (nothing is uploaded anywhere) and a recording mailer (nothing is sent). The zip it
+ * produces is then verified offline by scripts/till-verify.cjs verifyArchive, exactly as an inspector would.
+ */
+const TILL5_STATIC = `select
+  (select public from storage.buckets where id = 'till-archives') as bucket_public,
+  (select allowed_mime_types::text from storage.buckets where id = 'till-archives') as bucket_mime,
+  (select count(*) from pg_policies where schemaname = 'storage' and tablename = 'objects' and (coalesce(qual, '') ilike '%till-archives%' or coalesce(with_check, '') ilike '%till-archives%'))::int as bucket_policies,
+  exists (select 1 from pg_trigger where tgname = 'till_archive_objects_keep' and tgrelid = 'storage.objects'::regclass) as objects_keep_trigger,
+  (select bool_and(relrowsecurity) from pg_class where relnamespace = 'public'::regnamespace and relname in ('till_archives', 'till_archive_signatures')) as rls_on,
+  (select bool_or(has_table_privilege(r, 'public.' || t, 'SELECT')) from unnest(array['anon', 'authenticated']) r, unnest(array['till_archives', 'till_archive_signatures']) t) as api_reads,
+  (select bool_or(has_table_privilege('service_role', 'public.' || t, p)) from unnest(array['till_archives', 'till_archive_signatures']) t, unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE']) p) as service_writes,
+  has_function_privilege('service_role', 'public.till_archive_commit(text,text,date,date,date,date,text,text,text,bigint,bigint,text,text,text,text)', 'EXECUTE') and has_function_privilege('service_role', 'public.till_sign_archive(text,uuid,text,text)', 'EXECUTE') as service_calls,
+  (select bool_or(has_function_privilege(r, f, 'EXECUTE')) from unnest(array['anon', 'authenticated']) r, unnest(array['public.till_archive_commit(text,text,date,date,date,date,text,text,text,bigint,bigint,text,text,text,text)', 'public.till_sign_archive(text,uuid,text,text)', 'public.till_archive_object_guard()']) f) as api_calls,
+  (select count(*) from pg_trigger where tgname in ('till_archives_append_only', 'till_archives_no_truncate', 'till_archive_signatures_append_only', 'till_archive_signatures_no_truncate'))::int as append_triggers,
+  (select software_name || ' ' || software_version from public.till_settings where id) as software,
+  (select guard_mode from public.till_settings where id) as guard_mode,
+  md5(pg_get_functiondef('public.place_order_atomic_v2(jsonb,text,text,uuid,text,date,jsonb)'::regprocedure)) as v2_md5`
+function checkStatic5(s) {
+  ok('W1 · the bucket till-archives is PRIVATE (public = false), zip only, and NO storage policy names it — anon / authenticated can neither read, list nor write it', s.bucket_public === false && s.bucket_policies === 0 && /application\/zip/.test(s.bucket_mime || ''), s)
+  ok('W2 · a trigger on storage.objects refuses any change or deletion of an object in that bucket', s.objects_keep_trigger === true, s.objects_keep_trigger)
+  ok('W3 · till_archives, till_archive_signatures: RLS on; anon / authenticated cannot read them; the service role cannot write them; both append-only (4 triggers)', s.rls_on === true && s.api_reads === false && s.service_writes === false && s.append_triggers === 4, s)
+  ok('W4 · the service role may call till_archive_commit and till_sign_archive; anon / authenticated may call neither (nor the object guard)', s.service_calls === true && s.api_calls === false, s)
+  ok('W5 · the software is "HatchGrab, till module 1.0.0"; the guard is still in OBSERVE mode', s.software === 'HatchGrab, till module 1.0.0' && s.guard_mode === 'observe', s)
+  ok('W6 · place_order_atomic_v2 untouched: md5 e4b273abcf8e7609c6ca54033ed59332', s.v2_md5 === 'e4b273abcf8e7609c6ca54033ed59332', s.v2_md5)
+}
+async function bundleTill5() {
+  const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
+  const PURE = new Set(['next-intl', 'react', 'fflate'])
+  globalThis.__tp5inert = pkg => { const inert = new Proxy(function () {}, { get: (_t, k) => (k === 'then' ? undefined : k === Symbol.toPrimitive ? () => '' : k === '__esModule' ? true : inert), apply: () => inert, construct: () => inert }); void pkg; return inert }
+  const plugins = [{ name: 'inert', setup(b) {
+    b.onResolve({ filter: /^[^./]/ }, a => {
+      if (a.path.startsWith('@/')) return undefined
+      if (a.path.startsWith('node:')) return { path: a.path, external: true }
+      const pkg = a.path.startsWith('@') ? a.path.split('/').slice(0, 2).join('/') : a.path.split('/')[0]
+      return PURE.has(pkg) ? { path: a.path, external: true } : { path: a.path, namespace: 'inert' }
+    })
+    b.onLoad({ filter: /.*/, namespace: 'inert' }, a => ({ contents: `module.exports = globalThis.__tp5inert(${JSON.stringify(a.path)})`, loader: 'js' }))
+  } }]
+  const contents = `export { buildTillArchive, signPendingArchives, finalArchivesFor, issueArchiveLink, TillArchiveError } from '@/lib/till/archive'
+export { runTillCloses } from '@/lib/till/close-run'
+export { loadSigningKey } from '@/lib/till/signing'
+export { instantOfLocal } from '@/lib/time-utils'
+export { TILL_VERSION } from '@/lib/till/version'`
+  const out = (await esbuild.build({ stdin: { contents, resolveDir: REPO, loader: 'ts', sourcefile: 'entry.ts' }, bundle: true, write: false, platform: 'node', format: 'cjs', logLevel: 'silent', alias: { '@': REPO }, plugins })).outputFiles[0].text
+  const mod = { exports: {} }
+  new Function('module', 'exports', 'require', out)(mod, mod.exports, require)
+  return mod.exports
+}
+async function till5Counts(label) {
+  const base = await till4Counts(label)
+  const extra = await inRollback(`till5-counts-${label}`, async c => {
+    await q(c, `till5-counts-${label}`, 'set transaction read only')
+    const has = (await q(c, `till5-counts-${label}`, "select to_regclass('public.till_archives') is not null as has")).rows[0].has
+    const bucket = (await q(c, `till5-counts-${label}`, "select count(*)::int as n from storage.objects where bucket_id = 'till-archives'")).rows[0].n
+    if (!has) return { till5: 'not applied', bucket_objects: bucket }
+    return { ...(await q(c, `till5-counts-${label}`, `select (select count(*) from public.till_archives)::int as archives_anywhere,
+        (select count(*) from public.till_archive_signatures)::int as archive_signatures_anywhere,
+        (select software_version from public.till_settings where id) as software_version`)).rows[0], bucket_objects: bucket }
+  })
+  say(`  till-pack-5-6 counts ${label}: ${JSON.stringify(extra)}`)
+  return { ...base, ...extra }
+}
+async function till5Proofs(file) {
+  let body = null
+  if (file) {
+    const rel = path.relative(REPO, path.resolve(REPO, file)).split(path.sep).join('/')
+    if (!/^supabase\/migrations\/[^/]+\.sql$/.test(rel)) die(`${rel} is not a migration file`)
+    body = fs.readFileSync(path.join(REPO, rel), 'utf8').replace(/--[^\n]*/g, '').replace(/^\s*set lock_timeout[^;]*;/im, '').replace(/^\s*begin;\s*$/im, '').replace(/^\s*commit;\s*$/im, '').replace(/^\s*notify pgrst[^;]*;/im, '')
+    if (/^\s*(begin|commit|rollback)\s*;/im.test(body) || /\bcommit\b/i.test(body)) die('the migration body still has a transaction statement after stripping')
+    say(`\n══ PRE-FLIGHT — ${rel} inside ONE transaction that is ROLLED BACK ══`)
+  } else say('\n══ TILL-PACK-5-6, LIVE — every transaction ROLLED BACK ══')
+  const M = await bundleTill5()
+  const V = require('./till-verify.cjs')
+  const before = await till5Counts('before')
+  const tag = file ? 'preflight5' : 'till5'
+  const A = TRUCKS.A, TZ = 'Europe/Paris', D1 = '2026-10-30'
+  const at = (day, hm) => new Date(M.instantOfLocal(day, hm, TZ)).toISOString()
+  const K = M.loadSigningKey(crypto.generateKeyPairSync('ed25519').privateKey.export({ format: 'der', type: 'pkcs8' }).toString('base64'))
+  await inRollback(tag, async c => {
+    await guard(c)
+    const t0 = Date.now()
+    await q(c, tag, "set local timezone = 'UTC'")
+    await q(c, tag, "set local till.include_demo = 'on'")
+    await q(c, tag, tillHelpers() + '\n' + till2Helpers() + '\n' + till4Helpers())
+    const one = async (sql, p = []) => (await q(c, tag, sql, p)).rows[0]
+    const val = async (sql, p = []) => Object.values(await one(sql, p))[0]
+    const bd = (rate, gross) => JSON.stringify([{ rate_milli: rate, food_minor: gross, gross_minor: gross, tax_minor: Math.round(gross * rate / (100000 + rate)), net_minor: gross - Math.round(gross * rate / (100000 + rate)) }])
+    const item = (name, minor) => JSON.stringify([{ name, quantity: 1, unit_price: minor / 100 }])
+    const order = (day, atIso, status, items, bdj, minor, rate) => val('select pg_temp.rbp4_order($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9::jsonb, $10, $11) as k', [A, day, atIso, status, 'manual', null, null, items, bdj, minor, rate])
+    const pay = (k, kind, method, amount, atIso) => val('select pg_temp.rbp4_pay($1, $2, $3, $4, $5, $6) as id', [k, kind, 'in_person_other', method, amount, atIso])
+    // the customer fields these fixtures carry — none may reach any archive file
+    const hseq0 = Number((await one('select coalesce((select last_seq from public.till_chain_heads where truck_id = $1), 0)::int as s', [A])).s)
+    const PERSONAL = ['Camille Rollback-Proof', 'camille.rollback@example.org', '+33600000999', 'allergie arachide — preuve']
+    say('  — the demo truck\'s till: a day of sales (30 Oct 2026), with customer details on the rows —')
+    const O1 = await order(D1, at(D1, '12:00'), 'collected', item('Galette', 1100), bd(10000, 1100), 1100, 10000)
+    await pay(O1, 'charge', 'cash', 1100, at(D1, '12:01'))
+    const O2 = await order(D1, at(D1, '13:00'), 'collected', item('Cidre', 600), bd(20000, 600), 600, 20000)
+    await pay(O2, 'charge', 'card', 600, at(D1, '13:01'))
+    await pay(O2, 'refund', 'card', 200, at(D1, '15:00'))
+    await q(c, tag, 'update public.orders set customer_name = $2, customer_email = $3, customer_phone = $4, notes = $5 where order_key = any($1::uuid[])', [[O1, O2], ...PERSONAL])
+    let wrote = null
+    if (body) {
+      const w0 = (await q(c, tag, TILL_WROTE)).rows[0]
+      await q(c, tag, body)
+      const w1 = (await q(c, tag, TILL_WROTE)).rows[0]
+      wrote = Object.fromEntries(Object.keys(w1).map(k => [k, w1[k] - w0[k]]))
+      ok('U0 · the migration itself wrote NO row of orders, order_payments, action_audit_log or trucks (the rows carrying this transaction\'s xid are the same before and after it)', Object.values(wrote).every(n => n === 0), wrote)
+      const ve = await one("select c.software_version as sv, c.payload::jsonb -> 'data' as d from public.till_chain c where c.truck_id = $1 and c.kind = 'event' and c.ref = 'version' order by c.seq desc limit 1", [A])
+      ok('V0 · the migration chained a "version" event for the truck already in the till: 0.1.0 → 1.0.0, itself stamped 1.0.0', ve && ve.sv === '1.0.0' && ve.d.from === '0.1.0' && ve.d.to === '1.0.0' && ve.d.software === 'HatchGrab, till module', ve)
+    }
+    checkStatic5((await q(c, tag, TILL5_STATIC)).rows[0])
+    const db = pgDb(c, tag)
+    // a close of the day, so the archive carries a close and its signature
+    const run = await M.runTillCloses(db, { taxOf: async () => ({ inclusive: true, rateMilli: 10000 }), signingKey: K, trucks: [A], fromDay: D1, untilDay: D1, isDemo: () => false, log: () => {} })
+    ok('A0 · the day close of 30 Oct, signed (the till-pack-4 run)', run.trucks[0].days === 1 && run.trucks[0].signed >= 1, run)
+    // pre-flight: the entries after the migration's version event; after the apply: every entry this transaction wrote
+    const base = body ? Number(await val("select coalesce(max(seq), 0)::int from public.till_chain where truck_id = $1 and kind = 'event' and ref = 'version'", [A])) : hseq0
+    const stamped = await one("select count(*) filter (where software_version = '1.0.0')::int as v1, count(*)::int as n from public.till_chain where truck_id = $1 and seq > $2", [A, base])
+    ok('V1 · every chain entry written since the version change carries 1.0.0 (orders, payments, the close, its verify event)', stamped.n > 0 && stamped.v1 === stamped.n, stamped)
+    const closeSv = await val("select software_version from public.till_closes where truck_id = $1 and period_type = 'day' and period_start = $2", [A, D1])
+    ok('V2 · …and the close itself carries 1.0.0', closeSv === M.TILL_VERSION, closeSv)
+
+    // ── the archive, the real code, an in-memory bucket and a recording mailer ──
+    const bucket = new Map(), mails = []
+    const storage = { async put(p, bytes) { if (bucket.has(p)) throw new Error('exists'); bucket.set(p, Buffer.from(bytes)) }, async signedUrl(p, s) { return `https://example.invalid/sign/till-archives/${p}?expires=${s}` } }
+    const mailer = { async send(e) { mails.push(e); return { ok: true } } }
+    const deps = key => ({ db, storage, signingKey: key, mailer, ownerOf: async () => ({ email: 'owner@example.invalid', locale: 'fr-FR' }), log: () => {} })
+    const archivesBefore = Number(await val('select count(*)::int from public.till_archives where truck_id = $1', [A]))
+    // 30 Oct (its sales and close) to today (the day every entry of this transaction was RECORDED — so the manifest has day heads)
+    const todayTz = await val("select (now() at time zone 'Europe/Paris')::date::text as d")
+    const r1 = await M.buildTillArchive(deps(K), { truckId: A, reason: 'on_demand', from: D1, to: todayTz, requestedBy: 'owner' })
+    const zip1 = bucket.get(r1.path)
+    const row1 = await one('select reason, storage_path, manifest_sha256, zip_sha256, zip_bytes::int as bytes, seq::int as seq, hash, signing_at_commit, software_version, requested_by from public.till_archives where id = $1', [r1.archiveId])
+    const entry1 = await one("select kind, ref, hash, payload::jsonb -> 'data' as d from public.till_chain where truck_id = $1 and seq = $2", [A, r1.seq])
+    ok('A1 · ONE archive and ONE chain entry: a till_archives row (signed, 1.0.0, requested by the owner) and the kind-"archive" entry carrying its manifest sha256', row1 && row1.signing_at_commit === 'signed' && row1.software_version === '1.0.0' && row1.requested_by === 'owner' && entry1.kind === 'archive' && entry1.hash === row1.hash && entry1.d.manifest_sha256 === r1.manifestSha256 && Number(await val('select count(*)::int from public.till_archives where truck_id = $1', [A])) === archivesBefore + 1, { row1, entry: entry1 && { kind: entry1.kind } })
+    const v1 = V.verifyArchive(zip1, { publicKey: K.publicKeyB64 })
+    ok('A2 · the stored zip VERIFIES OFFLINE (scripts/till-verify.cjs --archive, against the public key): every file\'s hash, the manifest signature, the chain, the close and its signature, each day\'s head', v1.ok && /verified with the given key/.test(v1.summary.signature) && v1.summary.closes >= 1 && v1.summary.closes_signed >= 1 && v1.summary.day_heads >= 1, { problems: v1.problems.slice(0, 5), summary: v1.summary })
+    ok('A3 · its sha256 is the one recorded (till_archives.zip_sha256, size), and the path is under the truck', crypto.createHash('sha256').update(zip1).digest('hex') === row1.zip_sha256 && zip1.length === row1.bytes && row1.storage_path.startsWith(`${A}/`))
+    const files = V.readZip(zip1)
+    const leaks = Object.entries(files).flatMap(([n, b]) => PERSONAL.filter(p => b.toString('utf8').includes(p)).map(p => `${n}: ${p}`))
+    ok('A4 · NO customer detail in any file (the fixture\'s name, email, phone and note are on the order rows; none is in the zip)', leaks.length === 0, leaks)
+    ok('A5 · the email went to the owner, in French, with the link and the fingerprint', mails.length === 1 && mails[0].locale === 'fr-FR' && mails[0].text.includes(r1.manifestSha256) && mails[0].text.includes(r1.url))
+    const vAfter = (await db.rpc('till_verify', { p_truck: A })).data
+    ok('A6 · till_verify stays true with the archive (it is the chain entry it names)', vAfter && vAfter.ok === true, vAfter && { ok: vAfter.ok, mismatches: vAfter.mismatches })
+
+    // unsigned, then signed later
+    const r2 = await M.buildTillArchive(deps(null), { truckId: A, reason: 'on_demand', from: D1, to: D1, requestedBy: 'admin' })
+    const sg2 = await val('select signing_at_commit from public.till_archives where id = $1', [r2.archiveId])
+    const n0 = Number(await val('select count(*)::int from public.till_archive_signatures where archive_id = $1', [r2.archiveId]))
+    const signedLater = await M.signPendingArchives(deps(K), A)
+    const sig2 = await one('select key_id, signature from public.till_archive_signatures where archive_id = $1', [r2.archiveId])
+    ok('A7 · with no key, the archive is written UNSIGNED; the next run with the key signs it, and the signature verifies over its manifest sha256', sg2 === 'unsigned' && n0 === 0 && signedLater === 1 && sig2 && crypto.verify(null, Buffer.from(r2.manifestSha256, 'utf8'), crypto.createPublicKey({ key: Buffer.from(K.publicKeyB64, 'base64'), format: 'der', type: 'spki' }), Buffer.from(sig2.signature, 'base64')), { sg2, n0, signedLater })
+    ok('A8 · …and the unsigned zip still verifies offline (its files and chain), reported as unsigned', V.verifyArchive(bucket.get(r2.path), { publicKey: K.publicKeyB64 }).ok && V.verifyArchive(bucket.get(r2.path), {}).summary.signature === 'unsigned')
+
+    // the yearly archive: once per year; refusals
+    const y = await M.buildTillArchive(deps(K), { truckId: A, reason: 'year', from: '2025-01-01', to: '2025-12-31', requestedBy: 'system' })
+    const ydup = await M.buildTillArchive(deps(K), { truckId: A, reason: 'year', from: '2025-01-01', to: '2025-12-31', requestedBy: 'system' }).then(() => null, e => e)
+    ok('R1 · a year archive is made once: the second of the same year is REFUSED by the database (HGT20) — after its zip was stored (never deleted), nothing chained', y.archiveId && ydup && ydup.code === 'HGT20' && Number(await val("select count(*)::int from public.till_archives where truck_id = $1 and reason = 'year'", [A])) === 1, ydup && ydup.message)
+    const badHead = await db.rpc('till_archive_commit', { p_truck: A, p_reason: 'on_demand', p_start: D1, p_end: D1, p_year_start: '2026-01-01', p_year_end: '2026-12-31', p_path: `${A}/2026/x.zip`, p_manifest_sha: 'a'.repeat(64), p_zip_sha: 'b'.repeat(64), p_bytes: 10, p_head_seq: 1, p_head_hash: 'c'.repeat(64), p_key_id: null, p_signature: null, p_requested_by: 'admin' })
+    ok('R2 · an archive naming a chain head that is not the truck\'s is REFUSED (HGT21)', badHead.error && badHead.error.code === 'HGT21', badHead.error)
+    const badPath = await db.rpc('till_archive_commit', { p_truck: A, p_reason: 'on_demand', p_start: D1, p_end: D1, p_year_start: '2026-01-01', p_year_end: '2026-12-31', p_path: `other-truck/x.zip`, p_manifest_sha: 'a'.repeat(64), p_zip_sha: 'b'.repeat(64), p_bytes: 10, p_head_seq: 1, p_head_hash: 'c'.repeat(64), p_key_id: null, p_signature: null, p_requested_by: 'admin' })
+    ok('R3 · an archive stored outside the truck\'s own folder is REFUSED (HGT20)', badPath.error && badPath.error.code === 'HGT20', badPath.error)
+    const tamper = await (async () => { await q(c, tag, 'savepoint rbp5_t'); try { await q(c, tag, 'update public.till_archives set zip_bytes = zip_bytes + 1 where truck_id = $1', [A]); return 'allowed' } catch (e) { return e.code } finally { await q(c, tag, 'rollback to savepoint rbp5_t') } })()
+    ok('R4 · an archive row cannot be changed (HGT01, append-only)', tamper === 'HGT01', tamper)
+    // the bucket's objects can never change or go (a row put straight into storage.objects for this proof, rolled back)
+    await q(c, tag, "insert into storage.objects (bucket_id, name, owner, metadata) values ('till-archives', $1, null, '{}'::jsonb)", [`${A}/rbp-proof.zip`])
+    const objUpd = await (async () => { await q(c, tag, 'savepoint rbp5_o'); try { await q(c, tag, "update storage.objects set metadata = '{\"x\":1}'::jsonb where bucket_id = 'till-archives' and name = $1", [`${A}/rbp-proof.zip`]); return 'allowed' } catch (e) { return e.code } finally { await q(c, tag, 'rollback to savepoint rbp5_o') } })()
+    const objDel = await (async () => { await q(c, tag, 'savepoint rbp5_d'); await q(c, tag, "select set_config('storage.allow_delete_query', 'true', true)"); try { await q(c, tag, "delete from storage.objects where bucket_id = 'till-archives' and name = $1", [`${A}/rbp-proof.zip`]); return 'allowed' } catch (e) { return e.code } finally { await q(c, tag, 'rollback to savepoint rbp5_d') } })()
+    ok('R5 · an object in till-archives can be neither overwritten nor deleted, even by the storage API\'s own delete path (HGT01)', objUpd === 'HGT01' && objDel === 'HGT01', { objUpd, objDel })
+
+    // the final archive (account deletion) — and it stops when its email cannot go
+    const fin = await M.finalArchivesFor(deps(K), [A, TRUCKS.B])
+    ok('F1 · the final archive: one per truck WITH till records (the demo truck), none for the other; from the till start to today; emailed', fin.length === 1 && fin[0].truckId === A && fin[0].reason === 'final' && fin[0].emailed, fin.map(x => ({ t: x.truckId, r: x.reason, from: x.from, to: x.to })))
+    const failing = { ...deps(K), mailer: { async send() { return { ok: false } } } }
+    const finFail = await M.finalArchivesFor(failing, [A]).then(() => null, e => e)
+    ok('F2 · when the final archive\'s email cannot be sent, it THROWS a named error (account deletion then stops before anonymising)', finFail && finFail.step === 'final_email', finFail && finFail.message)
+    const vEnd = (await db.rpc('till_verify', { p_truck: A })).data
+    ok('F3 · till_verify true at the end (every archive is its chain entry)', vEnd && vEnd.ok === true, vEnd && { ok: vEnd.ok, mismatches: vEnd.mismatches })
+    say(`  ${body ? 'the migration and ' : ''}the proofs ran in ${Date.now() - t0} ms; the in-memory bucket held ${bucket.size} zip(s), ${[...bucket.values()].reduce((s, b) => s + b.length, 0)} bytes`)
+  })
+  const after = await till5Counts('after')
+  ok('the demo trucks\' counts, every till table\'s counts and the bucket\'s object count are identical before and after (nothing was committed or stored)', JSON.stringify(before) === JSON.stringify(after), { before, after })
+}
+
+/** After the apply: the bucket is private to the world — an anonymous request (the PUBLIC anon key, from the project's settings) can
+ *  neither fetch an object by its public URL, nor list the bucket, nor download by path. Reads only; uploads nothing. */
+async function bucketPrivacy(projectUrl, anonKey) {
+  say('\n══ THE BUCKET, FROM OUTSIDE (anonymous) ══')
+  const tries = [
+    ['public URL of an object', 'GET', `${projectUrl}/storage/v1/object/public/till-archives/x/probe.zip`, null],
+    ['download by path as anon', 'GET', `${projectUrl}/storage/v1/object/till-archives/x/probe.zip`, null],
+    ['list the bucket as anon', 'POST', `${projectUrl}/storage/v1/object/list/till-archives`, JSON.stringify({ prefix: '', limit: 10 })],
+    ['read the bucket as anon', 'GET', `${projectUrl}/storage/v1/bucket/till-archives`, null],
+  ]
+  const res = []
+  for (const [what, method, url, body] of tries) {
+    const r = await fetch(url, { method, headers: { apikey: anonKey, authorization: `Bearer ${anonKey}`, ...(body ? { 'content-type': 'application/json' } : {}) }, body })
+    const text = (await r.text()).slice(0, 200)
+    let listed = null
+    try { const j = JSON.parse(text); if (Array.isArray(j)) listed = j.length } catch { /* not JSON */ }
+    say(`  ${what}: HTTP ${r.status} ${text.replace(/\s+/g, ' ')}`)
+    res.push({ what, status: r.status, listed, text })
+  }
+  ok('P1 · an anonymous fetch of an object by its public URL is REFUSED (the bucket is not public)', res[0].status >= 400, res[0])
+  ok('P2 · an anonymous download by path is REFUSED', res[1].status >= 400, res[1])
+  ok('P3 · an anonymous listing returns nothing or is refused (no policy lets anon see an object)', res[2].status >= 400 || res[2].listed === 0, res[2])
+  ok('P4 · an anonymous read of the bucket itself is refused, or shows it private', res[3].status >= 400 || /"public":\s*false/.test(res[3].text), res[3])
+}
+
 async function main() {
   const args = process.argv.slice(2)
   URL_ = dbUrl()
-  if (args[0] === '--preflight-till-4' && args[1]) await till4Proofs(args[1])
+  if (args[0] === '--preflight-till-5' && args[1]) await till5Proofs(args[1])
+  else if (args[0] === '--till-5-check') await till5Proofs(null)
+  else if (args[0] === '--bucket-privacy' && args[1] && args[2]) await bucketPrivacy(args[1], args[2])
+  else if (args[0] === '--preflight-till-4' && args[1]) await till4Proofs(args[1])
   else if (args[0] === '--till-4-check') await till4Proofs(null)
   else if (args[0] === '--preflight-till-2' && args[1]) await till2Proofs(args[1])
   else if (args[0] === '--till-2-check') await till2Proofs(null)
@@ -1599,7 +1822,7 @@ async function main() {
   else if (args[0] === '--preflight' && args[1]) await preflight(args[1])
   else if (args[0] === '--concurrency') await concurrency()
   else if (args[0] === '--old-style-call') await oldStyleCall()
-  else die('usage: --preflight <migration.sql> | --concurrency | --old-style-call | --preflight-regime <migration.sql> | --regime-check | --preflight-notes <migration.sql> | --notes-check | --preflight-till-1 <migration.sql> | --till-1-check | --preflight-till-2 <migration.sql> | --till-2-check | --preflight-till-4 <migration.sql> | --till-4-check')
+  else die('usage: --preflight <migration.sql> | --concurrency | --old-style-call | --preflight-regime <migration.sql> | --regime-check | --preflight-notes <migration.sql> | --notes-check | --preflight-till-1 <migration.sql> | --till-1-check | --preflight-till-2 <migration.sql> | --till-2-check | --preflight-till-4 <migration.sql> | --till-4-check | --preflight-till-5 <migration.sql> | --till-5-check | --bucket-privacy <project url> <anon key>')
   say(failed ? `\n🔴 ${failed} proof(s) FAILED` : '\n✅ every proof passed')
   process.exit(failed ? 1 : 0)
 }

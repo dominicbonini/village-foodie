@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Integritetspolicy
 
 **Senast uppdaterad:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ I takt med att vår tjänst växer kan vi lägga till leverantörer, bland annat
 - **Ofullbordade onlinebeställningar med kort** (påbörjade men aldrig lagda): raderas inom ett dygn efter att de har löpt ut. Om en kortbetalning fortfarande var reserverad raderas de inom ett dygn efter att reservationen har hävts.
 - **WhatsApp-meddelanden som dina kunder skickar till en foodtruck, och våra automatiska svar:** 12 månader.
 - **Anonymiserade beställnings- och försäljningsuppgifter:** sparas utan tidsbegränsning, så att foodtruckarna behåller sin försäljningshistorik. Dessa uppgifter kan inte kopplas tillbaka till en enskild person.
-- **Bokföringsunderlag:** sex år från utgången av det aktuella räkenskapsåret, enligt kraven i brittisk skattelagstiftning.
+- **Bokföringsunderlag:** minst sex år från utgången av det aktuella räkenskapsåret, och tio år där lagen kräver det.
 - **Supportkorrespondens:** 24 månader.
 - **Tekniska loggar och säkerhetsloggar:** 90 dagar.
 - **Demouppgifter:** 24 timmar, eller 14 dagar om du ber oss att spara din demo; upp till 30 dagar om du registrerar dig utifrån den, eller för demor som vi förbereder för en foodtruck som vi har kontaktat (se avsnitt 5).

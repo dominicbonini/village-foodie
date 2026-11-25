@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Política de Privacidade
 
 **Última atualização:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Podemos também divulgar dados quando a lei o exija, ou para declarar ou defende
 - **Encomendas online com cartão inacabadas** (iniciadas mas nunca concluídas): apagadas no prazo de um dia após expirarem. Se ainda houver um pagamento com cartão cativo, são apagadas no prazo de um dia após a libertação desse valor cativo.
 - **Mensagens de WhatsApp que os seus clientes enviam a um food truck, e as nossas respostas automáticas:** 12 meses.
 - **Dados anonimizados de encomendas e vendas:** conservados por tempo indeterminado, para que os food trucks mantenham o seu histórico de atividade. Estes dados não podem ser associados a uma pessoa.
-- **Registos contabilísticos:** seis anos a contar do fim do exercício financeiro em causa, conforme exige a legislação fiscal do Reino Unido.
+- **Registos contabilísticos:** pelo menos seis anos a contar do fim do exercício financeiro em causa, e dez anos quando a lei o exija.
 - **Correspondência de apoio:** 24 meses.
 - **Registos técnicos e de segurança:** 90 dias.
 - **Dados da demonstração:** 24 horas, ou 14 dias se nos pedir que guardemos a sua demonstração; até 30 dias se se registar a partir dela, ou no caso de demonstrações que preparamos para um food truck que contactámos (consulte a secção 5).

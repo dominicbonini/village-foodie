@@ -1,0 +1,4 @@
+{
+  "subject": "Váš archív predajov za {period} je pripravený",
+  "body": "Váš archív predajov HatchGrab za {period} je pripravený. Stiahnite si ho tu: {link} (odkaz platí 7 dní). Uložte si kópiu: v niektorých krajinách, napríklad vo Francúzsku, musíte záznamy o predaji uchovávať 10 rokov. Odtlačok archívu: {hash}. Nič ďalšie robiť nemusíte."
+}

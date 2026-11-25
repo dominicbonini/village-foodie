@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Personvernerklæring
 
 **Sist oppdatert:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Etter hvert som tjenesten vår vokser, kan vi legge til leverandører, blant ann
 - **Uferdige kortbestillinger på nett** (påbegynt, men aldri lagt inn): slettes innen ett døgn etter at de utløper. Hvis en kortbetaling fortsatt var reservert, slettes de innen ett døgn etter at reservasjonen er frigitt.
 - **WhatsApp-meldinger kundene dine sender en matbil, og de automatiske svarene våre:** 12 måneder.
 - **Anonymiserte bestillings- og salgsdata:** oppbevares på ubestemt tid, slik at matbilene beholder salgshistorikken sin. Disse dataene kan ikke knyttes tilbake til en enkeltperson.
-- **Regnskapsmateriale:** seks år fra utgangen av det aktuelle regnskapsåret, slik britisk skattelovgivning krever.
+- **Regnskapsmateriale:** minst seks år fra utgangen av det aktuelle regnskapsåret, og ti år der loven krever det.
 - **Korrespondanse med kundestøtte:** 24 måneder.
 - **Tekniske logger og sikkerhetslogger:** 90 dager.
 - **Demodata:** 24 timer, eller 14 dager hvis du ber oss om å ta vare på demoen din; opptil 30 dager hvis du registrerer deg fra den, eller for demoer vi lager for en matbil vi har kontaktet (se punkt 5).

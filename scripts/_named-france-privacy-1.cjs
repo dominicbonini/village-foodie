@@ -15,6 +15,11 @@ const fs = require('fs'), path = require('path')
 const EDITS = require('./fixtures/france-privacy-1-legal-edits.json')
 
 function undoCode(file, src) {
+  // ⚠️ RE-PINNED (till-pack-5-6, 25 November 2026, docs/till-pack-5-6-report.md §8): the newer round's legal edit (the Privacy Policy's
+  // accounting-records line in English and the 54 used bases, its date, PRIVACY_UPDATED) is taken back FIRST, by name — newest change
+  // first, the chain's own rule — so every helper that calls this one sees the legal files as they were before it.
+  src = require('./_named-till-pack-5-6.cjs').undoCode(file, src)
+  if (src === null) return null
   const pairs = EDITS[file]
   if (!pairs || typeof src !== 'string') return src
   let out = src

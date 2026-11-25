@@ -1,0 +1,4 @@
+{
+  "subject": "Sinu müügiarhiiv perioodi {period} kohta on valmis",
+  "body": "Sinu HatchGrabi müügiarhiiv perioodi {period} kohta on valmis. Laadi see alla siit: {link} (link kehtib 7 päeva). Hoia koopia alles: mõnes riigis, näiteks Prantsusmaal, tuleb müügiandmeid säilitada 10 aastat. Arhiivi sõrmejälg: {hash}. Rohkem pole sul vaja midagi teha."
+}

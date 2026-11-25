@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Gizlilik Politikası
 
 **Son güncelleme:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Hizmetimiz büyüdükçe bir SMS sağlayıcısı da dâhil olmak üzere yeni sa�
 - **Tamamlanmamış online kartlı siparişler** (başlatılmış ancak hiç verilmemiş): süreleri dolduktan sonra bir gün içinde silinir. Bir kart ödemesi hâlâ bloke durumdaysa, bu blokenin kaldırılmasından sonra bir gün içinde silinir.
 - **Müşterilerinizin bir food truck’a gönderdiği WhatsApp mesajları ve otomatik yanıtlarımız:** 12 ay.
 - **Anonimleştirilmiş sipariş ve satış verileri:** food truck’ların satış geçmişini koruyabilmesi için süresiz olarak saklanır. Bu veriler bir kişiyle ilişkilendirilemez.
-- **Muhasebe kayıtları:** Birleşik Krallık vergi mevzuatının gerektirdiği şekilde, ilgili mali yılın sonundan itibaren altı yıl.
+- **Muhasebe kayıtları:** ilgili mali yılın sonundan itibaren en az altı yıl, kanunun gerektirdiği durumlarda ise on yıl.
 - **Destek yazışmaları:** 24 ay.
 - **Teknik ve güvenlik kayıtları (log):** 90 gün.
 - **Demo verileri:** 24 saat veya demonuzu saklamamızı isterseniz 14 gün; demodan kaydolursanız veya iletişime geçtiğimiz bir food truck için hazırladığımız demolarda en fazla 30 gün (bkz. 5. bölüm).

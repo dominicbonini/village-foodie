@@ -7629,5 +7629,9 @@
       "allSet": "Gjithçka është gati: paketa {plan} fillon më {date}.",
       "charge": "Kur të përfundojë prova, do të tarifojmë {amount} për pjesën e mbetur të muajit {month}."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Arkivi juaj i shitjeve për {period} është gati",
+    "body": "Arkivi juaj i shitjeve në HatchGrab për {period} është gati. Shkarkojeni këtu: {link} (lidhja vlen për 7 ditë). Ruani një kopje: në disa vende, si në Francë, të dhënat e shitjeve duhet të ruhen për 10 vjet. Gjurma digjitale e arkivit: {hash}. Nuk keni nevojë të bëni asgjë tjetër."
   }
 }

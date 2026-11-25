@@ -1,0 +1,4 @@
+{
+  "subject": "Myyntiarkistosi ajalta {period} on valmis",
+  "body": "HatchGrab-myyntiarkistosi ajalta {period} on valmis. Lataa se täältä: {link} (linkki toimii 7 päivää). Säilytä kopio: joissakin maissa, kuten Ranskassa, myyntitiedot on säilytettävä 10 vuotta. Arkiston sormenjälki: {hash}. Sinun ei tarvitse tehdä muuta."
+}

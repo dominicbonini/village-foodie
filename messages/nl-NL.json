@@ -7629,5 +7629,9 @@
       "allSet": "Alles is geregeld: {plan} gaat in op {date}.",
       "charge": "Als je proefperiode eindigt, rekenen we {amount} voor de rest van {month}."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Je verkooparchief over {period} staat klaar",
+    "body": "Je HatchGrab-verkooparchief over {period} staat klaar. Download het hier: {link} (de link werkt 7 dagen). Bewaar een kopie: in sommige landen, zoals Frankrijk, moet je verkoopgegevens 10 jaar bewaren. Vingerafdruk van het archief: {hash}. Je hoeft verder niets te doen."
   }
 }

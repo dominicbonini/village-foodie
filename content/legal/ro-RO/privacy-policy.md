@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Politica de confidențialitate
 
 **Ultima actualizare:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Pe măsură ce serviciul nostru se extinde, putem adăuga furnizori, inclusiv un
 - **Comenzile online cu plata cu cardul nefinalizate** (începute, dar niciodată plasate): șterse în termen de o zi de la expirare. Dacă o plată cu cardul era încă blocată, acestea sunt șterse în termen de o zi de la eliberarea sumei blocate.
 - **Mesajele WhatsApp pe care clienții dumneavoastră le trimit unui food truck și răspunsurile noastre automate:** 12 luni.
 - **Datele anonimizate privind comenzile și vânzările:** păstrate pe termen nelimitat, pentru ca food truck-urile să își păstreze istoricul vânzărilor. Aceste date nu pot fi asociate din nou cu o persoană fizică.
-- **Evidențele contabile:** șase ani de la sfârșitul exercițiului financiar respectiv, conform cerințelor legislației fiscale din Regatul Unit.
+- **Evidențele contabile:** cel puțin șase ani de la sfârșitul exercițiului financiar respectiv și zece ani în cazurile în care legea impune acest lucru.
 - **Corespondența de asistență:** 24 de luni.
 - **Jurnalele tehnice și de securitate:** 90 de zile.
 - **Datele demo-ului:** 24 de ore sau 14 zile, dacă ne cereți să vă păstrăm demo-ul; până la 30 de zile, dacă vă înregistrați pornind de la acesta, sau pentru demo-urile pe care le pregătim pentru un food truck pe care l-am contactat (consultați secțiunea 5).

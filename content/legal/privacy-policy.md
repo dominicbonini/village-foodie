@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 24 November 2026
+**Last updated:** 25 November 2026
 
 This policy explains how HatchGrab Ltd ("we", "us", "our") collects and uses personal data across two connected services:
 
@@ -149,7 +149,7 @@ As our service grows we may add providers, including an SMS provider. We will up
 - **Unfinished online card orders** (started but never placed): deleted within a day of expiring. If a card payment was still being held, they are deleted within a day of that hold being released.
 - **WhatsApp messages your customers send a truck, and our automatic replies:** 12 months.
 - **Anonymised order and sales data:** retained indefinitely, so trucks keep their trading history. This data cannot be linked back to an individual.
-- **Accounting records:** six years from the end of the relevant financial year, as UK tax law requires.
+- **Accounting records:** at least six years from the end of the relevant financial year, and ten years where the law requires it.
 - **Support correspondence:** 24 months.
 - **Technical and security logs:** 90 days.
 - **Demo data:** 24 hours, or 14 days if you ask us to keep your demo; up to 30 days if you sign up from it, or for demos we prepare for a food truck we have contacted (see section 5).

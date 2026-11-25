@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Polityka prywatności
 
 **Ostatnia aktualizacja:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Wraz z rozwojem naszej usługi możemy dodawać kolejnych dostawców, w tym dost
 - **Niedokończone zamówienia online opłacane kartą** (rozpoczęte, ale nigdy niezłożone): usuwane w ciągu jednego dnia od wygaśnięcia. Jeśli środki z płatności kartą były nadal zablokowane, są usuwane w ciągu jednego dnia od zwolnienia tej blokady.
 - **Wiadomości WhatsApp, które Państwa klienci wysyłają do food trucka, oraz nasze automatyczne odpowiedzi:** 12 miesięcy.
 - **Zanonimizowane dane zamówień i sprzedaży:** przechowywane bezterminowo, aby food trucki zachowały historię swojej sprzedaży. Danych tych nie można powiązać z konkretną osobą.
-- **Dokumentacja księgowa:** sześć lat od końca danego roku obrotowego, zgodnie z wymogami brytyjskiego prawa podatkowego.
+- **Dokumentacja księgowa:** co najmniej sześć lat od końca danego roku obrotowego, a dziesięć lat, jeżeli wymaga tego prawo.
 - **Korespondencja z obsługą klienta:** 24 miesiące.
 - **Logi techniczne i logi bezpieczeństwa:** 90 dni.
 - **Dane demo:** 24 godziny lub 14 dni, jeśli poproszą Państwo o zachowanie demo; do 30 dni, jeśli zarejestrują się Państwo z jego poziomu, lub w przypadku demo, które przygotowujemy dla food trucka, z którym nawiązaliśmy kontakt (zob. sekcja 5).

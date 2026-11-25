@@ -1,0 +1,4 @@
+{
+  "subject": "Handa na ang sales archive mo para sa {period}",
+  "body": "Handa na ang HatchGrab sales archive mo para sa {period}. I-download ito rito: {link} (gagana ang link sa loob ng 7 araw). Mag-save ng kopya: sa ilang bansa, gaya ng France, kailangang itago ang mga sales record nang 10 taon. Fingerprint ng archive: {hash}. Wala ka nang ibang kailangang gawin."
+}

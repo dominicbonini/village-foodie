@@ -1,0 +1,4 @@
+{
+  "subject": "Dit salgsarkiv for {period} er klar",
+  "body": "Dit HatchGrab-salgsarkiv for {period} er klar. Download det her: {link} (linket virker i 7 dage). Gem en kopi: i nogle lande, f.eks. Frankrig, skal salgsdata opbevares i 10 år. Arkivets fingeraftryk: {hash}. Du behøver ikke gøre mere."
+}

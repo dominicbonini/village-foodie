@@ -7629,5 +7629,9 @@
       "allSet": "Minden készen áll. Csomagja ({plan}) ekkor indul: {date}.",
       "charge": "A próbaidőszak végén {amount} összeget terhelünk {month} hátralévő részére."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Elkészült az Ön értékesítési archívuma ({period})",
+    "body": "Elkészült az Ön HatchGrab értékesítési archívuma ({period}). Innen töltheti le: {link} (a link 7 napig érvényes). Őrizzen meg egy másolatot: egyes országokban, például Franciaországban, az értékesítési nyilvántartást 10 évig kötelező megőrizni. Az archívum ujjlenyomata: {hash}. Más teendője nincs."
   }
 }

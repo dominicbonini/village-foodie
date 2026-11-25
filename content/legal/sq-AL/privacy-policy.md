@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Politika e privatësisë
 
 **Përditësuar së fundi:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Ndërsa shërbimi ynë rritet, mund të shtojmë ofrues, përfshirë një ofrues
 - **Porositë online me kartë të papërfunduara** (të filluara, por që nuk u dërguan kurrë): fshihen brenda një dite pas skadimit. Nëse një pagesë me kartë ishte ende e bllokuar, fshihen brenda një dite pasi të lirohet bllokimi.
 - **Mesazhet në WhatsApp që klientët tuaj i dërgojnë një food truck-u dhe përgjigjet tona automatike:** 12 muaj.
 - **Të dhënat anonime të porosive dhe të shitjeve:** mbahen pa afat, që food truck-et të ruajnë historikun e tyre të punës. Këto të dhëna nuk mund të lidhen me një individ.
-- **Regjistrimet kontabël:** gjashtë vjet nga fundi i vitit financiar përkatës, siç kërkon ligji tatimor i Mbretërisë së Bashkuar.
+- **Regjistrimet kontabël:** të paktën gjashtë vjet nga fundi i vitit financiar përkatës, dhe dhjetë vjet kur e kërkon ligji.
 - **Korrespondenca e mbështetjes:** 24 muaj.
 - **Regjistrat teknikë dhe të sigurisë:** 90 ditë.
 - **Të dhënat e demos:** 24 orë, ose 14 ditë nëse na kërkoni ta mbajmë demon tuaj; deri në 30 ditë nëse regjistroheni prej saj, ose për demot që përgatisim për një food truck që kemi kontaktuar (shihni seksionin 5).

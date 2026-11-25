@@ -7629,5 +7629,9 @@
       "allSet": "一切就緒：{plan} 方案將於 {date} 開始。",
       "charge": "試用期結束時，我們會收取 {month} 剩餘天數的 {amount}。"
     }
+  },
+  "emailTillArchive": {
+    "subject": "你的 {period} 銷售封存檔已準備就緒",
+    "body": "你的 {period} HatchGrab 銷售封存檔已準備就緒。請由此下載：{link} （連結 7 天內有效）。請保留一份副本：在部分國家，例如法國，銷售紀錄必須保存 10 年。封存檔指紋：{hash}。你不需要再做其他事。"
   }
 }

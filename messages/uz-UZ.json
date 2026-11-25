@@ -7629,5 +7629,9 @@
       "allSet": "Hammasi tayyor: {plan} tarifi {date} kuni boshlanadi.",
       "charge": "Sinov muddatingiz tugaganda {month} oyining qolgan qismi uchun {amount} yechamiz."
     }
+  },
+  "emailTillArchive": {
+    "subject": "{period} davri uchun savdo arxivingiz tayyor",
+    "body": "{period} davri uchun HatchGrab savdo arxivingiz tayyor. Uni bu yerdan yuklab oling: {link} (havola 7 kun amal qiladi). Nusxasini saqlab qoʻying: baʼzi mamlakatlarda, masalan, Fransiyada, savdo yozuvlarini 10 yil saqlash majburiy. Arxivning raqamli izi: {hash}. Boshqa hech narsa qilishingiz shart emas."
   }
 }

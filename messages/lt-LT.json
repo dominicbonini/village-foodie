@@ -7629,5 +7629,9 @@
       "allSet": "Viskas paruošta: planas {plan} prasidės {date}.",
       "charge": "Pasibaigus bandomajam laikotarpiui, nuskaitysime {amount} už likusią mėnesio dalį ({month})."
     }
+  },
+  "emailTillArchive": {
+    "subject": "Jūsų pardavimų archyvas už {period} paruoštas",
+    "body": "Jūsų HatchGrab pardavimų archyvas už {period} paruoštas. Atsisiųskite jį čia: {link} (nuoroda galioja 7 dienas). Išsisaugokite kopiją: kai kuriose šalyse, pavyzdžiui, Prancūzijoje, pardavimų įrašus privaloma saugoti 10 metų. Archyvo skaitmeninis atspaudas: {hash}. Daugiau nieko daryti nereikia."
   }
 }

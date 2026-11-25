@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Maxfiylik siyosati
 
 **Oxirgi yangilanish:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Xizmatimiz oʻsgani sari yangi provayderlar, jumladan SMS provayderini qoʻshish
 - **Tugallanmagan onlayn karta buyurtmalari** (boshlangan, lekin berilmagan): muddati tugaganidan keyin bir kun ichida oʻchiriladi. Agar karta toʻlovi hali ushlab turilgan boʻlsa, ushlab turish bekor qilinganidan keyin bir kun ichida oʻchiriladi.
 - **Mijozlaringiz fudtrakka yuborgan WhatsApp xabarlari va bizning avtomatik javoblarimiz:** 12 oy.
 - **Anonimlashtirilgan buyurtma va savdo maʼlumotlari:** fudtraklar savdo tarixini saqlab qolishi uchun muddatsiz saqlanadi. Bu maʼlumotlarni aniq bir shaxs bilan bogʻlab boʻlmaydi.
-- **Buxgalteriya yozuvlari:** Buyuk Britaniya soliq qonunchiligi talab qilganidek, tegishli moliya yili tugaganidan keyin olti yil.
+- **Buxgalteriya yozuvlari:** tegishli moliya yili tugaganidan keyin kamida olti yil, qonun talab qilgan hollarda esa oʻn yil.
 - **Qoʻllab-quvvatlash yozishmalari:** 24 oy.
 - **Texnik va xavfsizlik jurnallari:** 90 kun.
 - **Demo maʼlumotlari:** 24 soat yoki demongizni saqlab qolishimizni soʻrasangiz, 14 kun; undan roʻyxatdan oʻtsangiz yoki biz bogʻlangan fudtrak uchun tayyorlagan demolar uchun 30 kungacha (5-boʻlimga qarang).

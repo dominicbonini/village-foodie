@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Tietosuojaseloste
 
 **Päivitetty viimeksi:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Palvelumme kasvaessa voimme ottaa käyttöön uusia palveluntarjoajia, mukaan lu
 - **Keskeneräiset verkkokorttitilaukset** (aloitettu mutta ei koskaan tehty): poistetaan vuorokauden kuluessa niiden vanhenemisesta. Jos korttimaksun katevaraus oli vielä voimassa, ne poistetaan vuorokauden kuluessa siitä, kun katevaraus on vapautettu.
 - **Asiakkaidesi ruokarekalle lähettämät WhatsApp-viestit ja automaattiset vastauksemme:** 12 kuukautta.
 - **Anonymisoidut tilaus- ja myyntitiedot:** säilytetään toistaiseksi, jotta ruokarekat säilyttävät myyntihistoriansa. Näitä tietoja ei voida yhdistää takaisin yksittäiseen henkilöön.
-- **Kirjanpitoaineisto:** kuusi vuotta kyseisen tilikauden päättymisestä, kuten Yhdistyneen kuningaskunnan verolainsäädäntö edellyttää.
+- **Kirjanpitoaineisto:** vähintään kuusi vuotta kyseisen tilikauden päättymisestä ja kymmenen vuotta, jos laki sitä edellyttää.
 - **Tukeen liittyvä viestinvaihto:** 24 kuukautta.
 - **Tekniset ja tietoturvalokit:** 90 päivää.
 - **Esittelytiedot:** 24 tuntia tai 14 päivää, jos pyydät meitä säilyttämään esittelysi; enintään 30 päivää, jos rekisteröidyt sen kautta, tai esittelyissä, jotka valmistelemme ruokarekalle, johon olemme ottaneet yhteyttä (katso kohta 5).

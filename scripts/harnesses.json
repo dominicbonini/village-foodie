@@ -247,6 +247,8 @@
     "till-pack-1.cjs",
     "till-pack-2.cjs",
     "till-pack-4.cjs",
+    "till-pack-5-6.cjs",
+    "till-version-pin.cjs",
     "compare-fix-1.cjs",
     "compare-fix-2.cjs",
     "checker-prep-1.cjs"
@@ -297,6 +299,7 @@
         "_lp-france-records-1.cjs",
         "_lp-france-receipts-1.cjs",
         "_named-france-privacy-1.cjs",
+        "_named-till-pack-5-6.cjs",
         "_batch-rolling-snapshot.cjs",
         "_mini-dom.cjs",
         "_country-settings-gb.cjs",
@@ -460,7 +463,8 @@
         "partners-3-import.cjs",
         "partners-2-screens.cjs",
         "partners-3-screens.cjs",
-        "till-signing-keygen.cjs"
+        "till-signing-keygen.cjs",
+        "till-source-archive.cjs"
       ]
     },
     "needs_a_browser": {

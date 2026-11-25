@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Privātuma politika
 
 **Pēdējoreiz atjaunināts:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Mūsu pakalpojumam augot, mēs varam pievienot pakalpojumu sniedzējus, tostarp 
 - **Nepabeigti tiešsaistes pasūtījumi ar karti** (sākti, bet nekad nav veikti): tiek dzēsti dienas laikā pēc derīguma termiņa beigām. Ja kartes maksājums joprojām bija rezervēts, tie tiek dzēsti dienas laikā pēc šīs rezervācijas atcelšanas.
 - **WhatsApp ziņojumi, ko jūsu klienti sūta busiņam, un mūsu automātiskās atbildes:** 12 mēnešus.
 - **Anonimizēti pasūtījumu un pārdošanas dati:** tiek glabāti bez termiņa, lai busiņiem saglabātos tirdzniecības vēsture. Šos datus nevar saistīt ar konkrētu personu.
-- **Grāmatvedības ieraksti:** sešus gadus no attiecīgā finanšu gada beigām, kā to prasa Apvienotās Karalistes nodokļu tiesību akti.
+- **Grāmatvedības ieraksti:** vismaz sešus gadus no attiecīgā finanšu gada beigām un desmit gadus, ja to prasa tiesību akti.
 - **Saziņa ar atbalsta dienestu:** 24 mēnešus.
 - **Tehniskie un drošības žurnāli:** 90 dienas.
 - **Demo dati:** 24 stundas vai 14 dienas, ja lūdzat mums saglabāt jūsu demo; līdz 30 dienām, ja reģistrējaties no tā, vai demo, ko sagatavojam food truck, ar kuru esam sazinājušies (skatiet 5. sadaļu).

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
+<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
 # Kebijakan Privasi
 
 **Terakhir diperbarui:** {{LAST_UPDATED}}
@@ -149,7 +149,7 @@ Seiring berkembangnya layanan kami, kami dapat menambahkan penyedia, termasuk pe
 - **Pesanan kartu online yang belum selesai** (dimulai tetapi tidak pernah dikirim): dihapus dalam waktu satu hari setelah kedaluwarsa. Jika pembayaran kartu masih ditahan, pesanan tersebut dihapus dalam waktu satu hari setelah penahanan tersebut dilepaskan.
 - **Pesan WhatsApp yang dikirim pelanggan Anda kepada food truck, dan balasan otomatis kami:** 12 bulan.
 - **Data pesanan dan penjualan yang dianonimkan:** disimpan tanpa batas waktu, agar food truck tetap memiliki riwayat penjualannya. Data ini tidak dapat dikaitkan kembali dengan individu mana pun.
-- **Catatan akuntansi:** enam tahun sejak akhir tahun buku yang bersangkutan, sebagaimana diwajibkan oleh hukum perpajakan Britania Raya.
+- **Catatan akuntansi:** sekurang-kurangnya enam tahun sejak akhir tahun buku yang bersangkutan, dan sepuluh tahun apabila diwajibkan oleh hukum.
 - **Korespondensi dukungan:** 24 bulan.
 - **Log teknis dan keamanan:** 90 hari.
 - **Data demo:** 24 jam, atau 14 hari jika Anda meminta kami menyimpan demo Anda; hingga 30 hari jika Anda mendaftar dari demo tersebut, atau untuk demo yang kami siapkan untuk food truck yang telah kami hubungi (lihat bagian 5).

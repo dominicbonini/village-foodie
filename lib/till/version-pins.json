@@ -1,0 +1,15 @@
+{
+  "comment": "till-pack-6 (Q13): every fiscal version of \"HatchGrab, till module\" — the sha256 of its fiscal files (lib/till/version.ts FISCAL_FILES, scripts/till-version-pin.cjs sourceHash), its git tag, and the sha256 of its source archive (scripts/till-source-archive.cjs: git archive of the tag's fiscal files and docs/till/, kept per LPF L102 D / L96 J). A NEW entry is added BY HAND for each new version; an entry is never changed.",
+  "versions": [
+    {
+      "version": "1.0.0",
+      "source_sha256": "b138f9db92aade1555ee720653a7417eab0cec48792e114b7ca60436de515e4f",
+      "files": 18,
+      "tag": "till-module-1.0.0",
+      "source_archive_sha256": "0a73365d74d1bc130bbddccb05b2e36e6520a79686fe325006fb65abcb2a3b38",
+      "source_archive_files": 23,
+      "source_archive_bytes": 406528,
+      "pinned": "2026-11-25"
+    }
+  ]
+}

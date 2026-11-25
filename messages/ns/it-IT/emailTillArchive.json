@@ -1,0 +1,4 @@
+{
+  "subject": "Il tuo archivio vendite relativo a {period} è pronto",
+  "body": "Il tuo archivio vendite HatchGrab relativo a {period} è pronto. Scaricalo qui: {link} (il link è valido per 7 giorni). Conservane una copia: in alcuni Paesi, come la Francia, i registri delle vendite vanno conservati per 10 anni. Impronta digitale dell’archivio: {hash}. Non devi fare nient’altro."
+}
