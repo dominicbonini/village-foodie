@@ -197,3 +197,8 @@ count now: 0
 
 None exists: no ordering tool or app shows Nauru coverage.
 count now: 0
+
+## TV (AUD)
+
+None exists: no ordering tool or app shows Tuvalu coverage.
+count now: 0
