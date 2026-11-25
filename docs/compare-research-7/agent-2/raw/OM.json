@@ -1,0 +1,102 @@
+{
+ "country": "OM",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Zyda",
+   "website": "https://www.zyda.com",
+   "stored_id_prefix": "797df612",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Gulf/Egypt restaurant ordering-website platform with pickup & curbside ('Order ahead, collect fast'); its own Oman country page gives a plan price in OMR",
+   "eligibility": {
+    "order_quote": "Order ahead, collect fast",
+    "order_url": "https://www.zyda.com/oman/",
+    "country_quote": "Plans from 190 OMR a year.",
+    "country_url": "https://www.zyda.com/oman/"
+   },
+   "plans": [
+    {
+     "plan_name": "Zyda plans (lowest, 'from')",
+     "currency": "OMR",
+     "price_major": 190,
+     "period": "year",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Plans from 190 OMR a year.",
+     "url": "https://www.zyda.com/oman/",
+     "note": "A 'from' yearly price on the Oman country page for an unnamed plan (as accepted for QA/BH: yearly ÷ 12). Site-wide /pricing is KWD ('Prices for Kuwait')."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Order ahead, collect fast",
+     "url": "https://www.zyda.com/oman/"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Orders for a date, daily items and occasion peaks.",
+     "url": "https://www.zyda.com/pricing"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.zyda.com/oman/"
+   ]
+  }
+ ],
+ "notes": "OM count now: 3 (Ordable, Foodics + Zyda). Zyda's Oman country page carries 'Plans from 190 OMR a year.' (OMR accepted for OM) and the pickup product ('Order ahead, collect fast'; cafés: 'Order ahead, curbside and rewards for regulars.'). Same 'from' price form as QA/BH, accepted by the coordinator. Stopped at 3."
+}
