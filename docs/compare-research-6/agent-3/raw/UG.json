@@ -1,0 +1,26 @@
+{
+  "country": "UG",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Uganda restaurant online ordering system pickup order ahead Kampala \"UGX\" per month Ugandan startup software restaurants own website mobile money",
+    "Pesapal Reserveport restaurant website online orders pickup pricing Uganda"
+  ],
+  "vendors": [
+    {
+      "name": "Reserveport by Pesapal",
+      "website": "https://www.pesapal.com/ug/business/sector/restaurants",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "East-African (Pesapal) branded restaurant ordering website with a Uganda page: 'Reserveport by Pesapal is an online food ordering platform for direct website orders' / 'Get more direct sales & payments on your brand website'. But the Uganda page has no pickup / order-ahead wording ('Take-away' only in the till context: 'Manage eat-in, take-away and room-service food orders from a single point of sale') and no price — the 'Sign Up' buttons go to a demo request form (hidden). A Pesapal blog (search snippet, not read) says customers are notified 'when their food is ready for pickup'. Hidden price -> does not count",
+      "eligibility": {
+        "order_quote": "Reserveport by Pesapal is an online food ordering platform for direct website orders",
+        "order_url": "https://www.pesapal.com/ug/business/sector/restaurants"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://www.pesapal.com/ug/business/sector/restaurants"]
+    }
+  ],
+  "notes": "Count now: 0. New search: Deonde's Uganda page (flat monthly subscription, MTN MoMo, no figure in the snippet) belongs to agent 2 — only named; Simba Food (white-label apps via a partner, 2023 press), Jumia Food, Glovo, Eazzy Food, HelloFood (marketplaces — never counted). Reserveport (Pesapal) read once: direct website ordering but no pickup wording on the UG page and price on request (demo form) — not counted. Earlier: Bamudda (generic builder), RestaurantOS (staff-entered orders), Jjuma Global (generic), tills. Stopped. If Pesapal/Reserveport also serves KE/TZ/RW, it is the same hidden-price picture."
+}
