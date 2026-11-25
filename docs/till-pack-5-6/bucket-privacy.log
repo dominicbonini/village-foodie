@@ -1,0 +1,14 @@
+npm notice run village-foodie@0.1.0 npx
+npm notice run 'node' scripts/db-rollback-proofs.cjs --bucket-privacy https://ffphgwonshgxamtvefcv.supabase.co <base64>
+
+══ THE BUCKET, FROM OUTSIDE (anonymous) ══
+  public URL of an object: HTTP 400 {"statusCode":"404","error":"Bucket not found","message":"Bucket not found","code":"NoSuchBucket"}
+  download by path as anon: HTTP 400 {"statusCode":"404","error":"not_found","message":"Object not found","code":"NoSuchKey"}
+  list the bucket as anon: HTTP 200 []
+  read the bucket as anon: HTTP 400 {"statusCode":"404","error":"Bucket not found","message":"Bucket not found","code":"NoSuchBucket"}
+  ✓ P1 · an anonymous fetch of an object by its public URL is REFUSED (the bucket is not public)
+  ✓ P2 · an anonymous download by path is REFUSED
+  ✓ P3 · an anonymous listing returns nothing or is refused (no policy lets anon see an object)
+  ✓ P4 · an anonymous read of the bucket itself is refused, or shows it private
+
+✅ every proof passed
