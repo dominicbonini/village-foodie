@@ -5,7 +5,8 @@
     "India online ordering website for restaurants takeaway pickup commission-free \"₹\" per month plan own brand ordering food truck cafe software",
     "Indian startup pre-order pickup skip the queue cafes restaurants own ordering page \"₹\" \"/month\" subscription Bengaluru Mumbai takeaway counter token",
     "restaurant POS India \"online ordering\" website module takeaway pickup price \"₹\" per year Rista OR Torqus OR \"Slick POS\" OR Billberry OR \"Ezee\"",
-    "India food truck pre-order app order ahead pickup food stall ordering software \"food truck\" India ₹ monthly QR order counter pickup token Indian startup"
+    "India food truck pre-order app order ahead pickup food stall ordering software \"food truck\" India ₹ monthly QR order counter pickup token Indian startup",
+    "Indian restaurant online ordering website builder takeaway pickup \"₹\" per month own website zero commission cafes cloud kitchens pricing plans 2026 India startup self pickup"
   ],
   "vendors": [
     {
@@ -21,7 +22,54 @@
       "check_urls": [
         "https://royalpos.in/pos-software-in-india"
       ]
+    },
+    {
+      "name": "Kravon",
+      "website": "https://www.kravon.in",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Indian restaurant OS with direct ordering ('Growth ₹4,999 /month Full direct ordering channel.' … 'Delivery + pickup fulfillment'), but it is pre-launch: every plan button is 'Get Early Access', 'No setup fees during early access', 'During early access, the founder sets everything up with you directly', and the only restaurant shown is 'A real demo restaurant running on Kravon right now.' — no real customers (V16.38) -> not counted. If the reviewer accepts it, Growth ₹4,999/month would make IN 3",
+      "eligibility": {
+        "order_quote": "Customers order and pay directly. No Zomato. No commission.",
+        "order_url": "https://www.kravon.in/",
+        "country_quote": "Restaurant Operating System · India",
+        "country_url": "https://www.kravon.in/"
+      },
+      "plans": [
+        {
+          "plan_name": "Growth",
+          "currency": "INR",
+          "price_major": 4999,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Growth ₹4,999 /month Full direct ordering channel.",
+          "url": "https://www.kravon.in/",
+          "note": "Starter ₹2,499/month is presence + WhatsApp ordering; Pro ₹8,999/month. Recorded for reference only (not_relevant: early access, no real customers)."
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.kravon.in/"
+      ]
+    },
+    {
+      "name": "chotu",
+      "website": "https://owner.chotu.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Indian WhatsApp ordering for neighbourhood shops ('Start taking orders on WhatsApp now', 'Trusted by thousands of shops across India'); generic shops, no pickup / order-ahead wording and no price on its owner page",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://owner.chotu.com/"
+      ]
     }
   ],
-  "notes": "Count now: 2 (Dinehere, uEngage — agent 2's, not fetched) — no third. New: RoyalPOS (row above). Not read: RezoTap (Indian WhatsApp ordering, USD prices $11 / $28 per month per SoftwareSuggest — USD would not count in IN), Supaorder / Deonde / FoodChow (Indian multi-country, agent 2's), Petpooja / Prime POS / Mink Foodiee / Romio (tills, listing sites only), EasyQueue / SmartQ / Eatable / InvisQue / drivethruu (consumer multi-restaurant queue / pre-order apps — marketplace-like, press only), Foodiv (USD). For the coordinator: DineOpen (rejected by agent 2 in -2/-3 for no pickup wording) now has a product page https://www.dineopen.com/products/orders/online for a 'branded online ordering' page with India prices (search snippets: ₹299 / ₹899 / ₹1,799 per month) — not re-read (rejected vendor); agent 2 could re-check it. Stopped. SECOND PASS (food-truck only): no Indian food-truck ordering tool found: 'Truck Treats' is a designer's portfolio concept (contra.com / notion.site), not a product; Rocketchefs (2016 pizza-van delivery brand), MealPe / Zoop / TapCibo (consumer canteen / train / food-court ordering apps — marketplace-like), DineOpen's food-truck blog (agent 2's reject — see the note above), Scan-n-Order / Food Truck Pub (US), Jotform (generic forms). No vendor site to read. Count stays 2."
+  "notes": "Count now: 2 (Dinehere, uEngage — agent 2's, not fetched) — no third. New: RoyalPOS (row above). Not read: RezoTap (Indian WhatsApp ordering, USD prices $11 / $28 per month per SoftwareSuggest — USD would not count in IN), Supaorder / Deonde / FoodChow (Indian multi-country, agent 2's), Petpooja / Prime POS / Mink Foodiee / Romio (tills, listing sites only), EasyQueue / SmartQ / Eatable / InvisQue / drivethruu (consumer multi-restaurant queue / pre-order apps — marketplace-like, press only), Foodiv (USD). For the coordinator: DineOpen (rejected by agent 2 in -2/-3 for no pickup wording) now has a product page https://www.dineopen.com/products/orders/online for a 'branded online ordering' page with India prices (search snippets: ₹299 / ₹899 / ₹1,799 per month) — not re-read (rejected vendor); agent 2 could re-check it. Stopped. SECOND PASS (food-truck only): no Indian food-truck ordering tool found: 'Truck Treats' is a designer's portfolio concept (contra.com / notion.site), not a product; Rocketchefs (2016 pizza-van delivery brand), MealPe / Zoop / TapCibo (consumer canteen / train / food-court ordering apps — marketplace-like), DineOpen's food-truck blog (agent 2's reject — see the note above), Scan-n-Order / Food Truck Pub (US), Jotform (generic forms). No vendor site to read. Count stays 2. THIRD PASS (restaurant tools): Kravon (early-access, demo restaurant only — not_relevant under V16.38; ₹4,999/month Growth if accepted) and chotu (not_relevant) — rows above. Shoopy (generic store builder), Gustosfera, Menubly, Deonde (agent 2's), Restolabs, Hostinger / Wix (generic) not read. Count stays 2."
 }
