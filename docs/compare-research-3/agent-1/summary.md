@@ -75,3 +75,7 @@ None found. Poslik (Tunisian till) has no online ordering and no prices; CapsaFo
 ## CV (Cabo Verde, CVE)
 
 None found. Vendus serves Cabo Verde but is priced in EUR and shows no customer ordering ahead; Bafa is a marketplace; Cegid PHC is an ERP. count now: 0
+
+## SN (Senegal, XOF)
+
+None found. Search results were only Kolonell, a custom-build agency that compare-research-2 already marked not_relevant. Take App and inyad are agent 2's (USD only / no Senegal presence). count now: 0
