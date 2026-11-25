@@ -73,3 +73,9 @@ count now: 1
 
 Poster Georgia still USD only (search); not counted. nothing eligible exists in GEL.
 count now: 0
+
+## AZ (AZN)
+
+No vendor opened: three Azerbaijani/Russian searches (özün götür / əvvəlcədən sifariş / предзаказ навынос / manat) gave only Wolt/Bolt, single-restaurant apps and seller ads. Earlier rejects (Clopos, Delever, Dostavka.az) not re-read.
+nothing eligible exists.
+count now: 0
