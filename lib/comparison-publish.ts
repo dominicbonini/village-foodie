@@ -253,8 +253,13 @@ export function priceConfirmed(p: CompetitorPlan, evidence: readonly Row[]): boo
   })
 }
 
-/** compare-fix-1 (Dominic, 24 Nov): Romania's vendors price in EUR, so EUR also counts there. */
-export const ALSO_ACCEPTED_CURRENCY: Readonly<Record<string, readonly string[]>> = { RO: ['EUR'] }
+/** compare-fix-1 (Dominic, 24 Nov): Romania's vendors price in EUR, so EUR also counts there.
+ *  compare-research-3 (Dominic, 25 Nov; compare-research-2 §6.1 option b): Panama's vendors price in USD (at par with the balboa), and
+ *  Kuwait, Bahrain, Oman and Jordan's in their own currency, while HatchGrab prices there in USD — country_settings.currency is
+ *  never changed (it is HatchGrab's own price currency). The page shows a competitor's price in its plan's own currency. */
+export const ALSO_ACCEPTED_CURRENCY: Readonly<Record<string, readonly string[]>> = {
+  RO: ['EUR'], PA: ['USD'], KW: ['KWD'], BH: ['BHD'], OM: ['OMR'], JO: ['JOD'],
+}
 const currencyOk = (planCurrency: string, code: string, countryCurrency: string) => planCurrency === countryCurrency || (ALSO_ACCEPTED_CURRENCY[code] ?? []).includes(planCurrency)
 
 /** Whether a plan may be published automatically, and why not.
