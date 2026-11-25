@@ -1,15 +1,50 @@
 {
   "country": "UA",
   "researched_on": "2026-11-25",
-  "searches": ["система онлайн-замовлень для ресторанів самовивіз передзамовлення ціна грн/міс сайт для замовлень кафе тариф"],
+  "searches": [
+    "система онлайн-замовлень для ресторанів самовивіз передзамовлення ціна грн/міс сайт для замовлень кафе тариф"
+  ],
   "vendors": [
-    { "name": "Choice", "website": "https://choiceqr.com/ua", "stored_id_prefix": "70b34967", "focus": "nearest_local", "verdict": "unreadable",
-      "reason": "https://choiceqr.com/ua/pricing answered HTTP 403 again today (tried once, as asked).", "eligibility": {}, "plans": [], "answers": [], "check_urls": ["https://choiceqr.com/ua/pricing"] },
-    { "name": "Delivety", "website": "https://delivety.com/uk", "stored_id_prefix": null, "focus": "nearest_local", "verdict": "eligible",
+    {
+      "name": "Choice",
+      "website": "https://choiceqr.com/ua",
+      "stored_id_prefix": "70b34967",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "https://choiceqr.com/ua/pricing answered HTTP 403 again today (tried once, as asked).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://choiceqr.com/ua/pricing"
+      ]
+    },
+    {
+      "name": "Delivety",
+      "website": "https://delivety.com/uk",
+      "stored_id_prefix": "c0793a8a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
       "reason": "Eligible per compare-research-2 (takeaway time slots), but its Ukrainian pricing page shows no plans or prices at all ('У нас є ідеальний план саме для вас'; maybe loaded by script), and compare-research-2 saw USD only. No UAH price, so not counted.",
-      "eligibility": {}, "plans": [], "answers": [], "check_urls": ["https://delivety.com/uk/pricing"] },
-    { "name": "Diny", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
-      "reason": "Consumer pre-order/takeaway app listing many venues (a marketplace channel), App Store only. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] }
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://delivety.com/uk/pricing"
+      ]
+    },
+    {
+      "name": "Diny",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Consumer pre-order/takeaway app listing many venues (a marketplace channel), App Store only. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
   ],
   "notes": "Vitrina (UAH) is already counted. Poster wasn't re-read, as instructed. No other tool priced in UAH was found: Choice 403s again, Delivety's pricing page has no prices, and FoxiFood is EUR only (compare-research-2). Count stays 1, or 2 if Dominic accepts Poster's UAH figure."
 }
