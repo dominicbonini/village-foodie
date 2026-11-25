@@ -124,7 +124,104 @@
    "check_urls": [
     "https://ser.vi/pricing"
    ]
+  },
+  {
+   "name": "Dinlr (Dinlr Online Order)",
+   "website": "https://www.dinlr.com/sg",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Singapore restaurant POS; Dinlr Online Order lets customers order on the restaurant's website and schedule a pick-up date & time; module added to the Dinlr Waiter POS licence, both priced in S$ on /sg/pricing",
+   "eligibility": {
+    "order_quote": "Customer can place their order and schedule their pick-up date & time directly from the online website.",
+    "order_url": "https://www.dinlr.com/sg/online-order",
+    "country_quote": "Billed in SGD annually",
+    "country_url": "https://www.dinlr.com/sg/pricing"
+   },
+   "plans": [
+    {
+     "plan_name": "Dinlr Waiter + Dinlr Online Order",
+     "currency": "SGD",
+     "price_major": 198,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "In Singapore, Dinlr Waiter - the core iPad POS - costs S$89 per month per device billed annually, or S$99 per month billed monthly.",
+     "url": "https://www.dinlr.com/sg/pricing",
+     "note": "Module on a paid base plan → base + module. Monthly billing: Waiter S$99 (FAQ quote) + Online Order monthly 99 (page HTML for Online Order: '<div class=\"pricing\" per_price=\"89\" monthly_per_price=\"99\">', 'S$', 'Billed in SGD annually' by default) = S$198/month. Billed annually: S$89 + S$89 = S$178/month. FAQ: 'Self-ordering, kitchen display, online ordering and loyalty can be added later without migrating or reconfiguring the POS.' Read from raw HTML (curl), one request per page."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Customer can place their order and schedule their pick-up date & time directly from the online website.",
+     "url": "https://www.dinlr.com/sg/online-order"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Customer can place their order and schedule their pick-up date & time directly from the online website.",
+     "url": "https://www.dinlr.com/sg/online-order"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "S$99 per month billed monthly",
+     "url": "https://www.dinlr.com/sg/pricing"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.dinlr.com/sg/pricing",
+    "https://www.dinlr.com/sg/online-order"
+   ]
   }
  ],
- "notes": "SG count now: 2 (Klikit, Oddle) — unchanged. Qashier (stored) has a per-day price only (unclear); Eats365 SG unpriced; KPay no pickup ordering; Cococart '$' only and a generic store builder. Searches otherwise: Eats365 / Klikit / KPay blogs (vendor comparison posts, not sources), DBS / IMDA / RAS / GoBusiness pages (programmes), getapp.sg 'Nexordr' listing (directory, own site not found), SFA / HDB home-business rules. Take App (Singapore company) is USD only. Stopped after ~5 vendor sites with nothing new eligible and priced. Extra round: FoodZaps (USD only, no pickup wording) not relevant; Aptsys seen only in GoBusiness PSG annex PDFs (government catalogue, 2022–23, not a source). PASS 2 (food-truck only): the food-truck search found Feasty (Capterra SG listing only; QuickBooks / TurboTax tax exports and US$ pricing → a US tool, agent 3's region; own site not opened), StreetStop and STREAT Food (App Store listings naming no country; no own site found), Livingmenu (pre-order delivery platform = marketplace), YQueue (multi-merchant QR pre-order app = marketplace), WhyQ / GrabFood pre-order / FairPrice Kopitiam self-collect (marketplaces). No Singapore food-truck ordering tool with an own site and S$ price exists in the results. Count stays 2. ROUND 3 (restaurant tools): Atlas — optional online module unpriced, '$' only (/pricing is a 404). Tablevibe 401; Ser.vi no prices / no SG. SG count stays 2 after round 3 (Atlas, Tablevibe, Ser.vi + earlier KPay, Cococart, FoodZaps)."
+ "notes": "SG count now: 2 (Klikit, Oddle) — unchanged. Qashier (stored) has a per-day price only (unclear); Eats365 SG unpriced; KPay no pickup ordering; Cococart '$' only and a generic store builder. Searches otherwise: Eats365 / Klikit / KPay blogs (vendor comparison posts, not sources), DBS / IMDA / RAS / GoBusiness pages (programmes), getapp.sg 'Nexordr' listing (directory, own site not found), SFA / HDB home-business rules. Take App (Singapore company) is USD only. Stopped after ~5 vendor sites with nothing new eligible and priced. Extra round: FoodZaps (USD only, no pickup wording) not relevant; Aptsys seen only in GoBusiness PSG annex PDFs (government catalogue, 2022–23, not a source). PASS 2 (food-truck only): the food-truck search found Feasty (Capterra SG listing only; QuickBooks / TurboTax tax exports and US$ pricing → a US tool, agent 3's region; own site not opened), StreetStop and STREAT Food (App Store listings naming no country; no own site found), Livingmenu (pre-order delivery platform = marketplace), YQueue (multi-merchant QR pre-order app = marketplace), WhyQ / GrabFood pre-order / FairPrice Kopitiam self-collect (marketplaces). No Singapore food-truck ordering tool with an own site and S$ price exists in the results. Count stays 2. ROUND 3 (restaurant tools): Atlas — optional online module unpriced, '$' only (/pricing is a 404). Tablevibe 401; Ser.vi no prices / no SG. SG count stays 2 after round 3 (Atlas, Tablevibe, Ser.vi + earlier KPay, Cococart, FoodZaps). ROUND 3: NEW Dinlr — eligible (scheduled pick-up date & time) and priced in SGD as Waiter + Online Order: S$198/month billed monthly (S$178 billed annually). SG count now: 3 (Klikit, Oddle + Dinlr)."
 }
