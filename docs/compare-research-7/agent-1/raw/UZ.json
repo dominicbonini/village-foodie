@@ -1,0 +1,35 @@
+{
+  "country": "UZ",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "система автоматизации ресторанов Узбекистан модуль онлайн-заказов самовывоз сайт тарифы сум Billz OR Smartup OR \"Kassa\" OR Rkeeper",
+    "restoran kafe uchun Telegram bot va sayt orqali buyurtma platformasi \"olib ketish\" oylik obuna so'm tariflar SaaS"
+  ],
+  "vendors": [
+    {
+      "name": "Oshme (@Oshme_bot)",
+      "website": "https://www.it-park.uz",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Uzbek Telegram service for choosing restaurants and booking tables (IT Park startup story); booking only, no ordering ahead. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "OLX freelancer bot/site builds",
+      "website": "https://www.olx.uz",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Freelance one-off builds (Starter 1 500 000 so'm one-off etc.) - not a vendor's own product site, one-off quotes. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "UZ counts Delever (UZS) only. Earlier rounds rejected Poster (USD only; re-checked today, see V-Poster.json), Smartomato, iiko / R-Keeper, Zoomda (UZS but delivery and table ordering only, no pickup - not re-read), Jowi, MENU TIGER (agent 2), Yandex Eda / Uzum Tezkor / Wolt (marketplaces). Two new searches (Russian POS players with an online-ordering module - Billz, Smartup, Kassa, R-Keeper; Uzbek Telegram-bot ordering SaaS with 'olib ketish' and a monthly so'm fee) found only spot.uz news (iiko ~1000 restaurants, integrations with Uzum Tezkor), OLX freelancer ads, Yandex Eda's vendor help (marketplace pickup), Oshme (table booking) and foreign freelancer sites. Vitrina has no UZ price list (see V-Vitrina.json); Delever's KZ/AZ reach is сум only. Nothing eligible; UZ stays at 1."
+}
