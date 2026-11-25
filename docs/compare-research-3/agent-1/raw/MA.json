@@ -1,0 +1,50 @@
+{
+  "country": "MA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Maroc logiciel caisse restaurant \"commande en ligne\" \"click and collect\" prix \"DH\" mois site de commande restaurant marocain",
+    "plateforme marocaine commande à emporter restaurants snack abonnement \"DH/mois\" site de commande WhatsApp Maroc"
+  ],
+  "vendors": [
+    {
+      "name": "Asila",
+      "website": "https://asila.ma",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Moroccan restaurant/café POS + online-ordering platform: orders taken online on the business's own channel, for takeaway and delivery. One all-in plan priced in MAD. Borderline: no explicit 'order for a time' / pre-order wording.",
+      "eligibility": {
+        "order_quote": "Vendez sur votre propre canal avec un menu à votre image.",
+        "order_url": "https://asila.ma/",
+        "country_quote": "Caisse, commandes en ligne, stocks et back-office dans un seul système conçu pour les restaurants et cafés marocains.",
+        "country_url": "https://asila.ma/"
+      },
+      "plans": [
+        {
+          "plan_name": "Asila (monthly)", "currency": "MAD", "price_major": 300, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "300 MAD/mois", "url": "https://asila.ma/",
+          "note": "Single plan ('Une seule formule, tout inclus' on the pages.dev copy). Also '1.650 MAD/6 mois' (≈275/month) and '3.000 MAD/an' ('Soit environ 250 MAD/mois, facturés annuellement'). Custom domain: '300 MAD, une fois (achat du domaine non inclus).'"
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "partial", "quote": "À emporter et livraison", "url": "https://asila.ma/" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "not_mentioned" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "yes", "quote": "Nom de domaine personnalisé : 300 MAD, une fois (achat du domaine non inclus).", "url": "https://asila.ma/" },
+        { "key": "monthly", "value": "yes", "quote": "300 MAD/mois", "url": "https://asila.ma/" },
+        { "key": "perorder", "value": "not_mentioned" },
+        { "key": "cardfee", "value": "not_mentioned" }
+      ],
+      "check_urls": ["https://asila.ma/", "https://orika-drv.pages.dev/"]
+    }
+  ],
+  "notes": "inyad (MAD) is already counted and owned by agent 2, so not fetched. Asila makes 2. It was found via a search result for 'orika-drv.pages.dev' (a copy of the same site, linking to app.asila.ma), and the quotes are from asila.ma itself. Borderline on eligibility: its online ordering on the business's own channel covers 'À emporter et livraison' (takeaway = click and collect), but the page has no time-slot or pre-order wording. Dominic to decide. No food-truck wording on asila.ma (only the search snippet for the pages.dev copy said so, not quoted). Not looked at: consumer delivery apps (Kooul, Kaalix, Glovo); one-off kiosk packs on Avito (a marketplace listing); French tools priced in EUR (Lightspeed, Skello, Fiducial Pointex). Stopped at 2."
+}

@@ -54,3 +54,12 @@ Found no other tool priced in ISK (Dineout and Stefna show no price; FoxiFood is
 | UpMenu | nearest_local | not_relevant: USD only, no Serbia page | — | — |
 
 Found no other tool priced in RSD. count now: 1
+
+## MA (Morocco, MAD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| inyad | pos | already counted (agent 2's) | MAD | — |
+| Asila (new) | nearest_local | eligible, borderline (online takeaway ordering, no time-slot wording) | 300 MAD / month (3 000 MAD / year) | https://asila.ma/ |
+
+count now: 2 (1 if Dominic rejects Asila's borderline order-ahead evidence)
