@@ -1,0 +1,118 @@
+{
+ "country": "JP",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "KitchenCarMenu (キッチンカーメニュー)",
+   "website": "https://kitchencarmenu.com",
+   "stored_id_prefix": "fbea19b8",
+   "focus": "food_truck",
+   "verdict": "unreadable",
+   "reason": "https://kitchencarmenu.com/pricing answered HTTP 503 Service Unavailable again today (as twice on 24 Nov); not retried",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://kitchencarmenu.com/pricing"
+   ]
+  },
+  {
+   "name": "funfo",
+   "website": "https://www.funfo.jp",
+   "stored_id_prefix": "24aa846b",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Japanese restaurant POS + mobile order; funfoテイクアウト lets customers choose products and a pickup time; 0 yen a month + payment fee from 3.35% on its own takeout page",
+   "eligibility": {
+    "order_quote": "お好きな商品やピックアップ時間を選択",
+    "order_url": "https://www.funfo.jp/index.php/takeout/"
+   },
+   "plans": [
+    {
+     "plan_name": "funfoテイクアウト (月額0円)",
+     "currency": "JPY",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 3.35,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "月額費用 ￥0",
+     "url": "https://www.funfo.jp/index.php/takeout/",
+     "note": "Same page: '初期費用 ￥0', '決済手数料 3.35%～' (a 'from' fee on prepaid orders), '月額０円からスタートできる'. Paid plans (Lite AI 7,700円 / Business AI 13,200円 monthly incl. tax, from 1 Oct 2026) on /index.php/priceupdate/ per compare-research-1 (24 Nov), not re-read. Stored website is lycbiz.com (a LINE reseller page) — should be https://www.funfo.jp."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "お好きな商品やピックアップ時間を選択",
+     "url": "https://www.funfo.jp/index.php/takeout/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "no",
+     "quote": "月額費用 ￥0",
+     "url": "https://www.funfo.jp/index.php/takeout/"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "決済手数料 3.35%～",
+     "url": "https://www.funfo.jp/index.php/takeout/"
+    },
+    {
+     "key": "cardfee",
+     "value": "yes",
+     "quote": "決済手数料 3.35%～",
+     "url": "https://www.funfo.jp/index.php/takeout/"
+    }
+   ],
+   "check_urls": [
+    "https://www.funfo.jp/index.php/takeout/"
+   ]
+  }
+ ],
+ "notes": "JP count now: 3 (Mobaregi, Chuzmonster + funfo). Food-truck first: KitchenCarMenu (stored food-truck) still 503, so the restaurant tool funfo (stored eligible, own-site price re-read today) is the third. Stopped at 3."
+}
