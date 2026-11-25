@@ -1,0 +1,52 @@
+{
+  "country": "CZ",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Dotykačka OR Storyous online objednávky restaurace vyzvednutí ceník Kč měsíčně modul"
+  ],
+  "vendors": [
+    {
+      "name": "Dotykačka",
+      "website": "https://www.dotykacka.cz",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Czech POS. Its NEOMEZENĚ licence ('1 990 Kč' a month without terminal, bez DPH, 1 měsíc; 20 298 Kč a year) lists 'Objednávkové systémy', but its ordering-systems page shows these are third-party integrations (Foodora, Choice, Wolt, Bolt Food, Speedlo, Adaptee Gastro), 'paid services' with no price, and never mentions pickup. Not its own ordering product.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.dotykacka.cz/cenik/",
+        "https://dotykacka.cz/objednavkovy-system/"
+      ],
+      "note": "Price read from the cenik page's embedded price data (raw HTML): NEOMEZENĚ, '1 měsíc', 'Nemám zájem o terminál', price_without_vat '1 990 Kč'."
+    },
+    {
+      "name": "Speedlo",
+      "website": "https://www.speedlo.cz",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Czech delivery-ordering system (named on Dotykačka's integrations page); https://www.speedlo.cz/cenik returned only the domain name - unreadable.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.speedlo.cz/cenik"
+      ]
+    },
+    {
+      "name": "Storyous",
+      "website": "https://www.storyous.com/cs",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Czech POS; its pages in search mention connecting delivery and QR ordering channels and a kiosk, but no own pickup ordering product or Kč price. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "CZ counts DISH and Menu55. No third found. Dotykačka (Czech POS) prices its NEOMEZENĚ licence at 1 990 Kč a month, but its 'Objednávkové systémy' are third-party integrations (Choice, Speedlo, Adaptee Gastro, marketplaces) with no price, so it is not its own ordering tool. Speedlo unreadable; Storyous no ordering price. Choice (blocked, 403) not retried. Leads: Adaptee Gastro (Czech, timed online orders per Dotykačka's page) - not opened. CZ stays at 2."
+}
