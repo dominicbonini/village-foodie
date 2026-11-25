@@ -63,3 +63,13 @@ count now: 0
 
 Poster recorded from compare-research-3 agent-4's evidence (not re-read). No second KZT tool found.
 count now: 1
+
+## GE (GEL)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Shekveta | nearest_local | unreadable (TLS cert mismatch) | — | https://shekveta.ge/ |
+| Syrve (GastroDigital) | pos | not_relevant (no prices, no pickup) | — | https://www.syrve.com/en-gb/partner-page-gastrodigital-georgia |
+
+Poster Georgia still USD only (search); not counted. nothing eligible exists in GEL.
+count now: 0

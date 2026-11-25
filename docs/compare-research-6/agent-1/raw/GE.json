@@ -1,0 +1,24 @@
+{
+  "country": "GE",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Poster POS Georgia pricing ₾ GEL joinposter Грузия тарифы лари",
+    "კაფეებისთვის ონლაინ შეკვეთის პლატფორმა წინასწარ შეკვეთა წაღებით აპლიკაცია ბიზნესისთვის ფასები ლარი",
+    "Tbilisi restaurant software online ordering website takeaway pickup monthly subscription \"GEL\" OR \"₾\" Georgian company POS ordering module",
+    "Тбилиси сервис онлайн-заказов для кафе самовывоз предзаказ сайт заведения тариф лари в месяц"
+  ],
+  "vendors": [
+    {
+      "name": "Shekveta", "website": "https://shekveta.ge", "stored_id_prefix": null, "focus": "nearest_local", "verdict": "unreadable",
+      "reason": "Named on a directory (madloba.info) as an online ordering service for restaurants and cafés; https://shekveta.ge/ fails with a TLS certificate mismatch (cert for *.hyperhost.ua).",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": []
+    },
+    {
+      "name": "Syrve (GastroDigital, Georgia partner)", "website": "https://www.syrve.com", "stored_id_prefix": null, "focus": "pos", "verdict": "not_relevant",
+      "reason": "Georgia partner page ('GastroDigital is a certified Syrve partner in Georgia') shows no prices and no pickup / order-ahead wording, only 'delivery integrations'.",
+      "eligibility": {}, "plans": [], "answers": [],
+      "check_urls": ["https://www.syrve.com/en-gb/partner-page-gastrodigital-georgia"]
+    }
+  ],
+  "notes": "Nothing eligible with a GEL price (round 3). Poster (stored 0802a7c8, mine): its Georgia page (joinposter.com/en/pages/ge-main) is still USD only per search ('from $24 per month'); eligible in compare-research-2 but not counted; not re-read. Not re-read: Kovzy, XPOS (no customer pickup ordering), Restimo (EUR), Restaumatic (compare-research-2/-3). Georgian / Russian / English searches return Wolt / Glovo store pages (marketplaces) and MENU TIGER /ka (USD; not mine). Count: 0."
+}
