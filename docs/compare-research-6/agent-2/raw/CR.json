@@ -1,0 +1,40 @@
+{
+  "country": "CR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Costa Rica sistema de pedidos en línea para restaurantes \"para recoger\" pedidos anticipados planes \"₡\" mensual software costarricense",
+    "menú digital con pedidos \"para llevar\" Costa Rica plan \"₡\" \"por mes\" restaurantes sodas pedidos por WhatsApp recoger",
+    "POS restaurante Costa Rica factura electrónica Hacienda \"pedidos en línea\" OR \"tienda en línea\" precio colones mensual plan",
+    "plataforma tica pedidos restaurantes sin comisiones \"recoger en el local\" OR \"pick up\" Costa Rica app propia restaurante 2026",
+    "Eatsy Costa Rica plataforma restaurantes pedidos propios sitio web",
+    "Reorder plataforma restaurantes página web pedidos propia países Costa Rica recoger en tienda precio",
+    "food truck Costa Rica app ordenar por adelantado pre-orden recoger feria comida sistema pedidos colones"
+  ],
+  "vendors": [
+    {
+      "name": "Eatsy (Link-App)",
+      "website": "https://www.eatsycr.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Costa Rican own-ordering channel for restaurants (found at its real domain eatsycr.com; earlier rounds tried eatsy.cr, DNS fail) but delivery only via Uber logistics ('El express es pagado por el usuario'); no pickup / para recoger wording and no price ('Sin comisión porcentual sobre la venta', meeting booking only)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://www.eatsycr.com"]
+    },
+    {
+      "name": "Take Away CR",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Costa Rican take-away app seen in search (App Store id1492376570); App Store pages answered 404 (cd and us stores), no own site found; looks like a consumer app, not a tool a business buys",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://apps.apple.com/us/app/take-away-cr/id1492376570"]
+    }
+  ],
+  "notes": "Count now: 0. Round 2 (compare-research-6): nothing eligible with a CRC price. New: Eatsy (eatsycr.com, delivery-only via Uber, no price -> not_relevant), Take Away CR (app pages 404, no site). Seen in search, not read: Tico Togo (Tamarindo take-out marketplace app), Quefilo / Q'Filo (TEC university thesis, not a product), Alegra / Facture / GTI / Plaxp / POSMOVI (Costa Rican e-invoicing POS, no online ordering stated), Reorder (Colombian 11% own-ordering site, no Costa Rica page found), Capterra CR listings (ChatFood, Weevi, Orders2Me, Yelo — not sources), Square (no CR availability), GloriaFood (agent 1), MENU TIGER (USD). Earlier rejects not re-read: OlaClick, Biko.cr (marketplace, US$80/month), Avify, EDNA Foods. Justo entered Costa Rica (GAM) per press — agent 3's vendor, only named. Stopped after ~5 new candidates and 7 searches."
+}

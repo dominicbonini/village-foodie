@@ -10,3 +10,13 @@
 
 Nothing eligible exists with a PEN price after ~5 new candidates (7 searches in Spanish/English).
 count now: 0
+
+## CR (CRC)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Eatsy (Link-App) | nearest_local | not_relevant (delivery-only via Uber, no price) | – | https://www.eatsycr.com |
+| Take Away CR | nearest_local | unreadable (App Store 404, no site) | – | – |
+
+Nothing eligible exists with a CRC price after ~5 new candidates (7 searches). Justo (agent 3) entered CR per press — only named.
+count now: 0
