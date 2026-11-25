@@ -1,0 +1,807 @@
+{
+ "$comment": "compare-research-5 (25 Nov 2026): competitors read on their OWN websites by three Claude Code agents, one request at a time each (docs/compare-research-5-report.md; built by docs/compare-research-5/build.cjs). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import/). Every row source research, UNVERIFIED (35.an-1). Each answer carries the vendor’s verbatim quote and its page (35.an-4); \"no\" only with a quote saying it is not offered, silence is not_mentioned (35.ao-7). monthly_minor is MINOR units, converted from the page’s amount with lib/money-format.ts toMinorUnits (the 100× guard). request_check sets check_requested_at. \"evidence\" and \"not_relevant\" are for the reviewer; the import does not read them (the importer cannot mark a competitor not relevant).",
+ "id": "compare-research-5",
+ "checked_on": "2026-11-25",
+ "competitors": [
+  {
+   "id": "08a78851-3e39-5f57-b466-589394cded28",
+   "name": "HorecaSystems (Meniu QR)",
+   "website": "https://horecasystems.md/ro/",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-5 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: MD.",
+   "check_urls": [
+    "https://horecasystems.md/ro/",
+    "https://horecasystems.md/ro/modul-meniu-qr.html",
+    "https://horecasystems.md/ro/automatizare-fastfood-foodtruck.html"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Clientul introduce adresa de livrare, selectează intervalul de timp și pune instrucțiuni.",
+     "source_url": "https://horecasystems.md/ro/modul-meniu-qr.html"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "O cafea pe zi ≈ 900 lei/lună · fără comisioane per comandă",
+     "source_url": "https://horecasystems.md/ro/modul-meniu-qr.html"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned",
+     "note": "was \"no\" without a negative quote — recorded as not mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "e01cb953-6393-50c2-8cd4-2e49e1465d22",
+   "name": "Thinker POS",
+   "website": "https://thinkerpos.com",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-5 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: MK.",
+   "check_urls": [
+    "https://thinkerpos.com/en/pricing/",
+    "https://thinkerpos.com/en/online-ordering-delivery/",
+    "https://thinkerpos.com/en/food-truck/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Enable online ordering to expand your reach, allowing customers to pre-order and pick up meals on the go",
+     "source_url": "https://thinkerpos.com/en/food-truck/"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Enable online ordering to expand your reach, allowing customers to pre-order and pick up meals on the go",
+     "source_url": "https://thinkerpos.com/en/food-truck/"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "6.295 / month (incl. VAT) MKD",
+     "source_url": "https://thinkerpos.com/en/pricing/"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "ed59e1a6-1cfa-53f2-a75b-0af6435f0ef1",
+   "name": "RestroGreen",
+   "website": "https://quicklyservices.com/restrogreen",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-5 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: BD.",
+   "check_urls": [
+    "https://quicklyservices.com/restrogreen/restaurants/takeaway",
+    "https://quicklyservices.com/restrogreen/pricing-plan"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Let customers find the nearest branch, explore the menu, and pre-order with e-Restaurant for smooth dine-in or pickup.",
+     "source_url": "https://quicklyservices.com/restrogreen/restaurants/takeaway"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "2c3751b0-33e2-5070-95b4-238f7e6bd643",
+   "name": "Dinehere",
+   "website": "https://dinehere.in",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-5 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: IN.",
+   "check_urls": [
+    "https://dinehere.in/",
+    "https://dinehere.in/pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Students order ahead and skip the line.",
+     "source_url": "https://dinehere.in/"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Pre-orders and tokens",
+     "source_url": "https://dinehere.in/"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "₹500/month, plus ₹5,000 one-time setup for your own app.",
+     "source_url": "https://dinehere.in/"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  }
+ ],
+ "plans": [
+  {
+   "id": "0b61d1bc-b74b-5e11-82a2-74f60df16846",
+   "competitor_id": "08a78851-3e39-5f57-b466-589394cded28",
+   "country_code": "MD",
+   "plan_name": "Meniu QR (site de comenzi online)",
+   "currency": "MDL",
+   "price_hidden": false,
+   "monthly_minor": 91250,
+   "monthly_major": 912.5,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://horecasystems.md/ro/modul-meniu-qr.html",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-5, read 25 Nov 2026: \"Plătești fix 30 lei/zi (≈ 900 lei/lună), indiferent dacă primești 5 sau 500 de comenzi online.\" (priced per day: 30 MDL a day × 365 ÷ 12 — an estimate, so marked unclear) — ≈ 900 lei a month per the site. Presented as a standalone module (SmartCafé integration a bonus, not stated as required). The SmartCafé POS is 'de la 12 000 MDL', the food-truck package '26 200 MDL' (one-off packages)."
+  },
+  {
+   "id": "30573876-ab33-57b3-a96d-300bba3788dd",
+   "competitor_id": "e01cb953-6393-50c2-8cd4-2e49e1465d22",
+   "country_code": "MK",
+   "plan_name": "Standard",
+   "currency": "MKD",
+   "price_hidden": false,
+   "monthly_minor": 629500,
+   "monthly_major": 6295,
+   "yearly_only": false,
+   "setup_minor": 3075000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "incl",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://thinkerpos.com/en/pricing/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-5, read 25 Nov 2026: \"6.295 / month (incl. VAT) MKD\" — Implementation and training separate: '30,750 MKD including VAT'. The Standard card lets you pick free licences incl. 'Takeaway & delivery license' and 'QR ordering system license'; the words 'online ordering' appear in no plan card (only in the Products menu). Treat as the cheapest plan that plausibly carries online ordering — reviewer to confirm."
+  },
+  {
+   "id": "7546c4b6-cfed-518d-a913-5e1ed6e1ebac",
+   "competitor_id": "e01cb953-6393-50c2-8cd4-2e49e1465d22",
+   "country_code": "MK",
+   "plan_name": "Advanced",
+   "currency": "MKD",
+   "price_hidden": false,
+   "monthly_minor": 869300,
+   "monthly_major": 8693,
+   "yearly_only": false,
+   "setup_minor": 3075000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "incl",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://thinkerpos.com/en/pricing/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-5, read 25 Nov 2026: \"8.693 / month (incl. VAT) MKD\" — same licence list as Standard ('Takeaway & delivery license'); implementation 30,750 MKD incl. VAT"
+  },
+  {
+   "id": "cf442ecf-2ba9-54a3-aadf-82588307abcf",
+   "competitor_id": "ed59e1a6-1cfa-53f2-a75b-0af6435f0ef1",
+   "country_code": "BD",
+   "plan_name": "Sales & Marketing / All in One",
+   "currency": "BDT",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "hidden",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://quicklyservices.com/restrogreen/pricing-plan",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-5, read 25 Nov 2026: \"\" — Price hidden: the pricing page shows plan names 'Sales & Marketing' and 'All in One', a 'Paid Monthly' / 'Paid Yearly' toggle and a 30-day free trial, but no amounts in the page text (probably script-rendered). Same as compare-research-2."
+  },
+  {
+   "id": "375fca88-9dca-5310-9fd0-c0ae48f8d0d3",
+   "competitor_id": "2c3751b0-33e2-5070-95b4-238f7e6bd643",
+   "country_code": "IN",
+   "plan_name": "Dinehere + own ordering app",
+   "currency": "INR",
+   "price_hidden": false,
+   "monthly_minor": 50000,
+   "monthly_major": 500,
+   "yearly_only": false,
+   "setup_minor": 500000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://dinehere.in/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-5, read 25 Nov 2026: \"₹500/month, plus ₹5,000 one-time setup for your own app.\" — Quote is from the home page's comparison table. Pricing page: Dine-in plan ₹500 per month or ₹5,000 per year (yearly saves ₹1,000); 'Your own restaurant ordering app for delivery and pickup is a one-time setup of ₹5,000.' The pricing page itself does not say in words that the ₹500 plan is required beside the app; the comparison table pairs them. No per-order fee stated; GST not stated."
+  }
+ ],
+ "entries": [
+  {
+   "id": "006947ea-b4aa-5c97-9384-e4eaa4a7f875",
+   "country_code": "MD",
+   "competitor_id": "08a78851-3e39-5f57-b466-589394cded28",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "098329a3-7d80-5e22-a9b9-986b7069ac91",
+   "country_code": "MK",
+   "competitor_id": "e01cb953-6393-50c2-8cd4-2e49e1465d22",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "3923d7bf-29a1-5706-a2fe-c9a557ab3247",
+   "country_code": "BD",
+   "competitor_id": "ed59e1a6-1cfa-53f2-a75b-0af6435f0ef1",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "30630239-eed2-51ee-af46-eca8e85aed81",
+   "country_code": "IN",
+   "competitor_id": "2c3751b0-33e2-5070-95b4-238f7e6bd643",
+   "primary_plan_id": "375fca88-9dca-5310-9fd0-c0ae48f8d0d3",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  }
+ ],
+ "evidence": [
+  {
+   "name": "HorecaSystems (Meniu QR)",
+   "evidence": [
+    {
+     "country": "MD",
+     "order_quote": "Clientul introduce adresa de livrare, selectează intervalul de timp și pune instrucțiuni.",
+     "order_url": "https://horecasystems.md/ro/modul-meniu-qr.html",
+     "country_quote": "Același sistem funcționează ca site personalizat de livrări.",
+     "country_url": "https://horecasystems.md/ro/modul-meniu-qr.html",
+     "food_quote": "Automatizare pentru fast-food și food truck, construită pentru viteză",
+     "food_url": "https://horecasystems.md/ro/automatizare-fastfood-foodtruck.html",
+     "reason": "Moldovan HoReCa automation firm; its Meniu QR module doubles as the venue's own delivery-ordering site where the customer picks a time window; fixed 30 lei a day. Delivery only — pickup not mentioned (see note)"
+    }
+   ]
+  },
+  {
+   "name": "Thinker POS",
+   "evidence": [
+    {
+     "country": "MK",
+     "food_quote": "Whether you’re running a truck, cart, or trailer, our food truck POS is built to keep you moving",
+     "food_url": "https://thinkerpos.com/en/food-truck/",
+     "order_quote": "Enable online ordering to expand your reach, allowing customers to pre-order and pick up meals on the go",
+     "order_url": "https://thinkerpos.com/en/food-truck/",
+     "country_quote": "Basic: 3.699 / month (incl. VAT) MKD",
+     "country_url": "https://thinkerpos.com/en/pricing/",
+     "reason": "Skopje POS (MKD prices, +389, MK-language site) with a food-truck page offering online ordering so customers pre-order and pick up; the price page does not name which plan carries online ordering (see note)"
+    }
+   ]
+  },
+  {
+   "name": "RestroGreen",
+   "evidence": [
+    {
+     "country": "BD",
+     "order_quote": "Let customers find the nearest branch, explore the menu, and pre-order with e-Restaurant for smooth dine-in or pickup.",
+     "order_url": "https://quicklyservices.com/restrogreen/restaurants/takeaway",
+     "reason": "Dhaka restaurant POS whose own site shows online pre-orders for pickup; still no price shown (pricing page names plans and a monthly / yearly toggle, no amounts), so not counted"
+    }
+   ]
+  },
+  {
+   "name": "Dinehere",
+   "evidence": [
+    {
+     "country": "IN",
+     "food_quote": "Imran sells momos outside a college.",
+     "food_url": "https://dinehere.in/",
+     "order_quote": "Students order ahead and skip the line.",
+     "order_url": "https://dinehere.in/",
+     "country_quote": "Your own restaurant ordering app for delivery and pickup is a one-time setup of ₹5,000.",
+     "country_url": "https://dinehere.in/pricing",
+     "reason": "Indian zero-commission ordering: the restaurant's own ordering website and app with pickup / takeaway, and pre-orders paid ahead; ₹ prices on its own site"
+    }
+   ]
+  }
+ ],
+ "not_relevant": [
+  {
+   "country": "AL",
+   "name": "DISH (DISH Order)",
+   "website": "https://www.dish.co",
+   "stored": null,
+   "reason": "no Albania site: its country selector lists BE, DE, ES, FR, HR, International, IT, HU, NL, PL, PT, RO, SK, AT, CZ, UA only (read from the selector; summary, no verbatim quote)",
+   "url": "https://www.dish.co/",
+   "plans": []
+  },
+  {
+   "country": "AL",
+   "name": "Subger",
+   "website": "https://subger.com",
+   "stored": null,
+   "reason": "consumer subscription/price-tracker guide (DashPass, Uber One…), not software sold to food businesses",
+   "url": "https://subger.com/sq/food-delivery/restaurant-takeout",
+   "plans": []
+  },
+  {
+   "country": "AL",
+   "name": "Restaumatic",
+   "website": "https://www.restaumatic.com",
+   "stored": null,
+   "reason": "Polish ordering tool; its English price list shows no amounts and names no country but Polish signals (+48, Pyszne.pl); no Albania presence or ALL price",
+   "url": "https://www.restaumatic.com/en/price-list/",
+   "plans": []
+  },
+  {
+   "country": "BA",
+   "name": "DISH (DISH Order)",
+   "website": "https://www.dish.co",
+   "stored": null,
+   "reason": "no Bosnia site: its country selector lists BE, DE, ES, FR, HR, International, IT, HU, NL, PL, PT, RO, SK, AT, CZ, UA only (summary of the selector, no verbatim quote)",
+   "url": "https://www.dish.co/",
+   "plans": []
+  },
+  {
+   "country": "BA",
+   "name": "Restaumatic",
+   "website": "https://www.restaumatic.com",
+   "stored": null,
+   "reason": "Polish ordering tool; English price list shows no amounts and no country but Polish signals; no Bosnia presence or KM price",
+   "url": "https://www.restaumatic.com/en/price-list/",
+   "plans": []
+  },
+  {
+   "country": "BA",
+   "name": "FoodBooking (foodbooking.ba)",
+   "website": "https://foodbooking.ba",
+   "stored": null,
+   "reason": "Bosnian-language page for an ordering system now 'AISHA' (early-access sign-up); shows delivery or pickup but no ordering for a later time and no platform price (KM amounts are only sample menu items); no company named",
+   "url": "https://foodbooking.ba/",
+   "plans": []
+  },
+  {
+   "country": "BA",
+   "name": "Shopwidget",
+   "website": "https://www.shopwidget.app/ba",
+   "stored": null,
+   "reason": "Serbian (DDBusiness d.o.o. Subotica) generic web-shop widget for any website; local pickup but no ordering ahead shown; priced only in EUR (25 € a month), no KM price",
+   "url": "https://www.shopwidget.app/ba/blog/shopwidget-online-ordering-for-restaurants",
+   "plans": []
+  },
+  {
+   "country": "MK",
+   "name": "Dinerra",
+   "website": "https://dinerra.com",
+   "stored": null,
+   "reason": "Macedonian QR digital menu (MKD prices) whose only ordering is guests sending the order on Viber; no pickup or ordering ahead",
+   "url": "https://dinerra.com/",
+   "plans": []
+  },
+  {
+   "country": "BD",
+   "name": "Bhojon (Bdtask)",
+   "website": "https://www.bdtask.com/restaurant-management-system.php",
+   "stored": null,
+   "reason": "Dhaka developer's self-hosted restaurant script sold as a one-off licence in USD ($99); no BDT price. Seen in search on its own domain only, not opened.",
+   "url": "https://www.bdtask.com/restaurant-management-system.php",
+   "plans": []
+  },
+  {
+   "country": "LK",
+   "name": "Option4",
+   "website": "https://option4.lk",
+   "stored": null,
+   "reason": "Sri Lankan till ('retail, restaurant and laundry ready point-of-sale', 'Our Annual plan is just LKR 25,000/year'); no online ordering, pickup or takeaway on its home page.",
+   "url": "https://option4.lk/",
+   "plans": []
+  },
+  {
+   "country": "UZ",
+   "name": "Zoomda",
+   "website": "https://zoomda.uz",
+   "stored": null,
+   "reason": "Tashkent restaurant own-channel ordering platform (site, app, Telegram Mini App) priced in UZS, but no page read shows pickup / pre-order / order for a time: delivery and table ordering only.",
+   "url": "https://zoomda.uz/",
+   "plans": [
+    {
+     "plan_name": "Старт",
+     "currency": "UZS",
+     "price_major": 1300000,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": 1000,
+     "setup_major": null,
+     "quote": "Минимальный ежемесячный платёж — 1 300 000 сум.",
+     "url": "https://zoomda.uz/ru/tariffs",
+     "note": "Not counted (no ordering-ahead evidence). Per order 'от1 000сум / заказ' on Старт; tiers 1 200 → 500 сум per order by volume; 'Подключение, обучение и поддержка уже включены.' A search result also showed 'from 1,500,000 UZS/month' on an English page (not read)."
+    }
+   ]
+  },
+  {
+   "country": "UZ",
+   "name": "Jowi",
+   "website": "https://jowi.club",
+   "stored": null,
+   "reason": "Uzbek restaurant till with a guest app (Jowi Club, a multi-restaurant app); no UZS price for online ordering and no pickup evidence seen in search results. Not opened.",
+   "url": "https://jowi.club",
+   "plans": []
+  },
+  {
+   "country": "CL",
+   "name": "Toteat",
+   "website": "https://www.toteat.com",
+   "stored": null,
+   "reason": "Still no own-site sentence showing customers order online ahead for pickup. /precios (Chile, CLP) lists 'Toteat Pickup' and 'Toteat Delivery' only as bare bullets in Plan corporativo, and 'Delivery propio y para llevar' as a bare bullet in Plan avanzado. /es-cl/productos has no Pickup / Toteat App / tienda online page (only kiosk, Menú QR 'Tus clientes ven la carta actualizada y piden desde su celular.' = QR menu, Toteat Go = waiter app on the card terminal). A search snippet of the Mexican page mentions 'Toteat App ... delivery y pick up', but that is MX, not a Chilean page, and was not read",
+   "url": "https://www.toteat.com/precios",
+   "plans": [
+    {
+     "plan_name": "Plan corporativo",
+     "currency": "CLP",
+     "price_major": 179900,
+     "period": "month",
+     "quote": "Desde $179.900 /mes",
+     "url": "https://www.toteat.com/precios",
+     "note": "re-read 25 Nov: only plan listing 'Toteat Pickup' (no description); plus '0,35% venta neta mensual + IVA'. Plan avanzado 'Desde $69.900 /mes' + '0,5% venta neta mensual + IVA' lists 'Delivery propio y para llevar'. Not usable: no ordering-ahead quote",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "vat": "unknown"
+    }
+   ]
+  },
+  {
+   "country": "CL",
+   "name": "Justo",
+   "website": "https://www.getjusto.com",
+   "stored": null,
+   "reason": "Price UF only (unclear, does not count) and still no own-site pickup / retiro / scheduled-order sentence: /soluciones/restaurantes only says 'Integra todos tus canales de venta: tradicionales, online y apps de delivery en un solo lugar.' (page branded Justo México); /planes has no retiro/pickup feature line",
+   "url": "https://www.getjusto.com/soluciones/restaurantes",
+   "plans": [
+    {
+     "plan_name": "Ecom",
+     "currency": "CLF",
+     "price_major": 2,
+     "period": "month",
+     "quote": "UF 2/mes + IVA",
+     "url": "https://getjusto.com/planes",
+     "note": "unclear: true — price in UF (Unidad de Fomento, ISO CLF), not CLP; does not count. 'Precios de lista + IVA', per local; setup UF 2,5. Others: Inicia UF 0,5/mes, Apps UF 1/mes, PDV UF 3/mes, 360 UF 4/mes, Élite UF 7/mes (all + IVA). Only logistics fees are in CLP $",
+     "unclear": true,
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": 2.5,
+     "vat": "excl"
+    }
+   ]
+  },
+  {
+   "country": "CL",
+   "name": "Tiendanube",
+   "website": "https://www.tiendanube.com/cl",
+   "stored": null,
+   "reason": "generic web-shop builder (excluded by §91); seen in search only (Básico '$7.999 + IVA CLP /mes', pickup at 'puntos de retiro'), not read",
+   "url": "https://www.tiendanube.com/cl",
+   "plans": []
+  },
+  {
+   "country": "CL",
+   "name": "Weevi",
+   "website": null,
+   "stored": null,
+   "reason": "seen only on Capterra/GetApp listings (price 'US$90,00', no own site found in search, no CLP price); not usable",
+   "url": null,
+   "plans": []
+  }
+ ],
+ "unreadable": [
+  {
+   "country": "MK",
+   "name": "Waiterio",
+   "website": "https://www.waiterio.com/mk/",
+   "stored": null,
+   "reason": "Macedonian-language online-ordering page shows website orders into its POS but no ordering ahead; /mk/pricing/ shows no plan amounts or currency in the page text (rendered by script)"
+  },
+  {
+   "country": "BD",
+   "name": "Deonde",
+   "website": "https://deonde.co",
+   "stored": null,
+   "reason": "Bangladesh page answered HTTP 403 (as did its Sri Lanka page); search snippets say only a flat monthly fee, no amount."
+  },
+  {
+   "country": "LK",
+   "name": "Deonde",
+   "website": "https://deonde.co",
+   "stored": null,
+   "reason": "Sri Lanka page (deonde.co/sri-lanka/online-ordering-and-delivery-system.shtml) answered HTTP 403 again (as in compare-research-2); search snippets say only 'flat monthly subscription', no amount."
+  }
+ ],
+ "not_needed": []
+}
