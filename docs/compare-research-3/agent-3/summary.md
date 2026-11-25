@@ -59,3 +59,13 @@ count now: 1
 No second UYU-priced eligible tool (Reorder: no own site).
 
 count now: 1
+
+## CO (COP)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Fudo (Tu Delivery) | food_truck (BORDERLINE) | eligible | COP 110.900/mes add-on + base from COP 62.900/mes, sin IVA | https://fu.do/es-co/precios/ |
+| Menuestro | nearest_local | eligible | hidden ("a cotizar") | https://www.menuestro.com |
+| Vendty | nearest_local | not_relevant (BORDERLINE: no pickup wording) | COP 85.000–155.000/mes | https://vendty.com |
+
+count now: 1

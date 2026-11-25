@@ -1,0 +1,228 @@
+{
+ "country": "CO",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Colombia software restaurantes tienda online pedidos \"para recoger\" plan mensual \"COP\" sin comisiones menú digital precios"
+ ],
+ "vendors": [
+  {
+   "name": "Fudo (Tu Delivery)",
+   "website": "https://fu.do",
+   "stored_id_prefix": "7e12931c",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "Fudo's Colombian site: Tu Delivery online-shop add-on with 'Para retirar' (wave-2 quote from its delivery page), COP prices read today; food trucks y ferias named as a segment. BORDERLINE food_truck (segment label only).",
+   "eligibility": {
+    "food_quote": "Movilidad para food trucks y ferias",
+    "food_url": "https://fu.do/es-co/precios/",
+    "order_quote": "Entrega a domicilio Para retirar",
+    "order_url": "https://fu.do/es-co/delivery/",
+    "country_quote": "Precios en pesos colombianos, sin IVA.",
+    "country_url": "https://fu.do/es-co/precios/"
+   },
+   "plans": [
+    {
+     "plan_name": "Tu Delivery (add-on)",
+     "currency": "COP",
+     "price_major": 110900,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "$110.900 /mes",
+     "url": "https://fu.do/es-co/precios/",
+     "note": "add-on on top of a Fudo base plan; 'Precios en pesos colombianos, sin IVA.'"
+    },
+    {
+     "plan_name": "Plan Inicial (base plan)",
+     "currency": "COP",
+     "price_major": 62900,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "$62.900 /mes",
+     "url": "https://fu.do/es-co/precios/",
+     "note": "cheapest base plan; Tu Delivery is added to it (Plan Avanzado $118.900 /mes, Plan Pro $144.900 /mes)"
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Entrega a domicilio Para retirar",
+     "url": "https://fu.do/es-co/delivery/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://fu.do/es-co/precios/",
+    "https://fu.do/es-co/delivery/"
+   ]
+  },
+  {
+   "name": "Menuestro",
+   "website": "https://www.menuestro.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Colombian restaurant online menu / ordering with pickup and 0% commission; price only on quote (hidden)",
+   "eligibility": {
+    "order_quote": "Domicilio, recoger en tu sede o servido en la mesa.",
+    "order_url": "https://www.menuestro.com",
+    "country_quote": "¿Funciona fuera de Colombia?",
+    "country_url": "https://www.menuestro.com"
+   },
+   "plans": [
+    {
+     "plan_name": "Pago único / Anualidad",
+     "currency": "COP",
+     "price_major": null,
+     "period": "year",
+     "vat": "unknown",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "a cotizar",
+     "url": "https://www.menuestro.com",
+     "note": "price on request; 'Comisión por pedido' '$0, siempre'. Currency not shown (assumed COP)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Domicilio, recoger en tu sede o servido en la mesa.",
+     "url": "https://www.menuestro.com"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.menuestro.com"
+   ]
+  },
+  {
+   "name": "Vendty",
+   "website": "https://vendty.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "BORDERLINE: Colombian POS ('hecho para Colombia') with a virtual store / online menu and delivery module, COP prices ($155.000 / $85.000 / $140.000 per month), but no pickup / para llevar / scheduled-order wording on the home or restaurant page",
+   "eligibility": {
+    "country_quote": "Vendty es un Sistema de Punto de Venta para restaurantes y tiendas hecho para Colombia.",
+    "country_url": "https://vendty.com"
+   },
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://vendty.com",
+    "https://vendty.com/sistema-pos-para-restaurantes"
+   ]
+  }
+ ],
+ "notes": "Count now: 1 — Fudo Tu Delivery (COP 110.900/mes add-on + base plan from COP 62.900/mes, sin IVA, read today; its 'Para retirar' pickup quote is from wave 2's /es-co/delivery/ page, not re-read today). Menuestro (Colombian, pickup 'recoger en tu sede', 0% commission) is eligible but its price is 'a cotizar' (hidden, does not count). Vendty (Colombian POS, COP) shows online store / delivery but no pickup wording -> BORDERLINE not_relevant; if Dominic accepts its 'vender tu menú por Internet' + 'mesa, domicilio o autoservicios' as ordering ahead it would make 2 (Profesional $85.000/mes billed yearly). Siigo POS Gastrobar (till, sponsored press), Reorder (no own site), OlaClick (USD), MENU TIGER (agent 2) not counted. Stopped after 4 sites."
+}
