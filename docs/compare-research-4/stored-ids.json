@@ -1,0 +1,1906 @@
+{
+ "000f94fa": {
+  "focus": "food_truck",
+  "id": "000f94fa-7801-5e3f-95d6-09c2acba641e",
+  "lifecycle": "active",
+  "name": "Payli",
+  "website": "https://payli.be"
+ },
+ "01fa170d": {
+  "focus": "nearest_local",
+  "id": "01fa170d-7187-59ae-83d8-ac2af032907f",
+  "lifecycle": "active",
+  "name": "VGather self-ordering service",
+  "website": "https://dtspp.cyberport.hk"
+ },
+ "034d1e1a": {
+  "focus": "nearest_local",
+  "id": "034d1e1a-a013-5fd6-af2b-1e2d7b2103ce",
+  "lifecycle": "active",
+  "name": "TopEstrellas (Pedidos module)",
+  "website": "https://topestrellas.com"
+ },
+ "040f4b59": {
+  "focus": "nearest_local",
+  "id": "040f4b59-7a53-53fd-8e5b-02415b84c08b",
+  "lifecycle": "active",
+  "name": "Menu55",
+  "website": "https://menu55.cz"
+ },
+ "04a0ed24": {
+  "focus": "nearest_local",
+  "id": "04a0ed24-541b-5ddd-9ff4-f32e32ec06b7",
+  "lifecycle": "active",
+  "name": "Kioskito",
+  "website": "https://kioskito.app"
+ },
+ "065d9dc6": {
+  "focus": "nearest_local",
+  "id": "065d9dc6-6975-52b1-9eeb-d4d0b288e9b4",
+  "lifecycle": "active",
+  "name": "Sabbor",
+  "website": "https://restaurant-saas-monorepo.pages.dev"
+ },
+ "07509d43": {
+  "focus": "nearest_local",
+  "id": "07509d43-f7ee-582c-b82d-a54a92eb6a3a",
+  "lifecycle": "active",
+  "name": "Plick",
+  "website": "https://plick.com.mx"
+ },
+ "0802a7c8": {
+  "focus": "food_truck",
+  "id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+  "lifecycle": "active",
+  "name": "Poster",
+  "website": "https://joinposter.com"
+ },
+ "0947b3fc": {
+  "focus": "food_truck",
+  "id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+  "lifecycle": "active",
+  "name": "Place à emporter",
+  "website": "https://placeaemporter.fr"
+ },
+ "09cbaaeb": {
+  "focus": "nearest_local",
+  "id": "09cbaaeb-d9cd-59a3-89bc-9b78abe9766b",
+  "lifecycle": "active",
+  "name": "Ordinalo",
+  "website": "https://www.ordinalo.com"
+ },
+ "0b177e65": {
+  "focus": "food_truck",
+  "id": "0b177e65-0d52-58e7-a5e7-c24e2968e52a",
+  "lifecycle": "active",
+  "name": "Beat The Queue",
+  "website": "https://beatthequeue.co.uk"
+ },
+ "0b332418": {
+  "focus": "food_truck",
+  "id": "0b332418-d78b-594d-a106-0d7f92be1232",
+  "lifecycle": "active",
+  "name": "TuMenúDigital",
+  "website": "https://tumenudigital.mx"
+ },
+ "0b6a0e02": {
+  "focus": null,
+  "id": "0b6a0e02-0d08-4ab5-80ee-912d42d0c150",
+  "lifecycle": "candidate",
+  "name": "Epos Now",
+  "website": "https://www.eposnow.com"
+ },
+ "0c786162": {
+  "focus": "food_truck",
+  "id": "0c786162-6cb2-53f4-8fc7-5639eae6fc4f",
+  "lifecycle": "not_relevant",
+  "name": "Soften Food",
+  "website": "https://www.softensistemas.com.br"
+ },
+ "0ccb6996": {
+  "focus": "food_truck",
+  "id": "0ccb6996-6d76-5888-a0e0-794012ee976c",
+  "lifecycle": "active",
+  "name": "Truckster",
+  "website": "https://apps.apple.com"
+ },
+ "0d361b15": {
+  "focus": "nearest_local",
+  "id": "0d361b15-3847-5821-86a4-b8e776c0469f",
+  "lifecycle": "active",
+  "name": "Ezy Cart",
+  "website": "https://ezywebpro.com"
+ },
+ "0e42d25f": {
+  "focus": "food_truck",
+  "id": "0e42d25f-a6e1-54b6-a0d9-1e4fca1d82dc",
+  "lifecycle": "active",
+  "name": "Digitaste",
+  "website": "https://www.digitaste.be"
+ },
+ "10aba63d": {
+  "focus": "food_truck",
+  "id": "10aba63d-1d91-5309-8500-bccfaf43eaae",
+  "lifecycle": "active",
+  "name": "Goodfynd",
+  "website": "https://goodfynd.com"
+ },
+ "110abdac": {
+  "focus": "nearest_local",
+  "id": "110abdac-c213-5f20-bada-10b1b9b8c9f0",
+  "lifecycle": "active",
+  "name": "Oddle",
+  "website": "https://oddle.me"
+ },
+ "113508e1": {
+  "focus": null,
+  "id": "113508e1-1d64-55f2-93dc-aee5f0095585",
+  "lifecycle": "not_relevant",
+  "name": "Check",
+  "website": "https://foodtruckya.com"
+ },
+ "11889b66": {
+  "focus": "nearest_local",
+  "id": "11889b66-2305-500b-ad4d-b6726439667f",
+  "lifecycle": "active",
+  "name": "JMENU",
+  "website": "https://www.jmenu.it"
+ },
+ "11e41caa": {
+  "focus": "food_truck",
+  "id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+  "lifecycle": "active",
+  "name": "Nomad (nomadcaisse.fr)",
+  "website": "https://www.nomadcaisse.fr"
+ },
+ "1217609a": {
+  "focus": "nearest_local",
+  "id": "1217609a-bb14-5ea5-9768-c784b5cf1d64",
+  "lifecycle": "active",
+  "name": "Anota AI",
+  "website": "https://anota.ai"
+ },
+ "1311faad": {
+  "focus": "food_truck",
+  "id": "1311faad-2736-589a-98e2-2023313ac5b6",
+  "lifecycle": "active",
+  "name": "MOBI (formerly Mobi2Go)",
+  "website": "https://mobihq.com"
+ },
+ "145be338": {
+  "focus": "nearest_local",
+  "id": "145be338-bde6-5e93-908e-73c068886c94",
+  "lifecycle": "active",
+  "name": "Sistema Que Vende",
+  "website": "http://sistemaquevende.pt"
+ },
+ "14ed815d": {
+  "focus": "nearest_local",
+  "id": "14ed815d-7e33-5924-86d0-625a67dec34d",
+  "lifecycle": "active",
+  "name": "Blink",
+  "website": "https://www.blinkco.io"
+ },
+ "1774b420": {
+  "focus": "pos",
+  "id": "1774b420-e555-587a-a407-4f6254bd346e",
+  "lifecycle": "candidate",
+  "name": "Lightspeed",
+  "website": "https://www.lightspeedhq.com/"
+ },
+ "18f621da": {
+  "focus": "food_truck",
+  "id": "18f621da-3c8f-5f1d-add2-5ee6b15c155c",
+  "lifecycle": "active",
+  "name": "Food Truck Pub",
+  "website": "https://foodtruck.pub"
+ },
+ "196dc923": {
+  "focus": null,
+  "id": "196dc923-9702-43b8-859b-60df4cc9b078",
+  "lifecycle": "candidate",
+  "name": "FoodChow",
+  "website": "https://www.foodchow.com"
+ },
+ "1a32fe8f": {
+  "focus": "nearest_local",
+  "id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
+  "lifecycle": "active",
+  "name": "Owner.com",
+  "website": "https://www.owner.com"
+ },
+ "1af3a80c": {
+  "focus": "food_truck",
+  "id": "1af3a80c-4ab4-50f8-8ce6-afc88552f028",
+  "lifecycle": "not_relevant",
+  "name": "VirtualLine",
+  "website": "https://virtualline.com.br"
+ },
+ "1b6afb43": {
+  "focus": "nearest_local",
+  "id": "1b6afb43-5e64-5548-82d5-49de7395c83e",
+  "lifecycle": "active",
+  "name": "HungryHungry",
+  "website": "https://www.hungryhungry.com"
+ },
+ "1bf6d752": {
+  "focus": null,
+  "id": "1bf6d752-8701-44e9-a9f9-05926e0536eb",
+  "lifecycle": "candidate",
+  "name": "Taptouch POS",
+  "website": "https://taptouchpos.com"
+ },
+ "1c3ade45": {
+  "focus": "food_truck",
+  "id": "1c3ade45-27f2-5931-9bd0-9f2ca8680fe3",
+  "lifecycle": "active",
+  "name": "Restolabs",
+  "website": "https://restolabs.com"
+ },
+ "1cccb6df": {
+  "focus": "food_truck",
+  "id": "1cccb6df-3d9f-4379-a4aa-dab9e95fdc4f",
+  "lifecycle": "active",
+  "name": "Orderly",
+  "website": "https://orderly.hu"
+ },
+ "20c3683b": {
+  "focus": "food_truck",
+  "id": "20c3683b-2988-5acc-af97-31b1e6cd5408",
+  "lifecycle": "active",
+  "name": "SisFood",
+  "website": "https://www.sisfood.com.br"
+ },
+ "213c6cc6": {
+  "focus": null,
+  "id": "213c6cc6-70ce-49f5-afbf-055c9299a97b",
+  "lifecycle": "candidate",
+  "name": "Ounti",
+  "website": "https://ounti.com"
+ },
+ "2338937d": {
+  "focus": null,
+  "id": "2338937d-b782-4e95-ba25-2229c5f533c4",
+  "lifecycle": "candidate",
+  "name": "Bistriqx",
+  "website": "https://bistriqx.com"
+ },
+ "2392b933": {
+  "focus": "nearest_local",
+  "id": "2392b933-1bbe-5309-80bf-afcf10d4f2fc",
+  "lifecycle": "active",
+  "name": "ISSUE PANDA (3bitter)",
+  "website": "https://saas.imitsu.jp"
+ },
+ "239e19cb": {
+  "focus": null,
+  "id": "239e19cb-6dd2-4d9b-8d47-ef2b9d6428d0",
+  "lifecycle": "candidate",
+  "name": "Preorder",
+  "website": "https://order-pre.com"
+ },
+ "24aa846b": {
+  "focus": "nearest_local",
+  "id": "24aa846b-a685-5a1f-a513-3e13a32e5c2b",
+  "lifecycle": "active",
+  "name": "funfo",
+  "website": "https://www.lycbiz.com"
+ },
+ "259d3513": {
+  "focus": "nearest_local",
+  "id": "259d3513-38e9-5757-b326-ed82df629aee",
+  "lifecycle": "active",
+  "name": "Zunapro",
+  "website": "https://www.zunapro.com/turkey/tr"
+ },
+ "27ec5274": {
+  "focus": "nearest_local",
+  "id": "27ec5274-22f9-576a-92d4-1625bd4383eb",
+  "lifecycle": "active",
+  "name": "Wongnai POS (formerly FoodStory)",
+  "website": "https://www.wongnai.com/pos/"
+ },
+ "28016a1b": {
+  "focus": null,
+  "id": "28016a1b-43ef-4b16-b36e-169633217d14",
+  "lifecycle": "candidate",
+  "name": "Flash Order",
+  "website": "https://flashordr.com"
+ },
+ "29eec8ec": {
+  "focus": "food_truck",
+  "id": "29eec8ec-d638-5218-8b3f-4c1be22b80e0",
+  "lifecycle": "active",
+  "name": "Zay-OS (Zayos)",
+  "website": "https://zay-os.com"
+ },
+ "2a0e471f": {
+  "focus": "food_truck",
+  "id": "2a0e471f-ac23-5a74-a1b3-5186f45b66e7",
+  "lifecycle": "active",
+  "name": "Jitmeal",
+  "website": "https://jitmeal.com/et/"
+ },
+ "2a58410a": {
+  "focus": "nearest_local",
+  "id": "2a58410a-4afd-5f69-9633-409bc9f456a2",
+  "lifecycle": "active",
+  "name": "Take App",
+  "website": "https://www.take.app"
+ },
+ "2b36ed33": {
+  "focus": "nearest_local",
+  "id": "2b36ed33-c0c0-511a-87a0-1a94e7969b44",
+  "lifecycle": "active",
+  "name": "O:der ToGo (Showcase Gig)",
+  "website": "https://saas.imitsu.jp"
+ },
+ "2bfa2064": {
+  "focus": "nearest_local",
+  "id": "2bfa2064-2982-571e-9a29-10c9dfe4b6b7",
+  "lifecycle": "active",
+  "name": "Vitrina",
+  "website": "https://vitrina.cafe"
+ },
+ "2c389cf4": {
+  "focus": "food_truck",
+  "id": "2c389cf4-0ec0-58e7-bd4d-580f4e6b5a65",
+  "lifecycle": "not_relevant",
+  "name": "Ordeno App",
+  "website": "https://foodtruckya.com"
+ },
+ "2cbec3e7": {
+  "focus": "nearest_local",
+  "id": "2cbec3e7-3d53-5f38-ae54-218c43a284e2",
+  "lifecycle": "active",
+  "name": "Pikit",
+  "website": "https://pikit.ch"
+ },
+ "2de24ab5": {
+  "focus": "nearest_local",
+  "id": "2de24ab5-b295-5dad-8a42-31e217a5de34",
+  "lifecycle": "active",
+  "name": "Menuto",
+  "website": "https://menuto.app/bg/"
+ },
+ "2e6f0051": {
+  "focus": "nearest_local",
+  "id": "2e6f0051-84e3-5aeb-8a93-6b16a8b873ab",
+  "lifecycle": "active",
+  "name": "Qashier (QashierEats)",
+  "website": "https://qashier.com/my"
+ },
+ "2e7c69aa": {
+  "focus": "nearest_local",
+  "id": "2e7c69aa-380a-5d74-ba24-63e5f9671e87",
+  "lifecycle": "active",
+  "name": "xMenu",
+  "website": "https://www.xmenu.it"
+ },
+ "2f50461f": {
+  "focus": null,
+  "id": "2f50461f-381b-4a63-b004-b83846ef25a0",
+  "lifecycle": "candidate",
+  "name": "ExtendaGO Ordin",
+  "website": "https://www.extendago.com"
+ },
+ "2f51f8db": {
+  "focus": "food_truck",
+  "id": "2f51f8db-065c-57df-a2f5-e73ef4d3723f",
+  "lifecycle": "active",
+  "name": "HungryTrucks",
+  "website": "https://www.hungrytrucks.com"
+ },
+ "304ad1a7": {
+  "focus": "nearest_local",
+  "id": "304ad1a7-f8c4-40c2-a120-5fb1664acba7",
+  "lifecycle": "active",
+  "name": "Sapaad",
+  "website": "https://www.sapaad.com"
+ },
+ "30664554": {
+  "focus": "food_truck",
+  "id": "30664554-4c0e-5a0e-a23b-6ca025b5f498",
+  "lifecycle": "active",
+  "name": "Spot (Spot – Drive Thru Pickup app)",
+  "website": "https://www.hospitalitynewsmag.com"
+ },
+ "30bb8773": {
+  "focus": "nearest_local",
+  "id": "30bb8773-a54b-52bc-b459-38b53fd0de8b",
+  "lifecycle": "active",
+  "name": "Snackpass",
+  "website": "https://www.snackpass.co"
+ },
+ "30f495eb": {
+  "focus": "pos",
+  "id": "30f495eb-c27e-5a73-a1aa-00eaa584ba90",
+  "lifecycle": "active",
+  "name": "Worldline All-in-One Platform Ordering",
+  "website": "https://worldline.com/el-gr"
+ },
+ "334357d0": {
+  "focus": "food_truck",
+  "id": "334357d0-454c-5d0f-9ee7-863a6cd008a3",
+  "lifecycle": "active",
+  "name": "Heustach",
+  "website": "https://heustach.fr"
+ },
+ "34a72bd1": {
+  "focus": null,
+  "id": "34a72bd1-d2d4-4b64-874f-8c14dbba767f",
+  "lifecycle": "not_relevant",
+  "name": "Creavo Order",
+  "website": "https://creavo.fi"
+ },
+ "34c0c62f": {
+  "focus": "nearest_local",
+  "id": "34c0c62f-2dd5-5895-a827-ba2f1c066b44",
+  "lifecycle": "active",
+  "name": "Yoello",
+  "website": "https://www.yoello.com"
+ },
+ "356a620b": {
+  "focus": null,
+  "id": "356a620b-9fd4-4af9-a1f4-e3aab789c6e1",
+  "lifecycle": "not_relevant",
+  "name": "ABS POS",
+  "website": "https://abspos.pl"
+ },
+ "369127ec": {
+  "focus": "nearest_local",
+  "id": "369127ec-c520-45e6-844c-ce4568d1de08",
+  "lifecycle": "active",
+  "name": "SwissPOS",
+  "website": "https://www.swisspos.ch"
+ },
+ "3cc2b17f": {
+  "focus": "food_truck",
+  "id": "3cc2b17f-6397-53d5-b04b-aa9f0bfc6c06",
+  "lifecycle": "active",
+  "name": "Qrder",
+  "website": "https://qrder.app"
+ },
+ "3d587bd6": {
+  "focus": "nearest_local",
+  "id": "3d587bd6-4b5c-47bb-94fa-4e9f41da68ac",
+  "lifecycle": "active",
+  "name": "Restaumatic",
+  "website": "https://www.restaumatic.com"
+ },
+ "3d6e4599": {
+  "focus": null,
+  "id": "3d6e4599-003c-42c9-a56d-079a996f7d8f",
+  "lifecycle": "candidate",
+  "name": "Menuella",
+  "website": "https://www.menuella.com"
+ },
+ "3d81b4a1": {
+  "focus": "food_truck",
+  "id": "3d81b4a1-180c-5ba7-acc8-eba8ecc1b176",
+  "lifecycle": "active",
+  "name": "EasyEats",
+  "website": "https://easyeats.com"
+ },
+ "3ec3fbaa": {
+  "focus": "food_truck",
+  "id": "3ec3fbaa-ab59-4573-97f0-b06d1f533033",
+  "lifecycle": "active",
+  "name": "Feadys",
+  "website": "https://feadys.com"
+ },
+ "3f0b6c2e": {
+  "focus": "food_truck",
+  "id": "3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93",
+  "lifecycle": "active",
+  "name": "What The Truck",
+  "website": "https://whatthetruck.ai"
+ },
+ "3fc43b3e": {
+  "focus": null,
+  "id": "3fc43b3e-c394-464f-8482-9da05244d095",
+  "lifecycle": "candidate",
+  "name": "TapTasty",
+  "website": "https://www.taptasty.com"
+ },
+ "41abaf89": {
+  "focus": "nearest_local",
+  "id": "41abaf89-a2e2-5f95-a34e-8a77984c61e1",
+  "lifecycle": "active",
+  "name": "Stefna",
+  "website": "https://www.stefna.is"
+ },
+ "42e450a6": {
+  "focus": "food_truck",
+  "id": "42e450a6-8690-5415-b81b-112e97949aee",
+  "lifecycle": "active",
+  "name": "FoodTrucker - Find & Order",
+  "website": "https://apps.apple.com"
+ },
+ "430c8cb2": {
+  "focus": "nearest_local",
+  "id": "430c8cb2-4568-56dc-a79f-613e15c77709",
+  "lifecycle": "active",
+  "name": "Wiiz Eat",
+  "website": "https://wiizeat.com"
+ },
+ "4524d8f0": {
+  "focus": "nearest_local",
+  "id": "4524d8f0-e7f2-574a-a5b3-c276a34e494b",
+  "lifecycle": "not_relevant",
+  "name": "Liven",
+  "website": "https://liven.love"
+ },
+ "45429d1b": {
+  "focus": null,
+  "id": "45429d1b-d5ca-4642-ade8-abdbaf2f81e5",
+  "lifecycle": "candidate",
+  "name": "NewPOS",
+  "website": "https://www.newpos.ai"
+ },
+ "4620b046": {
+  "focus": "nearest_local",
+  "id": "4620b046-ea62-574c-af26-b1aaff7a80b7",
+  "lifecycle": "active",
+  "name": "Foodics",
+  "website": "https://www.foodics.com"
+ },
+ "462996c6": {
+  "focus": "food_truck",
+  "id": "462996c6-f468-5537-bce3-46d8326347c9",
+  "lifecycle": "active",
+  "name": "WEIQ",
+  "website": "https://weiq.tech"
+ },
+ "465f1ff8": {
+  "focus": "nearest_local",
+  "id": "465f1ff8-1782-5364-a7bf-723f350c744f",
+  "lifecycle": "not_relevant",
+  "name": "Resto-SaaS (Digital Bonsaï Ltd)",
+  "website": "https://resto-saas-production-a095.up.railway.app/"
+ },
+ "47a1fbe0": {
+  "focus": null,
+  "id": "47a1fbe0-897f-4814-b6dc-8adbc9c7b797",
+  "lifecycle": "active",
+  "name": "EatSelf",
+  "website": "https://www.eatself.com"
+ },
+ "4b9bd6dd": {
+  "focus": null,
+  "id": "4b9bd6dd-6da8-47df-88fa-15b9b89d826b",
+  "lifecycle": "candidate",
+  "name": "Ordeliya",
+  "website": "https://ordeliya.com"
+ },
+ "4c350e59": {
+  "focus": "food_truck",
+  "id": "4c350e59-c704-5555-be1a-856e5f803346",
+  "lifecycle": "active",
+  "name": "Ordering.co",
+  "website": "https://www.ordering.co"
+ },
+ "4cde17cb": {
+  "focus": "food_truck",
+  "id": "4cde17cb-ef44-56e5-84e5-786ed72c8c23",
+  "lifecycle": "active",
+  "name": "Hotplate",
+  "website": "https://www.hotplate.com"
+ },
+ "4eff2bd5": {
+  "focus": "food_truck",
+  "id": "4eff2bd5-13be-477b-a37e-755f7da8e79c",
+  "lifecycle": "active",
+  "name": "bonappli",
+  "website": "https://bonappli.fr"
+ },
+ "4f54a28d": {
+  "focus": "food_truck",
+  "id": "4f54a28d-0ff9-51f9-8049-03f2ee33b509",
+  "lifecycle": "active",
+  "name": "Street Food Spot",
+  "website": "https://streetfoodspot.nz"
+ },
+ "50d5999f": {
+  "focus": "nearest_local",
+  "id": "50d5999f-4ba3-55e2-b814-0dbc5b2f44cb",
+  "lifecycle": "active",
+  "name": "uEngage",
+  "website": "https://www.uengage.io"
+ },
+ "50f273c2": {
+  "focus": null,
+  "id": "50f273c2-60c4-40ea-ac17-2600a6bc7cc5",
+  "lifecycle": "candidate",
+  "name": "ord.to",
+  "website": "https://ord.to"
+ },
+ "5143bd80": {
+  "focus": "nearest_local",
+  "id": "5143bd80-a465-5643-928a-3a70bf3c149f",
+  "lifecycle": "active",
+  "name": "OrderEatRepeat",
+  "website": "https://ordereatrepeat.com"
+ },
+ "515a8c44": {
+  "focus": "nearest_local",
+  "id": "515a8c44-8085-4202-8d91-a52e656b5050",
+  "lifecycle": "active",
+  "name": "Ordero",
+  "website": "https://ordero.ch"
+ },
+ "51e6b79e": {
+  "focus": "nearest_local",
+  "id": "51e6b79e-8e7c-5c37-961e-766db5e2bfe6",
+  "lifecycle": "active",
+  "name": "pidopago",
+  "website": "https://pidopago.com"
+ },
+ "5286c363": {
+  "focus": null,
+  "id": "5286c363-5db6-4fdc-97fd-9558f9a2bb8e",
+  "lifecycle": "not_relevant",
+  "name": "Food Truck Concept",
+  "website": "https://foodtruck-concept.com"
+ },
+ "53395fcb": {
+  "focus": "food_truck",
+  "id": "53395fcb-a0fa-4641-aba8-9c4b7764b183",
+  "lifecycle": "active",
+  "name": "QRM.hu",
+  "website": "https://qrm.hu"
+ },
+ "54922ec3": {
+  "focus": "nearest_local",
+  "id": "54922ec3-a000-5da8-bf65-92c06c35fcf1",
+  "lifecycle": "active",
+  "name": "NemTakeAway",
+  "website": "https://www.nemtakeaway.dk"
+ },
+ "54b82bfa": {
+  "focus": "nearest_local",
+  "id": "54b82bfa-66d7-53de-bbd8-d08ac2a02504",
+  "lifecycle": "active",
+  "name": "Spevdo",
+  "website": "https://spevdo.gr"
+ },
+ "55cd958d": {
+  "focus": "food_truck",
+  "id": "55cd958d-25c7-48b6-9791-7544d19a066c",
+  "lifecycle": "active",
+  "name": "Menuthere",
+  "website": "https://menuthere.com"
+ },
+ "55fd4d07": {
+  "focus": "nearest_local",
+  "id": "55fd4d07-6971-52e8-b067-5b7751802ff7",
+  "lifecycle": "active",
+  "name": "Takego",
+  "website": "https://takego.pt"
+ },
+ "56eb7481": {
+  "focus": "nearest_local",
+  "id": "56eb7481-90de-5451-94bc-12306773994f",
+  "lifecycle": "active",
+  "name": "majoo",
+  "website": "https://majoo.id"
+ },
+ "57790b35": {
+  "focus": null,
+  "id": "57790b35-fb5e-4dd0-8e26-b5ba0d0f161a",
+  "lifecycle": "not_relevant",
+  "name": "Dine360",
+  "website": "https://dine360.ca"
+ },
+ "58b9820f": {
+  "focus": "nearest_local",
+  "id": "58b9820f-a221-5b75-90f7-094ca786e34f",
+  "lifecycle": "active",
+  "name": "Favrit",
+  "website": "https://web.favrit.com"
+ },
+ "598df7ba": {
+  "focus": "food_truck",
+  "id": "598df7ba-b347-5c57-9ee3-a93425929f08",
+  "lifecycle": "active",
+  "name": "Food Pronto",
+  "website": "https://www.foodpronto.com.br"
+ },
+ "5a8fd79e": {
+  "focus": "nearest_local",
+  "id": "5a8fd79e-2549-57cd-bf5b-601b5eb0518e",
+  "lifecycle": "active",
+  "name": "PedíFácil",
+  "website": "https://pedifacil.com.py"
+ },
+ "5b0488ed": {
+  "focus": "nearest_local",
+  "id": "5b0488ed-af63-58e1-be96-a46558102a3d",
+  "lifecycle": "active",
+  "name": "Actib",
+  "website": "https://actib.app"
+ },
+ "5b50f4e3": {
+  "focus": "nearest_local",
+  "id": "5b50f4e3-b163-5af3-9695-f5acb4ad04b7",
+  "lifecycle": "active",
+  "name": "Flipdish",
+  "website": "https://www.flipdish.com"
+ },
+ "5bb256b3": {
+  "focus": "food_truck",
+  "id": "5bb256b3-cd3f-43de-8420-c41d358e0fbf",
+  "lifecycle": "active",
+  "name": "LivePepper",
+  "website": "https://www.livepepper.fr"
+ },
+ "5bb315aa": {
+  "focus": null,
+  "id": "5bb315aa-9ed9-48d9-93f6-9db5b253ce6c",
+  "lifecycle": "candidate",
+  "name": "CliqMenu",
+  "website": "https://cliqmenu.com"
+ },
+ "5bec1864": {
+  "focus": "food_truck",
+  "id": "5bec1864-cefb-5100-827a-72d261253fc4",
+  "lifecycle": "active",
+  "name": "Vev",
+  "website": "https://vev.co"
+ },
+ "5c805a29": {
+  "focus": "nearest_local",
+  "id": "5c805a29-3d71-52a7-9477-a44a1a8c9e16",
+  "lifecycle": "active",
+  "name": "The Foody Gram",
+  "website": "https://www.thefoodygram.com"
+ },
+ "5c808451": {
+  "focus": "nearest_local",
+  "id": "5c808451-8dfe-59b4-bb32-95bafa418af6",
+  "lifecycle": "active",
+  "name": "Goomer",
+  "website": "https://goomer.com.br"
+ },
+ "5c901b17": {
+  "focus": "food_truck",
+  "id": "5c901b17-794b-499f-bc48-8fc09e9bef11",
+  "lifecycle": "active",
+  "name": "iShopo",
+  "website": "https://ishopo.ca"
+ },
+ "5d40e41f": {
+  "focus": "nearest_local",
+  "id": "5d40e41f-f122-57ab-8dac-4826cc9cb820",
+  "lifecycle": "active",
+  "name": "Delever",
+  "website": "https://delever.uz"
+ },
+ "5eb5b42d": {
+  "focus": null,
+  "id": "5eb5b42d-db14-4be7-baea-d25e81dddbd5",
+  "lifecycle": "candidate",
+  "name": "leafsystems",
+  "website": "https://leaf-systems.eu"
+ },
+ "5f28f634": {
+  "focus": "food_truck",
+  "id": "5f28f634-cde0-4853-81a9-40e4521a7796",
+  "lifecycle": "active",
+  "name": "Tilby",
+  "website": "https://tilby.com"
+ },
+ "5f613b54": {
+  "focus": "food_truck",
+  "id": "5f613b54-2391-5257-8420-743f9e93af18",
+  "lifecycle": "active",
+  "name": "Yabie",
+  "website": "https://yabie.com"
+ },
+ "5f69d328": {
+  "focus": "food_truck",
+  "id": "5f69d328-5181-5185-b206-1b7e1b5bfc5f",
+  "lifecycle": "active",
+  "name": "Simpliza",
+  "website": "https://simpliza.com.br"
+ },
+ "630bcb18": {
+  "focus": "nearest_local",
+  "id": "630bcb18-38cb-5b56-a6d7-51a299f0a1a4",
+  "lifecycle": "active",
+  "name": "Pedizap",
+  "website": "https://pedizap.com.br"
+ },
+ "640ecd44": {
+  "focus": "food_truck",
+  "id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+  "lifecycle": "active",
+  "name": "Beau Camion",
+  "website": "https://beaucamion.fr"
+ },
+ "647628e6": {
+  "focus": "nearest_local",
+  "id": "647628e6-7d0b-56a7-9869-c71fe7c13e3e",
+  "lifecycle": "active",
+  "name": "Eats365",
+  "website": "https://www.eats365pos.com/hk"
+ },
+ "647a5e78": {
+  "focus": "food_truck",
+  "id": "647a5e78-ed30-50c7-b368-e011f0e06518",
+  "lifecycle": "active",
+  "name": "Moonrise",
+  "website": "https://ordermoonrise.com"
+ },
+ "64e49b93": {
+  "focus": "nearest_local",
+  "id": "64e49b93-70b7-5bee-9ba5-2d06ff489543",
+  "lifecycle": "not_relevant",
+  "name": "Moduurn",
+  "website": "https://www.capterra.ca"
+ },
+ "662c9884": {
+  "focus": "food_truck",
+  "id": "662c9884-ba53-5282-b393-8494e7785a48",
+  "lifecycle": "active",
+  "name": "Foodticket",
+  "website": "https://foodticket.nl"
+ },
+ "678a4310": {
+  "focus": "nearest_local",
+  "id": "678a4310-8c1e-4ff2-a33f-c8384c4ec403",
+  "lifecycle": "active",
+  "name": "DigiCommerce",
+  "website": "https://stage.app.digicommerce.be"
+ },
+ "683bf425": {
+  "focus": "nearest_local",
+  "id": "683bf425-5177-5d27-84fa-66e5e475dd57",
+  "lifecycle": "active",
+  "name": "OrderFront",
+  "website": "https://www.orderfront.de/"
+ },
+ "6863aab3": {
+  "focus": "nearest_local",
+  "id": "6863aab3-ba52-5054-b0f4-89f374b5dacd",
+  "lifecycle": "active",
+  "name": "POS Masters",
+  "website": "https://posmasters.lk"
+ },
+ "6869d76d": {
+  "focus": null,
+  "id": "6869d76d-bb52-485b-beb5-826fecaa8472",
+  "lifecycle": "candidate",
+  "name": "Regulars",
+  "website": "https://tryregulars.com"
+ },
+ "69a3cfce": {
+  "focus": "nearest_local",
+  "id": "69a3cfce-dc33-59a2-bd81-b4adc526778c",
+  "lifecycle": "active",
+  "name": "Ordable",
+  "website": "https://www.itsordable.com"
+ },
+ "6afa79bc": {
+  "focus": "food_truck",
+  "id": "6afa79bc-f3ce-55d1-a685-bb16689495d1",
+  "lifecycle": "active",
+  "name": "Eventifood",
+  "website": "https://eventifood.com"
+ },
+ "6d6a20e9": {
+  "focus": null,
+  "id": "6d6a20e9-407c-4538-bb33-c5dfd96a1e25",
+  "lifecycle": "candidate",
+  "name": "Happy Gastro",
+  "website": "https://www.happygastro.hu"
+ },
+ "6dc60fd2": {
+  "focus": "food_truck",
+  "id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+  "lifecycle": "active",
+  "name": "Ordea",
+  "website": "https://www.ordea.uk"
+ },
+ "6fa20b90": {
+  "focus": "food_truck",
+  "id": "6fa20b90-bd0b-40aa-9871-eca9ef932330",
+  "lifecycle": "active",
+  "name": "Rent-a-Shop",
+  "website": "https://www.rent-a-shop.ch"
+ },
+ "70b34967": {
+  "focus": "nearest_local",
+  "id": "70b34967-4f02-5356-aad0-1bd98c82a4a8",
+  "lifecycle": "active",
+  "name": "Choice",
+  "website": "https://choiceqr.com"
+ },
+ "71f255ff": {
+  "focus": "food_truck",
+  "id": "71f255ff-560a-59f9-8f9b-e716dd91ecf8",
+  "lifecycle": "active",
+  "name": "Truckfindr",
+  "website": "https://truckfindr.com"
+ },
+ "73a31845": {
+  "focus": null,
+  "id": "73a31845-d3aa-46fd-9bd0-7bec3ba3d314",
+  "lifecycle": "candidate",
+  "name": "Waiterio",
+  "website": "https://www.waiterio.com"
+ },
+ "757fad52": {
+  "focus": "pos",
+  "id": "757fad52-a236-5491-a015-7d84d1503a46",
+  "lifecycle": "candidate",
+  "name": "Toast",
+  "website": "https://pos.toasttab.com/"
+ },
+ "75a79897": {
+  "focus": "food_truck",
+  "id": "75a79897-2103-52e6-8e50-d9c376436ca1",
+  "lifecycle": "active",
+  "name": "Restaurant-internet.com",
+  "website": "https://restaurant-internet.com"
+ },
+ "769c4972": {
+  "focus": "nearest_local",
+  "id": "769c4972-4968-5100-9bc5-2c723efe801e",
+  "lifecycle": "active",
+  "name": "Qvian",
+  "website": "https://qvian.com"
+ },
+ "7734b770": {
+  "focus": "food_truck",
+  "id": "7734b770-7509-4ce5-bb24-073324889597",
+  "lifecycle": "active",
+  "name": "Restomax",
+  "website": "https://www.restomax.be"
+ },
+ "78b5be7c": {
+  "focus": null,
+  "id": "78b5be7c-5d36-4ae7-8fbc-51cb02774331",
+  "lifecycle": "not_relevant",
+  "name": "POSbistro",
+  "website": "https://posbistro.com"
+ },
+ "797df612": {
+  "focus": "nearest_local",
+  "id": "797df612-f4b5-584f-b2cd-6aa538d2f846",
+  "lifecycle": "active",
+  "name": "Zyda",
+  "website": "https://www.zyda.com"
+ },
+ "79fcc90d": {
+  "focus": "food_truck",
+  "id": "79fcc90d-7eb8-520d-919e-9d671b0a3e7f",
+  "lifecycle": "active",
+  "name": "Liefersoft",
+  "website": "https://liefersoft.de"
+ },
+ "7bf0553c": {
+  "focus": "food_truck",
+  "id": "7bf0553c-1e02-57fb-9408-c1ce832ee15b",
+  "lifecycle": "active",
+  "name": "StreetFoodFinder",
+  "website": "https://streetfoodfinder.com"
+ },
+ "7e12931c": {
+  "focus": "food_truck",
+  "id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+  "lifecycle": "active",
+  "name": "Fudo",
+  "website": "https://fu.do"
+ },
+ "7e788860": {
+  "focus": "nearest_local",
+  "id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
+  "lifecycle": "active",
+  "name": "Mylo",
+  "website": "https://mylo.africa"
+ },
+ "7fbcd197": {
+  "focus": null,
+  "id": "7fbcd197-081b-543f-9c63-e78e3742ac40",
+  "lifecycle": "active",
+  "name": "RapidOrderz",
+  "website": null
+ },
+ "80a8b5b2": {
+  "focus": "nearest_local",
+  "id": "80a8b5b2-4bf1-4942-8b29-a71ab15d7c3f",
+  "lifecycle": "active",
+  "name": "Fritzy",
+  "website": "https://fritzy.be"
+ },
+ "832a682c": {
+  "focus": "nearest_local",
+  "id": "832a682c-2814-5f0a-8fa7-b45d3b76dd08",
+  "lifecycle": "active",
+  "name": "Menufy",
+  "website": "https://restaurant.menufy.com"
+ },
+ "83a101fb": {
+  "focus": null,
+  "id": "83a101fb-9f58-4c59-824f-3911752cdf49",
+  "lifecycle": "candidate",
+  "name": "MetaPOS",
+  "website": "https://metapos.com.au"
+ },
+ "841dfd9e": {
+  "focus": "food_truck",
+  "id": "841dfd9e-6453-5f44-8727-40482f2c16b9",
+  "lifecycle": "active",
+  "name": "Restora POS",
+  "website": "https://restorapos.com"
+ },
+ "85c5360a": {
+  "focus": "nearest_local",
+  "id": "85c5360a-221f-555c-90bd-7ca4f0a9d551",
+  "lifecycle": "active",
+  "name": "tossdown",
+  "website": "https://tossdown.com"
+ },
+ "86a8eea4": {
+  "focus": "food_truck",
+  "id": "86a8eea4-216b-4cae-a321-b1262720e28c",
+  "lifecycle": "active",
+  "name": "Vroomeat",
+  "website": "https://vroomeat.fr"
+ },
+ "873c5c65": {
+  "focus": "food_truck",
+  "id": "873c5c65-258d-55e1-8450-ed6a1da33609",
+  "lifecycle": "active",
+  "name": "TOI",
+  "website": "https://web.toi.do"
+ },
+ "875ca26d": {
+  "focus": null,
+  "id": "875ca26d-115d-4d2c-8192-952e29631291",
+  "lifecycle": "not_relevant",
+  "name": "apetitio",
+  "website": "https://apetitio.pl"
+ },
+ "878164f6": {
+  "focus": null,
+  "id": "878164f6-8014-41d1-b294-514eed137de4",
+  "lifecycle": "candidate",
+  "name": "Appy POS",
+  "website": "https://appy.ro"
+ },
+ "87b9b92a": {
+  "focus": "nearest_local",
+  "id": "87b9b92a-24bc-59a9-ac1c-dfdb1352b7ec",
+  "lifecycle": "active",
+  "name": "Toss Place",
+  "website": "https://tossplace.com"
+ },
+ "89a12466": {
+  "focus": "nearest_local",
+  "id": "89a12466-18ff-4603-9de3-3a21471c0406",
+  "lifecycle": "active",
+  "name": "iButler",
+  "website": "https://www.i-butler.nl"
+ },
+ "8bcbd76a": {
+  "focus": "food_truck",
+  "id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
+  "lifecycle": "active",
+  "name": "Ocuioso",
+  "website": "https://www.ocuioso.com"
+ },
+ "8c7188e7": {
+  "focus": "food_truck",
+  "id": "8c7188e7-8eae-4fb4-8f13-b45179636213",
+  "lifecycle": "active",
+  "name": "Y wait",
+  "website": "https://ywait.com.au"
+ },
+ "8ceb8696": {
+  "focus": "pos",
+  "id": "8ceb8696-a091-59cb-846d-ca37c262c6aa",
+  "lifecycle": "candidate",
+  "name": "Clover",
+  "website": "https://www.clover.com/"
+ },
+ "92a350ce": {
+  "focus": null,
+  "id": "92a350ce-cb94-5acc-880f-5f4cd9d61c81",
+  "lifecycle": "not_relevant",
+  "name": "Where The Truck (AMFVG)",
+  "website": "https://wherethetruck.at"
+ },
+ "92dbc215": {
+  "focus": "food_truck",
+  "id": "92dbc215-d1be-5539-b656-3314b48907d9",
+  "lifecycle": "active",
+  "name": "ClickParaPedir",
+  "website": "https://clickparapedir.com"
+ },
+ "938f3a06": {
+  "focus": "nearest_local",
+  "id": "938f3a06-fad1-4988-8237-4efac81faec7",
+  "lifecycle": "active",
+  "name": "Foodeliver",
+  "website": "https://4bsystems.pl"
+ },
+ "93b88e3b": {
+  "focus": null,
+  "id": "93b88e3b-34d6-4dc0-879d-d7077052271c",
+  "lifecycle": "candidate",
+  "name": "XPRIO",
+  "website": "https://xprio.com"
+ },
+ "93cd38bf": {
+  "focus": "food_truck",
+  "id": "93cd38bf-41b8-5d90-8de8-0a32eb57d114",
+  "lifecycle": "not_relevant",
+  "name": "Aphelios",
+  "website": "https://apheliossoftware.com"
+ },
+ "96772514": {
+  "focus": "nearest_local",
+  "id": "96772514-dc2a-5184-92ac-7a753921d1b2",
+  "lifecycle": "active",
+  "name": "iCHEF",
+  "website": "https://www.ichefpos.com/zh-tw"
+ },
+ "96ce7971": {
+  "focus": "nearest_local",
+  "id": "96ce7971-2ddb-5b53-b969-a2e6b9e9ef2e",
+  "lifecycle": "active",
+  "name": "Order Up! (moving to Nomni)",
+  "website": "https://www.orderup.com.au"
+ },
+ "97922d9d": {
+  "focus": "nearest_local",
+  "id": "97922d9d-65bf-5569-a413-0db15bbdaf10",
+  "lifecycle": "active",
+  "name": "inyad",
+  "website": "https://inyad.com"
+ },
+ "98c064da": {
+  "focus": "nearest_local",
+  "id": "98c064da-195e-57d9-8f18-4e9ad4aa9e81",
+  "lifecycle": "active",
+  "name": "Storekit",
+  "website": "https://storekit.com"
+ },
+ "9a4e55c0": {
+  "focus": "food_truck",
+  "id": "9a4e55c0-e80b-591d-98b3-841fca140fdb",
+  "lifecycle": "active",
+  "name": "Best Food Trucks (BFT)",
+  "website": "https://customers.bestfoodtrucks.com"
+ },
+ "9acae7b6": {
+  "focus": "pos",
+  "id": "9acae7b6-2af6-4800-93ee-0be972e22314",
+  "lifecycle": "active",
+  "name": "Square",
+  "website": "https://squareup.com"
+ },
+ "9af04d84": {
+  "focus": "nearest_local",
+  "id": "9af04d84-0659-5c20-b571-9cefadb7a04e",
+  "lifecycle": "active",
+  "name": "Restorant",
+  "website": "https://restorant.com.ng"
+ },
+ "9bce2002": {
+  "focus": "nearest_local",
+  "id": "9bce2002-83a7-5585-bf15-fd4ef7e929b9",
+  "lifecycle": "active",
+  "name": "ChowNow",
+  "website": "https://get.chownow.com"
+ },
+ "9c2e5c2a": {
+  "focus": "nearest_local",
+  "id": "9c2e5c2a-693f-5a4d-a3e4-98451ca0b3f0",
+  "lifecycle": "active",
+  "name": "Sparissimo Food",
+  "website": "https://www.sparissimofood.com"
+ },
+ "9c855eec": {
+  "focus": "food_truck",
+  "id": "9c855eec-5788-4338-b1a3-69f218632254",
+  "lifecycle": "active",
+  "name": "Software Food Good",
+  "website": "https://boomsrl.it"
+ },
+ "9df2dcd4": {
+  "focus": "nearest_local",
+  "id": "9df2dcd4-0c87-5e51-8a96-63931d09a34d",
+  "lifecycle": "active",
+  "name": "FoodsHero",
+  "website": "https://foodshero.de"
+ },
+ "9ed5a6b1": {
+  "focus": "nearest_local",
+  "id": "9ed5a6b1-33c5-5f81-a8c0-3cae3835665a",
+  "lifecycle": "active",
+  "name": "GASTRODIGITAL",
+  "website": "https://gastro.digital"
+ },
+ "9f2ee7a6": {
+  "focus": "nearest_local",
+  "id": "9f2ee7a6-aaec-57e1-be23-8cadeab432ad",
+  "lifecycle": "active",
+  "name": "テイクイーツ (Take Eats)",
+  "website": "https://take-eats.jp"
+ },
+ "9f932a75": {
+  "focus": "nearest_local",
+  "id": "9f932a75-2809-5a8e-a668-595342bbd7da",
+  "lifecycle": "not_relevant",
+  "name": "AdvaNceD IoT キッチンカー＆屋台スマートオーダーシステム (Device Agency)",
+  "website": "https://and-iot.jp"
+ },
+ "a0052971": {
+  "focus": "nearest_local",
+  "id": "a0052971-b11c-5dad-9f3c-67422fd9f051",
+  "lifecycle": "active",
+  "name": "Caspeco",
+  "website": "https://caspeco.com"
+ },
+ "a09713bc": {
+  "focus": "nearest_local",
+  "id": "a09713bc-ffa5-5fa2-a6d8-22a1814608f4",
+  "lifecycle": "active",
+  "name": "Superb",
+  "website": "https://www.superbexperience.com"
+ },
+ "a207b996": {
+  "focus": "food_truck",
+  "id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+  "lifecycle": "active",
+  "name": "Eatch",
+  "website": "https://eatch.app"
+ },
+ "a36488cf": {
+  "focus": "food_truck",
+  "id": "a36488cf-1344-50f6-bfd7-75ac9f2c8b2c",
+  "lifecycle": "active",
+  "name": "Truckly",
+  "website": "https://truckly.dk"
+ },
+ "a431bf75": {
+  "focus": "food_truck",
+  "id": "a431bf75-b5f0-5a2d-9a9c-42fbe0a0d30c",
+  "lifecycle": "active",
+  "name": "GastroOnline & Winorder",
+  "website": "https://gastro-online.at"
+ },
+ "a59d5659": {
+  "focus": null,
+  "id": "a59d5659-a89b-4a5a-b404-b92c5a650d9e",
+  "lifecycle": "candidate",
+  "name": "Foodlz",
+  "website": "https://foodlz.io"
+ },
+ "a59dfb20": {
+  "focus": "food_truck",
+  "id": "a59dfb20-aa52-5416-bd76-6d131565beb4",
+  "lifecycle": "active",
+  "name": "gastro25",
+  "website": "https://www.gastro25.de/"
+ },
+ "a65c8f98": {
+  "focus": null,
+  "id": "a65c8f98-a84f-528e-9fc7-5c0bfd7aecca",
+  "lifecycle": "not_relevant",
+  "name": "Point (pointmeup)",
+  "website": "https://www.pointmeup.com"
+ },
+ "a7218fda": {
+  "focus": null,
+  "id": "a7218fda-9cda-4698-b0bd-b2535b82d523",
+  "lifecycle": "candidate",
+  "name": "Order Local",
+  "website": "https://getorderlocal.com"
+ },
+ "a8ba9459": {
+  "focus": "nearest_local",
+  "id": "a8ba9459-a96a-5a65-b52d-17f0fc9e825b",
+  "lifecycle": "active",
+  "name": "Bopple",
+  "website": "https://bopple.com"
+ },
+ "a8ecbf68": {
+  "focus": "food_truck",
+  "id": "a8ecbf68-1710-58f5-a4cc-858d30afe444",
+  "lifecycle": "active",
+  "name": "Achil",
+  "website": "https://achil.com"
+ },
+ "a9825e32": {
+  "focus": "food_truck",
+  "id": "a9825e32-f5d2-4be7-96e9-8b43d62d37c1",
+  "lifecycle": "active",
+  "name": "4SaleFood",
+  "website": "https://4salefood.net"
+ },
+ "a9d7b921": {
+  "focus": "nearest_local",
+  "id": "a9d7b921-f137-5a56-882a-fae26bcc43eb",
+  "lifecycle": "active",
+  "name": "Ojapo",
+  "website": "https://www.ojapo.com.ar"
+ },
+ "a9fafd04": {
+  "focus": "nearest_local",
+  "id": "a9fafd04-95c2-50a7-9fee-3b99e5446109",
+  "lifecycle": "active",
+  "name": "Purspot",
+  "website": "https://purspot.com"
+ },
+ "aa8cf034": {
+  "focus": "pos",
+  "id": "aa8cf034-f429-52eb-9cbf-f23c35e42a3a",
+  "lifecycle": "not_relevant",
+  "name": "Zettle (PayPal)",
+  "website": "https://www.zettle.com/"
+ },
+ "abd86253": {
+  "focus": "food_truck",
+  "id": "abd86253-f769-53db-8468-7fa7a171d12f",
+  "lifecycle": "active",
+  "name": "GastroDok",
+  "website": "https://gastrodok.de/"
+ },
+ "ac1f084d": {
+  "focus": null,
+  "id": "ac1f084d-d6c8-51fb-bd22-eaa3342f3fea",
+  "lifecycle": "not_relevant",
+  "name": "NOQ",
+  "website": "https://noqgroup.com"
+ },
+ "aebf5a80": {
+  "focus": "food_truck",
+  "id": "aebf5a80-8776-5bb5-8b06-95cca00866fb",
+  "lifecycle": "active",
+  "name": "Yoveletta",
+  "website": "https://yoveletta.ch"
+ },
+ "aed7bf67": {
+  "focus": "food_truck",
+  "id": "aed7bf67-c977-5bc8-993d-ca74485e3939",
+  "lifecycle": "active",
+  "name": "Order Tiger",
+  "website": "https://www.ordertiger.com"
+ },
+ "afe2f58d": {
+  "focus": "nearest_local",
+  "id": "afe2f58d-df5f-5b96-9a77-5a8bd4f08cc7",
+  "lifecycle": "active",
+  "name": "Resto",
+  "website": "https://resto.co.za"
+ },
+ "b030b97d": {
+  "focus": "nearest_local",
+  "id": "b030b97d-3bed-5868-b655-8845d39eb210",
+  "lifecycle": "not_relevant",
+  "name": "DineEasy",
+  "website": "https://www.dineeasy.app"
+ },
+ "b10476b9": {
+  "focus": "nearest_local",
+  "id": "b10476b9-ae32-469d-8acf-4cece8de0ede",
+  "lifecycle": "active",
+  "name": "GoPOS / GoOrder",
+  "website": "https://gopos.pl"
+ },
+ "b32f19c9": {
+  "focus": "food_truck",
+  "id": "b32f19c9-993d-5b51-8f7f-6a174e6f0ab2",
+  "lifecycle": "active",
+  "name": "Grafterr",
+  "website": "https://www.grafterr.com"
+ },
+ "b3ab941b": {
+  "focus": null,
+  "id": "b3ab941b-d348-4d5a-8f4f-69990ff1e12d",
+  "lifecycle": "candidate",
+  "name": "CloudOrders",
+  "website": "https://cloudorders.co"
+ },
+ "b459885d": {
+  "focus": "food_truck",
+  "id": "b459885d-e446-4816-8829-d8cec005679f",
+  "lifecycle": "active",
+  "name": "Asky",
+  "website": "https://asky.ai"
+ },
+ "b4d82532": {
+  "focus": null,
+  "id": "b4d82532-5165-587a-8131-009706c97843",
+  "lifecycle": "not_relevant",
+  "name": "PAYMEZONE",
+  "website": "https://paymezone.com"
+ },
+ "b6a1a595": {
+  "focus": "food_truck",
+  "id": "b6a1a595-48be-5eba-a0d4-0efc637f1ef6",
+  "lifecycle": "active",
+  "name": "Qromo",
+  "website": "https://qromo.it"
+ },
+ "b70bbf5e": {
+  "focus": "food_truck",
+  "id": "b70bbf5e-d3fd-4aa0-9871-939ff0e9fe40",
+  "lifecycle": "active",
+  "name": "MenuForma",
+  "website": "https://menuforma.com"
+ },
+ "b7b74ca7": {
+  "focus": "food_truck",
+  "id": "b7b74ca7-3b6b-5f15-beaa-0c85b1fa5131",
+  "lifecycle": "active",
+  "name": "Food Truck ONE (Food Truck OS)",
+  "website": "https://foodtruckone.com"
+ },
+ "b82dcffe": {
+  "focus": "food_truck",
+  "id": "b82dcffe-b383-52b0-8b8c-00bdfb2a91fc",
+  "lifecycle": "active",
+  "name": "Truckons",
+  "website": "https://truckons.com"
+ },
+ "b94c7a14": {
+  "focus": "food_truck",
+  "id": "b94c7a14-ba5e-48a9-9b1a-2b134331a2ef",
+  "lifecycle": "active",
+  "name": "DISH",
+  "website": "https://www.dish.co"
+ },
+ "bc4c32f7": {
+  "focus": "nearest_local",
+  "id": "bc4c32f7-ebeb-58a3-a477-0bf37e70f05b",
+  "lifecycle": "active",
+  "name": "QR-MENU.BG",
+  "website": "https://www.qr-menu.bg"
+ },
+ "bea75bdc": {
+  "focus": "nearest_local",
+  "id": "bea75bdc-4c1c-4290-9216-510c571c09d2",
+  "lifecycle": "active",
+  "name": "restauracja.online",
+  "website": "https://restauracja.online"
+ },
+ "c0542ae9": {
+  "focus": "nearest_local",
+  "id": "c0542ae9-786b-4c9c-8d52-d57fdd9b0e36",
+  "lifecycle": "active",
+  "name": "eSystem",
+  "website": "https://vendeglatoprogram.com"
+ },
+ "c06e5b78": {
+  "focus": "nearest_local",
+  "id": "c06e5b78-6f2f-5a3f-a85d-96881a273bb3",
+  "lifecycle": "active",
+  "name": "Asila",
+  "website": "https://asila.ma"
+ },
+ "c0793a8a": {
+  "focus": "nearest_local",
+  "id": "c0793a8a-4bf4-5693-9008-e45e28bbc78f",
+  "lifecycle": "active",
+  "name": "Delivety",
+  "website": "https://delivety.com/uk"
+ },
+ "c400f63a": {
+  "focus": "nearest_local",
+  "id": "c400f63a-23a8-51a4-882c-7a0d56c0e252",
+  "lifecycle": "active",
+  "name": "OlaClick",
+  "website": "https://pricing.olaclick.app"
+ },
+ "c413ad17": {
+  "focus": "nearest_local",
+  "id": "c413ad17-a8aa-59ff-95d5-0f895fe07779",
+  "lifecycle": "active",
+  "name": "ared",
+  "website": "https://ared.lt"
+ },
+ "c4484192": {
+  "focus": "nearest_local",
+  "id": "c4484192-5153-51c0-81ea-84b55d4c5559",
+  "lifecycle": "active",
+  "name": "Dineout",
+  "website": "https://www.dineout.is/solutions/is"
+ },
+ "c4972b72": {
+  "focus": "food_truck",
+  "id": "c4972b72-8d20-47b6-b174-1e813881fbef",
+  "lifecycle": "active",
+  "name": "StandMágus / OnlineMágus",
+  "website": "https://www.vendeglato-szoftver.hu"
+ },
+ "c615e67d": {
+  "focus": "nearest_local",
+  "id": "c615e67d-1760-5314-9a81-b3d5ad2a06f0",
+  "lifecycle": "active",
+  "name": "Pedix",
+  "website": "https://pedix.app"
+ },
+ "c71ae83d": {
+  "focus": "food_truck",
+  "id": "c71ae83d-0a37-5974-9532-3fc74a5adc79",
+  "lifecycle": "active",
+  "name": "Perkss",
+  "website": "https://perkss.co.uk"
+ },
+ "c762b9c2": {
+  "focus": "food_truck",
+  "id": "c762b9c2-6e7c-5ab6-877c-2c9a5f714caf",
+  "lifecycle": "not_relevant",
+  "name": "FoodTruck POS",
+  "website": "https://foodtruckpos.nl"
+ },
+ "ccd6121e": {
+  "focus": "food_truck",
+  "id": "ccd6121e-f61b-5d0d-b9ab-28c37c2a9371",
+  "lifecycle": "active",
+  "name": "Where's The Foodtruck",
+  "website": "https://wheresthefoodtruck.com"
+ },
+ "ccdd08d1": {
+  "focus": "nearest_local",
+  "id": "ccdd08d1-e216-512a-9c28-68e5b47fe908",
+  "lifecycle": "active",
+  "name": "Gestióndo",
+  "website": "https://gestiondo.com.do"
+ },
+ "cd9f8f3d": {
+  "focus": null,
+  "id": "cd9f8f3d-e13f-4a58-9d95-12383c16ad8c",
+  "lifecycle": "not_relevant",
+  "name": "Orsys",
+  "website": "https://www.orsys.hu"
+ },
+ "ce1df15a": {
+  "focus": "food_truck",
+  "id": "ce1df15a-98b9-52f7-a587-73c10f224af7",
+  "lifecycle": "active",
+  "name": "Jamezz",
+  "website": "https://jamezz.com"
+ },
+ "cfa5b47a": {
+  "focus": "nearest_local",
+  "id": "cfa5b47a-bb84-55cd-be6c-59d42af45335",
+  "lifecycle": "active",
+  "name": "ESB Order",
+  "website": "https://www.esb.id"
+ },
+ "cff055db": {
+  "focus": "food_truck",
+  "id": "cff055db-d347-57a3-ac73-ee5a90654919",
+  "lifecycle": "active",
+  "name": "VexMenu",
+  "website": "https://vexmenu.com"
+ },
+ "d00d6bfd": {
+  "focus": "nearest_local",
+  "id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
+  "lifecycle": "active",
+  "name": "MENU TIGER",
+  "website": "https://www.menutiger.com"
+ },
+ "d02db147": {
+  "focus": "nearest_local",
+  "id": "d02db147-f039-5d82-a289-5c483780ff17",
+  "lifecycle": "active",
+  "name": "Mezzita",
+  "website": "https://mezzita.com"
+ },
+ "d03a6e1f": {
+  "focus": "food_truck",
+  "id": "d03a6e1f-3358-5708-bcaf-0ca3ade8a187",
+  "lifecycle": "active",
+  "name": "FoxiFood",
+  "website": "https://www.foxifood.com/de/"
+ },
+ "d06ae0d2": {
+  "focus": "food_truck",
+  "id": "d06ae0d2-e9d5-59ec-a9d5-9c2434d3f79d",
+  "lifecycle": "active",
+  "name": "Click & Collection",
+  "website": "https://clickandcollection.com"
+ },
+ "d0eb16fa": {
+  "focus": "pos",
+  "id": "d0eb16fa-4f72-57e7-86e6-383769afd992",
+  "lifecycle": "active",
+  "name": "SumUp",
+  "website": "https://www.sumup.com/"
+ },
+ "d3218f9c": {
+  "focus": "food_truck",
+  "id": "d3218f9c-a5fd-46ff-ba7e-7802829a259f",
+  "lifecycle": "active",
+  "name": "Wollopit",
+  "website": "https://wollopit.com.au"
+ },
+ "d35d4efa": {
+  "focus": "street_food_markets",
+  "id": "d35d4efa-d347-5de5-a3e6-8dcfd0cb547c",
+  "lifecycle": "active",
+  "name": "Homegrown",
+  "website": "https://findhomegrown.com"
+ },
+ "d41b0ca7": {
+  "focus": "food_truck",
+  "id": "d41b0ca7-8e8d-4ed5-ba13-3815f08205f1",
+  "lifecycle": "active",
+  "name": "SmakSpace",
+  "website": "https://smakspace.co.nz"
+ },
+ "d4c5de98": {
+  "focus": "nearest_local",
+  "id": "d4c5de98-a999-5c91-b766-5b2ee35756ce",
+  "lifecycle": "active",
+  "name": "İletmen",
+  "website": "https://www.iletmen.com.tr"
+ },
+ "da91c9a7": {
+  "focus": "nearest_local",
+  "id": "da91c9a7-4479-5fa8-ba19-b82c6fbe9f51",
+  "lifecycle": "active",
+  "name": "どこでも注文くん (Chuzmonster)",
+  "website": "https://lme.jp"
+ },
+ "dad148a7": {
+  "focus": "nearest_local",
+  "id": "dad148a7-5d9c-5a09-91e0-83610279a420",
+  "lifecycle": "active",
+  "name": "YUMBI",
+  "website": "https://www.yumbi.com"
+ },
+ "dc1d8f05": {
+  "focus": "nearest_local",
+  "id": "dc1d8f05-24a3-54a5-8281-42841fa1de5a",
+  "lifecycle": "active",
+  "name": "GloriaFood",
+  "website": "https://www.gloriafood.com"
+ },
+ "ddc61529": {
+  "focus": "nearest_local",
+  "id": "ddc61529-5524-5ae8-956e-ec5df0542df2",
+  "lifecycle": "active",
+  "name": "StoreHub",
+  "website": "https://www.storehub.com/my"
+ },
+ "e192197c": {
+  "focus": "food_truck",
+  "id": "e192197c-c9ec-5588-aeaa-986197a5420a",
+  "lifecycle": "active",
+  "name": "Qhop",
+  "website": "https://www.qhop.com.au"
+ },
+ "e22529b7": {
+  "focus": "nearest_local",
+  "id": "e22529b7-9fda-5fb9-b109-81bb857c67b1",
+  "lifecycle": "active",
+  "name": "Cheerfy Shop",
+  "website": "https://en.cheerfy.com"
+ },
+ "e31a7d92": {
+  "focus": null,
+  "id": "e31a7d92-5270-4a40-83ce-d26d5a67a326",
+  "lifecycle": "candidate",
+  "name": "Zegashop",
+  "website": "https://www.zegashop.com"
+ },
+ "e5153771": {
+  "focus": null,
+  "id": "e5153771-6769-4ad8-b3c8-2ac346e7ae78",
+  "lifecycle": "candidate",
+  "name": "TapaPOS",
+  "website": "https://tapapay.app"
+ },
+ "e6a09d6e": {
+  "focus": "food_truck",
+  "id": "e6a09d6e-dc3b-5e07-9d53-e5c2fadfa7ec",
+  "lifecycle": "active",
+  "name": "モバレジ (Mobaregi, EDDYS FACTORY)",
+  "website": "https://mobaregi.jp"
+ },
+ "e72778c0": {
+  "focus": "food_truck",
+  "id": "e72778c0-6679-500e-9298-14b5f09547ae",
+  "lifecycle": "active",
+  "name": "Weevi",
+  "website": "https://www.weevi.com"
+ },
+ "e796f041": {
+  "focus": "nearest_local",
+  "id": "e796f041-31bd-5ab1-b44d-32e40dc6a53b",
+  "lifecycle": "active",
+  "name": "QRico",
+  "website": "https://qrico.mx"
+ },
+ "e86ba596": {
+  "focus": "nearest_local",
+  "id": "e86ba596-3087-5767-b989-46a835b940a4",
+  "lifecycle": "active",
+  "name": "Slerp",
+  "website": "https://www.slerp.com"
+ },
+ "eac8099e": {
+  "focus": null,
+  "id": "eac8099e-c1ba-45d5-b83e-5b25d3f122b8",
+  "lifecycle": "candidate",
+  "name": "INFI",
+  "website": "https://infi.us"
+ },
+ "ece796a2": {
+  "focus": "food_truck",
+  "id": "ece796a2-cd23-5db5-a9aa-266bbb55558c",
+  "lifecycle": "active",
+  "name": "Digitale Menukaart",
+  "website": "https://digitalemenukaart.nl"
+ },
+ "ed59e1a6": {
+  "focus": "food_truck",
+  "id": "ed59e1a6-1cfa-53f2-a75b-0af6435f0ef1",
+  "lifecycle": "active",
+  "name": "RestroGreen",
+  "website": "https://quicklyservices.com/restrogreen"
+ },
+ "ef6eec53": {
+  "focus": "nearest_local",
+  "id": "ef6eec53-3df3-5c33-8e46-9e601461c1b2",
+  "lifecycle": "active",
+  "name": "Refektorius",
+  "website": "https://refektorius.lt"
+ },
+ "ef9dcbd8": {
+  "focus": "nearest_local",
+  "id": "ef9dcbd8-d5c7-5339-8181-9cb995413683",
+  "lifecycle": "active",
+  "name": "UpMenu",
+  "website": "https://www.upmenu.com"
+ },
+ "f025fc79": {
+  "focus": "nearest_local",
+  "id": "f025fc79-dc1a-5c8e-a433-ab5775843efe",
+  "lifecycle": "active",
+  "name": "Menuestro",
+  "website": "https://www.menuestro.com"
+ },
+ "f07f8ff1": {
+  "focus": "nearest_local",
+  "id": "f07f8ff1-7785-5c90-a5d3-31f0dc9e7173",
+  "lifecycle": "active",
+  "name": "Aparece",
+  "website": "https://aparece.mx"
+ },
+ "f349ff27": {
+  "focus": "nearest_local",
+  "id": "f349ff27-3694-58cf-8940-73df5b18a550",
+  "lifecycle": "active",
+  "name": "Bestelly",
+  "website": "https://bestelly.nl"
+ },
+ "f44927e4": {
+  "focus": "nearest_local",
+  "id": "f44927e4-dd05-54cd-9db9-42a606810529",
+  "lifecycle": "active",
+  "name": "Klikit",
+  "website": "https://klikit.io"
+ },
+ "f508b55e": {
+  "focus": null,
+  "id": "f508b55e-efc7-45e0-a94d-3b2455b2f4b4",
+  "lifecycle": "not_relevant",
+  "name": "Gustoco",
+  "website": "https://www.gustoco.de"
+ },
+ "f5707721": {
+  "focus": "food_truck",
+  "id": "f5707721-8160-520f-a204-d9ac37958620",
+  "lifecycle": "active",
+  "name": "Qopla",
+  "website": "https://www.qopla.com"
+ },
+ "f6a04474": {
+  "focus": "nearest_local",
+  "id": "f6a04474-ebdc-5a08-bd4f-bfaaa4eed0b5",
+  "lifecycle": "active",
+  "name": "Food4you",
+  "website": "https://food4you.fi"
+ },
+ "f7343532": {
+  "focus": "nearest_local",
+  "id": "f7343532-5b7f-5e93-aac3-c97906980b3d",
+  "lifecycle": "active",
+  "name": "Ewity POS",
+  "website": "https://ewity.com"
+ },
+ "f8d9d52d": {
+  "focus": "food_truck",
+  "id": "f8d9d52d-1456-512a-b89e-8a3843a93532",
+  "lifecycle": "active",
+  "name": "Outbites",
+  "website": "https://outbites.com"
+ },
+ "fbbf6c37": {
+  "focus": "food_truck",
+  "id": "fbbf6c37-2dd0-5f11-9e68-a0be5d563629",
+  "lifecycle": "active",
+  "name": "Hatches Up",
+  "website": null
+ },
+ "fbea19b8": {
+  "focus": "food_truck",
+  "id": "fbea19b8-4940-53bb-95d6-b19dace1027f",
+  "lifecycle": "active",
+  "name": "KitchenCarMenu (キッチンカーメニュー)",
+  "website": "https://kitchencarmenu.com"
+ },
+ "fbfecac2": {
+  "focus": "food_truck",
+  "id": "fbfecac2-3f4d-5889-b354-b63e7b4f78e7",
+  "lifecycle": "active",
+  "name": "Frivo",
+  "website": "https://frivo.pl"
+ },
+ "fc80e04f": {
+  "focus": "nearest_local",
+  "id": "fc80e04f-ede0-5e0d-b0bb-9e6a315f2954",
+  "lifecycle": "active",
+  "name": "Bestelltheke",
+  "website": "https://bestelltheke.de"
+ },
+ "fca70222": {
+  "focus": "food_truck",
+  "id": "fca70222-5055-456f-a58e-602f305254f1",
+  "lifecycle": "active",
+  "name": "L'Addition",
+  "website": "https://commande-en-ligne.laddition.com"
+ },
+ "fd3008f4": {
+  "focus": null,
+  "id": "fd3008f4-25b3-4abc-afc0-5cffb6499c16",
+  "lifecycle": "candidate",
+  "name": "RestApp",
+  "website": "https://www.restapp.com"
+ },
+ "fdcd9f95": {
+  "focus": "nearest_local",
+  "id": "fdcd9f95-8fd8-58b0-9805-20eb74ae938b",
+  "lifecycle": "active",
+  "name": "Cardápio Web",
+  "website": "https://www.cardapioweb.com"
+ },
+ "fedc794a": {
+  "focus": "nearest_local",
+  "id": "fedc794a-993d-5890-9dbb-4e01c042042b",
+  "lifecycle": "active",
+  "name": "Bizzfo",
+  "website": "https://bizzfo.co.za"
+ },
+ "fefb8e43": {
+  "focus": "nearest_local",
+  "id": "fefb8e43-0206-5b14-9d05-79b6b44b8e09",
+  "lifecycle": "active",
+  "name": "Sinqro",
+  "website": "https://sinqro.com/en-tn"
+ },
+ "ff78ffa2": {
+  "focus": "food_truck",
+  "id": "ff78ffa2-2d9a-5292-881b-226af2859e2f",
+  "lifecycle": "active",
+  "name": "FesteaPay",
+  "website": "https://foodtruckya.com"
+ },
+ "ffac93b0": {
+  "focus": null,
+  "id": "ffac93b0-ad42-54bc-819d-4da2150bc99a",
+  "lifecycle": "not_relevant",
+  "name": "Ritual",
+  "website": "https://ritual.co"
+ }
+}
