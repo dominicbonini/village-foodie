@@ -8,3 +8,11 @@
 | Jowi | pos | not_relevant (no UZS online-ordering price, not opened) | none | https://jowi.club |
 
 count now: 1 (Delever). Nothing else eligible in UZS: Russian and Uzbek searches turned up only marketplaces and freelancer builds.
+
+## IN (INR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Dinehere | nearest_local (street-food example on home page) | eligible | ₹500/month + ₹5,000 one-time setup for own ordering app | https://dinehere.in/pricing |
+
+count now: 2 (uEngage + Dinehere).
