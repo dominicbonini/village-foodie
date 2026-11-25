@@ -207,3 +207,8 @@ count now: 0
 
 None exists: Uber Kai's (Facebook delivery service), consumer apps with no Cook Islands coverage, travel listings.
 count now: 0
+
+## NU (NZD)
+
+None exists: a handful of cafes in travel guides; no ordering tool.
+count now: 0
