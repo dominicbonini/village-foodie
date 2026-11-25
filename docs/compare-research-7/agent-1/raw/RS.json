@@ -42,7 +42,21 @@
       "plans": [],
       "answers": [],
       "check_urls": []
+    },
+    {
+      "name": "AjDonesi",
+      "website": "https://ajdonesi.rs",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Serbian 'Sopstveni online sistem za restorane' (own ordering site; 'jasno razdvajanje dostave od preuzimanja', 'Fiksna mesečna cena i direktna kontrola porudžbina.') but priced only in € ('19 €' / '39 €' / '69 €' '/ mesec', from the page's raw HTML; the page reader saw only the title). No RSD price, so it does not count for RS (stored RSD). Pickup-for-a-time wording not found.",
+      "check_urls": [
+        "https://ajdonesi.rs/"
+      ],
+      "stored_id_prefix": null,
+      "eligibility": {},
+      "plans": [],
+      "answers": []
     }
   ],
-  "notes": "RS counts Vitrina (RSD) only. Earlier rounds rejected FoxiFood (EUR only), doXmenu, Kafeterija, Ordera, UpMenu, Poster, Remaris, iiko and saw Orders.co, Listim, Restimo, Restaumatic, mobi2go, Monri, subger, Jotform - not re-read. Three new Serbian searches (local web agencies with ordering packages, 'izrada sajta za restoran sa online poručivanjem', ESIR / 'kasa za ugostitelje' POS with an online-ordering module) returned Glovo listings (marketplace), Jotform templates, a freelance web developer, a generic store builder (Zegashop), Minimax's ESIR docs, Anolla (never), Odoo and Poster (USD), TiramisuERP (Slovenian ERP, no Serbia), Restimo/Restaumatic (Polish, no RSD). No local agency sells an ordering product with a public RSD price. Nothing eligible; RS stays at 1. Aside: Odoo (Belgian ERP, local-currency pricing by country) has POS-restaurant online ordering but is a generic ERP / web-shop builder - not opened."
+  "notes": "RS counts Vitrina (RSD) only. Earlier rounds rejected FoxiFood (EUR only), doXmenu, Kafeterija, Ordera, UpMenu, Poster, Remaris, iiko and saw Orders.co, Listim, Restimo, Restaumatic, mobi2go, Monri, subger, Jotform - not re-read. Three new Serbian searches (local web agencies with ordering packages, 'izrada sajta za restoran sa online poručivanjem', ESIR / 'kasa za ugostitelje' POS with an online-ordering module) returned Glovo listings (marketplace), Jotform templates, a freelance web developer, a generic store builder (Zegashop), Minimax's ESIR docs, Anolla (never), Odoo and Poster (USD), TiramisuERP (Slovenian ERP, no Serbia), Restimo/Restaumatic (Polish, no RSD). No local agency sells an ordering product with a public RSD price. Nothing eligible; RS stays at 1. Aside: Odoo (Belgian ERP, local-currency pricing by country) has POS-restaurant online ordering but is a generic ERP / web-shop builder - not opened. Third pass: regional angle - AjDonesi (Serbian own-site ordering, seen in compare-research-5 BA notes) read: € prices only (19/39/69 € a month), so not counted. RS stays at 1."
 }
