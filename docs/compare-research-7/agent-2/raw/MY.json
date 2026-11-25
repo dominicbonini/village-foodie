@@ -2,7 +2,8 @@
  "country": "MY",
  "researched_on": "2026-11-25",
  "searches": [
-  "Malaysia F&B online ordering system self pickup takeaway pre-order commission-free pricing \"RM\" per month restaurant cafe own website"
+  "Malaysia F&B online ordering system self pickup takeaway pre-order commission-free pricing \"RM\" per month restaurant cafe own website",
+  "EasyEat OR Delivereat OR Slurp Malaysia restaurant online ordering self-pickup pricing RM per month plan"
  ],
  "vendors": [
   {
@@ -46,7 +47,21 @@
    "check_urls": [
     "https://feedme.ai/pricing"
    ]
+  },
+  {
+   "name": "Mobi (formerly Mobi2Go)",
+   "website": "https://www.mobihq.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "pricing page has plan names only ('SMBs', 'Enterprise'; 'We build pricing plans tailored to the needs of small-to-medium sized businesses.'), no amounts, no currency, no country named",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.mobihq.com/pricing/smbs"
+   ]
   }
  ],
- "notes": "MY count now: 2 (Klikit, StoreHub) — unchanged. Qashier MY (stored, eligible) is priced per day only (compare-research-1: 'RM8 a DAY'; a search snippet now shows 'Plan RM 1.50 / day') — a per-day price is unclear, so not counted. Oddle MY: a search snippet shows 'from RM199/month' on oddle.me/en-my, but oddle.me refused automated fetches twice today (403) — not tried again; worth a later re-try (Oddle is stored). Take App MY: USD only. New sites opened: Orderla (form not found), iCHEF (no MY price page), FeedMe (no plan prices, no order-ahead). Stopped."
+ "notes": "MY count now: 2 (Klikit, StoreHub) — unchanged. Qashier MY (stored, eligible) is priced per day only (compare-research-1: 'RM8 a DAY'; a search snippet now shows 'Plan RM 1.50 / day') — a per-day price is unclear, so not counted. Oddle MY: a search snippet shows 'from RM199/month' on oddle.me/en-my, but oddle.me refused automated fetches twice today (403) — not tried again; worth a later re-try (Oddle is stored). Take App MY: USD only. New sites opened: Orderla (form not found), iCHEF (no MY price page), FeedMe (no plan prices, no order-ahead). Stopped. Extra round: Mobi (mobi2go.com → mobihq.com) quote-only, no country; EasyEat / Delivereat / Slurp not found in search; Deonde MY page (flat fee, no amount, Deonde 403 in other rounds) not opened."
 }
