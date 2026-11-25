@@ -5,7 +5,8 @@
     "owner.com restaurant \"Puerto Rico\" online ordering San Juan",
     "plataforma puertorriqueña pedidos en línea restaurantes recogido \"pick-up\" sin comisión planes mensual Puerto Rico software",
     "food truck Puerto Rico ordenar en línea pre-order app goodfynd OR hotplate OR \"food truck\" San Juan pickup online ordering platform",
-    "Puerto Rico food truck ordenar por adelantado app \"food truck\" pre-order pickup platform used by Puerto Rico food trucks \"food truck park\" ordering link"
+    "Puerto Rico food truck ordenar por adelantado app \"food truck\" pre-order pickup platform used by Puerto Rico food trucks \"food truck park\" ordering link",
+    "clover.com \"Puerto Rico\" Clover available merchants help article"
   ],
   "vendors": [
     {
@@ -38,5 +39,8 @@
       ]
     }
   ],
-  "notes": "Count now: 2 (Menufy, Take App) — no third. Clover is the likeliest third (it hosts PR restaurants' ordering pages) but its pages are script-rendered today: a human reviewer could read clover.com/pricing in a browser. Owner.com: no owner.com page for a Puerto Rico restaurant in results (only Uber Eats / DoorDash / Postmates / Caviar listings). DoorDash Commerce Platform / Storefront: a marketplace's product (not counted, as in -2/-3). Square (excludes PR — raw/B4-Square.json), Toast and ChowNow (no PR presence — raw/B4-*.json) not re-read. Eatsy (CR), Reorder (UY) — no PR presence. Stopped after ~5 candidates. SECOND PASS (food-truck only): no food-truck ordering tool used in Puerto Rico found: results were single restaurants' apps (Meso Pick-Up — on Flipdish, agent 1's; Burger King PR; FoodNetPR), Zabor Eats (PR delivery marketplace), PRoduce! (farm-to-fork produce app), Postmates / DoorDash listings of PR food trucks (marketplaces), Toast's Borinquen Cravings page (403 in -2) and Discover Puerto Rico's food-truck-park guide (no ordering tool named). No vendor site to read. Count stays 2."
+  "notes": "Count now: 2 (Menufy, Take App) — no third. Clover is the likeliest third (it hosts PR restaurants' ordering pages) but its pages are script-rendered today: a human reviewer could read clover.com/pricing in a browser. Owner.com: no owner.com page for a Puerto Rico restaurant in results (only Uber Eats / DoorDash / Postmates / Caviar listings). DoorDash Commerce Platform / Storefront: a marketplace's product (not counted, as in -2/-3). Square (excludes PR — raw/B4-Square.json), Toast and ChowNow (no PR presence — raw/B4-*.json) not re-read. Eatsy (CR), Reorder (UY) — no PR presence. Stopped after ~5 candidates. SECOND PASS (food-truck only): no food-truck ordering tool used in Puerto Rico found: results were single restaurants' apps (Meso Pick-Up — on Flipdish, agent 1's; Burger King PR; FoodNetPR), Zabor Eats (PR delivery marketplace), PRoduce! (farm-to-fork produce app), Postmates / DoorDash listings of PR food trucks (marketplaces), Toast's Borinquen Cravings page (403 in -2) and Discover Puerto Rico's food-truck-park guide (no ordering tool named). No vendor site to read. Count stays 2. CLOVER RETRY (coordinator item 1): a search of clover.com / docs.clover.com for Puerto Rico found no availability or PR page; the one extra own-site page read, https://docs.clover.com/docs/us-merchants (renders as text, 20k characters), never mentions Puerto Rico or territories (only 'Merchants are configured to process payments in US dollars (USD).' per the search). Presence still not quotable -> Clover stays uncounted in PR.",
+  "check_urls_extra": [
+    "https://docs.clover.com/docs/us-merchants"
+  ]
 }
