@@ -1,0 +1,80 @@
+{
+ "country": "PK",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Pakistan restaurant online ordering website pickup takeaway pricing Rs per month PKR commission free"
+ ],
+ "vendors": [
+  {
+   "name": "tossdown",
+   "website": "https://tossdown.com",
+   "stored_id_prefix": "85c5360a",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "commission-free pickup and delivery ordering; its FAQ says Pakistan uses rupee pricing, but the pricing page (served with a US country flag, no region selector) shows only $ amounts, so no PKR price",
+   "eligibility": {
+    "order_quote": "Accept commission-free pickup and delivery orders.",
+    "order_url": "https://tossdown.com/pricing",
+    "country_quote": "Canada uses Canadian dollar pricing and Pakistan uses rupee pricing (Rs.).",
+    "country_url": "https://tossdown.com/pricing"
+   },
+   "plans": [
+    {
+     "plan_name": "Direct Ordering",
+     "currency": "USD",
+     "price_major": 99,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": 500,
+     "quote": "$99/ location / mo.",
+     "url": "https://tossdown.com/pricing",
+     "note": "$ not PKR (geo-priced; rupee amounts not readable). Core platform \"$49/ month\" with \"One-time base setup of $500.\""
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Accept commission-free pickup and delivery orders.",
+     "url": "https://tossdown.com/pricing"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://tossdown.com/pricing"
+   ]
+  },
+  {
+   "name": "Moneypex",
+   "website": "https://www.moneypex.com/pk",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Pakistan restaurant POS page shows \"£30 /month\" (GBP) and \"Web Ordering £10\" add-on; no PKR price and no pickup/order-ahead sentence",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.moneypex.com/pk/restaurant-pos"
+   ]
+  },
+  {
+   "name": "Oscar",
+   "website": "https://oscar.pk",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "restaurant e-commerce page: online ordering in general, no pickup/takeaway/order-ahead sentence, no prices",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://oscar.pk/solutions/restaurant-ecommerce"
+   ]
+  }
+ ],
+ "notes": "PK: nothing priced in PKR confirmed. tossdown is geo-priced (FAQ says Rs. for Pakistan, page shows $). Nosh: PKR 1,999 / 4,999 per branch per month seen only on a freedom251.com listing (not a source; Nosh's own site not found). Deonde Pakistan: no amount per search. Blink: PK plans not priced in PKR (compare-research-2). count now: 0."
+}

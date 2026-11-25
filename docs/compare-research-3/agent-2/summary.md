@@ -115,3 +115,13 @@ count now: 2 (Qvian + Ewity)
 | HisabPlus | nearest_local | not_relevant (table QR only, no price) | — | https://hisabplus.com/Blog/restaurant-pos-software-bangladesh-guide |
 
 count now: 1 (Restora POS)
+
+## PK (Pakistan, PKR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| tossdown | nearest_local | eligible but $ only (geo-priced; FAQ says Rs. in Pakistan) | Direct Ordering $99/location/month + $500 setup | https://tossdown.com/pricing |
+| Moneypex | nearest_local | not_relevant (GBP, no pickup wording) | — | https://www.moneypex.com/pk/restaurant-pos |
+| Oscar | nearest_local | not_relevant (no pickup wording, no price) | — | https://oscar.pk/solutions/restaurant-ecommerce |
+
+None found with an own-site PKR price (Nosh PKR prices only on a listing site). count now: 0
