@@ -20,3 +20,11 @@ count now: 2 (food-truck: 2)
 No second KRW tool found after 3 searches (only Naver/Kakao platform ordering, kiosk/table-order products, Wix help pages). Toss's fee needs checking.
 
 count now: 1 (food-truck: 0)
+
+## TW (Taiwan, TWD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Oddle | nearest_local | eligible (online takeaway ordering; no pickup-time wording) | NT$3,000/month from, tax not stated | https://oddle.me/tw/pricing |
+
+With Klikit (counted earlier). count now: 2 (food-truck: 0)

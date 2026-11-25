@@ -1,0 +1,101 @@
+{
+ "country": "TW",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Oddle",
+   "website": "https://oddle.me/tw",
+   "stored_id_prefix": "110abdac",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Singapore-based restaurant platform with a Taiwan-localized site: online takeaway and delivery ordering system; NT$ price on its TW pricing page",
+   "eligibility": {
+    "order_quote": "線上外帶外送系統與物流管理",
+    "order_url": "https://oddle.me/tw",
+    "country_quote": "NT$3,000/月 起",
+    "country_url": "https://oddle.me/tw/pricing"
+   },
+   "plans": [
+    {
+     "plan_name": "一個價格，全面使用",
+     "currency": "TWD",
+     "price_major": 3000,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "NT$3,000/月 起",
+     "url": "https://oddle.me/tw/pricing",
+     "note": "'起' (from) price, '月繳' (paid monthly); the plan lists '線上訂單' and '每月最高 NT$25K 線上訂單' (online orders up to NT$25K a month). Tax not stated."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "線上外帶外送系統與物流管理",
+     "url": "https://oddle.me/tw"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://oddle.me/tw/pricing",
+    "https://oddle.me/tw"
+   ]
+  }
+ ],
+ "notes": "Oddle TW (403 last round) loaded today. Its pages say online takeaway ordering ('線上外帶') but no word for pickup time / scheduled orders (no '自取' on the home page), so ahead is 'partial'. With Klikit (counted) TW now has 2 in TWD. iCHEF not re-read (base plan excludes ordering). count now: 2."
+}
