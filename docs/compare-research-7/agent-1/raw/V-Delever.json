@@ -1,0 +1,13 @@
+{
+  "vendor": "Delever",
+  "stored_id_prefix": "5d40e41f",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Delever Казахстан тарифы тенге delever.kz"
+  ],
+  "vendors": [],
+  "check_urls": [
+    "https://delever.io/pricing"
+  ],
+  "notes": "Already counts in UZ (UZS) - skipped. KZ and AZ: https://delever.io/pricing shows only сум ('Start: 1 300 000 сум в месяц, 1 000 заказов, сверх лимита 1 950 сум за заказ'; Medium 3 600 000, Big 6 600 000, Enterprise 13 000 000 сум) with no currency or country selector and no mention of Kazakhstan, Azerbaijan, tenge or manat. Its home page says it has legal entities in Kazakhstan and Azerbaijan (compare-research-2), but delever.kz does not resolve and the search found no Kazakhstan price page. No KZT / AZN price, so it counts in neither KZ nor AZ."
+}
