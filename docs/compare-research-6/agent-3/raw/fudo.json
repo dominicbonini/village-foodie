@@ -1,0 +1,34 @@
+[
+  {
+    "country": "AR",
+    "active_account_quote": "Solo necesitás una cuenta activa en Fudo.",
+    "active_account_url": "https://fu.do/es-ar/delivery/",
+    "base_plan": "Plan Inicial",
+    "base_price_major": 23900,
+    "base_quote": "$23.900 /mes … Precio final … Sin impuestos nacionales: $19.752",
+    "base_url": "https://fu.do/es-ar/precios/",
+    "vat": "incl",
+    "fee_pct": 1.9,
+    "fee_quote": "1,9% + IVA de tasa de servicio por cada venta, con un tope de $99.000 + IVA por mes",
+    "fee_url": "https://fu.do/es-ar/delivery/",
+    "cap_quote": "con un tope de $99.000 + IVA por mes … El tope aplica solo si activás Fudo Pagos como procesador de pago online.",
+    "no_free_plan_quote": null,
+    "note": "Re-read 25 Nov. /precios: 'Precios finales en pesos argentinos.'; toggle 'Mensual Semestral −10% Anual −15%' (prices shown '/mes'; the page also says monthly subscription 'obtenés un 5% de descuento'). No sentence says there is no free plan; trial wording only: '¡Sí! Te ofrecemos un periodo de prueba gratis para que puedas resolver todas tus dudas antes de pagar.' and 'Probar Gratis' buttons; delivery page: 'Probá con 25 ventas gratis', 'Prueba gratuita de todas las funcionalidades.' Delivery page still says 'No tiene abono mensual: solo pagás cuando vendés.' (= no module fee; the base account is the cost). /precios describes Tu Delivery as 'Tienda online, pedidos por WhatsApp, repartidores e integraciones.' without tying it to a plan. Pickup: 'Para retirar'. The fee cap applies only with Fudo Pagos. Price = Plan Inicial ARS 23.900/mes final + 1,9 % + IVA per sale."
+  },
+  {
+    "country": "CL",
+    "active_account_quote": "Solo necesitas una cuenta activa en Fudo.",
+    "active_account_url": "https://fu.do/es-cl/delivery/",
+    "base_plan": "Plan Inicial",
+    "base_price_major": 25500,
+    "base_quote": "$25.500 /mes … Precios en pesos chilenos, sin IVA.",
+    "base_url": "https://fu.do/es-cl/precios/",
+    "vat": "excl",
+    "fee_pct": 1.9,
+    "fee_quote": "Luego pagas una tasa de servicio del 1,9% + IVA por cada venta realizada a través de Tu Delivery,",
+    "fee_url": "https://fu.do/es-cl/delivery/",
+    "cap_quote": null,
+    "no_free_plan_quote": null,
+    "note": "Re-read 25 Nov. /precios: FAQ 'en pesos chilenos y sin IVA'; toggle 'Mensual', 'Semestral −10%', 'Anual −15%' (prices '/mes'; 'Con suscripción mensual obtienes un 5% de descuento.'). No sentence says there is no free plan; trial wording only: '¡Sí! Te ofrecemos un periodo de prueba gratis para que puedas resolver todas tus dudas antes de pagar.', 'Probar Gratis'; delivery page: 'Probar 25 ventas gratis', 'Las primeras 25 ventas son sin costo', 'Prueba gratuita de todas las funcionalidades.' No 'abono mensual' sentence and no cap on the CL page. Fee sentence continues: the merchant may pass the cost to customers. Pickup: 'Para retirar' next to 'Entrega a domicilio'. Price = Plan Inicial CLP 25.500/mes + IVA + 1,9 % + IVA per sale."
+  }
+]
