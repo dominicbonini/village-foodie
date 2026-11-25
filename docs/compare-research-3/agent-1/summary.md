@@ -111,3 +111,7 @@ Poster (0802a7c8) has the same ambiguity as UA: '8 640 ₸9 600 ₸/мес.' wit
 ## GE (Georgia, GEL)
 
 None found: Restimo is EUR only, MENU TIGER is agent 2's, and Kovzy, XPOS and Poster were already dead ends in compare-research-2. count now: 0
+
+## AZ (Azerbaijan, AZN)
+
+None found: only Wolt and the Dostavka.az aggregator came up; Clopos and Delever were already dead ends. count now: 0

@@ -1,0 +1,10 @@
+{
+  "country": "AZ",
+  "researched_on": "2026-11-25",
+  "searches": ["restoran üçün onlayn sifariş sistemi özün götür əvvəlcədən sifariş qiymət AZN aylıq Bakı sifariş saytı"],
+  "vendors": [
+    { "name": "Dostavka.az", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Consumer aggregator of delivery services (marketplace), App Store only. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] }
+  ],
+  "notes": "None found priced in AZN. Results were Wolt restaurant pages (marketplace) and Dostavka.az. Compare-research-2 dead ends weren't repeated: Clopos (QR menu only, USD) and Delever (UZS only; agent 2's). Vitrina has no AZ price page. Count: 0."
+}
