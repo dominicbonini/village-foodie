@@ -44,7 +44,7 @@ const NOT_SOLD_IN = { /* filled after review */ }
 const REVIVE = [/* filled after review */]
 // A research plan whose name differs from the stored plan it corrects.
 // compare-research-4: stored competitors whose focus this research must not change (Fudo stays food_truck, as Dominic kept it; §59 borderline list)
-const KEEP_STORED_FOCUS = ['7e12931c']
+const KEEP_STORED_FOCUS = ['7e12931c', 'ed59e1a6' /* RestroGreen: stored food_truck, kept (compare-research-5) */]
 const RENAME = { 'afe2f58d|ZA|resto shop': 'Shop' }   // compare-research-4: agent 1's "Resto shop" is the stored plan "Shop"
 const CORRECT_EVEN_IF_NOT_RELEVANT = []
 // Coordinator review (25 Nov 2026): plans recorded by the agents that must never be published as a stated monthly price — the page
