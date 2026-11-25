@@ -1,0 +1,40 @@
+{
+  "country": "CO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Colombia software restaurantes pedidos en línea \"para recoger\" página propia sin comisión planes precios COP mensual 2026",
+    "menú digital pedidos WhatsApp restaurantes Colombia \"recoger en tienda\" plan mensual \"$\" pesos colombianos domicilios propios",
+    "sistema para restaurantes Colombia \"pedidos online\" \"para llevar\" módulo tienda virtual precios \"COP\" o \"$\" \"al mes\" Bogotá Medellín POS",
+    "FoodClick Colombia POS domicilios restaurantes sitio oficial precios",
+    "ImpulsoWeb FoodClick",
+    "\"pedidos programados\" \"recoger\" restaurante Colombia plataforma propia tienda online comida plan precio mensual colombianos",
+    "\"Propio\" Rappi canal propio restaurantes tienda online recoger en tienda precio mensual sitio"
+  ],
+  "vendors": [
+    {
+      "name": "iwebnu",
+      "website": "https://iwebnu.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Colombian digital menu for 'corrientazos' (found via a Portafolio article: QR menu at the table, delivery; price 'under 1,000 pesos per day' — a per-day price, unclear); https://iwebnu.com/ did not connect today (no HTTP response), so nothing was read from its own site",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://iwebnu.com/"]
+    },
+    {
+      "name": "Propio by Rappi",
+      "website": "https://propio.rappi.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Rappi's 2020 own-ordering-channel product for restaurants (press: delivery or 'recojo en tienda'); https://propio.rappi.com/ did not connect today (no HTTP response) — apparently discontinued; nothing read from its own site, no price",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://propio.rappi.com/"]
+    }
+  ],
+  "notes": "Count now: 1 (Fudo 'Plan Inicial + Tu Delivery', COP, stored). No second COP-priced tool found. Seven searches (para recoger / recoger en tienda / pedidos programados, POS with a tienda virtual module, WhatsApp menú digital) surfaced only two new vendor sites, both dead today (iwebnu, Propio by Rappi — rows above). FoodClick (ImpulsoWeb; Colombian Windows desktop POS with delivery management per Capterra) has no own website in results — not read. La República's 'cinco plataformas' article named Cluvi (dead domain in -2), Justo (no pickup wording in -2), Apparta and Degusta (reservations / guides), Pirpos (POS, orders only via delivery-app integrations) — none read. Otherwise: OlaClick (USD; sponsored press — not counted), Reorder (press only, ~11%), Siigo POS Gastrobar (till), Colombia Move (directory, rejected in -4), Meniu (MXN), Wix, Shipday (Shopify app), Lavu / Lightspeed (USD), Klikit's blog (agent 2), Capterra listings (Weevi, Restroworks, Orders2Me, TouchBistro, MYR POS, Ordyx — not sources). Earlier dead ends (Vendty, Menuestro, Menüpp, Loggro Restobar, Kucharon, Toteat) not re-read. Pedix: Colombia not on its price list (raw/V-Pedix.json). Stopped."
+}
