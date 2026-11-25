@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.37
+HatchGrab Engineering Reference Manual · V16.38
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.37**
+**Version 16.38**
 
 November 2026
 
@@ -120,7 +120,7 @@ identical; a **pre-flight** before the migration runs and a **check** after it. 
 insert fail (its own exception block; on error it leaves the value NULL and logs a WARNING). Never run a proof against Pizzeria
 Gusto or any trading truck. A proof that can't be run is a stop: say so; don't apply the migration.
 
-# Open items (V16.37, 25 November 2026) — THE ONLY CURRENT LIST
+# Open items (V16.38, 25 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
@@ -343,17 +343,37 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 55. 🔴 **Competitor check workflow: re-enable only after the deploy that puts compare-fix-1/-2 and the 25 Nov rules on GitHub `main`.**
     Until then it stays disabled (it can't spend before 1 Dec anyway). After re-enabling: prices re-checked every 90 days as decided.
     OBSERVED 25 Nov 13:17 UTC: `Competitor check  disabled_manually`.
+    **Deadline (V16.38):** prices start to age out on **21 Feb 2027** (US first; all live countries by 31 Mar). The deploy and the
+    re-enabling must happen **before mid-February 2027**. A keep-current plan (prices 90 days, features rarely, presence once, staggered
+    due dates, within the $90 cap) follows a read-only review of how a routine check refreshes `checked_on`.
 56. 🔴 **Vercel Spend Management:** confirm there is no budget with "Pause production deployments" (a pause = 503 for every page, Pizzeria
     Gusto included); keep alerts only. **Decision: Observability** events (≈ $0.13–0.31 a day) — switch off if unused.
-57. **Comparison research — next waves**, in launch order (the method in §91):
+57. ~~**Comparison research — next waves**, in launch order (the method in §91):
     - one short: MT; IS RS KR QA SA BH JO BO DO SV GT JM UY ZA CO; AL BA MK MD UZ IN LK BD (and others in compare-research-3's table);
     - nothing eligible found: AO BS CR CV HN IL MC MZ NI PE PY SN TN TT; KZ GE AZ AM ME KG PK KH NP MN MO BN LA TZ UG ET NA BW ZM ZW DZ BZ
-      GY SR; micro-territories not researched.
-58. **Comparison open points (compare-research-3b §4):** Poster's "Site" add-on (kept unclear); KZ — add joinposter.kz to Poster's check
+      GY SR; micro-territories not researched.~~
+    ⛔ **V16.38:** **Comparison research — next waves**, in launch order (the method in §91):
+    - one short, waves 1–2: MT IS RS QA BH JO BO DO SV GT JM UY CO (two rounds found nothing new for all but CO; parking proposed);
+      KR at 0 (Toss Place unclear);
+    - one short, wave 3: AL BA MK MD UZ IN LK BD;
+    - nothing eligible found: AO BS CR CV HN IL MC MZ NI PE PY SN TN TT; KZ GE AZ AM ME KG PK KH NP MN MO BN LA TZ UG ET NA BW ZM ZW DZ BZ
+      GY SR MU; micro-territories not researched.
+    - **CL** is live on SumUp's single fallback: a second real CLP tool wanted (Toteat and Justo were round-2 evidence gaps).
+58. ~~**Comparison open points (compare-research-3b §4):** Poster's "Site" add-on (kept unclear); KZ — add joinposter.kz to Poster's check
     pages; **Toss Place KR** — the fee in force (0 won "try" against the planned 3.5 % + VAT) must be confirmed on its own site before KR
-    goes live.
-59. **Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, Restorant NG, Menufy PR, Oddle TW, Yoveletta /
-    Rent-a-Shop LI and Ordea GI (neighbour fits), Fudo AR/CL, Pedix, DISH HR/SK, Vitrina SI.
+    goes live.~~
+    ⛔ **V16.38:** **Comparison open points:**
+    - Poster's "Site" add-on on its own: kept unclear (an add-on needing a POS plan; counting it would show 760 ₴ on the live UA page).
+    - KZ: add joinposter.kz to Poster's check pages when KZ is next researched (it can't make KZ live alone).
+    - ~~Toss Place KR — the fee in force must be confirmed on its own site before KR goes live.~~ ⛔ V16.38: not stated on its own site →
+      plan unclear; KR at 0.
+    - **Fudo AR (live):** check whether fu.do/es-ar also says Tu Delivery needs a paid Fudo plan (as on the CO page). If so, AR's
+      ARS 0 + 1.9 % understates Fudo's price; store plan + module as for CO.
+59. ~~**Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, Restorant NG, Menufy PR, Oddle TW, Yoveletta /
+    Rent-a-Shop LI and Ordea GI (neighbour fits), Fudo AR/CL, Pedix, DISH HR/SK, Vitrina SI.~~
+    ⛔ **V16.38:** **Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, **Linkin1 SA**, Restorant NG,
+    Oddle TW, Yoveletta / Rent-a-Shop LI and Ordea GI (neighbour fits, terms read), Fudo AR, Pedix (quote strengthened V16.38), DISH
+    HR/SK, Vitrina SI. ⛔ V16.38: Menufy PR now has a quoted price ($179); Fudo CL is unclear.
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -605,6 +625,41 @@ actions, `refund`, the Manage-level token routes. 6. After two clean weeks, grou
 board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings (owner only; needs a mockup first).
 
 # Changelog
+
+## V16.38 — 25 November 2026 — **58 COMPARISON COUNTRIES LIVE (SA, ZA JOIN); TOSS PLACE KR AND FUDO CL UNCLEAR; MENUFY PR AT $179; PRICES START TO AGE OUT ON 21 FEB 2027**
+
+- **compare-research-4** (3 agents; the one-short countries of waves 1–2 plus three evidence top-ups; one load round; migration
+  `20261133`; `data/compare-research-4/competitors.json` registered ninth in `DATA_FILES`; `data_imports` 14 → 15): **56 → 58 live.**
+  - **SA** joins: Ordable · **Linkin1** (linkin1.com, «SAR 59» a month excl. VAT + 1.5 % on online-paid orders; curbside pickup, no
+    "for a time" wording — borderline, like Asila).
+  - **ZA** joins: Bizzfo · **Resto** (re-read: «Resto's simple pricing - R1000/month»; its unclear mark cleared).
+  - **Menufy PR:** its own pricing page's HTML states «$179 a month month-to-month, or $149 a month on a 12-month agreement». The stored
+    USD 0 was corrected to 179 through the importer (old row kept). PR stays live (Menufy · Take App).
+  - **Fudo CO:** Tu Delivery is a module added to a paid Fudo plan («Necesitas una cuenta activa en Fudo y sumar el módulo Tu Delivery a
+    tu plan.»), so stored as "Plan Inicial + Tu Delivery", COP 173 800 a month excl. IVA (62 900 + 110 900, both quoted). CO: 0 → 1.
+  - **Fudo CL:** no "no monthly fee" quote on fu.do/es-cl → plan **unclear**. **CL stays live on Pedix · SumUp** (SumUp as the single
+    fallback).
+  - **Toss Place KR:** tossplace.com states no fee in force (only the 2025 «주문 수수료 0원으로 써보기» "try" offer against the planned
+    3.5 % + VAT of 2024) → plan **unclear**. **KR: 0.**
+  - **Pedix:** the bare article-title quote replaced by a body sentence («…tus clientes hagan el pedido desde el catálogo online y pasen
+    luego a buscarlo por el local.»), every country.
+  - **OrderFlow BH** (15 / 20 / 25 BHD, pickup) **left out**: its only site is on a duckdns.org address and it claims one customer — the
+    Resto-SaaS MU standard (not a confirmed live product).
+  - **Fudo's stored focus kept** (`KEEP_STORED_FOCUS`): the CO row would otherwise have changed it from food truck to restaurant
+    everywhere.
+  - Verified read-only: 58 live; shown = marked everywhere; AE false/false; 0 of 753 priced plans over the ceiling; no pending or duplicate
+    answers.
+- **When prices stop counting (compare-research-4 Step 0c, read-only):** a plan counts until `checked_on + interval (90 days) + 30`;
+  Admin-verified plans never expire. With no re-check, **US drops from 21 Feb 2027**; BR CZ GB JP NZ from 8 Mar; most from 10–26 Mar;
+  **all 56 (now 58) by 31 Mar 2027**. So the deploy that puts compare-fix-1/-2 and the 25 Nov rules on GitHub `main`, and the Competitor
+  check's re-enabling, are needed **before mid-February 2027**.
+- **Still one short after this run:** MT IS RS QA BH JO BO DO SV GT JM UY CO (two rounds found nothing new for all but CO); KR at 0.
+- ⚠️ **Step 0(a) deviation:** told to stop on uncommitted compare files, the run instead committed its own leftover
+  `docs/compare-research-2/sql-wave-2.txt` (`22e885df`) and flagged it. Harmless; recorded.
+- **Live comparison countries (25 Nov): 58** — AR AT AU BE BG BR CA CH CL CY CZ DE DK EC EE EG ES FI FR GB GI GR HK HR HU ID IE IT JP KW
+  LI LT LU LV MA MV MY NG NL NO NZ OM PA PL PR PT RO SA SE SG SI SK TH TR TW UA US ZA.
+- **OBSERVED when applying (25 Nov 2026, 14:04 UTC, read-only):** **58 live** (exactly the list above); AE `auto_publish` false,
+  `auto_live` false; the newest `data_imports` row `data/compare-research-4/competitors.json`, `ok`, 13:53:28 UTC; `DATA_FILES` holds 9 files.
 
 ## V16.37 — 24–25 November 2026 — **56 COMPARISON COUNTRIES LIVE (FROM 5); THE COMPARISON RULES; AN ALL-OR-NOTHING IMPORTER WITH ROLLED-BACK DRY RUNS ON THE LIVE DATA; VERCEL-COST-1 DEPLOYED ON ITS OWN**
 
@@ -39979,6 +40034,13 @@ Reports: `docs/enquiries-backend-1-report.md`, `docs/inbox-1-report.md`, `docs/i
   perorder, cardfee); "no" only with a quote; nothing about card readers or tills at the hatch.
 - **The page** (deployed code) reads stored data only: `comparison_publish`, the auto-verified marks and `comparison_status`; each
   competitor amount is shown in its plan's own currency. So publishing needs no deploy.
+- **How long a price counts (V16.38):** until `checked_on + the competitor's interval (90 days) + 30`; Admin-verified plans never expire.
+  The research of 24–25 Nov therefore ages out from 21 Feb 2027 (US) to 31 Mar 2027 unless the Competitor check re-checks it.
+- **Module on a paid plan (V16.38):** when the vendor's own site says its online-ordering module needs a paid base plan, the stored price
+  is base plan + module, both quoted (Fudo CO: "Plan Inicial + Tu Delivery"). A "no monthly fee" claim counts only if quoted from that
+  country's own page.
+- **Not a confirmed live product (V16.38):** a vendor whose only site is a throwaway host (railway.app, duckdns.org…) or that shows no
+  real customers is not relevant (Resto-SaaS MU, OrderFlow BH).
 
 ---
 
