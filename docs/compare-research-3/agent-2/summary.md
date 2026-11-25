@@ -28,3 +28,11 @@ count now: 1 (food-truck: 0)
 | Oddle | nearest_local | eligible (online takeaway ordering; no pickup-time wording) | NT$3,000/month from, tax not stated | https://oddle.me/tw/pricing |
 
 With Klikit (counted earlier). count now: 2 (food-truck: 0)
+
+## SA (Saudi Arabia, SAR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Foodics | nearest_local | eligible; currency NOT shown on KSA page | Advanced 765/month (8448/year), the only plan with the online website | https://www.foodics.com/ar/foodics-pricing-ksa/ |
+
+count now: 1 confirmed (Ordable); 2 if the KSA page is accepted as SAR. No other SAR food ordering tool found.
