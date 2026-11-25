@@ -8,7 +8,8 @@
     "FoodClick Colombia POS domicilios restaurantes sitio oficial precios",
     "ImpulsoWeb FoodClick",
     "\"pedidos programados\" \"recoger\" restaurante Colombia plataforma propia tienda online comida plan precio mensual colombianos",
-    "\"Propio\" Rappi canal propio restaurantes tienda online recoger en tienda precio mensual sitio"
+    "\"Propio\" Rappi canal propio restaurantes tienda online recoger en tienda precio mensual sitio",
+    "Colombia software POS restaurantes con módulo pedidos en línea \"para recoger\" tienda virtual precio \"COP\" OR \"$\" \"mensual\" Treinta OR Alegra OR \"Pirpos\" OR \"Tu Domicilio\" menú digital pedidos recoger en tienda"
   ],
   "vendors": [
     {
@@ -21,7 +22,9 @@
       "eligibility": {},
       "plans": [],
       "answers": [],
-      "check_urls": ["https://iwebnu.com/"]
+      "check_urls": [
+        "https://iwebnu.com/"
+      ]
     },
     {
       "name": "Propio by Rappi",
@@ -33,8 +36,24 @@
       "eligibility": {},
       "plans": [],
       "answers": [],
-      "check_urls": ["https://propio.rappi.com/"]
+      "check_urls": [
+        "https://propio.rappi.com/"
+      ]
+    },
+    {
+      "name": "Siigo POS GastroBar",
+      "website": "https://www.siigo.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Colombian restaurant till ('Sistema POS GastroBar PRO $ 87.494 / mes*' — '*El pago es anual.'); its page covers waiter ordering at the table ('Toma pedidos desde el celular y envíalos directo a cocina o barra.'), inventory and DIAN invoicing — no customer online ordering, pickup or order-ahead wording (till-only)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.siigo.com/sistema-pos/restaurantes"
+      ]
     }
   ],
-  "notes": "Count now: 1 (Fudo 'Plan Inicial + Tu Delivery', COP, stored). No second COP-priced tool found. Seven searches (para recoger / recoger en tienda / pedidos programados, POS with a tienda virtual module, WhatsApp menú digital) surfaced only two new vendor sites, both dead today (iwebnu, Propio by Rappi — rows above). FoodClick (ImpulsoWeb; Colombian Windows desktop POS with delivery management per Capterra) has no own website in results — not read. La República's 'cinco plataformas' article named Cluvi (dead domain in -2), Justo (no pickup wording in -2), Apparta and Degusta (reservations / guides), Pirpos (POS, orders only via delivery-app integrations) — none read. Otherwise: OlaClick (USD; sponsored press — not counted), Reorder (press only, ~11%), Siigo POS Gastrobar (till), Colombia Move (directory, rejected in -4), Meniu (MXN), Wix, Shipday (Shopify app), Lavu / Lightspeed (USD), Klikit's blog (agent 2), Capterra listings (Weevi, Restroworks, Orders2Me, TouchBistro, MYR POS, Ordyx — not sources). Earlier dead ends (Vendty, Menuestro, Menüpp, Loggro Restobar, Kucharon, Toteat) not re-read. Pedix: Colombia not on its price list (raw/V-Pedix.json). Stopped."
+  "notes": "Count now: 1 (Fudo 'Plan Inicial + Tu Delivery', COP, stored). No second COP-priced tool found. Seven searches (para recoger / recoger en tienda / pedidos programados, POS with a tienda virtual module, WhatsApp menú digital) surfaced only two new vendor sites, both dead today (iwebnu, Propio by Rappi — rows above). FoodClick (ImpulsoWeb; Colombian Windows desktop POS with delivery management per Capterra) has no own website in results — not read. La República's 'cinco plataformas' article named Cluvi (dead domain in -2), Justo (no pickup wording in -2), Apparta and Degusta (reservations / guides), Pirpos (POS, orders only via delivery-app integrations) — none read. Otherwise: OlaClick (USD; sponsored press — not counted), Reorder (press only, ~11%), Siigo POS Gastrobar (till), Colombia Move (directory, rejected in -4), Meniu (MXN), Wix, Shipday (Shopify app), Lavu / Lightspeed (USD), Klikit's blog (agent 2), Capterra listings (Weevi, Restroworks, Orders2Me, TouchBistro, MYR POS, Ordyx — not sources). Earlier dead ends (Vendty, Menuestro, Menüpp, Loggro Restobar, Kucharon, Toteat) not re-read. Pedix: Colombia not on its price list (raw/V-Pedix.json). Stopped. THIRD PASS (POS with an ordering module): Siigo POS GastroBar read — till-only (row above). Siesa POS (Capterra 'desde 700.000 COP', ERP POS), FoodClick (no own site), Treinta / Alegra / Pirpos (no restaurant ordering module surfaced) not read. Count stays 1 (Fudo)."
 }
