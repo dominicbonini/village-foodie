@@ -3,12 +3,12 @@
   "versions": [
     {
       "version": "1.0.0",
-      "source_sha256": "b138f9db92aade1555ee720653a7417eab0cec48792e114b7ca60436de515e4f",
+      "source_sha256": "0348d16ed292a86d9dfde38f471d83e2715258b5a1bcbe79f006e14912f02e20",
       "files": 18,
       "tag": "till-module-1.0.0",
-      "source_archive_sha256": "0a73365d74d1bc130bbddccb05b2e36e6520a79686fe325006fb65abcb2a3b38",
+      "source_archive_sha256": "a471aecb6ae4dad7bdfb8989e485b309e2a0f6d3615b0093688b71066f48abad",
       "source_archive_files": 23,
-      "source_archive_bytes": 406528,
+      "source_archive_bytes": 407040,
       "pinned": "2026-11-25"
     }
   ]

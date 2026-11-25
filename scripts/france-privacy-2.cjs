@@ -166,7 +166,9 @@ const TABLES = ['operators', 'trucks', 'truck_users', 'orders', 'order_drafts', 
       J(dels(dbH).filter(tb => tb !== 'whatsapp_logs' && tb !== 'messages')) === J(dels(dbS)) && dels(dbH).filter(tb => tb === 'whatsapp_logs' || tb === 'messages').length === 4
       && !dels(dbH).some(tb => ['orders', 'order_drafts', 'order_payments', 'trucks', 'operators'].includes(tb)), { H: dels(dbH), S: dels(dbS) })
     t(`the result reports whatsappDeleted ${J(rH.whatsappDeleted)} and draftsAnonymised ${rH.draftsAnonymised}`, J(rH.whatsappDeleted) === J({ whatsapp_logs: 3, messages: 3 }) && rH.draftsAnonymised === 5)
-    t('…and every other figure of the result equals START\'s', J({ ...rH, whatsappDeleted: undefined, draftsAnonymised: undefined }) === J(rS), { H: Object.keys(rH), S: Object.keys(rS) })
+    // ⚠️ RE-PINNED (till-pack-5-6, 25 November 2026, docs/till-pack-5-6-report.md): the result also carries tillArchives (the final till
+    // archives, built before anything is anonymised — none on this seed); scripts/till-pack-5-6.cjs proves them.
+    t('…and every other figure of the result equals START\'s', J({ ...rH, whatsappDeleted: undefined, draftsAnonymised: undefined, tillArchives: undefined }) === J(rS), { H: Object.keys(rH), S: Object.keys(rS) })
 
     // TWICE: run again as it is (the trucks are off the account now), and the recovery re-run with the trucks still on the account
     const before2 = J(dbH.T)
@@ -209,6 +211,12 @@ const TABLES = ['operators', 'trucks', 'truck_users', 'orders', 'order_drafts', 
   // ══ B ═════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('B · THE CODE — where the steps sit, what they may touch, and what did not change')
   {
+    // ⚠️ RE-PINNED (till-pack-5-6, 25 November 2026): account deletion gained step 1b (the final till archive, BEFORE step 2), the result's
+    // tillArchives and the option finalArchive; the admin route maps that step to till_final_archive_failed; the privacy policy's section 7
+    // line and date moved (Part C). Each comparison with START takes EXACTLY those committed edits back (scripts/_lp-till-pack-5-6.cjs for
+    // the code, scripts/_named-till-pack-5-6.cjs for the policy — both throw if the edits are not there exactly) and compares every other byte.
+    const LP56 = require('./_lp-till-pack-5-6.cjs'), N56 = require('./_named-till-pack-5-6.cjs')
+    const asBefore56 = f => (f === 'content/legal/privacy-policy.md' ? N56.asBefore(f, read(f)) : LP56.asBefore(f, read(f)))
     const src = read('lib/account-deletion.ts'), code = src.replace(/\/\/.*$/gm, '')
     const at = re => code.search(re)
     const i2b = at(/notesPatch\(r\)/), i2c = at(/from\(table\)\.delete\(\)\.eq\('truck_id', truckId\)/), i2d = at(/\.from\('order_drafts'\)\s*\.update\(\{ customer_name: ANON_LABEL/), i3 = at(/\.from\('truck_users'\)/)
@@ -220,9 +228,9 @@ const TABLES = ['operators', 'trucks', 'truck_users', 'orders', 'order_drafts', 
     const startSrc = atStart('lib/account-deletion.ts')
     const strip = s => s.replace(/\n  \/\/ ── 2c\.[\s\S]*?(?=\n  \/\/ ── 3\. STAFF)/, '').replace(/\n  \/\*\* france-privacy-2:[^\n]*\n  whatsappDeleted[^\n]*\n  \/\*\* france-privacy-2:[^\n]*\n  draftsAnonymised: number/, '')
       .replace(', whatsappDeleted, draftsAnonymised,', ',').replace(/\n\/\/   • the trucks' WhatsApp rows[^\n]*\n\/\/     cleared like[^\n]*/, '')
-    t('…and the rest of lib/account-deletion.ts is byte-identical to START (only the two steps, two result fields and a header line added)', strip(src) === startSrc)
+    t('…and the rest of lib/account-deletion.ts is byte-identical to START (only the two steps, two result fields and a header line added)', strip(asBefore56('lib/account-deletion.ts')) === startSrc)
     for (const f of ['lib/order-retention.ts', 'app/api/admin/execute-account-deletion/route.ts', 'app/api/cron/order-retention/route.ts', 'content/legal/privacy-policy.md', 'content/legal/country-specific-terms.md'])
-      t(`${f} byte-identical to START (retention, the admin route and the legal text not touched)`, read(f) === atStart(f))
+      t(`${f} byte-identical to START (retention, the admin route and the legal text not touched)`, asBefore56(f) === atStart(f))
     const pp = read('content/legal/privacy-policy.md')
     t('the privacy policy still says what the new steps make true: WhatsApp kept 12 months at most, and account deletion removes personal data',
       /\*\*WhatsApp messages your customers send a truck, and our automatic replies:\*\* 12 months\./.test(pp) && /We will delete your account and personal data, except where we are required to retain records for accounting or legal reasons\./.test(pp)

@@ -155,7 +155,10 @@ const NAMED = {
     // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md): /privacy and /country-terms carry 24 November 2026,
     // and the Privacy Policy no longer links the Country-specific terms (one policy for every country — Dominic's approved change A).
     const FP1 = require('./_named-france-privacy-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (france-privacy-1)
-    const shownNow = FP1.LANDED && doc !== 'terms' ? '24 November 2026' : shownDate
+    // ⚠️ RE-PINNED (till-pack-5-6, 25 November 2026, docs/till-pack-5-6-report.md): /privacy carries 25 November 2026 (section 7's
+    // accounting-records line; scripts/_named-till-pack-5-6.cjs); /country-terms keeps 24 November 2026.
+    const TP56 = require('./_named-till-pack-5-6.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (till-pack-5-6)
+    const shownNow = TP56.LANDED && doc === 'privacy' ? TP56.PRIVACY_DATE[1] : FP1.LANDED && doc !== 'terms' ? '24 November 2026' : shownDate
     t(`/${doc} shows "Last updated: ${shownNow}"`, flat(html).includes(flat(`Last updated: ${shownNow}`)))  // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): per-document date
     if (doc === 'privacy' && FP1.LANDED) t('/privacy no longer links the Country-specific terms (france-privacy-1: one policy for every country)', !html.includes('<a href="/country-terms"'))
     else if (doc !== 'country-terms') t(`/${doc} links to the Country-specific terms (a real <a href="/country-terms">)`, html.includes('<a href="/country-terms"'))

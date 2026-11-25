@@ -183,7 +183,9 @@ const linesNoNotes = v => (Array.isArray(v) ? v.map(l => { if (!l || typeof l !=
     // ⚠️ RE-PINNED (france-privacy-2, 24 November 2026): the result also carries france-privacy-2's whatsappDeleted and draftsAnonymised
     // (scripts/france-privacy-2.cjs proves them); they are left out of the comparison with START, like notesCleared.
     t(`the result reports the notes cleared (${J(rH.notesCleared)}) beside START's figures, which are unchanged`, J(rH.notesCleared) === J({ orders: 2 + 1 + 1 + [...Array(1100).keys()].filter(i => i % 2 || i % 3 === 0).length, drafts: 2 })
-      && J({ ...rH, notesCleared: undefined, whatsappDeleted: undefined, draftsAnonymised: undefined }) === J({ ...rS, notesCleared: undefined }), { H: rH.notesCleared, S: Object.keys(rS) })
+      // ⚠️ RE-PINNED (till-pack-5-6, 25 November 2026, docs/till-pack-5-6-report.md): the result also carries tillArchives — the final till
+      // archives built BEFORE anything is anonymised (none here: the seed's trucks have no till chain); scripts/till-pack-5-6.cjs proves them.
+      && J({ ...rH, notesCleared: undefined, whatsappDeleted: undefined, draftsAnonymised: undefined, tillArchives: undefined }) === J({ ...rS, notesCleared: undefined }), { H: rH.notesCleared, S: Object.keys(rS) })
     t('every other table START\'s run wrote ends the same (operators, trucks, staff)', ['operators', 'trucks', 'truck_users'].every(tb => J(dbH.T[tb]) === J(dbS.T[tb])))
     // TWICE: as run again by hand (the request is still pending), and as a re-run after a failure that came after the notes step
     const before2 = J(dbH.T)
@@ -216,6 +218,11 @@ const linesNoNotes = v => (Array.isArray(v) ? v.map(l => { if (!l || typeof l !=
   head('B · THE ENGLISH — exactly the prompt\'s changes, nothing else')
   const PP0 = atStart('content/legal/privacy-policy.md'), CS0 = atStart('content/legal/country-specific-terms.md')
   const PP = read('content/legal/privacy-policy.md'), CS = read('content/legal/country-specific-terms.md')
+  // ⚠️ RE-PINNED (till-pack-5-6, 25 November 2026, docs/till-pack-5-6-report.md Part C): section 7's accounting-records line and the date
+  // (24 → 25 November) moved in the English, the 54 used bases and lib/legal.ts's PRIVACY_UPDATED. The byte-for-byte comparisons below take
+  // EXACTLY those edits back (scripts/_named-till-pack-5-6.cjs, which throws if they are not there exactly) and compare every other byte.
+  const TP56 = require('./_named-till-pack-5-6.cjs')
+  const PPb = TP56.asBefore('content/legal/privacy-policy.md', PP)
   const once = (s, a, b) => { if (s.split(a).length !== 2) throw new Error('not once: ' + a.slice(0, 60)); return s.replace(a, () => b) }
   {
     let want = PP0
@@ -239,7 +246,7 @@ const linesNoNotes = v => (Array.isArray(v) ? v.map(l => { if (!l || typeof l !=
       "**Complaints.** Tell us first at privacy@hatchgrab.com; we would appreciate the chance to put things right. You can also complain to the data protection regulator where you live. In the UK, that is the Information Commissioner's Office, at ico.org.uk or on 0303 123 1113.",
     ].join('\n') + '\n' + want.slice(e8)
     want = once(want, '**Last updated:** 4 November 2026', '**Last updated:** 24 November 2026')
-    t('privacy-policy.md is START with exactly the prompt\'s A (intro), B (allergy notes), C (transfer sentence), D (section 8) and E (date) — nothing else', PP === want)
+    t('privacy-policy.md is START with exactly the prompt\'s A (intro), B (allergy notes), C (transfer sentence), D (section 8) and E (date) — nothing else', PPb === want)
   }
   const countryParts = md => md.split(/\n(?=## )/).slice(1).map(s => { const i = s.indexOf('\n### Privacy, for everyone in'); return { name: s.split('\n')[0], terms: (i < 0 ? s : s.slice(0, i)).replace(/\n+$/, ''), privacy: i < 0 ? null : s.slice(i + 1) } })
   {
@@ -253,7 +260,7 @@ const linesNoNotes = v => (Array.isArray(v) ? v.map(l => { if (!l || typeof l !=
     t('country-specific-terms.md is START with the privacy parts deleted (F), the three intro paragraphs (G) and the date (H) — nothing else', CS === want && /Our \[Terms of Service\]\(\/terms\) and \[Privacy Policy\]\(\/privacy\) apply/.test(was) && /apply as written\.\s*$/.test(was))
   }
   {
-    const legal = read('lib/legal.ts')
+    const legal = TP56.asBefore('lib/legal.ts', read('lib/legal.ts'))   // ⚠️ RE-PINNED (till-pack-5-6): PRIVACY_UPDATED 25 November taken back
     t('lib/legal.ts mirrors the dates (PRIVACY_UPDATED, COUNTRY_TERMS_UPDATED 24 November 2026; TERMS_UPDATED unchanged) and TERMS_VERSION moves with the documents (2026-11-24)',
       /PRIVACY_UPDATED = '24 November 2026'/.test(legal) && /COUNTRY_TERMS_UPDATED = '24 November 2026'/.test(legal) && /TERMS_UPDATED = '19 November 2026'/.test(legal) && /TERMS_VERSION = '2026-11-24'/.test(legal))
     const N = require('./_named-france-privacy-1.cjs')
@@ -293,7 +300,7 @@ const linesNoNotes = v => (Array.isArray(v) ? v.map(l => { if (!l || typeof l !=
       try {
         want = once(want, A0, B.text.A); want = once(want, B0, B.text.B + '\n\n' + B0); want = once(want, C0, B.text.C); want = once(want, D0, B.text.D)
       } catch (e) { rest.push(`${l}: ${e.message}`); continue }
-      if (L.body(pp) !== want) rest.push(`${l}/privacy-policy.md: something outside the five parts differs`)
+      if (L.body(TP56.asBefore(`content/legal/${l}/privacy-policy.md`, pp)) !== want) rest.push(`${l}/privacy-policy.md: something outside the five parts differs`)
       const csb0 = L.body(cs0), G0 = paras(csb0.slice(0, csb0.indexOf('\n---\n'))).slice(-3).join('\n\n')
       const csWant = once(csb0, G0, B.text.G).split(/\n(?=## )/).map((s, i) => (i === 0 ? s : termsOf(s) + '\n')).join('\n').replace(/\n+$/, '') + '\n'
       if (L.body(cs) !== csWant) rest.push(`${l}/country-specific-terms.md: something outside the intro and the privacy parts differs`)
@@ -320,7 +327,8 @@ const linesNoNotes = v => (Array.isArray(v) ? v.map(l => { if (!l || typeof l !=
     const { PAGES } = renderer(kit, REPO)
     const text = s => String(s ?? '').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/\s+/g, ' ')
     const pp = text(await PAGES.legal('privacy')), ct = text(await PAGES.legal('countryTerms'))
-    t('/privacy renders the new policy: "This policy applies wherever you are.", the allergy notes, "Making a request.", "If something goes wrong.", the ICO', /This policy applies wherever you are\./.test(pp) && /Allergy and dietary notes\./.test(pp) && /Making a request\./.test(pp) && /If something goes wrong\./.test(pp) && /Information Commissioner's Office/.test(pp) && /24 November 2026/.test(pp) && !/Some countries have extra rules\./.test(pp))
+    // ⚠️ RE-PINNED (till-pack-5-6, 25 November 2026): /privacy's date is now 25 November 2026 (Part C); /country-terms keeps 24 November.
+    t('/privacy renders the new policy: "This policy applies wherever you are.", the allergy notes, "Making a request.", "If something goes wrong.", the ICO', /This policy applies wherever you are\./.test(pp) && /Allergy and dietary notes\./.test(pp) && /Making a request\./.test(pp) && /If something goes wrong\./.test(pp) && /Information Commissioner's Office/.test(pp) && /25 November 2026/.test(pp) && !/Some countries have extra rules\./.test(pp))
     t('/country-terms renders: the new intro, every country\'s operator terms, no privacy part', /Our Privacy Policy is the same in every country\./.test(ct) && !/Privacy, for everyone in/.test(ct) && (ct.match(/For food truck operators/g) || []).length === 16 && /24 November 2026/.test(ct))
     for (const [seg, base] of [['fr', 'fr-FR'], ['de', 'de-DE'], ['jp', 'ja-JP'], ['ae', 'ar-AE']]) {
       const B = JSON.parse(read(`docs/france-privacy-1/back/${base}.json`))

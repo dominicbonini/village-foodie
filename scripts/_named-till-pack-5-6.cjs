@@ -43,5 +43,12 @@ function sitemapLegal(v) {
     return e
   })
 }
+/** The shown date of /privacy (the English and every translation carry the English "Last updated"). */
+const PRIVACY_DATE = ['24 November 2026', '25 November 2026']
+/** The named item for the harnesses that list one per view — PRECISE: it must change the view. */
+const ITEMS = !LANDED ? [] : [{ id: 'till-pack-5-6-privacy-lastmod',
+  what: '⚠️ RE-PINNED (till-pack-5-6, 25 November 2026): the HatchGrab sitemap’s /privacy lastmod is 2026-11-25 (lib/legal.ts PRIVACY_UPDATED: section 7’s accounting-records line, Part C)',
+  views: id => /^parts\/sitemap\|(GB|US)\|hatchgrab/.test(id),
+  apply: (id, v) => { const r = sitemapLegal(v); if (JSON.stringify(r) === JSON.stringify(v)) throw new Error('till-pack-5-6-privacy-lastmod: nothing to change in ' + id); return r } }]
 
-module.exports = { EDITED_FILES: Object.keys(EDITS), undoCode, asBefore, LANDED, LASTMOD, sitemapLegal }
+module.exports = { EDITED_FILES: Object.keys(EDITS), undoCode, asBefore, LANDED, LASTMOD, sitemapLegal, PRIVACY_DATE, ITEMS }

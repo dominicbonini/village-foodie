@@ -409,9 +409,12 @@ const quiet = async f => { const e = console.error, w = console.warn, l = consol
     const otherThanKey = msgs.filter(f => {
       const before = JSON.parse(git('show', `${START}:${f}`)), after = JSON.parse(read(f))
       if (after.errorsKitchen) delete after.errorsKitchen.sale_closed
+      // ⚠️ RE-PINNED (till-pack-5-6, 25 November 2026, docs/till-pack-5-6-report.md): till-pack-5-6 adds ONE new namespace, emailTillArchive
+      // (the archive email, the prompt's only new message; scripts/till-pack-5-6.cjs holds it) — set aside only where START did not have it.
+      if (!before.emailTillArchive) delete after.emailTillArchive
       return J(before) !== J(after)
     })
-    t(`the ${msgs.length} message files change by exactly one key — errorsKitchen.sale_closed — and nothing else`, msgs.length === 60 && otherThanKey.length === 0, otherThanKey)
+    t(`the ${msgs.length} message files change by exactly one key — errorsKitchen.sale_closed (and till-pack-5-6's emailTillArchive aside) — and nothing else`, msgs.length === 60 && otherThanKey.length === 0, otherThanKey)
     // RE-PINNED by till-pack-4 (25 November 2026, docs/till-pack-4-report.md §1): lib/accounts/daily-totals.ts now dates a sale by its
     // trading day (Q3, Dominic's decision) — it still only ever sees netted rows (its loader, checked below); till-pack-4's H1–H3 prove
     // the change against START. It leaves this list; every other file stays pinned.
