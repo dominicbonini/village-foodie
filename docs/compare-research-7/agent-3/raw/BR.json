@@ -1,0 +1,130 @@
+{
+  "country": "BR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "sistema pedidos online para food truck cardápio digital retirada no balcão agendamento planos R$ mês",
+    "app para food truck e eventos cliente faz pedido pelo celular e retira sem fila plano mensal preço R$ food park",
+    "Picks app pagamento eventos foodtrucks cardápio digital pedido lojista planos taxa"
+  ],
+  "vendors": [
+    {
+      "name": "SisFood",
+      "website": "https://www.sisfood.com.br",
+      "stored_id_prefix": "20c3683b",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Brazilian restaurant / food-truck system (PDV + own commission-free digital menu); its food-truck page has customers order from the truck's menu link for pickup ('para buscar'), and its digital menu takes pickup at a chosen time and orders up to 60 days ahead; R$ price from the home page FAQ. Readable today (403 in compare-research-1). BORDERLINE price: the food-truck page's FAQ says the package is modular and priced with a specialist, while the home FAQ gives 'A partir de R$ 149,90/mês' including 'cardápio digital próprio'",
+      "eligibility": {
+        "food_quote": "Sistema para Food Truck que Roda na Maquininha e Funciona Offline",
+        "food_url": "https://www.sisfood.com.br/segmentos/sistema-para-food-truck",
+        "order_quote": "No celular, o cliente abre o cardápio do truck pelo link, monta o lanche e paga por PIX, seja para buscar ou para receber em casa.",
+        "order_url": "https://www.sisfood.com.br/segmentos/sistema-para-food-truck",
+        "country_quote": "NFC-e emitida pela maquininha ou pelo celular quando há conexão, já adaptada às regras de 2026.",
+        "country_url": "https://www.sisfood.com.br/segmentos/sistema-para-food-truck"
+      },
+      "plans": [
+        {
+          "plan_name": "SisFood (a partir de)",
+          "currency": "BRL",
+          "price_major": 149.9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "A partir de R$ 149,90/mês , com centenas de recursos já inclusos: PDV, cardápio digital próprio",
+          "url": "https://www.sisfood.com.br/",
+          "note": "home page FAQ 'Quanto custa o SisFood?', read today; continues 'Alguns módulos são cobrados à parte, como NFC-e, NF-e, autoatendiment…'. The food-truck page FAQ instead says: 'O valor depende do que entra no pacote, então o melhor caminho é falar com um especialista' and lists 'cardápio digital' among features you 'ativa … conforme o food truck cresce' — so whether the R$ 149,90 entry price covers the digital menu for a food truck is BORDERLINE (the home FAQ says it is included)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "retirada na loja (com horário agendado)",
+          "url": "https://www.sisfood.com.br/solucoes/cardapio-digital"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "O cliente escolhe a data e horário de retirada/entrega, com até 60 dias de antecedência.",
+          "url": "https://www.sisfood.com.br/solucoes/cardapio-digital"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "Sistema para Food Truck que Roda na Maquininha e Funciona Offline",
+          "url": "https://www.sisfood.com.br/segmentos/sistema-para-food-truck"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Domínio personalizado (www.seurestaurante.com.br)",
+          "url": "https://www.sisfood.com.br/segmentos/sistema-para-food-truck"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Quanto custa o SisFood? A partir de R$ 149,90/mês",
+          "url": "https://www.sisfood.com.br/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.sisfood.com.br/",
+        "https://www.sisfood.com.br/segmentos/sistema-para-food-truck",
+        "https://www.sisfood.com.br/solucoes/cardapio-digital"
+      ]
+    },
+    {
+      "name": "VISU",
+      "website": "https://visu.network",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "food-truck QR menu for people already in the queue ('Um QR no truck. Cardápio, ponto de hoje e pedido no celular de quem está na fila.'), no ordering ahead or pickup wording; no price ('Escopo e investimento são definidos em proposta.'); no country stated",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://visu.network/br/solucoes/food-trucks/"
+      ]
+    }
+  ],
+  "notes": "Count now: 3 if SisFood is counted (was 2 food-truck: VexMenu, Food Pronto). SisFood (stored 20c3683b, food_truck, unreadable in compare-research-1) is readable today: food-truck page + pickup / scheduled pickup + 'A partir de R$ 149,90/mês' (BORDERLINE price, see its plan note). Simpliza (stored 5f69d328, food_truck): still blocked (Cloudflare 'Sorry, you have been blocked', HTTP 403 on /food-truck.php) — not counted. New: VISU (not_relevant, row above). Seen in search, not read: Picks (event / food-truck consumer ordering app — App Store only, no own site in results, no merchant price), Pede Pronto (multi-restaurant consumer order-ahead app, convenience fee to diners — marketplace-like, press only), Saipos (restaurant POS, from R$219 — restaurant tool, not needed while BR has 3 food-truck tools), Ticket (menu link / QR), Link Card Menu (Hotmart product), Asaas payment links (not vendor sites), Yumm Trux / Food Truck Pub (US). Goomer, Pedizap, Cardápio Web (stored restaurant tools) not re-read. Stopped at 3."
+}
