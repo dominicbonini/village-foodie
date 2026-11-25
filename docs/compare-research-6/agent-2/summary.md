@@ -172,3 +172,8 @@ count now: 0
 
 None exists: only travel listings; US tools are agent 3's.
 count now: 0
+
+## MP (USD)
+
+Nothing eligible among my vendors: Eats Easy = marketplace; US tools are agent 3's.
+count now: 0
