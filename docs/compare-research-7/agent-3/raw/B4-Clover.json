@@ -1,0 +1,8 @@
+{
+  "vendor": "Clover",
+  "stored_id_prefix": "8ceb8696",
+  "countries": [],
+  "researched_on": "2026-11-25",
+  "vendors": [],
+  "notes": "Does not count in GU, MP, AS or VI: no clover.com page found naming any of them (site search for Guam / Puerto Rico / Virgin Islands / US territories). Clover's developer docs (https://docs.clover.com/docs/region-specific-features, search snippet) list its markets as the US, UK, Ireland, Germany, Austria, Canada and Argentina — no territory. The only Guam / Saipan mention is Bank of Hawaii's Clover merchant-services pages (boh.com — a reseller bank, not Clover's own site; never a source). Presence cannot be quoted from the own site -> not counted. No page fetched beyond the search."
+}
