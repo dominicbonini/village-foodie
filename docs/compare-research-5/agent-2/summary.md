@@ -16,3 +16,12 @@ count now: 1 (Delever). Nothing else eligible in UZS: Russian and Uzbek searches
 | Dinehere | nearest_local (street-food example on home page) | eligible | ₹500/month + ₹5,000 one-time setup for own ordering app | https://dinehere.in/pricing |
 
 count now: 2 (uEngage + Dinehere).
+
+## LK (LKR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Option4 | pos | not_relevant (till only, LKR 25,000/year) | none for ordering | https://option4.lk/ |
+| Deonde | nearest_local | unreadable (HTTP 403 again) | none | https://deonde.co/sri-lanka/online-ordering-and-delivery-system.shtml |
+
+count now: 1 (POS Masters). Nothing else eligible in LKR.

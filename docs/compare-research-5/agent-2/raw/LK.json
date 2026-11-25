@@ -1,0 +1,38 @@
+{
+  "country": "LK",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "online ordering pickup Sri Lanka restaurant system Rs per month own website takeaway",
+    "restaurant POS Sri Lanka online orders module pricing LKR monthly cloud POS takeaway",
+    "Sri Lanka restaurant online ordering website builder LKR monthly plan \"pickup\" commission free Colombo",
+    "අවන්හල් ඔන්ලයින් ඇණවුම් පද්ධතිය takeaway pre order app Sri Lanka cafe LKR subscription",
+    "\"Rs.\" \"per month\" online food ordering platform Sri Lanka restaurants own app pickup delivery Lanka QR PayHere subscription"
+  ],
+  "vendors": [
+    {
+      "name": "Option4",
+      "website": "https://option4.lk",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Sri Lankan till ('retail, restaurant and laundry ready point-of-sale', 'Our Annual plan is just LKR 25,000/year'); no online ordering, pickup or takeaway on its home page.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://option4.lk/"]
+    },
+    {
+      "name": "Deonde",
+      "website": "https://deonde.co",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Sri Lanka page (deonde.co/sri-lanka/online-ordering-and-delivery-system.shtml) answered HTTP 403 again (as in compare-research-2); search snippets say only 'flat monthly subscription', no amount.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://deonde.co/sri-lanka/online-ordering-and-delivery-system.shtml"]
+    }
+  ],
+  "notes": "LK count stays 1 (POS Masters, LKR). Third round: English and Sinhala searches found no second tool priced in LKR. New sites opened: Option4 (till only) and Deonde (403, not retried). Other results: PayHere (a payment gateway, LKR 3,990 / 9,990 a month plans, not a food-ordering tool, not opened), Leapset (old 2015 news only), iasoft (one-off builds from LKR 225,000 / 600,000), Badagini (dine-in QR, news), marketplaces (PickMe Food, Uber Eats, SriDelivery, Pizza.lk, Eatts), Fiverr / ikman freelancers, OMAK (price on request; directories only), Dinlr (Singapore page, no Sri Lanka). Take App lists Sri Lanka but prices in USD (compare-research-2). Nothing else eligible in LKR."
+}
