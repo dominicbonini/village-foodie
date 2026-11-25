@@ -1,0 +1,51 @@
+{
+  "country": "DK",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "onlinepos.dk priser takeaway online bestilling afhentning kr. pr. måned",
+    "online bestillingssystem til takeaway restaurant egen hjemmeside afhentning \"kr. pr. måned\" OR \"kr./md\" uden kommission Danmark"
+  ],
+  "vendors": [
+    {
+      "name": "SumUp Kvik Order",
+      "website": "https://www.sumup.com/da-dk/kvikorder/",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "SumUp Denmark's restaurant online-ordering page ('Onlinebestilling, nu med indbygget SumUp-onlinebetaling', 'Udviklet til travle restauranter'; '1.25%' transaction fee, 'Ingen faste omkostninger. Ingen binding.') - but no pickup, pre-order or chosen-time wording on the page, so the order-ahead rule is not met. A real food tool, unlike SumUp's web shop: worth a second page read if the coordinator wants it.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.sumup.com/da-dk/kvikorder/"
+      ]
+    },
+    {
+      "name": "OrderYOYO",
+      "website": "https://www.orderyoyo.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Danish (OrderYOYO A/S) own-website ordering for takeaways; its online-ordering page has no pickup/pre-order wording and no price ('low commission fees on online orders', 'Request info'). Unpriced.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.orderyoyo.com/online-ordering/"
+      ]
+    },
+    {
+      "name": "OnlinePOS",
+      "website": "https://onlinepos.dk",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Danish POS with a takeaway module ('only a fixed and low amount per month') but no kr. amount for it in search; Premium '+300 DKK per month' on top of an unstated base. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "DK counts Truckly and NemTakeAway. No third found. SumUp's Danish Kvik Order page is a restaurant online-ordering product with a price (1.25 % per transaction, no fixed cost) but shows no pickup / order-ahead wording; OrderYOYO and OnlinePOS show no price. Others in results: Worldline DK (resells NemTakeAway), Storekit/DISH (no DK prices), Shopify POS / PayPal / myPOS (tills). DK stays at 2."
+}
