@@ -91,3 +91,12 @@ count now: 0
 No vendor opened: Montenegrin/Serbian searches (lično preuzimanje / poručivanje unaprijed / cjenovnik €) gave only Glovo, directories, Jotform and Zegashop.
 nothing eligible exists.
 count now: 0
+
+## KG (KGS)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Smartomato | nearest_local | not_relevant (no Kyrgyzstan, no pickup wording, no price on home page) | — | https://smartomato.ru/ |
+
+nothing eligible exists: Russian searches (предзаказ / навынос / самовывоз / сом в месяц) gave Glovo and single-chain apps.
+count now: 0

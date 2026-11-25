@@ -1,0 +1,16 @@
+{
+  "country": "KG",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Бишкек сервис предзаказа для кофеен заказ навынос заранее приложение для заведений подключить тариф сом",
+    "Кыргызстан программа для ресторана с онлайн-заказами сайт заказов самовывоз модуль цена сом в месяц кыргызская компания POS"
+  ],
+  "vendors": [
+    {
+      "name": "Smartomato", "website": "https://smartomato.ru", "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Russian restaurant site/app platform; home page names no countries (only 'в 9 странах и 6 часовых поясах'), no Kyrgyzstan, no pickup / pre-order wording and no prices on the home page.",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": ["https://smartomato.ru/"]
+    }
+  ],
+  "notes": "Nothing eligible with a KGS price (round 3). Russian searches return Glovo store pages (marketplace), single-chain apps (Империя Пиццы), a ubuy.kg hardware POS (one-off, marketplace) and a WeProject article. Not re-read: Kenguroo, Ем.kg, Namba Food, Pai, Zegashop, Eats365, Delever (сум only), Paloma365, Poster (no Kyrgyzstan), Vitrina (compare-research-2/-3). Count: 0."
+}
