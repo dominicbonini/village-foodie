@@ -4,6 +4,240 @@
  "checked_on": "2026-11-25",
  "competitors": [
   {
+   "id": "92dbc215-d1be-5539-b656-3314b48907d9",
+   "name": "ClickParaPedir",
+   "website": "https://clickparapedir.com",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-6 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: PY.",
+   "check_urls": [
+    "https://clickparapedir.com"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.",
+     "source_url": "https://clickparapedir.com"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "yes",
+     "quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.",
+     "source_url": "https://clickparapedir.com"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "Sin comisión por pedido",
+     "source_url": "https://clickparapedir.com"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
+   "name": "Ocuioso",
+   "website": "https://www.ocuioso.com",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-6 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: AO.",
+   "check_urls": [
+    "https://www.ocuioso.com/precos"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Pede sem filas",
+     "source_url": "https://www.ocuioso.com",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "dad148a7-5d9c-5a09-91e0-83610279a420",
+   "name": "YUMBI",
+   "website": "https://www.yumbi.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-6 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: NA.",
+   "check_urls": [
+    "https://www.yumbi.com/pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "White-label web and app ordering that builds owned customer relationships.",
+     "source_url": "https://www.yumbi.com/",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
    "id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
    "name": "Fudo",
    "website": "https://fu.do",
@@ -85,6 +319,102 @@
  ],
  "plans": [
   {
+   "id": "e07b44e4-287f-58ee-9dbd-fc86d0e628fe",
+   "competitor_id": "92dbc215-d1be-5539-b656-3314b48907d9",
+   "country_code": "PY",
+   "plan_name": "ClickParaPedir",
+   "currency": "PYG",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "hidden",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://clickparapedir.com",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-6, read 25 Nov 2026: \"Sin comisión por pedido\" — no plan price on the site (hidden plan); Gs. figures on the page are only dashboard mock-ups"
+  },
+  {
+   "id": "830418bd-b348-525d-9fe3-0867374c5600",
+   "competitor_id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
+   "country_code": "AO",
+   "plan_name": "(plan cards, script-loaded)",
+   "currency": "AOA",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "hidden",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.ocuioso.com/precos",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-6, read 25 Nov 2026: \"O cartão de cada plano apresenta o preço e o respetivo período. Confirma os detalhes no processo de adesão antes de efetuar o pagamento.\" — hidden. Also on /precos: 'Menu e pedidos são a base.' (all plans include menu + orders; cupões, clientes, relatórios e gestão de entregas only on some plans); trial: '14 dias gratuitos para conhecer o Ocuioso.' … 'sem cobrança automática' … 'tens 3 dias de graça para escolher e pagar um plano.'"
+  },
+  {
+   "id": "f9c4909f-73ed-5efd-9358-6481a21eb7d2",
+   "competitor_id": "dad148a7-5d9c-5a09-91e0-83610279a420",
+   "country_code": "NA",
+   "plan_name": "StoreFront (price on request)",
+   "currency": "NAD",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "hidden",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.yumbi.com/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-6, read 25 Nov 2026: \"\" — hidden; /pricing 404 (25 Nov). Same for BW and ZM"
+  },
+  {
    "id": "4967b515-0570-54aa-8213-e7d8e6880910",
    "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
    "country_code": "AR",
@@ -153,6 +483,36 @@
  ],
  "entries": [
   {
+   "id": "6878e1f8-3f21-5afe-9e9c-137392867a8b",
+   "country_code": "PY",
+   "competitor_id": "92dbc215-d1be-5539-b656-3314b48907d9",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "68f9f20b-c0b5-59b1-87da-2918ea063e5c",
+   "country_code": "AO",
+   "competitor_id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "ad8543e3-6978-5eb6-bd19-fe2513c2fe92",
+   "country_code": "NA",
+   "competitor_id": "dad148a7-5d9c-5a09-91e0-83610279a420",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
    "id": "93bdf9b7-d9bc-5b67-a895-09263f6d8768",
    "country_code": "AR",
    "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
@@ -174,6 +534,45 @@
   }
  ],
  "evidence": [
+  {
+   "name": "ClickParaPedir",
+   "evidence": [
+    {
+     "country": "PY",
+     "order_quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.",
+     "order_url": "https://clickparapedir.com",
+     "reason": "re-checked for a price today: still eligible (Paraguayan; take-away orders by WhatsApp ready before pickup; food-truck solution page) but still no price on its site (only 'Sin comisión por pedido' / '0% por pedido'; sales via WhatsApp / demo form) -> unpriced, not counted"
+    }
+   ]
+  },
+  {
+   "name": "Ocuioso",
+   "evidence": [
+    {
+     "country": "AO",
+     "food_quote": "Boa comida, por perto",
+     "food_url": "https://www.ocuioso.com",
+     "order_quote": "Pede sem filas",
+     "order_url": "https://www.ocuioso.com",
+     "country_quote": "Preços em kwanzas · período indicado em cada plano",
+     "country_url": "https://www.ocuioso.com/precos",
+     "reason": "unchanged BORDERLINE (waves 2/3): Luanda ordering from a public menu, 'Roulotes' category; still no price readable on the page. Re-read /precos 25 Nov: the page text has no amounts; the plan cards are filled in the browser from the site's own plans endpoint (the page script calls GET /api/plans and shows priceKz with '/mês', '/trimestre' or '/ano'). That endpoint was NOT read (the request was blocked in this session), and a value from it would not be a quote of the visible page anyway — price stays hidden"
+    }
+   ]
+  },
+  {
+   "name": "YUMBI",
+   "evidence": [
+    {
+     "country": "NA",
+     "order_quote": "White-label web and app ordering that builds owned customer relationships.",
+     "order_url": "https://www.yumbi.com/",
+     "country_quote": "Namibia",
+     "country_url": "https://www.yumbi.com/",
+     "reason": "unchanged from wave 2 (lists Namibia; white-label web/app ordering incl. pickup) but still no price: tried the pricing page once — https://www.yumbi.com/pricing answers HTTP 404; a site-restricted search found no pricing page, only a support article (billing) naming a 'monthly subscription fee' plus order-processing fees with no amounts, and a guide saying it suits brands with 10+ restaurants. Hidden plan — does not count as priced"
+    }
+   ]
+  },
   {
    "name": "Fudo",
    "evidence": [
@@ -202,6 +601,15 @@
  ],
  "not_relevant": [
   {
+   "country": "IL",
+   "name": "Foody POS",
+   "website": "https://foody-pos.co.il",
+   "stored": null,
+   "reason": "Israeli POS + online ordering with ILS prices (pricing page per reader: 'Foody Online' 590 ₪ לחודש before VAT, incl. 'איסוף עצמי וטייק אוויי'; setup 1,090 ₪), but it shows no real customers (V16.38): no names, logos or testimonials; its about page says demos use synthetic data and 'הדוגמאות המספריות אינן תוצאות של לקוחות'. No address. Directory prices (299 ₪ Starter, $149) don't match its own page.",
+   "url": "https://foody-pos.co.il/",
+   "plans": []
+  },
+  {
    "country": "MC",
    "name": "LivePepper",
    "website": "https://www.livepepper.fr",
@@ -217,6 +625,87 @@
    "stored": null,
    "reason": "Paris POS with click and collect ('Développez votre chiffre d’affaires grâce à la livraison et au click and collect.') but no Monaco mention; home page says 'Fait avec amour à Paris'. /tarifs 404.",
    "url": "https://www.innovorder.com/",
+   "plans": []
+  },
+  {
+   "country": "SN",
+   "name": "Haraka Pro",
+   "website": null,
+   "stored": null,
+   "reason": "Dakar restaurant ordering app (publisher POINTEL - SAS, Dakar) found only via App Store listings; no own website and no merchant price found. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "SN",
+   "name": "Helio POS",
+   "website": null,
+   "stored": null,
+   "reason": "West-African POS named only in Kolonell blog posts (third party, '15 000 à 30 000 FCFA/mois'); no own site found in search and no evidence of online ordering. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "SN",
+   "name": "Dakar Food Delivery (DFD / DFD Admin)",
+   "website": null,
+   "stored": null,
+   "reason": "Consumer delivery app with a restaurant-side order app (App Store); delivery only, marketplace. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "TN",
+   "name": "Dishop",
+   "website": "https://www.dishop.co",
+   "stored": null,
+   "reason": "French branded click-and-collect app/site maker (makes the Carthaj'i restaurant app); own home page names no Tunisia, only French restaurants; price is per week ('abonnement Dishop de 49 €/semaine, hors frais de paiement.').",
+   "url": "https://www.dishop.co/",
+   "plans": []
+  },
+  {
+   "country": "TN",
+   "name": "Kmandi",
+   "website": "https://kmandi-app.tn",
+   "stored": null,
+   "reason": "Tunisian QR-code digital menu ('Vos clients n'auront qu'à scanner le QR code avec leurs smartphones pour voir l'interface'); no ordering ahead; price on quote only. QR-menu-only.",
+   "url": "https://kmandi-app.tn/",
+   "plans": []
+  },
+  {
+   "country": "TN",
+   "name": "Menutium",
+   "website": null,
+   "stored": null,
+   "reason": "Consumer food-delivery app for the Tunisian Sahel (App Store only); delivery marketplace. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "TN",
+   "name": "Tunisiano",
+   "website": null,
+   "stored": null,
+   "reason": "Described on the App Store as an on-demand delivery app for restaurants; delivery only. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "CR",
+   "name": "Eatsy (Link-App)",
+   "website": "https://www.eatsycr.com",
+   "stored": null,
+   "reason": "Costa Rican own-ordering channel for restaurants (found at its real domain eatsycr.com; earlier rounds tried eatsy.cr, DNS fail) but delivery only via Uber logistics ('El express es pagado por el usuario'); no pickup / para recoger wording and no price ('Sin comisión porcentual sobre la venta', meeting booking only)",
+   "url": "https://www.eatsycr.com",
+   "plans": []
+  },
+  {
+   "country": "HN",
+   "name": "Sinqro",
+   "website": "https://sinqro.com",
+   "stored": null,
+   "reason": "restaurant operations layer with a Honduras market page ('© 2026 Sinqro Honduras'), but its pages show only channel / delivery orchestration ('Receive and orchestrate orders, bookings, payments and deliveries from every channel.'), no pickup / takeaway / order-ahead wording; pricing page showed 'Pricing temporarily unavailable. Please try again.'",
+   "url": "https://sinqro.com/en-hn/solutions",
    "plans": []
   },
   {
@@ -236,9 +725,34 @@
    "reason": "US food-truck finder app (What The Truck LLC); the App Store listing shows a vendor subscription (S/ 39.90 monthly in the Peru store) but describes finding trucks only, no pre-order or order ahead; Peru App Store prices are store localisation, not a Peruvian presence. Own site not read (App Store Peru page answered 404).",
    "url": "https://apps.apple.com/pe/app/what-the-truck/id6474005821",
    "plans": []
+  },
+  {
+   "country": "PY",
+   "name": "Fiweex",
+   "website": "https://fiweex.com",
+   "stored": null,
+   "reason": "Latin-American business-tools suite (WiFi portal, reservations, WhatsApp catalogue, loyalty) listing Paraguay among sales countries; no pickup / retirar / order-ahead wording ('Impulsa tus ventas en Whatsapp con un Catálogo conectado a tu número habitual.') and no prices on the home page",
+   "url": "https://fiweex.com",
+   "plans": []
+  },
+  {
+   "country": "TT",
+   "name": "eVendor (B Scanned)",
+   "website": "https://bscanned.com",
+   "stored": null,
+   "reason": "App Store listing only (per search snippet: vendors post a daily menu and manage pickup and delivery orders; Small/Medium/Large monthly subscriptions, 'pricing is shown in the app'; Caribbean support). The developer's site bscanned.com is a Calgary AI/web agency with no eVendor, no ordering wording, no Trinidad mention and no TTD price: no own-site evidence",
+   "url": "https://bscanned.com/",
+   "plans": []
   }
  ],
  "unreadable": [
+  {
+   "country": "IL",
+   "name": "Wix (Wix Restaurants Orders)",
+   "website": "https://www.wix.com",
+   "stored": null,
+   "reason": "Third attempt: https://he.wix.com/upgrade/website redirects to https://www.wix.com/upgrade/website, which rendered only its title ('Wix Pricing Information | Upgrade to a Premium Plan | Wix.com'); no ILS price obtainable. Also a generic website builder."
+  },
   {
    "country": "MC",
    "name": "Obypay",
@@ -252,6 +766,13 @@
    "website": "https://commande-en-ligne.laddition.com",
    "stored": "fca70222",
    "reason": "Stored website https://commande-en-ligne.laddition.com/ returned HTTP 404 today; Monaco presence not checkable."
+  },
+  {
+   "country": "CR",
+   "name": "Take Away CR",
+   "website": null,
+   "stored": null,
+   "reason": "Costa Rican take-away app seen in search (App Store id1492376570); App Store pages answered 404 (cd and us stores), no own site found; looks like a consumer app, not a tool a business buys"
   },
   {
    "country": "PE",
