@@ -1,0 +1,68 @@
+{
+ "country": "SG",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Singapore F&B online ordering website self-collection pre-order commission-free pricing \"S$\" \"/month\" POS integration hawker cafe",
+  "Singapore home-based food business bakery pre-order ordering page pickup slots plan S$ per month local startup"
+ ],
+ "vendors": [
+  {
+   "name": "Qashier (QashierEats)",
+   "website": "https://qashier.com/sg",
+   "stored_id_prefix": "2e6f0051",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "priced per day only ('Everything included. $5 a day.', '$5/day'; alternative '$3,650 once, the same as $5 a day.' = 2 years upfront incl. terminal); no per-month price; a per-day price is unclear under the compare-research-7 rule; the pricing page has no pickup / pre-order sentence",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://qashier.com/sg/pricing"
+   ]
+  },
+  {
+   "name": "Eats365",
+   "website": "https://www.eats365pos.com/sg",
+   "stored_id_prefix": "647628e6",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "/sg/pricing shows no amounts ('FREE FOR 14 DAYS', 'NO PAYMENT required'); Online Ordering module unpriced",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.eats365pos.com/sg/pricing"
+   ]
+  },
+  {
+   "name": "KPay",
+   "website": "https://www.kpay-group.com/en-sg",
+   "stored_id_prefix": null,
+   "focus": "pos",
+   "verdict": "not_relevant",
+   "reason": "its SG pages cover scan-to-order (in-venue QR), kiosks and POS ('KPay POS also supports scan-to-order'); no pickup / pre-order online ordering and no S$ price; /en-sg/pricing is a 404",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.kpay-group.com/en-sg/pricing",
+    "https://www.kpay-group.com/en-sg/blog/best-digital-ordering-system-for-restaurant/"
+   ]
+  },
+  {
+   "name": "Cococart",
+   "website": "https://cococart.co",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "online-store builder 'for local businesses, from home bakers and crafters to restaurants, cafés and retail shops'; 'Online Store: Start for $19/mo' in bare '$' (no S$/SGD and Singapore not named on the page); pickup only as a fulfilment option ('choose the delivery, pickup and payment options…'), no pickup time/date or pre-order wording -> currency unclear, generic store builder",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://cococart.co/pricing"
+   ]
+  }
+ ],
+ "notes": "SG count now: 2 (Klikit, Oddle) — unchanged. Qashier (stored) has a per-day price only (unclear); Eats365 SG unpriced; KPay no pickup ordering; Cococart '$' only and a generic store builder. Searches otherwise: Eats365 / Klikit / KPay blogs (vendor comparison posts, not sources), DBS / IMDA / RAS / GoBusiness pages (programmes), getapp.sg 'Nexordr' listing (directory, own site not found), SFA / HDB home-business rules. Take App (Singapore company) is USD only. Stopped after ~5 vendor sites with nothing new eligible and priced."
+}
