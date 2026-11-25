@@ -1,0 +1,12 @@
+{
+ "$comment": "compare-research-7 (25 Nov 2026): competitors read on their OWN websites by three Claude Code agents, one request at a time each (docs/compare-research-7-report.md; built by docs/compare-research-7/build.cjs). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import/). Every row source research, UNVERIFIED (35.an-1). Each answer carries the vendor’s verbatim quote and its page (35.an-4); \"no\" only with a quote saying it is not offered, silence is not_mentioned (35.ao-7). monthly_minor is MINOR units, converted from the page’s amount with lib/money-format.ts toMinorUnits (the 100× guard). request_check sets check_requested_at. \"evidence\" and \"not_relevant\" are for the reviewer; the import does not read them (the importer cannot mark a competitor not relevant).",
+ "id": "compare-research-7",
+ "checked_on": "2026-11-25",
+ "competitors": [],
+ "plans": [],
+ "entries": [],
+ "evidence": [],
+ "not_relevant": [],
+ "unreadable": [],
+ "not_needed": []
+}

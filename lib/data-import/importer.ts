@@ -34,6 +34,8 @@ export const DATA_FILES = [
   { path: 'data/compare-research-5/competitors.json', label: 'Comparison research 5 (25 Nov)', kind: 'research' },
   // compare-research-6 (25 Nov 2026): fixes, the 'nothing found' countries in launch order, micro-territories (docs/compare-research-6/build.cjs).
   { path: 'data/compare-research-6/competitors.json', label: 'Comparison research 6 (25 Nov)', kind: 'research' },
+  // compare-research-7 (25 Nov 2026): stored vendors in the one-short countries, deeper searches, API-loaded prices, US territories, third tools (docs/compare-research-7/build.cjs).
+  { path: 'data/compare-research-7/competitors.json', label: 'Comparison research 7 (25 Nov)', kind: 'research' },
 ] as const
 export type DataFile = (typeof DATA_FILES)[number]
 
