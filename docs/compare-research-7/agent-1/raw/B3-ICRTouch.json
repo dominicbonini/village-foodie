@@ -1,0 +1,16 @@
+{
+  "vendor": "ICRTouch TouchTakeaway",
+  "stored_id_prefix": "77b49f4f",
+  "territory": "IM",
+  "researched_on": "2026-11-25",
+  "result": "unpriced",
+  "endpoint_url": null,
+  "plan_name": null,
+  "amount": null,
+  "check_urls": [
+    "https://icrtouch.com/products/touchtakeaway/",
+    "https://icrtouch.com/wp-sitemap-posts-page-1.xml",
+    "https://icrtouch.com/sectors/micromerchant/"
+  ],
+  "reason": "ICRTouch has no pricing page, so there is no price endpoint to read. Checked from the raw HTML (curl): (1) the site's own page sitemap (wp-sitemap-posts-page-1.xml, 80 pages) lists no pricing / plans / cost page - TouchTakeaway has only /products/touchtakeaway/ and /sectors/hospitality/takeaways/; (2) the TouchTakeaway page source has no £ amount and no per-month text (its only money wording: 'TouchTakeaway charges 0% commission on every order, meaning 100% of the profit stays in your pocket.'), and links to '/where-to-buy' (authorised partners) instead of a price; (3) the only same-domain endpoints the page HTML/scripts name are WordPress plumbing - 'wp-json/wp/v2/pages/48943' (the page's own REST record), 'wp-json/complianz/v1/' (cookie consent), 'wp-json/elementskit/v1/' (Elementor widgets), 'admin-ajax.php' and an Elementor Lottie animation 'default.json' - none of them a price source; (4) the micromerchant sector page has no £ amounts either. Not read: none of those endpoints, as none is called for prices. Verdict: unpriced (hidden plan), as in compare-research-6."
+}
