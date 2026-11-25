@@ -1,0 +1,51 @@
+{
+  "country": "GI",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Ordea",
+      "website": "https://www.ordea.uk",
+      "stored_id_prefix": "6dc60fd2",
+      "focus": "food_truck",
+      "neighbour": "GB",
+      "verdict": "eligible",
+      "reason": "UK food-truck pre-ordering tool priced in GBP; its own site and terms do not exclude Gibraltar (no country list, no 'UK mainland' limit). Serves GI from GB.",
+      "eligibility": {
+        "food_quote": "From food trucks to festival stalls, businesses trust Ordea to handle their orders.",
+        "food_url": "https://www.ordea.uk",
+        "order_quote": "Let customers order from their phone before they reach your window.",
+        "order_url": "https://www.ordea.uk/food-trucks",
+        "country_quote": "Join food businesses across the UK serving more customers with less stress.",
+        "country_url": "https://www.ordea.uk"
+      },
+      "plans": [
+        {
+          "plan_name": "Free (3% per order)", "currency": "GBP", "price_major": 0, "period": "month", "vat": "unknown",
+          "per_order_pct": 3, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "No monthly fees. No lock-in. Just 3% per order when you make a sale.",
+          "url": "https://www.ordea.uk",
+          "note": "Stripe fees separate ('3% per order (Stripe fees separate)'). Terms: 'Ordea charges a commission of 3% per order processed through the platform.' (https://www.ordea.uk/terms)"
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "yes", "quote": "Let customers order from their phone before they reach your window.", "url": "https://www.ordea.uk/food-trucks" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "not_mentioned" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "not_mentioned" },
+        { "key": "monthly", "value": "no", "quote": "No monthly fees. No lock-in. Just 3% per order when you make a sale.", "url": "https://www.ordea.uk" },
+        { "key": "perorder", "value": "yes", "quote": "Ordea charges a commission of 3% per order processed through the platform.", "url": "https://www.ordea.uk/terms" },
+        { "key": "cardfee", "value": "partial", "quote": "3% per order (Stripe fees separate)", "url": "https://www.ordea.uk" }
+      ],
+      "check_urls": ["https://www.ordea.uk", "https://www.ordea.uk/terms"]
+    }
+  ],
+  "notes": "Neighbour rule (serves GI from GB). Order Tiger (aed7bf67, £59) already stored and counted for GI; Ordea makes 2. Ordea terms: no territory or eligibility limit; 'These Terms are governed by the laws of England and Wales.' No mention of Gibraltar or 'UK mainland' on the homepage or terms. order_quote is the compare-research-1 quote from /food-trucks (not re-read today, to save requests); price re-read today on the homepage. Stopped at 2."
+}
