@@ -87,6 +87,246 @@
    "set_focus": true
   },
   {
+   "id": "c06e5b78-6f2f-5a3f-a85d-96881a273bb3",
+   "name": "Asila",
+   "website": "https://asila.ma",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: MA.",
+   "check_urls": [
+    "https://asila.ma/",
+    "https://orika-drv.pages.dev/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "À emporter et livraison",
+     "source_url": "https://asila.ma/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Nom de domaine personnalisé : 300 MAD, une fois (achat du domaine non inclus).",
+     "source_url": "https://asila.ma/"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "300 MAD/mois",
+     "source_url": "https://asila.ma/"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "14ed815d-7e33-5924-86d0-625a67dec34d",
+   "name": "Blink",
+   "website": "https://www.blinkco.io",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: BH.",
+   "check_urls": [
+    "https://www.blinkco.io/bahrain/",
+    "https://www.blinkco.io/pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Give your customers the option between delivery and pickup",
+     "source_url": "https://www.blinkco.io/?p=20107"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "4620b046-ea62-574c-af26-b1aaff7a80b7",
+   "name": "Foodics",
+   "website": "https://www.foodics.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: EG, OM, QA, SA.",
+   "check_urls": [
+    "https://www.foodics.com/foodics-pricing-egypt/",
+    "https://www.foodics.com/foodics-pricing-oman/",
+    "https://www.foodics.com/foodics-pricing-qatar/",
+    "https://www.foodics.com/ar/pricing/",
+    "https://www.foodics.com/ar/foodics-pricing-ksa/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Maximize your margins by accepting curbside, pick-up and delivery orders",
+     "source_url": "https://www.foodics.com/online/"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+     "source_url": "https://www.foodics.com/online/"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
    "id": "aebf5a80-8776-5bb5-8b06-95cca00866fb",
    "name": "Yoveletta",
    "website": "https://yoveletta.ch",
@@ -239,6 +479,159 @@
     }
    ],
    "set_focus": true
+  },
+  {
+   "id": "110abdac-c213-5f20-bada-10b1b9b8c9f0",
+   "name": "Oddle",
+   "website": "https://oddle.me/tw",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: TW.",
+   "check_urls": [
+    "https://oddle.me/tw/pricing",
+    "https://oddle.me/tw"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "線上外帶外送系統與物流管理",
+     "source_url": "https://oddle.me/tw"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "873c5c65-258d-55e1-8450-ed6a1da33609",
+   "name": "TOI",
+   "website": "https://web.toi.do",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: DO.",
+   "check_urls": [
+    "https://web.toi.do"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Pre-orden en comida con aviso al estar lista",
+     "source_url": "https://web.toi.do"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
   }
  ],
  "plans": [
@@ -274,6 +667,204 @@
    "verified_at": null,
    "verified_by": null,
    "notes": "compare-research-3, read 25 Nov 2026 — serves GI from GB (neighbouring-market rule, Dominic 25 Nov): \"No monthly fees. No lock-in. Just 3% per order when you make a sale.\" — Stripe fees separate ('3% per order (Stripe fees separate)'). Terms: 'Ordea charges a commission of 3% per order processed through the platform.' (https://www.ordea.uk/terms)"
+  },
+  {
+   "id": "ae735226-20f0-5863-b186-92543b5ef790",
+   "competitor_id": "c06e5b78-6f2f-5a3f-a85d-96881a273bb3",
+   "country_code": "MA",
+   "plan_name": "Asila (monthly)",
+   "currency": "MAD",
+   "price_hidden": false,
+   "monthly_minor": 30000,
+   "monthly_major": 300,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://asila.ma/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"300 MAD/mois\" — Single plan ('Une seule formule, tout inclus' on the pages.dev copy). Also '1.650 MAD/6 mois' (≈275/month) and '3.000 MAD/an' ('Soit environ 250 MAD/mois, facturés annuellement'). Custom domain: '300 MAD, une fois (achat du domaine non inclus).'"
+  },
+  {
+   "id": "b40db88f-c1e6-5cb7-8871-25a0dcfcab5f",
+   "competitor_id": "14ed815d-7e33-5924-86d0-625a67dec34d",
+   "country_code": "BH",
+   "plan_name": "Food & Beverages – Website Only",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 5000,
+   "monthly_major": 50,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.blinkco.io/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"$50/branch /month\" — '$' is the only currency marker, no code, no country stated for the prices (read as USD). 'Website + App' $100/branch /month."
+  },
+  {
+   "id": "8daa6016-a79c-533f-a3e1-4819b901760e",
+   "competitor_id": "4620b046-ea62-574c-af26-b1aaff7a80b7",
+   "country_code": "EG",
+   "plan_name": "Advanced Bundle",
+   "currency": "EGP",
+   "price_hidden": false,
+   "monthly_minor": 373367,
+   "monthly_major": 3733.67,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.foodics.com/foodics-pricing-egypt/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"EGP 3733.67/mo\" — 'Billed Annually' shown under the prices; the page also shows 'EGP 3957.69/mo' and does not label which is the quarterly vs yearly tab (lower one taken as yearly). Advanced includes 'Foodics Online Web Creation'. Basic ('EGP 2848.95/mo' / 'EGP 3019.89/mo') lists 'Foodics Online Web' only as an optional add-on (price not shown)."
+  },
+  {
+   "id": "0823eeee-be74-5dbd-b447-a64a2deabd56",
+   "competitor_id": "4620b046-ea62-574c-af26-b1aaff7a80b7",
+   "country_code": "OM",
+   "plan_name": "Advanced Bundle",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 8900,
+   "monthly_major": 89,
+   "yearly_only": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.foodics.com/foodics-pricing-oman/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"USD 1,068/year\" (yearly price ÷ 12) — billed annually; Advanced is the only plan listing 'Website'. Starter 'USD 384/year', Basic 'USD 639/year' have no website line. Page does not say Foodics Online is the 'Website' item."
+  },
+  {
+   "id": "053cef50-c18b-5593-b384-3dd2c40af303",
+   "competitor_id": "4620b046-ea62-574c-af26-b1aaff7a80b7",
+   "country_code": "QA",
+   "plan_name": "Advanced Bundle",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 12500,
+   "monthly_major": 125,
+   "yearly_only": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.foodics.com/foodics-pricing-qatar/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"USD 1,500/year\" (yearly price ÷ 12) — USD, not QAR. 'Billed Annually'. Only Advanced lists 'Website'. Starter 'USD 684/year', Basic 'USD 900/year'."
+  },
+  {
+   "id": "0852ccc4-f611-5f3d-a65d-a7d332cb7133",
+   "competitor_id": "4620b046-ea62-574c-af26-b1aaff7a80b7",
+   "country_code": "SA",
+   "plan_name": "الباقة المطورة (Advanced)",
+   "currency": "SAR",
+   "price_hidden": false,
+   "monthly_minor": 76500,
+   "monthly_major": 765,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.foodics.com/ar/foodics-pricing-ksa/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"765 /شهر\" — CURRENCY NOT SHOWN: the reader saw no ريال / ر.س / SAR and no image alt text next to any number (probably the new Saudi riyal glyph drawn as an image). SAR inferred from the KSA-only page. Only this plan lists 'موقع إلكتروني أونلاين'. Yearly 8448 '/سنة' ('تدفع سنوياً', = 704/month). Other plans 248 and 450 /شهر have no online-ordering line."
   },
   {
    "id": "9dbd0cd7-0156-5491-9500-211a2a1d60d3",
@@ -406,6 +997,71 @@
    "verified_at": null,
    "verified_by": null,
    "notes": "compare-research-3, read 25 Nov 2026 — serves LI from CH (neighbouring-market rule, Dominic 25 Nov): \"Bis zu 100 Produkte | 25.00 CHF |\" — Onlineshop module monthly; 'Bis zu 25 Produkte | 0.00 CHF', 5'000 Produkte 55.00 CHF, Unlimitierte 85.00 CHF; 'Alle Preise verstehen sich exkl. MwSt.'"
+  },
+  {
+   "id": "7af3dec8-be67-5e98-b90c-f0179ea56692",
+   "competitor_id": "110abdac-c213-5f20-bada-10b1b9b8c9f0",
+   "country_code": "TW",
+   "plan_name": "一個價格，全面使用",
+   "currency": "TWD",
+   "price_hidden": false,
+   "monthly_minor": 300000,
+   "monthly_major": 3000,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://oddle.me/tw/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"NT$3,000/月 起\" — '起' (from) price, '月繳' (paid monthly); the plan lists '線上訂單' and '每月最高 NT$25K 線上訂單' (online orders up to NT$25K a month). Tax not stated."
+  },
+  {
+   "id": "84eb63d5-cae2-5528-b726-606c8d164df7",
+   "competitor_id": "873c5c65-258d-55e1-8450-ed6a1da33609",
+   "country_code": "DO",
+   "plan_name": "Cadenas y eventos",
+   "currency": "DOP",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "hidden",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://web.toi.do",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"A medida\" — price on request (custom after an on-site assessment); the page says all prices exclude ITBIS. Restaurant plan 'RD$ 5,500 /mes' (+0.40% above RD$1.3MM sales) has no customer online ordering ahead, so not used."
   }
  ],
  "entries": [
@@ -414,6 +1070,66 @@
    "country_code": "GI",
    "competitor_id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
    "primary_plan_id": "0d823260-4c7c-58ee-83b7-c8b56a2d53d9",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "f50c7bc4-210b-5844-b7e8-87cee57ace16",
+   "country_code": "MA",
+   "competitor_id": "c06e5b78-6f2f-5a3f-a85d-96881a273bb3",
+   "primary_plan_id": "ae735226-20f0-5863-b186-92543b5ef790",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "43a8231c-3d6e-5ee0-bbef-7dcf7ce4473b",
+   "country_code": "BH",
+   "competitor_id": "14ed815d-7e33-5924-86d0-625a67dec34d",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "1c276e26-be12-5922-a152-4b3f72ed54ec",
+   "country_code": "EG",
+   "competitor_id": "4620b046-ea62-574c-af26-b1aaff7a80b7",
+   "primary_plan_id": "8daa6016-a79c-533f-a3e1-4819b901760e",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "559a69c1-5654-54e3-b08a-062362a8eddd",
+   "country_code": "OM",
+   "competitor_id": "4620b046-ea62-574c-af26-b1aaff7a80b7",
+   "primary_plan_id": "0823eeee-be74-5dbd-b447-a64a2deabd56",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "784e0e5a-c7c0-525b-bc93-a776215c2f10",
+   "country_code": "QA",
+   "competitor_id": "4620b046-ea62-574c-af26-b1aaff7a80b7",
+   "primary_plan_id": "053cef50-c18b-5593-b384-3dd2c40af303",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "ebdec64d-6591-5d14-83e9-fbb45389113d",
+   "country_code": "SA",
+   "competitor_id": "4620b046-ea62-574c-af26-b1aaff7a80b7",
+   "primary_plan_id": null,
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -438,6 +1154,26 @@
    "sort_order": 50,
    "verified_at": null,
    "verified_by": null
+  },
+  {
+   "id": "024e8a59-173a-56fe-8b07-23faea71434e",
+   "country_code": "TW",
+   "competitor_id": "110abdac-c213-5f20-bada-10b1b9b8c9f0",
+   "primary_plan_id": "7af3dec8-be67-5e98-b90c-f0179ea56692",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "33752d1a-f57f-5f11-a4de-2ba81f80bae9",
+   "country_code": "DO",
+   "competitor_id": "873c5c65-258d-55e1-8450-ed6a1da33609",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
   }
  ],
  "evidence": [
@@ -454,6 +1190,69 @@
      "country_url": "https://www.ordea.uk",
      "reason": "UK food-truck pre-ordering tool priced in GBP; its own site and terms do not exclude Gibraltar (no country list, no 'UK mainland' limit). Serves GI from GB.",
      "neighbour": "GB"
+    }
+   ]
+  },
+  {
+   "name": "Asila",
+   "evidence": [
+    {
+     "country": "MA",
+     "order_quote": "Vendez sur votre propre canal avec un menu à votre image.",
+     "order_url": "https://asila.ma/",
+     "country_quote": "Caisse, commandes en ligne, stocks et back-office dans un seul système conçu pour les restaurants et cafés marocains.",
+     "country_url": "https://asila.ma/",
+     "reason": "Moroccan restaurant/café POS + online-ordering platform: orders taken online on the business's own channel, for takeaway and delivery. One all-in plan priced in MAD. Borderline: no explicit 'order for a time' / pre-order wording."
+    }
+   ]
+  },
+  {
+   "name": "Blink",
+   "evidence": [
+    {
+     "country": "BH",
+     "order_quote": "Give your customers the option between delivery and pickup",
+     "order_url": "https://www.blinkco.io/?p=20107",
+     "country_quote": "Equip your restaurant with an all-in-one platform to expand your business in Bahrain.",
+     "country_url": "https://www.blinkco.io/bahrain/",
+     "reason": "Pakistan-based restaurant POS with branded ordering website/app; has a Bahrain page; '$' prices; pickup wording only on its Qatar ordering-website page (same product), not on the Bahrain page"
+    }
+   ]
+  },
+  {
+   "name": "Foodics",
+   "evidence": [
+    {
+     "country": "EG",
+     "order_quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+     "order_url": "https://www.foodics.com/online/",
+     "country_quote": "Foodics Online Web Creation",
+     "country_url": "https://www.foodics.com/foodics-pricing-egypt/",
+     "reason": "Saudi restaurant POS; Foodics Online (own ordering website, pick-up, orders scheduled ahead); Egypt pricing page in EGP with 'Foodics Online Web Creation' in the Advanced Bundle"
+    },
+    {
+     "country": "OM",
+     "order_quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+     "order_url": "https://www.foodics.com/online/",
+     "country_quote": "Advanced Bundle USD 1,068/year",
+     "country_url": "https://www.foodics.com/foodics-pricing-oman/",
+     "reason": "Saudi restaurant POS; Foodics Online gives the restaurant its own ordering website with pick-up and orders scheduled ahead; Oman pricing page in USD"
+    },
+    {
+     "country": "QA",
+     "country_quote": "USD 1,500/year",
+     "country_url": "https://www.foodics.com/foodics-pricing-qatar/",
+     "order_quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+     "order_url": "https://www.foodics.com/online/",
+     "reason": "Saudi restaurant POS with its own ordering website (eligibility: compare-research-2 SA file); its Qatar pricing page is priced in USD only, so it does not count in QAR"
+    },
+    {
+     "country": "SA",
+     "country_quote": "الباقة المطورة",
+     "country_url": "https://www.foodics.com/ar/foodics-pricing-ksa/",
+     "order_quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+     "order_url": "https://www.foodics.com/online/",
+     "reason": "Saudi restaurant POS with its own ordering website (eligibility from compare-research-2 SA file); KSA pricing page amounts shown with no currency word or symbol, so SAR is not confirmed"
     }
    ]
   },
@@ -488,9 +1287,118 @@
      "neighbour": "CH"
     }
    ]
+  },
+  {
+   "name": "Oddle",
+   "evidence": [
+    {
+     "country": "TW",
+     "order_quote": "線上外帶外送系統與物流管理",
+     "order_url": "https://oddle.me/tw",
+     "country_quote": "NT$3,000/月 起",
+     "country_url": "https://oddle.me/tw/pricing",
+     "reason": "Singapore-based restaurant platform with a Taiwan-localized site: online takeaway and delivery ordering system; NT$ price on its TW pricing page"
+    }
+   ]
+  },
+  {
+   "name": "TOI",
+   "evidence": [
+    {
+     "country": "DO",
+     "food_quote": "Compra desde la app de todos los vendors a la vez",
+     "food_url": "https://web.toi.do",
+     "order_quote": "Pre-orden en comida con aviso al estar lista",
+     "order_url": "https://web.toi.do",
+     "country_quote": "Facturación electrónica e-CF",
+     "country_url": "https://web.toi.do",
+     "reason": "BORDERLINE: Dominican POS whose cashless events app lets festival-goers pre-order food from all vendors with a ready alert; that events offer is priced 'A medida' (hidden). The RD$ 5,500/mes restaurant plan has only kiosks, digital menu and PedidosYa/Uber Eats, no own online ordering ahead, so it is not used as this tool's price."
+    }
+   ]
   }
  ],
  "not_relevant": [
+  {
+   "country": "CV",
+   "name": "Vendus (Cegid / Vendus by Shine)",
+   "website": "https://www.vendus.pt",
+   "stored": null,
+   "reason": "Portuguese invoicing/POS software. Search snippets say it covers Cabo Verde among its markets, but its prices are in EUR only (e.g. 8,33 a month), not CVE, and no customer online ordering ahead appears in the results. Not opened.",
+   "url": "https://www.vendus.pt",
+   "plans": []
+  },
+  {
+   "country": "CV",
+   "name": "Bafa",
+   "website": null,
+   "stored": null,
+   "reason": "Praia consumer delivery app (marketplace), found via a third-party listing. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "CV",
+   "name": "Cegid PHC",
+   "website": "https://www.cegid.com/cv/",
+   "stored": null,
+   "reason": "ERP for Cabo Verde businesses, not a food ordering tool. Not opened.",
+   "url": "https://www.cegid.com/cv/",
+   "plans": []
+  },
+  {
+   "country": "IS",
+   "name": "myPOS",
+   "website": "https://www.mypos.com/is-is/",
+   "stored": null,
+   "reason": "Icelandic-language site with ISK prices, but only for card terminals (e.g. myPOS Go 2 '9,900 kr 7,400 kr' án VSK) and online payments; no online ordering, pickup or order-ahead on its food & drink page.",
+   "url": "https://www.mypos.com/is-is/industries/posi-fyrir-mat-og-drykkjufyrirtaeki",
+   "plans": []
+  },
+  {
+   "country": "IS",
+   "name": "Subger",
+   "website": "https://subger.com/is/",
+   "stored": null,
+   "reason": "A consumer comparison site for delivery-app subscriptions (DashPass, Uber One, Bolt Plus…), not an ordering tool.",
+   "url": "https://subger.com/is/food-delivery/restaurant-takeout",
+   "plans": []
+  },
+  {
+   "country": "MC",
+   "name": "EatIn Monaco",
+   "website": null,
+   "stored": null,
+   "reason": "Monaco consumer delivery app (marketplace). Seen via search (App Store) only.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "MC",
+   "name": "Mr Room Service",
+   "website": "https://mrroomservice.fr",
+   "stored": null,
+   "reason": "Consumer delivery marketplace ('#1 delivery service in Monaco' per its App Store listing). Not opened.",
+   "url": "https://mrroomservice.fr",
+   "plans": []
+  },
+  {
+   "country": "MC",
+   "name": "UpMenu",
+   "website": "https://www.upmenu.com",
+   "stored": null,
+   "reason": "Search shows USD prices only ($49/$89/$169) and no Monaco page or presence. Not opened.",
+   "url": "https://www.upmenu.com",
+   "plans": []
+  },
+  {
+   "country": "MC",
+   "name": "SumUp",
+   "website": "https://www.sumup.com",
+   "stored": "d0eb16fa",
+   "reason": "No Monaco country site in search results (only fr-fr, fr-be, fr-lu, fr-ch); generic web shop anyway. Not opened.",
+   "url": "https://www.sumup.com",
+   "plans": []
+  },
   {
    "country": "MT",
    "name": "Storekit",
@@ -540,6 +1448,132 @@
      "note": "Generic web shop; 'Competitive transaction fee' 2.5 %. Recorded as fallback only."
     }
    ]
+  },
+  {
+   "country": "RS",
+   "name": "Kafeterija",
+   "website": null,
+   "stored": null,
+   "reason": "Ordering app of one Belgrade coffee chain (pickup-time ordering for its own outlets only), not software sold to food businesses. Seen via search (App Store) only.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "RS",
+   "name": "Ordera - Topli obrok",
+   "website": null,
+   "stored": null,
+   "reason": "Workplace hot-meal ordering (companies order from caterers a day ahead); no price. Seen via search (App Store) only.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "RS",
+   "name": "UpMenu",
+   "website": "https://www.upmenu.com",
+   "stored": null,
+   "reason": "Polish ordering tool with an app in Balkan App Stores, but search results show only USD prices ($89 / $119 a month) and no Serbia page or RSD price. Not opened.",
+   "url": "https://www.upmenu.com",
+   "plans": []
+  },
+  {
+   "country": "TN",
+   "name": "Poslik",
+   "website": "https://www.poslik.com",
+   "stored": null,
+   "reason": "Tunisian restaurant till ('Pos>lik Tunisie | Caisse Enregistreuse Connectée'); no online ordering ahead or takeaway ordering on its site (delivery only via integrations: 'Livraison : Intégrez-vous aux meilleures applications existantes.'); no prices (empty 'Abonnement' column, demo form).",
+   "url": "https://www.poslik.com/",
+   "plans": []
+  },
+  {
+   "country": "TN",
+   "name": "CapsaFood",
+   "website": null,
+   "stored": null,
+   "reason": "Gafsa consumer delivery marketplace (news articles only). Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "TN",
+   "name": "Linéo Resto (Spacenet / Tunisianet packs)",
+   "website": null,
+   "stored": null,
+   "reason": "One-off till packs sold by retailers (e.g. 2 799 DT TTC); till only, no online ordering; retailer listings, not vendor's own site. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "JO",
+   "name": "Foodics (Foodics Online)",
+   "website": "https://www.foodics.com",
+   "stored": "4620b046",
+   "reason": "no Jordan pricing page: https://www.foodics.com/foodics-pricing-jordan/ serves the homepage; country pricing links cover only KSA, Egypt, UAE, Kuwait, Oman, Qatar; Jordan appears only as a phone number",
+   "url": "https://www.foodics.com/foodics-pricing-jordan/",
+   "plans": []
+  },
+  {
+   "country": "BO",
+   "name": "Pídeme.online",
+   "website": "https://pideme.online",
+   "stored": null,
+   "reason": "re-read today: no pickup / recoger / para llevar wording on the home page, and the plans now show USD only (Sazón $4.99/mes etc.) with Venezuelan Pago Móvil payment; no BOB price",
+   "url": "https://pideme.online",
+   "plans": []
+  },
+  {
+   "country": "GT",
+   "name": "Midelivery Food",
+   "website": "https://www.mideliveryfood.com",
+   "stored": null,
+   "reason": "re-read today (wave-2 BORDERLINE): GTQ prices (Q199 / Q399 / Q1,199 per month) but still no pickup / para llevar / scheduling wording anywhere on the one-page site (no other pages linked)",
+   "url": "https://www.mideliveryfood.com",
+   "plans": []
+  },
+  {
+   "country": "JM",
+   "name": "visuEats",
+   "website": "https://visueats.com",
+   "stored": null,
+   "reason": "Jamaican consumer visual-menu app listing many restaurants (diners 'see every dish before you order for pickup or delivery'); a multi-restaurant marketplace, restaurants book a demo, no price",
+   "url": "https://visueats.com",
+   "plans": []
+  },
+  {
+   "country": "SV",
+   "name": "OlaClick",
+   "website": "https://www.olaclick.com",
+   "stored": "c400f63a",
+   "reason": "USD prices fit SV, but no stated El Salvador presence: today's pricing page names no country except Cuba and Venezuela (domains), and a site search of olaclick.com found no El Salvador page (only Salvador, Brazil)",
+   "url": "https://pricing.olaclick.app/es",
+   "plans": [
+    {
+     "plan_name": "Advanced",
+     "currency": "USD",
+     "price_major": 9.9,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "US$ 9.90/mes",
+     "url": "https://pricing.olaclick.app/es",
+     "note": "billed yearly: \"Los precios son para suscripciones anuales pagadas al momento de la compra\". Recorded for reference; not counted in SV (no SV presence)."
+    },
+    {
+     "plan_name": "Premium",
+     "currency": "USD",
+     "price_major": 25,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "US$ 25.00/mes",
+     "url": "https://pricing.olaclick.app/es",
+     "note": "billed yearly"
+    }
+   ]
   }
  ],
  "unreadable": [
@@ -549,6 +1583,20 @@
    "website": "https://maltix.tawk.help",
    "stored": null,
    "reason": "Help-centre pages (search snippets) describe 'client QR order, pay and pick up' and mention 'UK £ Easy Pay'; both help-centre pages opened returned 404. No EUR price or Malta presence could be read from its own site."
+  },
+  {
+   "country": "IL",
+   "name": "Wix (Wix Restaurants Orders)",
+   "website": "https://www.wix.com",
+   "stored": null,
+   "reason": "https://he.wix.com/plans returned HTTP 404; www.wix.com/plans rendered only its title last round; Wix prices are geo-dependent, no ILS price obtainable"
+  },
+  {
+   "country": "KR",
+   "name": "Toss Place (토스오더 픽업주문)",
+   "website": "https://tossplace.com",
+   "stored": null,
+   "reason": "already counted from compare-research-2 (0 KRW); re-check of tossplace.com/pricing returned HTTP 404, so the fee was not re-confirmed today"
   }
  ],
  "not_needed": []

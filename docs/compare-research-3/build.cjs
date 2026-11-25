@@ -49,7 +49,7 @@ const CORRECT_EVEN_IF_NOT_RELEVANT = []
 // Each: [website host, country ('*' = every country), plan-name pattern, reason].
 const UNCLEAR = [
   ['blinkco.io', '*', /./, 'the price is shown only as "$" with no currency code and no country'],
-  ['foodics.com', '*', /./, 'the KSA pricing page shows the amounts without any currency symbol, and the bundles are not shown to include online ordering'],
+  ['foodics.com', 'SA', /./, 'the KSA pricing page shows the amounts without any currency symbol, and the bundles are not shown to include online ordering'],
   ['nemtakeaway.no', 'NO', /./, 'the price is shown as a bare number with no currency (the agent notes it is invoiced in DKK)'],
   ['sumup.com', 'CO', /./, 'the Colombian page came back in English with mixed $ and £ amounts, so the currency is not certain'],
   ['klikit.io', '*', /^core$/i, 'Core alone has no webshop (online ordering needs the Omni add-on)'],
