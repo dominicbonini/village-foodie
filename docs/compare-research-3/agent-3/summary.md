@@ -204,3 +204,12 @@ count now: 0
 No vendor site worth reading (Deliver Addis marketplace; FoodChow not mine). Nothing eligible exists with an ETB price.
 
 count now: 0
+
+## MU (MUR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Resto-SaaS (Digital Bonsaï Ltd) | nearest_local | eligible | 1 800 / 4 400 MUR + VAT per month | https://resto-saas-production-a095.up.railway.app/ |
+| MauriPros | nearest_local | not_relevant (US agency, no MU presence) | — | https://www.mauripros.com/services/restaurant-platform |
+
+count now: 1

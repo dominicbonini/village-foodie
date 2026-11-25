@@ -1,0 +1,138 @@
+{
+ "country": "MU",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Mauritius restaurant online ordering system click and collect \"Rs\" OR \"MUR\" per month Mauritian software takeaway ordering website (Capterra/GetApp/G2 excluded)",
+  "Mauritius \"click and collect\" OR \"pick-up\" online ordering platform for restaurants snacks cafés Mauritian startup pricing monthly Rs no commission (FoodChow excluded)"
+ ],
+ "vendors": [
+  {
+   "name": "Resto-SaaS (Digital Bonsaï Ltd)",
+   "website": "https://resto-saas-production-a095.up.railway.app/",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Mauritian takeaway ordering platform for restaurants: customers order from their phones and choose a pickup slot, capacity controlled; MUR monthly prices, no commission. Vendor's own site is on a railway.app subdomain.",
+   "eligibility": {
+    "order_quote": "Customers choose their slot, you control capacity. No more counter rush at peak hours.",
+    "order_url": "https://resto-saas-production-a095.up.railway.app/",
+    "country_quote": "The takeaway ordering platform built for Mauritius restaurants.",
+    "country_url": "https://resto-saas-production-a095.up.railway.app/"
+   },
+   "plans": [
+    {
+     "plan_name": "Starter",
+     "currency": "MUR",
+     "price_major": 1800,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "1 800 MUR + VAT",
+     "url": "https://resto-saas-production-a095.up.railway.app/",
+     "note": "'per month · All inclusive'; MIPS and MCB fees included; 30-day free trial"
+    },
+    {
+     "plan_name": "Pro",
+     "currency": "MUR",
+     "price_major": 4400,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "4 400 MUR + VAT",
+     "url": "https://resto-saas-production-a095.up.railway.app/",
+     "note": "per month"
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Customers choose their slot, you control capacity. No more counter rush at peak hours.",
+     "url": "https://resto-saas-production-a095.up.railway.app/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "yes",
+     "quote": "Customers choose their slot, you control capacity. No more counter rush at peak hours.",
+     "url": "https://resto-saas-production-a095.up.railway.app/"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "1 800 MUR + VAT",
+     "url": "https://resto-saas-production-a095.up.railway.app/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "No commission on your sales.",
+     "url": "https://resto-saas-production-a095.up.railway.app/"
+    },
+    {
+     "key": "cardfee",
+     "value": "partial",
+     "quote": "One fixed monthly price that includes the platform, MIPS and MCB fees, and support.",
+     "url": "https://resto-saas-production-a095.up.railway.app/"
+    }
+   ],
+   "check_urls": [
+    "https://resto-saas-production-a095.up.railway.app/"
+   ]
+  },
+  {
+   "name": "MauriPros",
+   "website": "https://www.mauripros.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "'Digital Marketing Agency' listing an 'All-in-one Restaurant Platform'; the page names only Louisville, Kentucky, no Mauritius, no pickup wording, no price",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.mauripros.com/services/restaurant-platform"
+   ]
+  }
+ ],
+ "notes": "Count now: 1 (Resto-SaaS by Digital Bonsaï Ltd, 1 800 MUR + VAT / 4 400 MUR + VAT per month, pickup slots with capacity, no commission; its own site is on a railway.app subdomain — a reviewer may want to confirm it is the live product site). No second eligible MUR-priced tool. MauriPros: US agency, no MU presence. OnlyEat, HungryDodo (runs on Ordering.co, stored), fooddelivery.mu, OrderManzer, UpDash: marketplaces — never counted. Simply Good Food: a single restaurant. Storekit appeared in results (agent 1's, only named). FoodChow (Indian, not mine) has a Mauritius page. Take App (agent 2) eligible in USD only (wave 2)."
+}
