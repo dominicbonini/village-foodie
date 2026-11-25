@@ -1,0 +1,39 @@
+{
+ "country": "HK",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "香港 餐廳 網上點餐 外賣自取 預約 系統 月費 HK$ 收費 方案 Mezzofy OR Gingersoft OR OmniWe OR Ninja",
+  "Hong Kong restaurant online ordering self pick-up system \"HK$\" per month plan takeaway pre-order website POS vendor pricing page"
+ ],
+ "vendors": [
+  {
+   "name": "Mezzofy",
+   "website": "https://www.mezzofy.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "/pricing is a 404; its nav lists Management System, Marketplace, NFC Pass, Vault, Pass — no restaurant ordering product or price seen",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.mezzofy.com/pricing"
+   ]
+  },
+  {
+   "name": "OmniWe",
+   "website": "https://www.omniwe.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "/pricing answered HTTP 404; not retried",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.omniwe.com/pricing"
+   ]
+  }
+ ],
+ "notes": "HK count now: 2 (Oddle, Eats365) — unchanged. Searches (Chinese and English) returned mostly Cyberport DTSPP / HKPC catalogue listings (government directories, never sources: VGather 1,200–2,900 HK$/month on 24-month contracts, DimPOS, Link F&B POS, DoLA, eRun, 'Catering POS+QR plan' — prices not on the vendors' own sites), the Consumer Council table (PDF, not a source), MENU TIGER (USD; rejected), Eats365 pages (counted), e-commerce builder blogs (Aspire, Airwallex). Earlier-rejected vendors not re-read: iCHEF, KPay, DimOrder, Boutir (403 twice), VGather (no price on own site). New sites opened: Mezzofy (no ordering product), OmniWe (404). Stopped: nothing new eligible and priced."
+}
