@@ -1,0 +1,142 @@
+{
+  "country": "LV",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Vitrina",
+      "website": "https://vitrina.cafe/sk",
+      "stored_id_prefix": "2bfa2064",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "white-label ordering site + POS (Complete Solution s.r.o., Slovakia); its English main page names Latvia as a market where it sells the ordering site but not the POS; € prices as on its EU (Slovak) page — Express 0 € + 3 %, Start 39 €/month, excl. VAT. Weak: no Latvian page or Latvia-specific price page",
+      "eligibility": {
+        "order_quote": "Order ahead on the website and pick up without queuing",
+        "order_url": "https://vitrina.cafe",
+        "country_quote": "in Romania, Lithuania and Latvia we don’t offer the POS.",
+        "country_url": "https://vitrina.cafe"
+      },
+      "plans": [
+        {
+          "plan_name": "Express",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 3,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "0 €/mes.",
+          "url": "https://vitrina.cafe/sk",
+          "note": "No Latvian-language site or price page; the € price list was read on the Slovak page (https://vitrina.cafe/sk: Štart 39 €35,10 €31,20 €/mes., Reštaurácia 79 €…), assumed to be the EU € list — a reviewer may decide not to count it. Excl. VAT."
+        },
+        {
+          "plan_name": "Start",
+          "currency": "EUR",
+          "price_major": 39,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0.9,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "39 €",
+          "url": "https://vitrina.cafe/sk",
+          "note": "No Latvian-language site or price page; the € price list was read on the Slovak page (https://vitrina.cafe/sk: Štart 39 €35,10 €31,20 €/mes., Reštaurácia 79 €…), assumed to be the EU € list — a reviewer may decide not to count it. Excl. VAT."
+        },
+        {
+          "plan_name": "Restaurant",
+          "currency": "EUR",
+          "price_major": 79,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0.9,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "79 €",
+          "url": "https://vitrina.cafe/sk",
+          "note": "No Latvian-language site or price page; the € price list was read on the Slovak page (https://vitrina.cafe/sk: Štart 39 €35,10 €31,20 €/mes., Reštaurácia 79 €…), assumed to be the EU € list — a reviewer may decide not to count it. Excl. VAT."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Order ahead on the website and pick up without queuing",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Order ahead on the website and pick up without queuing",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Your venue's Wi-Fi and social links on the website",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen display on a tablet: stations, timers and Ready",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Your domain, logo and colours: guests see your brand, not ours",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "39 €",
+          "url": "https://vitrina.cafe/sk"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://vitrina.cafe",
+        "https://vitrina.cafe/sk"
+      ],
+      "country": "LV"
+    }
+  ],
+  "notes": "LV counts FoxiFood and SumUp. Third: Vitrina (stored 2bfa2064, restaurant tool, mine) copied from compare-research-2 agent-5 (read today, 25 Nov; not re-read): EUR prices (Start 39 €/month monthly-billed, Express 0 € + 3 %), presence only via its English main page naming Latvia ('in Romania, Lithuania and Latvia we don’t offer the POS.') - the weakest presence type; a reviewer may drop it. Note SumUp is the generic web-shop fallback, so with Vitrina LV would have FoxiFood + Vitrina as real tools."
+}
