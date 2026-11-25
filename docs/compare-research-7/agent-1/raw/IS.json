@@ -5,7 +5,9 @@
     "Teya OR Smartpay OR Straumur netpantanir veitingastaðir sækja pöntun kassakerfi verð kr. á mánuði",
     "\"pantanakerfi\" OR \"pöntunarvefur\" OR \"pöntunarapp\" fyrir veitingastaði og kaffihús hugbúnaður \"sótt\" verðskrá",
     "dk hugbúnaður dk Pos veitingastaðir netpantanir vefpantanir tenging verðskrá",
-    "online ordering restaurants pricing \"ISK\" per month pickup Iceland software"
+    "online ordering restaurants pricing \"ISK\" per month pickup Iceland software",
+    "\"panta á netinu\" OR \"pantaðu á netinu\" sækja veitingastaður \"powered by\" OR \"keyrt á\" pöntunarkerfi Reykjavík pizza",
+    "Viska Vef ehf pöntunarkerfi veitingastaði app verð"
   ],
   "vendors": [
     {
@@ -31,7 +33,19 @@
       "plans": [],
       "answers": [],
       "check_urls": []
+    },
+    {
+      "name": "Viska Vef ehf",
+      "website": "https://apps.apple.com/us/developer/viska-vef-ehf/id1715633077",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Icelandic developer behind the Pizzan ordering app (pickup or delivery) and Te & Kaffi's app (App Store, used only to find the vendor); no own website or price found - custom app builds, not a priced ordering product. Not opened.",
+      "stored_id_prefix": null,
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
     }
   ],
-  "notes": "IS counts Vitrina (ISK) only. Earlier rounds rejected or could not price: Dineout and Stefna (eligible but no price), Aha.is, FoxiFood (EUR only), myPOS, Subger, Noona, Yonoton, Munu, Glaze - not re-read. Four new searches (Icelandic: pantanakerfi / pöntunarvefur / pöntunarapp / netpantanir / sótt / verðskrá, the Icelandic POS and payment players Teya, Smartpay, Straumur, dk; and English 'ISK per month') returned only Wolt listings, directories (Capterra, GetApp, G2), tts.ai (AI phone ordering, no price; seen in round 4), and foreign tools with EUR/USD prices and no Iceland page (Flipdish, EasyOrder, Oddle, UpMenu, mobi2go). New candidates Teya and dk Pos are not ordering tools. Nothing eligible with an ISK price; IS stays at 1."
+  "notes": "IS counts Vitrina (ISK) only. Earlier rounds rejected or could not price: Dineout and Stefna (eligible but no price), Aha.is, FoxiFood (EUR only), myPOS, Subger, Noona, Yonoton, Munu, Glaze - not re-read. Four new searches (Icelandic: pantanakerfi / pöntunarvefur / pöntunarapp / netpantanir / sótt / verðskrá, the Icelandic POS and payment players Teya, Smartpay, Straumur, dk; and English 'ISK per month') returned only Wolt listings, directories (Capterra, GetApp, G2), tts.ai (AI phone ordering, no price; seen in round 4), and foreign tools with EUR/USD prices and no Iceland page (Flipdish, EasyOrder, Oddle, UpMenu, mobi2go). New candidates Teya and dk Pos are not ordering tools. Nothing eligible with an ISK price; IS stays at 1. Third pass: followed an Icelandic pizzeria's own ordering app (Pizzan) to its developer Viska Vef ehf - custom builds, no site or ISK price. Other venues order via Wolt. No Icelandic POS reseller with an online-ordering add-on price surfaced (dk Pos is table/till only). IS stays at 1."
 }
