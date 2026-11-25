@@ -1,0 +1,100 @@
+{
+  "country": "HR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "sustav za online narudžbe za restorane i food truck osobno preuzimanje vlastita stranica cjenik paketa \"€/mj\" OR \"€ mjesečno\" Hrvatska"
+  ],
+  "vendors": [
+    {
+      "name": "FoodApp",
+      "website": "https://restorani.foodapp.hr",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Croatian white-label ordering for restaurants ('Gumbi „Pogledaj MENI i Naruči“ na vašoj web stranici'), plus a free listing on its foodapp.hr portal; pickup only in a sample header ('Dostava i preuzimanje'); no price on its partner page. Not counted (unpriced, weak pickup).",
+      "eligibility": {
+        "order_quote": "Gumbi „Pogledaj MENI i Naruči“ na vašoj web stranici te Smartlink za Google profil, Instagram i Facebook.",
+        "order_url": "https://restorani.foodapp.hr/"
+      },
+      "plans": [
+        {
+          "plan_name": "FoodApp (hidden)",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "0 %, transparentan paket",
+          "url": "https://restorani.foodapp.hr/",
+          "note": "No € amount on the page (raw HTML checked too: no € / EUR, no price link). A compare-research-5 search snippet said €50/month - not on its own page."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0 %, transparentan paket",
+          "url": "https://restorani.foodapp.hr/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://restorani.foodapp.hr/"
+      ]
+    }
+  ],
+  "notes": "HR counts DISH and Vitrina. No third found. FoodApp (Croatian white-label ordering, seen in compare-research-5 BA notes) read today: no price on its own page and pickup only in a sample header - unpriced. One Croatian search returned only Glovo/Wolt listings and Subger. Not counted: SumUp (generic web shop, already the single fallback type; compare-research-2), Storekit (GBP only), Anolla (never). Earlier rounds' searches (Remaris, Eurocomp, Gustico, Dobartek) not repeated. HR stays at 2."
+}
