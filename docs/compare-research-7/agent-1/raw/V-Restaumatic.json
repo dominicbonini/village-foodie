@@ -1,0 +1,9 @@
+{
+  "vendor": "Restaumatic",
+  "stored_id_prefix": "3d587bd6",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "check_urls": [],
+  "notes": "Polish ordering tool whose price list shows no amounts (compare-research-1 PL: price_major null; compare-research-5 AL/BA: English price list without amounts, Polish signals only; compare-research-2 SI: Slovenian site but no price). No priced page for any one-short country, so it counts in none; no page read this round."
+}
