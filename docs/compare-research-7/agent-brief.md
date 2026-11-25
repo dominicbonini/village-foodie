@@ -24,8 +24,7 @@ changes:
   page; a vendor whose only site is a throwaway host (railway.app, duckdns.org…) or that shows no real customers is not relevant.
 - Earlier evidence for these countries: `docs/compare-research-2/agent-*/raw/<CC>.json` and `docs/compare-research-3/agent-*/raw/<CC>.json`.
 - **compare-research-7 additions:** delivery-only ordering does NOT count (pickup / click and collect only); a per-day price is
-  unclear. Earlier evidence is in `docs/compare-research-2/`, `-3/`, `-4/` and `-5/` (`agent-*/raw/<CC>.json`). **Parked (don't
-  research):** MT IS RS QA BH JO BO DO SV GT JM UY CO AL BA MD UZ LK BD KR.
+  unclear. Earlier evidence is in `docs/compare-research-2/`, `-3/`, `-4/` and `-5/` (`agent-*/raw/<CC>.json`). (compare-research-7: no country is parked — the coordinator gives each agent its list.)
 - **compare-research-7:** earlier evidence is in `docs/compare-research-2/` … `-6/` (`agent-*/raw/<CC>.json`). Neighbour fits only LI←CH and
   GI←GB; MT strict. Before each new country or vendor run `TZ=Europe/London date`; start nothing new after 18:10 UK time. Commit your
   folder after every country or vendor.
