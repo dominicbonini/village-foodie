@@ -1,0 +1,135 @@
+{
+  "country": "KZ",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "онлайн предзаказ для кофеен и фудтраков Казахстан самовывоз к времени сервис для заведений тариф ₸ в месяц",
+    "сайт заказов для ресторана Казахстан самовывоз модуль онлайн-заказов iiko OR Wipon OR \"R-Keeper\" тариф тенге в месяц",
+    "Алматы сервис для кафе свой сайт и приложение заказов самовывоз без комиссии агрегатора тарифы ₸ казахстанская компания",
+    "SmartPikasso приложение для ресторанов Казахстан заказ навынос тариф",
+    "кафеге онлайн тапсырыс жүйесі алдын ала тапсырыс өзі алып кету тариф теңге айына"
+  ],
+  "vendors": [
+    {
+      "name": "Poster",
+      "website": "https://joinposter.kz",
+      "stored_id_prefix": "0802a7c8",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Poster's own Kazakhstan site (joinposter.kz) with a Kazakhstan food-truck page and tenge prices; ordering website = paid Poster Site add-on ('Доставка и самовывоз'). Priced as base plan + module (V16.38): Starter 9 600 ₸ + Poster Site 11 400 ₸ = 21 000 ₸ a month on monthly billing. Recorded from compare-research-3 agent-4's evidence (read 25 Nov); joinposter.kz now counts as Poster's own check page (coordinator).",
+      "eligibility": {
+        "food_quote": "Автоматизация фудтрака в Казахстане",
+        "food_url": "https://joinposter.kz/business/foodtruck",
+        "order_quote": "Сайт для заказов из вашего заведения — за 5 минут",
+        "order_url": "https://joinposter.kz/pricing",
+        "country_quote": "Автоматизация фудтрака в Казахстане",
+        "country_url": "https://joinposter.kz/business/foodtruck"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter + Poster Site add-on",
+          "currency": "KZT",
+          "price_major": 21000,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "8 640 ₸9 600 ₸/мес. | Стоимость — 11 400 ₸/мес.",
+          "url": "https://joinposter.kz/pricing",
+          "note": "9 600 ₸ (Starter, monthly billing; 8 640 ₸ a month billed yearly) + 11 400 ₸ (Poster Site add-on, only figure shown) = 21 000 ₸/month. The add-on on its own and Mini (15 660 / 17 400 ₸) stay unclear and are not counted."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Доставка и самовывоз",
+          "url": "https://joinposter.kz/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://joinposter.kz/pricing",
+        "https://joinposter.kz/business/foodtruck"
+      ]
+    },
+    {
+      "name": "СделайЗаказ (4mobile.me)",
+      "website": "https://new.4mobile.me",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Russian branded ordering app with pickup pre-orders ('Предзаказ на определенные день/время.'), but priced in RUB only ('4 990 ₽ / мес.') and no Kazakhstan on its site; clients in Rostov-on-Don / St Petersburg. Found via a Kazakhstan App Store listing.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://new.4mobile.me/"
+      ]
+    },
+    {
+      "name": "SmartPikasso (TOO «Смартпикассо»)",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Kazakh developer of single-restaurant ordering apps (App Store only, e.g. JÜZIM, Кафе АВТОДОМ); no own site or merchant price found. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "Poster KZ recorded from docs/compare-research-3/agent-4/raw/KZ.json (pricing page read 25 Nov: 'Starter 8 640 ₸9 600 ₸/мес.', add-on 'Стоимость — 11 400 ₸/мес.'); higher Starter figure = monthly billing. Not re-read today. Earlier rejects not re-read: Paloma365 (no pickup), Kaspi Рестораны (QR payment), Clopos (QR menu, USD), Glovo/Wolt/Yandex Eda (marketplaces); FoxiFood, SumUp, Storekit, Vitrina do not list Kazakhstan (compare-research-2/-3). Second KZT tool: none found (5 Russian/Kazakh searches return Glovo/Wolt pages, Kaspi guide, App Store listings and RUB-priced Russian tools; iiko/R-Keeper only via integrators/OLX, RUB prices). Delever (Tashkent; eligible in compare-research-2 but сум-only) not re-read: not my region's vendor. Count now: 1 (Poster, 21 000 ₸/month)."
+}

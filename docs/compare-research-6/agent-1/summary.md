@@ -50,3 +50,16 @@ count now: 0
 
 nothing eligible exists: Hebrew searches (הזמנה מראש / איסוף עצמי / מערכת הזמנות אונליין למסעדות / פוד טראק) are saturated by Wix help pages and USD tools.
 count now: 0
+
+# Round 3 (wave 3)
+
+## KZ (KZT)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Poster (0802a7c8) | food_truck | eligible | Starter 9 600 ₸ + Poster Site 11 400 ₸ = 21 000 ₸/month (monthly billing) | https://joinposter.kz/pricing |
+| СделайЗаказ (4mobile.me) | nearest_local | not_relevant (RUB only, no Kazakhstan) | 4 990 ₽/мес. | https://new.4mobile.me/ |
+| SmartPikasso | nearest_local | not_relevant (App Store only, no own site/price) | — | — |
+
+Poster recorded from compare-research-3 agent-4's evidence (not re-read). No second KZT tool found.
+count now: 1
