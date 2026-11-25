@@ -79,3 +79,7 @@ None found. Vendus serves Cabo Verde but is priced in EUR and shows no customer 
 ## SN (Senegal, XOF)
 
 None found. Search results were only Kolonell, a custom-build agency that compare-research-2 already marked not_relevant. Take App and inyad are agent 2's (USD only / no Senegal presence). count now: 0
+
+## UA (Ukraine, UAH)
+
+Choice 403s again; Delivety's /uk/pricing shows no prices (compare-research-2 saw USD only); Diny is a consumer app. Poster not re-read. count now: 1 (Vitrina)
