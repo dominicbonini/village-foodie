@@ -1,0 +1,11 @@
+{
+  "vendor": "Choice",
+  "stored_id_prefix": "70b34967",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "check_urls": [
+    "https://choiceqr.com/md/pricing"
+  ],
+  "notes": "https://choiceqr.com/md/pricing answered HTTP 403 (bot block; one try, not retried) - the same block every earlier round hit on its country pricing pages (cz, ro, bg, ee, lv, lt, hu, pt, ua). No country page or price could be read for any one-short country; earlier compare-research-4 found no Malta presence (strict rule). Counts in none (unreadable)."
+}
