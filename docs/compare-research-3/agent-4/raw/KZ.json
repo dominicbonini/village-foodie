@@ -1,0 +1,129 @@
+{
+ "country": "KZ",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Poster",
+   "website": "https://joinposter.kz",
+   "stored_id_prefix": "0802a7c8",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "Poster's own Kazakhstan site (joinposter.kz) with a Kazakhstan food-truck page and tenge prices; ordering website via the paid Poster Site add-on ('Доставка и самовывоз'). Prices are the higher (monthly-billing) figures.",
+   "eligibility": {
+    "food_quote": "Автоматизация фудтрака в Казахстане",
+    "food_url": "https://joinposter.kz/business/foodtruck",
+    "order_quote": "Сайт для заказов из вашего заведения — за 5 минут",
+    "order_url": "https://joinposter.kz/pricing",
+    "country_quote": "Автоматизация фудтрака в Казахстане",
+    "country_url": "https://joinposter.kz/business/foodtruck"
+   },
+   "plans": [
+    {
+     "plan_name": "Starter + Poster Site add-on",
+     "currency": "KZT",
+     "price_major": 9600,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "8 640 ₸9 600 ₸/мес.",
+     "url": "https://joinposter.kz/pricing",
+     "note": "8 640 ₸ a month if billed yearly; Starter POS price only, the Poster Site add-on (11 400 ₸/мес.) is extra"
+    },
+    {
+     "plan_name": "Mini (food-truck page price)",
+     "currency": "KZT",
+     "price_major": 17400,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "15 660 ₸17 400 ₸/мес.",
+     "url": "https://joinposter.kz/pricing",
+     "note": "15 660 ₸ a month if billed yearly (the food-truck page shows '15 660 ₸/в мес.'); Poster Site add-on extra"
+    },
+    {
+     "plan_name": "Poster Site (ordering website add-on)",
+     "currency": "KZT",
+     "price_major": 11400,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Стоимость — 11 400 ₸/мес.",
+     "url": "https://joinposter.kz/pricing",
+     "note": "no separate yearly figure is shown for the add-on (only 11 400 ₸/мес.); add-on on top of a POS plan"
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Доставка и самовывоз",
+     "url": "https://joinposter.kz/pricing"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://joinposter.kz/pricing",
+    "https://joinposter.kz/business/foodtruck"
+   ]
+  }
+ ],
+ "notes": "Pricing page read once today: 'Starter 8 640 ₸9 600 ₸/мес.', 'Mini 15 660 ₸17 400 ₸/мес.', 'Business 21 060 ₸23 400 ₸/мес.', 'Pro 31 860 ₸35 400 ₸/мес.'; only toggle 'Оплата за год', no discount %, no label saying which figure is which, no strike-through visible in the text. Higher figure taken as monthly billing (lower = higher × 0.9), as instructed. order_quote re-read today on joinposter.kz/pricing; food_quote (and country_quote) from Poster's own Kazakhstan food-truck page as recorded by compare-research-2 agent-5 (not re-read today). Pickup wording only 'Доставка и самовывоз' (menu under Poster Site); no order-for-a-time wording."
+}
