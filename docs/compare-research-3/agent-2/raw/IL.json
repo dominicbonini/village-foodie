@@ -1,0 +1,23 @@
+{
+ "country": "IL",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "מערכת הזמנות אונליין למסעדות איסוף עצמי ללא עמלות מחיר לחודש ₪"
+ ],
+ "vendors": [
+  {
+   "name": "Wix (Wix Restaurants Orders)",
+   "website": "https://www.wix.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "https://he.wix.com/plans returned HTTP 404; www.wix.com/plans rendered only its title last round; Wix prices are geo-dependent, no ILS price obtainable",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://he.wix.com/plans"
+   ]
+  }
+ ],
+ "notes": "IL: none exist that I could find with an own-site shekel price. Hebrew search returned the same dead ends as compare-research-2: Shopify app Zapiet Eats (USD, app listing, not an own site), MENU TIGER /he/ (USD; agent ownership as before), UpMenu (agent 1, no Israel price), Wix help pages (no price), a review directory. Tabit (US site, no prices) and Beecomm (no results) from compare-research-2 not repeated. count now: 0."
+}

@@ -76,3 +76,11 @@ No second tool found (marketplaces, single-restaurant apps, Zegashop blog only).
 | Foodics | nearest_local | eligible | Advanced EGP 3733.67/month billed annually (includes Foodics Online Web Creation) | https://www.foodics.com/foodics-pricing-egypt/ |
 
 count now: 2 (Ordable + Foodics)
+
+## IL (Israel, ILS)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Wix | nearest_local | unreadable (he.wix.com/plans 404) | — | https://he.wix.com/plans |
+
+None exist that I could find with an own-site shekel price (Zapiet Eats USD app listing, MENU TIGER USD, UpMenu no IL price, Tabit no prices). count now: 0
