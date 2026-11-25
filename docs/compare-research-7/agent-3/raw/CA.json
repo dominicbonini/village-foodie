@@ -1,0 +1,111 @@
+{
+  "country": "CA",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "OrderEatRepeat",
+      "website": "https://ordereatrepeat.com",
+      "stored_id_prefix": "5143bd80",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Ottawa-made commission-free restaurant ordering page with pickup and scheduled orders; one CAD price per location on its own pricing page (re-read today). Stored and eligible since compare-research-1 but not among CA's two counted tools — it makes 3",
+      "eligibility": {
+        "order_quote": "Customers order pickup or delivery from a branded page on a link you own.",
+        "order_url": "https://ordereatrepeat.com",
+        "country_quote": "Canadian locations pay in CAD. Locations in the US and everywhere else pay in USD.",
+        "country_url": "https://ordereatrepeat.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Everything included",
+          "currency": "CAD",
+          "price_major": 89,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Everything included $89 $79 CAD USD per location, per month",
+          "url": "https://ordereatrepeat.com/pricing",
+          "note": "read today (static HTML: '&#36;89 &#36;79 CAD USD per location, per month' with a CAD/USD toggle; $89 = CAD, $79 = USD). 'no setup fee and 0% commission'; 30-day free trial. Home page also says 'Made in Ottawa, on a full stomach.' and 'Cash or card at pickup works with no setup.'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled orders",
+          "url": "https://ordereatrepeat.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Put it on your website, Google profile and socials.",
+          "url": "https://ordereatrepeat.com"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen order board",
+          "url": "https://ordereatrepeat.com/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Customers order pickup or delivery from a branded page on a link you own.",
+          "url": "https://ordereatrepeat.com"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Everything included $89 $79 CAD USD per location, per month",
+          "url": "https://ordereatrepeat.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Every online ordering feature is included, with no setup fee and 0% commission.",
+          "url": "https://ordereatrepeat.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ordereatrepeat.com",
+        "https://ordereatrepeat.com/pricing"
+      ]
+    }
+  ],
+  "notes": "Count now: 3 if OrderEatRepeat is counted (was 2: iShopo, Owner.com). OrderEatRepeat (stored 5143bd80, active, eligible with CAD 89 in compare-research-1) was re-read today: pickup + 'Scheduled orders', CAD $89 per location per month. No new search needed — stopped at 3. Not re-read: Food Truck Pub (USD only, Canada never named), CloudOrders (no country), Ritual / Dine360 / Moduurn / FoodTrucker (rejected in compare-research-1). Note for the coordinator: OrderEatRepeat says 'Locations in the US and everywhere else pay in USD.' ($79 USD) — a generic presence, not a named country, so not recorded for any USD country."
+}
