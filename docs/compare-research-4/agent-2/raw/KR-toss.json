@@ -1,0 +1,10 @@
+{
+  "vendor": "Toss Place",
+  "stored_id_prefix": "87b9b92a",
+  "fee_in_force_stated": false,
+  "fee_pct": null,
+  "vat": "unknown",
+  "quote": "평생 주문 수수료 0원으로 쓸 수 있어요.",
+  "url": "https://tossplace.com/story/tossorder-event",
+  "note": "No tossplace.com page states the pickup-order fee in force today. Searched tossplace.com (one site-restricted search) and read 3 pages not read by compare-research-3b: story/tossorder-event (2023.10.30: the quote above is a lifetime 0-won benefit only for beta pre-applicants; '사전 신청 이벤트가 마감되었어요'), story/pickupoder_stampok (2024.10.28: no fee stated; points to support 1644-2955), story/vat_return (2025.01.16: no fee stated). Terms page pages.tossplace.com/policies/1661/447 rendered empty (JS); the search snippet of it says fees follow '본 서비스 신청 시의 안내 및 동의한 내용' and that card settlement fees are separate — i.e. the fee is set at sign-up, not published. Still the newest fee wording: story/pickup_order (2025.04.08) '주문 수수료 0원으로 써보기' (no end date) vs story/toss-order (2024.02.29) planned 3.5% excl. VAT after end-2024. Verdict: fee in force not stated on its own site, so Toss Place should not count for KR."
+}
