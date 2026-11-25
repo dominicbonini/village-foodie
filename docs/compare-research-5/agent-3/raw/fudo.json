@@ -1,0 +1,40 @@
+[
+  {
+    "country": "AR",
+    "needs_paid_plan": false,
+    "quote": "Solo necesitás una cuenta activa en Fudo.",
+    "url": "https://fu.do/es-ar/delivery/",
+    "base_plan": {
+      "name": "Plan Inicial",
+      "price_major": 23900,
+      "quote": "$23.900 /mes",
+      "url": "https://fu.do/es-ar/precios/"
+    },
+    "module_price": {
+      "price_major": null,
+      "quote": "Por cada venta que entra por Tu Delivery pagás una tasa de servicio del 1,9% + IVA.",
+      "url": "https://fu.do/es-ar/delivery/"
+    },
+    "no_monthly_fee_quote": "No tiene abono mensual: solo pagás cuando vendés.",
+    "note": "BORDERLINE. The AR page has no CO-style wording (no 'sumar el módulo Tu Delivery a tu plan'); its FAQ asks only for 'una cuenta activa en Fudo', the heading says 'Activá Tu Delivery en minutos y sin costo adicional' and the benefits 'Sin abono mensual ni permanencia'; also 'Activá tu cuenta gratis y en 15 minutos ya estás operando.' (free trial). But /es-ar/precios/ lists no free plan (only Plan Inicial $23.900 /mes, Avanzado $46.500 /mes, Pro $93.500 /mes, all 'Precio final'; Inicial 'Sin impuestos nacionales: $19.752'), says 'El único costo de Fudo es el abono mensual.' and offers only a free trial, so an 'active account' after the trial probably means a paid plan — not stated in words. base_plan filled for reference only (the cheapest plan, in case 'cuenta activa' is read as a paid plan). Fee cap: '1,9% + IVA de tasa de servicio por cada venta, con un tope de $99.000 + IVA por mes' — 'El tope aplica solo si activás Fudo Pagos como procesador de pago online.' Billing toggle 'Mensual / Semestral −10% / Anual −15%'; the headline prices are not labelled with a period. The 'Delivery Apps +$19.500' module on /precios is the aggregator integration, not Tu Delivery."
+  },
+  {
+    "country": "CL",
+    "needs_paid_plan": false,
+    "quote": "Solo necesitas una cuenta activa en Fudo.",
+    "url": "https://fu.do/es-cl/delivery/",
+    "base_plan": {
+      "name": "Plan Inicial",
+      "price_major": 25500,
+      "quote": "$25.500 /mes",
+      "url": "https://fu.do/es-cl/precios/"
+    },
+    "module_price": {
+      "price_major": null,
+      "quote": "Luego pagas una tasa de servicio del 1,9% + IVA por cada venta realizada a través de Tu Delivery",
+      "url": "https://fu.do/es-cl/delivery/"
+    },
+    "no_monthly_fee_quote": null,
+    "note": "BORDERLINE. Same as AR: no CO-style module wording; FAQ asks only for 'una cuenta activa en Fudo'; heading 'Activa Tu Delivery en minutos y sin costo adicional'; first 25 sales free; no 'abono mensual' / no-monthly-fee sentence on the CL page (hence null) and no fee cap. /es-cl/precios/: no free plan, 'Precios en pesos chilenos, sin IVA.' — Plan Inicial $25.500 /mes, Avanzado $34.500 /mes, Pro $52.500 /mes; 'El único costo de Fudo es el abono mensual.'; free trial only ('periodo de prueba gratis ... antes de pagar'). So an active account after the trial probably means a paid plan, but the page does not say so. base_plan filled for reference only. Modules 'Súmale módulos ... El precio se suma al de tu plan.' list Delivery Apps $9.500 /mes (aggregator integration, not Tu Delivery); Tu Delivery is not listed as a priced module."
+  }
+]
