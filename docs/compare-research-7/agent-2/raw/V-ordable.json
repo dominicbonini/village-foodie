@@ -1,0 +1,7 @@
+{
+  "vendor": "Ordable",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "notes": "Ordable (69a3cfce) already counts in QA, BH and JO. Its country selectors on https://www.itsordable.com/en/qatar/pricing list only Intl., Bahrain, Egypt, Jordan, Saudi Arabia, Kuwait, Oman, Qatar, UAE (footer also Iraq, Lebanon); none of the other one-short countries (MT IS RS BO DO SV GT JM UY CO AL BA MK MD UZ LK BD KR KZ) appears. Qatar prices still read '3000 QAR / year' and '4500 QAR / year' (unchanged). Nothing new."
+}
