@@ -6,7 +6,10 @@
   "Jordan restaurant POS \"online ordering\" pickup plans \"JOD\" per month",
   "منصة أردنية للمطاعم والكافيهات طلب مسبق واستلام Pick up للتجار اشتراك سعر الباقة",
   "تصميم تطبيق وموقع طلبات للمطاعم عمان الأردن باقات الأسعار دينار سنوي استلام من المطعم",
-  "نظام كاشير للمطاعم في الأردن مع طلبات أونلاين وموقع طلبات أسعار الاشتراك الشهري دينار"
+  "نظام كاشير للمطاعم في الأردن مع طلبات أونلاين وموقع طلبات أسعار الاشتراك الشهري دينار",
+  "Amman restaurant order online pickup website \"powered by\" Jordan cafe online ordering",
+  "برنامج نقاط بيع مطاعم الأردن إضافة طلبات أونلاين موقع خاص استلام من المطعم السعر دينار شهريا الباقة",
+  "restaurant online ordering platform available in Jordan Saudi UAE Kuwait pricing plans JOD pickup branded website app MENA"
  ],
  "vendors": [
   {
@@ -22,7 +25,21 @@
    "check_urls": [
     "https://orange.jo/en/business/small-businesses/smart-business/pos"
    ]
+  },
+  {
+   "name": "Zegashop",
+   "website": "https://www.zegashop.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "general eCommerce CMS ('We provide a CMS platform built to load fast and scale and grow your eCommerce sales quickly.') with an Amman F&B marketing page ('Determine whether customers will order via delivery, pickup, or both.'), no price on the page — a generic web-shop builder, excluded",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.zegashop.com/business/?p=72952"
+   ]
   }
  ],
- "notes": "JO count now: 1 (Ordable, JOD) — unchanged. Block 1: Foodics no Jordan price page (V-foodics.json); Zyda doesn't list Jordan (V-zyda.json); Take App doesn't list Jordan; MENU TIGER and Restora POS (USD) don't name Jordan. Block 2: four new searches (Arabic and English: own ordering site with branch pickup in JOD, Jordan POS online-ordering plans, Jordanian pre-order/pickup platform, restaurant ordering-site agencies in Amman) returned Talabat (marketplace), Qoyod (accounting/e-invoicing POS, no ordering), Geidea (UAE pages only), Capterra/GoodFirms (directories, not sources), Shopify/WooCommerce/GoodBarber/Odoo (generic builders), Pickup.qa (a Qatari consumer app), khamsat / mostaql / Upwork gigs (freelancers, USD). Foodics' offers.foodics.com Jordan page (no price per the search summary) not opened — Foodics rejected for JO. Only one new vendor site was worth opening (Orange Jordan POS: till only). Nothing eligible exists beyond Ordable; stopped. A fifth search (كاشير مطاعم + طلبات أونلاين) found only Qoyod guides, khamsat gigs and OpenSooq classifieds (one-off POS offers)."
+ "notes": "JO count now: 1 (Ordable, JOD) — unchanged. Block 1: Foodics no Jordan price page (V-foodics.json); Zyda doesn't list Jordan (V-zyda.json); Take App doesn't list Jordan; MENU TIGER and Restora POS (USD) don't name Jordan. Block 2: four new searches (Arabic and English: own ordering site with branch pickup in JOD, Jordan POS online-ordering plans, Jordanian pre-order/pickup platform, restaurant ordering-site agencies in Amman) returned Talabat (marketplace), Qoyod (accounting/e-invoicing POS, no ordering), Geidea (UAE pages only), Capterra/GoodFirms (directories, not sources), Shopify/WooCommerce/GoodBarber/Odoo (generic builders), Pickup.qa (a Qatari consumer app), khamsat / mostaql / Upwork gigs (freelancers, USD). Foodics' offers.foodics.com Jordan page (no price per the search summary) not opened — Foodics rejected for JO. Only one new vendor site was worth opening (Orange Jordan POS: till only). Nothing eligible exists beyond Ordable; stopped. A fifth search (كاشير مطاعم + طلبات أونلاين) found only Qoyod guides, khamsat gigs and OpenSooq classifieds (one-off POS offers). PASS 3: (b) 'powered by' search on Amman cafés found only Talabat / Bento (marketplaces), OpenTable / TableAgent (booking) and Zegashop (opened: generic store builder); (a) Jordanian POS-reseller search found OpenSooq classifieds (one-off till prices from 75 / 99 JD) and Qoyod guides — no online-ordering add-on with a JOD price; (c) regional players: Foodics (no JO price, rejected), Cloudix (UAE, no price), Taker (quote-only, rejected), UrbanPiper (aggregator hub, no Jordan), Geidea (UAE). JO stays 1."
 }
