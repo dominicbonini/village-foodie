@@ -259,3 +259,8 @@ count now: 0
 
 Nothing eligible: Axa Eats = delivery marketplace; restaurants take takeout by phone.
 count now: 0
+
+## MS (XCD)
+
+None exists: no ordering tool or app found.
+count now: 0
