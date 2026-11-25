@@ -68,3 +68,9 @@ count now: 0
 
 Nothing eligible exists with an NPR price (Nepali tools are POS / QR-table only; Foodmandu, Bhojmandu = marketplaces).
 count now: 0
+
+## KH (KHR)
+
+No vendor worth reading: marketplaces (Nham24, foodpanda, Grab, WOWNOW), a restaurant group's own app (Thalias), QR table menus (T-O Group, Miam Miam), payments (ABA PayWay). Aldelo: agent 3.
+Nothing eligible exists with a KHR price.
+count now: 0
