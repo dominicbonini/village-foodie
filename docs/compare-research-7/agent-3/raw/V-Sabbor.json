@@ -1,0 +1,9 @@
+{
+  "vendor": "Sabbor",
+  "stored_id_prefix": "065d9dc6",
+  "countries": [],
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "notes": "Guatemalan, GTQ (counts in GT). Home page re-read today (https://restaurant-saas-monorepo.pages.dev/): '¿Listo para digitalizar tu restaurante en Guatemala?'; plans 'Q 375 / mes + Q 500 de configuración inicial' and 'Q 500 / mes + Q 500 de configuración inicial'; no other country named -> not plausible in BO, DO, SV, JM, UY or CO. No new country rows. FLAG for the reviewer (V16.38 rule, not acted on because GT already counts it): its only site is a Cloudflare Pages default host (pages.dev, a repo-style name 'restaurant-saas-monorepo'), and the page shows no real customer — the order cards are a sample ('Carlos Méndez 06 nov 2026 12:45 ... Recoger 1x Pizza Artesanal 4 Quesos Q95.00'), the CTAs are 'Solicitar demo' / 'Empezar prueba gratis', the third plan is 'Próximamente' with 'Unirme a la lista de espera'. Under 'a vendor whose only site is a throwaway host ... or that shows no real customers is not relevant' it may not count in GT (count would drop to 0)."
+}
