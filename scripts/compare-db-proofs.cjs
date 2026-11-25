@@ -7,6 +7,8 @@
 //        ONE transaction, ending in ROLLBACK: the migration's statements (its begin / commit taken out), then the checks it must pass —
 //        the current-answer count, no answer left without a current value by the failed import, the four live-page competitors'
 //        answers — then the counts after the rollback, which must equal the counts before.
+//   npx -y -p pg@8.13.1 node scripts/compare-db-proofs.cjs --preflight supabase/migrations/<competitor-data migration>.sql
+//        compare-research-3: any competitor-data migration, rolled back (its guards must pass; counts and checksums equal after).
 //   npx -y -p pg@8.13.1 node scripts/compare-db-proofs.cjs --repair-check
 //        After the migration ran: the same checks, read-only (rolled back too).
 //
@@ -91,6 +93,35 @@ async function preflightRepair(file) {
   ok('inside: competitors, plans and entries untouched', inside.competitors === before.competitors && inside.plans === before.plans && inside.entries === before.entries, { before, inside })
   ok('after the ROLLBACK: every count exactly as before', JSON.stringify(after) === JSON.stringify(before), { before, after })
 }
+/** compare-research-3: ANY competitor-data migration, inside ONE transaction that ROLLBACKs — the migration's own guards (its do-blocks)
+ *  must pass; the tables' counts and the competitor rows' check pages / plan flags are printed before, inside and after, and the
+ *  state after the rollback must equal the state before. */
+async function generalState(c, tag) {
+  const r = await q(c, tag, `select (select count(*) from public.competitors)::int competitors, (select count(*) from public.competitor_plans)::int plans,
+     (select count(*) from public.competitor_plans where superseded_at is null and unclear)::int current_unclear_plans,
+     (select count(*) from public.comparison_entries)::int entries, (select count(*) from public.competitor_feature_values where superseded_at is null)::int current_answers,
+     (select md5(string_agg(id::text || coalesce(array_to_string(check_urls, ','), '') || coalesce(website, ''), '|' order by id)) from public.competitors) competitors_md5,
+     (select md5(string_agg(id::text || unclear::text || coalesce(monthly_minor::text, '') || coalesce(notes, ''), '|' order by id)) from public.competitor_plans) plans_md5`)
+  say(`  state ${tag}: ${JSON.stringify(r.rows[0])}`)
+  return r.rows[0]
+}
+async function preflightGeneral(file) {
+  const rel = path.relative(REPO, path.resolve(REPO, file))
+  if (!/^supabase\/migrations\/[^/]+\.sql$/.test(rel)) die('the pre-flight takes one supabase/migrations/*.sql file')
+  const body = fs.readFileSync(path.join(REPO, rel), 'utf8').replace(/^\s*begin\s*;\s*$/gim, '').replace(/^\s*commit\s*;\s*$/gim, '')
+  if (/\bcommit\b/i.test(body.replace(/--[^\n]*/g, ''))) die('the migration still contains a COMMIT after stripping — refusing')
+  if (/\b(trucks|orders|plan_prices|plan_features|country_settings)\b|pizzeria-gusto/i.test(body.replace(/--[^\n]*/g, ''))) die('this pre-flight is for competitor data only')
+  say(`\n══ before (read-only, rolled back)`)
+  const before = await inRollback('before', async c => { await q(c, 'before', 'set transaction read only'); return generalState(c, 'before') })
+  say(`\n══ the migration inside ONE transaction that ROLLBACKs (${rel})`)
+  const inside = await inRollback('preflight', async c => { await q(c, 'preflight', body); return generalState(c, 'inside') })
+  say(`\n══ after the rollback (read-only)`)
+  const after = await inRollback('after', async c => { await q(c, 'after', 'set transaction read only'); return generalState(c, 'after') })
+  say(`\n══ checks`)
+  ok('inside: the migration ran, its own guards passed', !!inside)
+  ok('inside: competitors, plans, entries and answers counts unchanged (it only updates rows)', inside.competitors === before.competitors && inside.plans === before.plans && inside.entries === before.entries && inside.current_answers === before.current_answers, { before, inside })
+  ok('after the ROLLBACK: every count and checksum exactly as before', JSON.stringify(after) === JSON.stringify(before), { before, after })
+}
 async function repairCheck() {
   const s = await inRollback('check', async c => { await q(c, 'check', 'set transaction read only'); return stateOf(c, 'now') })
   ok(`${s.current_answers} current answers = 8,012`, s.current_answers === 8012, s)
@@ -104,7 +135,8 @@ async function repairCheck() {
   const args = process.argv.slice(2)
   if (args[0] === '--preflight-repair' && args[1]) await preflightRepair(args[1])
   else if (args[0] === '--repair-check') await repairCheck()
-  else die('usage: --preflight-repair <migration.sql> | --repair-check')
+  else if (args[0] === '--preflight' && args[1]) await preflightGeneral(args[1])
+  else die('usage: --preflight-repair <migration.sql> | --repair-check | --preflight <competitor-data migration.sql>')
   say(failed ? `\n🔴 compare-db-proofs: ${failed} check(s) failed` : '\n✓ compare-db-proofs: every check passed — nothing was committed')
   process.exit(failed ? 1 : 0)
 })().catch(e => die(e && e.message ? e.message : String(e)))
