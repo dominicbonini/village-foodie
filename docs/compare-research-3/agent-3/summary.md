@@ -245,3 +245,14 @@ count now: 0
 Nothing eligible exists with a Zimbabwe presence and a USD price.
 
 count now: 0
+
+## DZ (DZD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| BorneDZ | nearest_local | unreadable (HTTP 410 Gone) | — | https://bornedz.com/ |
+| NResto | nearest_local | not_relevant (table + delivery only, no pickup) | 6 500–11 500 DZD / 3 mois | https://nresto.com/ |
+
+Nothing eligible exists with a DZD price.
+
+count now: 0

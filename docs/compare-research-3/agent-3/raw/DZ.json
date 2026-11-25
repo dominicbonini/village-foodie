@@ -1,0 +1,42 @@
+{
+ "country": "DZ",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Algérie logiciel commande en ligne restaurant \"à emporter\" OR \"click and collect\" abonnement \"DA\" OR \"DZD\" par mois plateforme algérienne menu (Capterra/GetApp/G2/FoodChow excluded)"
+ ],
+ "vendors": [
+  {
+   "name": "BorneDZ",
+   "website": "https://bornedz.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "Algerian kiosk / till with an online-ordering page (search snippet: 'votre site, 0% commission', Essentiel 3 900 DA / Complet 6 900 DA par mois); both bornedz.com and its online-ordering page answered HTTP 410 Gone today",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://bornedz.com/",
+    "https://bornedz.com/commande-en-ligne-restaurant.html"
+   ]
+  },
+  {
+   "name": "NResto",
+   "website": "https://nresto.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Algerian QR menu with table ordering and a delivery (COD) system; no à emporter / retrait / click-and-collect / pre-order wording ('Livraison seule : 9 000 DZD / 3 mois.')",
+   "eligibility": {
+    "country_quote": "La solution de menu digital et gestion de restaurant pour l'Algérie.",
+    "country_url": "https://nresto.com/"
+   },
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://nresto.com/"
+   ]
+  }
+ ],
+ "notes": "Count now: 0. Nothing eligible exists with a DZD price that I could find (wave 2 + today ~5 candidates). BorneDZ (the most promising: own ordering site, DA monthly prices per snippet) answers 410 Gone. NResto: table + delivery only, no pickup wording (BORDERLINE if delivery ordering from the restaurant's own menu were accepted). Seen, not read: Restorium by Cirtasoft (restaurant till, 25 000 DZD HT), DZDFOOD (marketplace-looking), Wajeez, DZBuild / Arkan / Colisify (generic e-commerce), Mag Startup comparison (not a source). Wave 2: Yassir, Qooxy and other delivery marketplaces; inyad (agent 2) Morocco-only."
+}
