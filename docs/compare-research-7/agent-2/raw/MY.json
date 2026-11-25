@@ -5,7 +5,8 @@
   "Malaysia F&B online ordering system self pickup takeaway pre-order commission-free pricing \"RM\" per month restaurant cafe own website",
   "EasyEat OR Delivereat OR Slurp Malaysia restaurant online ordering self-pickup pricing RM per month plan",
   "aplikasi tempahan awal food truck Malaysia pre-order pickup peniaga bazar Ramadan sistem order online harga sebulan RM",
-  "TRUKADO food truck app pre-order"
+  "TRUKADO food truck app pre-order",
+  "sistem pesanan online restoran Malaysia ambil sendiri self pickup tempahan awal harga pakej RM sebulan kedai makan kafe tanpa komisen"
  ],
  "vendors": [
   {
@@ -63,7 +64,104 @@
    "check_urls": [
     "https://www.mobihq.com/pricing/smbs"
    ]
+  },
+  {
+   "name": "Dinlr (Dinlr Online Order)",
+   "website": "https://www.dinlr.com/my",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Singapore-based restaurant POS with a Malaysia site in MYR; Dinlr Online Order lets customers order on the restaurant's website and schedule a pick-up date & time; Online Order is a module added to the Dinlr Waiter POS licence, both priced on /my/pricing",
+   "eligibility": {
+    "order_quote": "Customer can place their order and schedule their pick-up date & time directly from the online website.",
+    "order_url": "https://www.dinlr.com/my/online-order",
+    "country_quote": "Billed in MYR annually",
+    "country_url": "https://www.dinlr.com/my/pricing"
+   },
+   "plans": [
+    {
+     "plan_name": "Dinlr Waiter + Dinlr Online Order",
+     "currency": "MYR",
+     "price_major": 400,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Dinlr Waiter 1 Location. First Device. RM 150 / MO … Dinlr Online Order Per Location. RM 150 / MO Billed in MYR annually",
+     "url": "https://www.dinlr.com/my/pricing",
+     "note": "Module on a paid base plan → base + module. Monthly billing: Waiter 'RM200 per month billed monthly' (page FAQ) + Online Order monthly 200 (the page's own HTML: '<div class=\"pricing\" per_price=\"150\" monthly_per_price=\"200\">' for Online Order, shown when the Monthly/Annually toggle is set to Monthly) = RM 400 / month. Billed annually: RM 150 + RM 150 = RM 300 / month. FAQ: 'The smallest viable setup is a single Dinlr Waiter licence … Self-ordering, kitchen display, online ordering and loyalty can be added'. Found via Exabytes' MY listicle (finding only)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Customer can place their order and schedule their pick-up date & time directly from the online website.",
+     "url": "https://www.dinlr.com/my/online-order"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Customer can place their order and schedule their pick-up date & time directly from the online website.",
+     "url": "https://www.dinlr.com/my/online-order"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "RM 150 / MO",
+     "url": "https://www.dinlr.com/my/pricing"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.dinlr.com/my/pricing",
+    "https://www.dinlr.com/my/online-order"
+   ]
   }
  ],
- "notes": "MY count now: 2 (Klikit, StoreHub) — unchanged. Qashier MY (stored, eligible) is priced per day only (compare-research-1: 'RM8 a DAY'; a search snippet now shows 'Plan RM 1.50 / day') — a per-day price is unclear, so not counted. Oddle MY: a search snippet shows 'from RM199/month' on oddle.me/en-my, but oddle.me refused automated fetches twice today (403) — not tried again; worth a later re-try (Oddle is stored). Take App MY: USD only. New sites opened: Orderla (form not found), iCHEF (no MY price page), FeedMe (no plan prices, no order-ahead). Stopped. Extra round: Mobi (mobi2go.com → mobihq.com) quote-only, no country; EasyEat / Delivereat / Slurp not found in search; Deonde MY page (flat fee, no amount, Deonde 403 in other rounds) not opened. PASS 2 (food-truck only): the Malay search returned Mobilefood.my (a food-truck e-marketplace, The Star 2017), Kapita / Tapak (food-truck locator app with a vendor app, Vulcan Post), MBPJ's truck-tracking app (council locator), Klikit / StoreHub food-truck blog posts (both already counted), food-truck rental sites, loan / SME articles. TRUKADO (App Store: Trukado LLC, 'Food Truck monthly USD 29.99') is a US food-truck network, not Malaysian, USD. No Malaysian food-truck pre-order tool with an own site and RM price. Count stays 2."
+ "notes": "MY count now: 2 (Klikit, StoreHub) — unchanged. Qashier MY (stored, eligible) is priced per day only (compare-research-1: 'RM8 a DAY'; a search snippet now shows 'Plan RM 1.50 / day') — a per-day price is unclear, so not counted. Oddle MY: a search snippet shows 'from RM199/month' on oddle.me/en-my, but oddle.me refused automated fetches twice today (403) — not tried again; worth a later re-try (Oddle is stored). Take App MY: USD only. New sites opened: Orderla (form not found), iCHEF (no MY price page), FeedMe (no plan prices, no order-ahead). Stopped. Extra round: Mobi (mobi2go.com → mobihq.com) quote-only, no country; EasyEat / Delivereat / Slurp not found in search; Deonde MY page (flat fee, no amount, Deonde 403 in other rounds) not opened. PASS 2 (food-truck only): the Malay search returned Mobilefood.my (a food-truck e-marketplace, The Star 2017), Kapita / Tapak (food-truck locator app with a vendor app, Vulcan Post), MBPJ's truck-tracking app (council locator), Klikit / StoreHub food-truck blog posts (both already counted), food-truck rental sites, loan / SME articles. TRUKADO (App Store: Trukado LLC, 'Food Truck monthly USD 29.99') is a US food-truck network, not Malaysian, USD. No Malaysian food-truck pre-order tool with an own site and RM price. Count stays 2. ROUND 3 (restaurant tools): NEW Dinlr — eligible (scheduled pick-up date & time) and priced in MYR as Waiter + Online Order: RM 400/month billed monthly (RM 300 billed annually). MY count now: 3 (Klikit, StoreHub + Dinlr). Exabytes eRestaurant: its product page from search is a 404 (not counted)."
 }
