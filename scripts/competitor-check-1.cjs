@@ -458,7 +458,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const wf = read('.github/workflows/competitor-check.yml')
     const at = k => wf.indexOf(k)
     t('the workflow imports FIRST — after npm ci, before the OIDC token step and the check — with the Supabase secrets only; the later steps still run if it fails',
-      at('name: Import new data files') > at('npm ci') && at('name: Import new data files') < at('name: Get the GitHub OIDC token') && /run: node scripts\/competitor-check\/run\.mjs scripts\/data-import\/main\.ts/.test(wf)
+      at('name: Import new data files') > at('npm ci') && at('name: Import new data files') < at('name: Get the GitHub OIDC token') && /run: (npx -y -p pg@8\.13\.1 )?node scripts\/competitor-check\/run\.mjs scripts\/data-import\/main\.ts/.test(wf) /* checker-prep-1: the pg runner */
       && !/ANTHROPIC/.test(wf.slice(at('name: Import new data files'), at('name: Get the GitHub OIDC token')).replace(/#.*$/gm, '')) && /if: \$\{\{ !cancelled\(\) \}\}/.test(wf))
     t('the migration (NOT RUN): data_imports with RLS on, no policy, grants revoked, one ok row per path+sha256; deep_country and deep_queue', (() => { const m = read('supabase/migrations/20261045_competitor_check_2.sql')
       return /create table if not exists public\.data_imports/.test(m) && /enable row level security/.test(m) && !/create policy/i.test(m) && /revoke all on table public\.data_imports from anon, authenticated, public/.test(m)

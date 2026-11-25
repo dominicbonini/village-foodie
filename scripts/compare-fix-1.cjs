@@ -249,9 +249,17 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   t('scripts/comparison-publish/main.ts runs runPublish with no Claude API (no Anthropic import, no checker)', /runPublish/.test(pub) && !/anthropic/i.test(pub.replace(/\/\/.*$/gm, '')) && !/runChecker/.test(pub))
   // compare-fix-2 (24 Nov 2026): the dry run is now the real run inside ONE transaction that always ROLLBACKs (scripts/compare-fix-2.cjs §6)
   t('…its --dry-run keeps nothing (one transaction that rolls back) and skips the findings', /inTransaction\(db\.client/.test(pub) && /\{ rollback: dryRun \}/.test(pub) && /skipFindings: true/.test(pub))
+  // checker-prep-1 (25 Nov 2026): the import step changed on purpose (the pg runner + SUPABASE_DB_URL; scripts/checker-prep-1.cjs).
+  // Undo exactly that change and the file must equal 2f0e763a's.
   let wf = ''
-  try { wf = execSync('git diff --name-only 2f0e763a -- .github/workflows/competitor-check.yml', { cwd: REPO }).toString().trim() } catch { wf = 'error' }
-  t('the workflow (.github/workflows/competitor-check.yml) is unchanged', wf === '')
+  try {
+    const now = fs.readFileSync(path.join(REPO, '.github/workflows/competitor-check.yml'), 'utf8')
+      .replace(/      # checker-prep-1 \(25 November 2026[^\n]*\n(      # [^\n]*\n){2}/, '')
+      .replace(/          SUPABASE_DB_URL: \$\{\{ secrets\.SUPABASE_DB_URL \}\}\n/, '')
+      .replace('run: npx -y -p pg@8.13.1 node scripts/competitor-check/run.mjs scripts/data-import/main.ts', 'run: node scripts/competitor-check/run.mjs scripts/data-import/main.ts')
+    wf = now === execSync('git show 2f0e763a:.github/workflows/competitor-check.yml', { cwd: REPO }).toString() ? '' : 'changed'
+  } catch { wf = 'error' }
+  t('the workflow (.github/workflows/competitor-check.yml) is unchanged apart from checker-prep-1\'s import step', wf === '')
   t('ACCOUNT errors (credit balance, workspace usage limit, login) are never a competitor\'s failed check — a real one still is',
     L.isAccountError('400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API."}}')
     && L.isAccountError('400 ... You have reached your specified workspace API usage limits. You will regain access on 2026-12-01 at 00:00 UTC.')

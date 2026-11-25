@@ -78,11 +78,15 @@ jobs:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
       # Before any API call and with no Claude login: data files (data/compare-de-1/competitors.json first) are imported
       # once per version — public.data_imports records each file's sha256.
+      # checker-prep-1 (25 November 2026, docs/checker-prep-1-report.md): the importer writes through the pg driver in one
+      # transaction (scripts/comparison-db.ts), so it needs the database connection string — the SUPABASE_DB_URL secret (name
+      # only; never echoed: the importer scrubs postgres:// strings from every message) — and the pinned pg package.
       - name: Import new data files
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node scripts/competitor-check/run.mjs scripts/data-import/main.ts
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: npx -y -p pg@8.13.1 node scripts/competitor-check/run.mjs scripts/data-import/main.ts
       # The GitHub OIDC token for the Claude API login. A token lasts about 5 minutes and can be exchanged only once, so a
       # background loop re-fetches it every 60 s for the rest of the job; the SDK re-reads the file at each refresh. Each
       # fetch writes a temporary file and renames it, so the SDK never reads a half-written token; a failed re-fetch
