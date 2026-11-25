@@ -4,7 +4,8 @@
   "searches": [
     "Ecuador sistema restaurantes pedidos online \"para llevar\" o \"retiro\" tienda propia planes USD mensual Illarli OR \"Dora POS\" OR GastroEc",
     "menú digital Ecuador restaurantes pedidos online \"retirar en el local\" o \"para recoger\" Quito Guayaquil planes \"$\" mensual sin comisiones ecuatoriano",
-    "food truck Ecuador Quito Guayaquil pedido anticipado app pedidos online food trucks feria gastronómica plataforma"
+    "food truck Ecuador Quito Guayaquil pedido anticipado app pedidos online food trucks feria gastronómica plataforma",
+    "Ecuador \"pedidos en línea\" restaurantes plataforma ecuatoriana \"retiro en local\" carta digital planes \"$\" mensual Cuenca Quito empresa software"
   ],
   "vendors": [
     {
@@ -64,5 +65,5 @@
       ]
     }
   ],
-  "notes": "Count now: 2 (OlaClick, Pedix — both USD) — no third. Probed the Ecuadorian names that compare-research-2 had listed but not read (rows above): none readable as an ordering tool with a price. Searches otherwise returned Justo (Chilean, active in Ecuador per press — rejected in CL for no pickup wording; not re-read), MENU TIGER (agent 2), Restroworks, Wix, Hungrrr (Capterra only), marketplaces (Rappi, PedidosYa, Uber Eats) and chain apps (Pollo Campero). MenuDigital.ec / Pedir.ec (compare-research-2 rejects) not re-read. OrderEatRepeat's pricing says 'Locations in the US and everywhere else pay in USD.' ($79 USD) but names no country — not counted. Stopped. SECOND PASS (food-truck only): no Ecuadorian food-truck ordering tool, association or fair platform found: results were marketplaces (PedidosYa, Rappi, Uber Eats, Domicilios.com, Mandao), chain apps (Pollo Campero), press and a Culture Trip food-truck guide (trucks post locations on Facebook). No vendor site to read. Count stays 2."
+  "notes": "Count now: 2 (OlaClick, Pedix — both USD) — no third. Probed the Ecuadorian names that compare-research-2 had listed but not read (rows above): none readable as an ordering tool with a price. Searches otherwise returned Justo (Chilean, active in Ecuador per press — rejected in CL for no pickup wording; not re-read), MENU TIGER (agent 2), Restroworks, Wix, Hungrrr (Capterra only), marketplaces (Rappi, PedidosYa, Uber Eats) and chain apps (Pollo Campero). MenuDigital.ec / Pedir.ec (compare-research-2 rejects) not re-read. OrderEatRepeat's pricing says 'Locations in the US and everywhere else pay in USD.' ($79 USD) but names no country — not counted. Stopped. SECOND PASS (food-truck only): no Ecuadorian food-truck ordering tool, association or fair platform found: results were marketplaces (PedidosYa, Rappi, Uber Eats, Domicilios.com, Mandao), chain apps (Pollo Campero), press and a Culture Trip food-truck guide (trucks post locations on Facebook). No vendor site to read. Count stays 2. SECOND PASS (food-truck only): (third pass, restaurant tools) no Ecuadorian restaurant ordering vendor surfaced: press (El Comercio, Expreso, Primicias), marketplaces (PedidosYa, Rappi), Oracle / Square / Restroworks (no EC presence or price), OlaClick sponsored press (already counted), university theses. No new vendor site. Count stays 2."
 }
