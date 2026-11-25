@@ -29,3 +29,11 @@ count now: 1 (Ordable) — nothing else in QAR found.
 | Take App | nearest_local | not_relevant (SA not listed) | — | https://www.take.app/countries |
 
 count now: 2 (Ordable + Linkin1, if Linkin1's curbside pickup is accepted as click and collect)
+
+## BH (USD; BHD accepted)
+| vendor | focus | verdict | price | URL |
+|---|---|---|---|---|
+| OrderFlow | nearest_local | eligible (pickup/takeaway orders; duckdns host, 1 stated customer) | 15 / 20 / 25 BHD a month, 0 % commission | https://aporederbot.duckdns.org/ |
+| Take App | nearest_local | not_relevant (BH not listed) | — | https://www.take.app/countries |
+
+count now: 2 (Ordable + OrderFlow, if its duckdns site is accepted)

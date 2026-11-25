@@ -1,0 +1,147 @@
+{
+ "country": "BH",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Bahrain restaurant online ordering website pickup commission-free pricing BHD OR \"BD\" per month plan"
+ ],
+ "vendors": [
+  {
+   "name": "OrderFlow",
+   "website": "https://aporederbot.duckdns.org/",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Bahraini direct-ordering platform for F&B: delivery, pickup, dine-in and BenefitPay takeaway orders; flat monthly BHD plans, 0% commission",
+   "eligibility": {
+    "order_quote": "Product catalog, stock tracking, and direct BenefitPay takeaway orders.",
+    "order_url": "https://aporederbot.duckdns.org/",
+    "country_quote": "Direct Ordering Platform for Bahrain F&B & Shops",
+    "country_url": "https://aporederbot.duckdns.org/"
+   },
+   "plans": [
+    {
+     "plan_name": "Starter",
+     "currency": "BHD",
+     "price_major": 15,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "15 BHD",
+     "url": "https://aporederbot.duckdns.org/",
+     "note": "'Flat monthly pricing' section; plan name and price as separate labels (joined by the page reader). A search snippet gave Starter 150 and Plus 350 orders a month (not read on the page)."
+    },
+    {
+     "plan_name": "Plus",
+     "currency": "BHD",
+     "price_major": 20,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "20 BHD",
+     "url": "https://aporederbot.duckdns.org/",
+     "note": "'Flat monthly pricing' section; plan name and price as separate labels (joined by the page reader). A search snippet gave Starter 150 and Plus 350 orders a month (not read on the page)."
+    },
+    {
+     "plan_name": "Pro",
+     "currency": "BHD",
+     "price_major": 25,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "25 BHD",
+     "url": "https://aporederbot.duckdns.org/",
+     "note": "'Flat monthly pricing' section; plan name and price as separate labels (joined by the page reader). A search snippet gave Starter 150 and Plus 350 orders a month (not read on the page)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Full delivery, pickup, and dine-in with table QR codes.",
+     "url": "https://aporederbot.duckdns.org/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "No contract. It's a flat monthly fee, and you can stop anytime.",
+     "url": "https://aporederbot.duckdns.org/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "Zero per-order cuts.",
+     "url": "https://aporederbot.duckdns.org/"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://aporederbot.duckdns.org/"
+   ],
+   "note": "CAUTION for reviewer: site is on a duckdns.org dynamic-DNS subdomain (no company domain), and claims 'Trusted by 1 Bahraini businesses'; very small/new. Ordering ahead is shown as online pickup/takeaway orders; no scheduling wording."
+  },
+  {
+   "name": "Take App",
+   "website": "https://www.take.app",
+   "stored_id_prefix": "2a58410a",
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "its countries page does not list Bahrain (Middle East: Lebanon, Iraq only)",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.take.app/countries"
+   ]
+  }
+ ],
+ "notes": "BH count now: 2 if OrderFlow is accepted (Ordable BHD + OrderFlow 15/20/25 BHD a month, 0% commission). Caveat: OrderFlow's own site is aporederbot.duckdns.org (dynamic-DNS host, 1 stated customer). Seen in the search, not opened: OrderJet and BD Dine (App Store listings only, no own site found), Foody Doo / Talabat (marketplaces), Blink (not re-read: '$' only)."
+}
