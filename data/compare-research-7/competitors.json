@@ -705,6 +705,92 @@
    "set_focus": true
   },
   {
+   "id": "b92ce4fc-aefa-5dc4-b0bd-2eac59e17118",
+   "name": "Quick Resto",
+   "website": "https://quickresto.kz",
+   "focus": "pos",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-7 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: KZ.",
+   "check_urls": [
+    "https://quickresto.kz/",
+    "https://quickresto.kz/price/",
+    "https://quickresto.kz/booster/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Ускорили выдачу заказов на самовывоз: гости видят время готовности",
+     "source_url": "https://quickresto.kz/booster/"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "40% оборота Do.Bro — навынос: предзаказ становится точкой роста",
+     "source_url": "https://quickresto.kz/booster/"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Кухонный экран повара Заказ от столика в кухню. Очередь заказов, техкарты к блюдам",
+     "source_url": "https://quickresto.kz/"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "25 990 ₸ / в месяц, за год 259 900 ₸",
+     "source_url": "https://quickresto.kz/price/"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "Вместо подписки — небольшая комиссия с онлайн оборота, ниже, чем у агрегаторов доставки.",
+     "source_url": "https://quickresto.kz/booster/"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
    "id": "9c2e5c2a-693f-5a4d-a3e4-98451ca0b3f0",
    "name": "Sparissimo Food",
    "website": "https://www.sparissimofood.com",
@@ -3770,6 +3856,72 @@
    "notes": "compare-research-7, read 25 Nov 2026: \"Billed annually, per site. €99 if billed monthly (ex. VAT)\" — From €79/month billed annually."
   },
   {
+   "id": "7c0a5fbc-8e06-5ce8-b856-07d18ca24237",
+   "competitor_id": "b92ce4fc-aefa-5dc4-b0bd-2eac59e17118",
+   "country_code": "KZ",
+   "plan_name": "Старт",
+   "currency": "KZT",
+   "price_hidden": false,
+   "monthly_minor": 2599000,
+   "monthly_major": 25990,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://quickresto.kz/price/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"25 990 ₸ / в месяц, за год 259 900 ₸\" — Price page text (raw HTML): 'Месяц Год -17% Старт 3% 21 658 ₸ 0 ₸ 25 990 ₸ / в месяц, за год 259 900 ₸'. 25 990 ₸ = monthly billing (21 658 ₸ = per month on the yearly toggle, 259 900 ₸ a year). The plan lists 'Доставка' among its modules. The '3% ... 0 ₸' figures are the Бустер variant (next plan)."
+  },
+  {
+   "id": "d3c48d77-a197-5478-8553-f35826d48abd",
+   "competitor_id": "b92ce4fc-aefa-5dc4-b0bd-2eac59e17118",
+   "country_code": "KZ",
+   "plan_name": "Старт + Бустер (guest site and app)",
+   "currency": "KZT",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 300,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://quickresto.kz/booster/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"Никакой абонентской платы — при подключении Бустера все модули Quick Resto будут бесплатны.\" — Бустер = 'тарифная опция для платформы Quick Resto'; instead of a subscription 'небольшая комиссия с онлайн оборота' - Старт '3% Ежемесячно с онлайн оплат'. The Бустер block on the KZ page shows a minimum commission in rubles ('Минимальная комиссия 15 000 ₽ / мес') - not tenge; reviewer may prefer the 25 990 ₸ subscription figure."
+  },
+  {
    "id": "9fe4490f-b92a-5ae8-b449-80dbff617292",
    "competitor_id": "9c2e5c2a-693f-5a4d-a3e4-98451ca0b3f0",
    "country_code": "LI",
@@ -5269,6 +5421,16 @@
    "verified_by": null
   },
   {
+   "id": "8f083468-8308-55a2-ae16-f9c12a9b7fcd",
+   "country_code": "KZ",
+   "competitor_id": "b92ce4fc-aefa-5dc4-b0bd-2eac59e17118",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
    "id": "cebf0bcc-9109-5007-b6d6-e295c2095192",
    "country_code": "LI",
    "competitor_id": "9c2e5c2a-693f-5a4d-a3e4-98451ca0b3f0",
@@ -5796,6 +5958,19 @@
    ]
   },
   {
+   "name": "Quick Resto",
+   "evidence": [
+    {
+     "country": "KZ",
+     "order_quote": "Сайт Удобное меню, самовывоз и доставка привлекают трафик и повышают узнаваемость бренда.",
+     "order_url": "https://quickresto.kz/booster/",
+     "country_quote": "Подробную информацию о каждом тарифе вы можете изучить в таблице . Если останутся вопросы, звоните по номеру +7 727 312 31 99 или пишите на почту support@quickresto.kz .",
+     "country_url": "https://quickresto.kz/price/",
+     "reason": "Russian-origin cloud POS with its own Kazakhstan site (quickresto.kz, +7 727, support@quickresto.kz, tenge prices, a Фудтрак business type). Its 'Бустер' option adds a branded guest website and app with pickup ('Сайт Удобное меню, самовывоз и доставка'). Priced in ₸ on its KZ price page. Restaurant/POS tool; order-for-a-time wording only in a customer story."
+    }
+   ]
+  },
+  {
    "name": "Sparissimo Food",
    "evidence": [
     {
@@ -6206,6 +6381,24 @@
    "plans": []
   },
   {
+   "country": "BA",
+   "name": "Delivero",
+   "website": "https://delivero.me",
+   "stored": null,
+   "reason": "Montenegrin branded web/mobile ordering platform ('Dostava, preuzimanje i prednarudžbe'; 95€ per month, 350€ set-up) - € only and no country named ('u regionu'); no KM price or Bosnia presence, so it does not count for BA.",
+   "url": "https://delivero.me/",
+   "plans": []
+  },
+  {
+   "country": "BA",
+   "name": "AjDonesi",
+   "website": "https://ajdonesi.rs",
+   "stored": null,
+   "reason": "Serbian own-site ordering, € only (19/39/69 € / mesec), no Bosnia named - read for RS today (RS.json); no KM price.",
+   "url": "https://ajdonesi.rs",
+   "plans": []
+  },
+  {
    "country": "CY",
    "name": "Orpay (Alt-a-Vie Ltd)",
    "website": "https://apps.apple.com/cy/app/orpay/id1607674325",
@@ -6386,6 +6579,24 @@
    "plans": []
   },
   {
+   "country": "MD",
+   "name": "4SaleFood",
+   "website": "https://4salefood.net",
+   "stored": "a9825e32",
+   "reason": "Romanian food-truck-capable shop builder (counted in RO) - its site names no Moldova and is priced only in euro ('Plans priced in euro'); no MDL price, so it does not count for MD.",
+   "url": "https://4salefood.net/",
+   "plans": []
+  },
+  {
+   "country": "MK",
+   "name": "Delivero",
+   "website": "https://delivero.me",
+   "stored": null,
+   "reason": "Montenegrin own-site ordering, € only, no country named (read today for BA) - no MKD price or North Macedonia presence.",
+   "url": "https://delivero.me",
+   "plans": []
+  },
+  {
    "country": "MT",
    "name": "Sixteen Ltd",
    "website": "https://storekit.com/strategic-partner/sixteen",
@@ -6467,6 +6678,15 @@
    "plans": []
   },
   {
+   "country": "RS",
+   "name": "AjDonesi",
+   "website": "https://ajdonesi.rs",
+   "stored": null,
+   "reason": "Serbian 'Sopstveni online sistem za restorane' (own ordering site; 'jasno razdvajanje dostave od preuzimanja', 'Fiksna mesečna cena i direktna kontrola porudžbina.') but priced only in € ('19 €' / '39 €' / '69 €' '/ mesec', from the page's raw HTML; the page reader saw only the title). No RSD price, so it does not count for RS (stored RSD). Pickup-for-a-time wording not found.",
+   "url": "https://ajdonesi.rs/",
+   "plans": []
+  },
+  {
    "country": "UA",
    "name": "Gotovo",
    "website": "https://apps.apple.com/hk/app/gotovo/id6447965164",
@@ -6503,12 +6723,39 @@
    "plans": []
   },
   {
+   "country": "UZ",
+   "name": "Qahva / Cofftan (consumer coffee pre-order apps)",
+   "website": "https://apps.apple.com/mx/app/qahva/id6447182088",
+   "stored": null,
+   "reason": "Tashkent consumer apps for ordering coffee ahead with a pickup time across cafés (App Store); shared consumer apps, no own vendor site or UZS price for businesses found. Not opened.",
+   "url": "https://apps.apple.com/mx/app/qahva/id6447182088",
+   "plans": []
+  },
+  {
+   "country": "UZ",
+   "name": "Quick Resto",
+   "website": "https://quickresto.kz",
+   "stored": null,
+   "reason": "Counted for KZ (tenge site) today, but quickresto.uz does not resolve and nothing shows an Uzbekistan site or UZS price.",
+   "url": "https://quickresto.kz",
+   "plans": []
+  },
+  {
    "country": "BD",
    "name": "YouthFireIT (WhatsApp ordering)",
    "website": "https://youthfireit.com",
    "stored": null,
    "reason": "Dhaka agency article selling WhatsApp/chat ordering set-up: delivery and in-chat only (no pickup / takeaway / ordering ahead), no named plan ('all-in SME plans typically starting around ৳15,000/month.')",
    "url": "https://youthfireit.com/academy/whatsapp-ordering-system-restaurant-bangladesh",
+   "plans": []
+  },
+  {
+   "country": "BD",
+   "name": "FoodChow",
+   "website": "https://www.foodchow.com",
+   "stored": null,
+   "reason": "Indian ordering platform with a Bangladesh landing page (takeaway pickup / scheduled pickup, 0% commission, per search), but its pricing page has no country/currency selector and only ₹ prices ('Online Food Ordering Life-time Plan' '₹5475', 'Growth Plan' '₹25,000'); no BDT price; its country pages are also restaurant-listing (marketplace-style) pages",
+   "url": "https://www.foodchow.com/pricing",
    "plans": []
   },
   {
@@ -6548,12 +6795,39 @@
    "plans": []
   },
   {
+   "country": "JO",
+   "name": "Zegashop",
+   "website": "https://www.zegashop.com",
+   "stored": null,
+   "reason": "general eCommerce CMS ('We provide a CMS platform built to load fast and scale and grow your eCommerce sales quickly.') with an Amman F&B marketing page ('Determine whether customers will order via delivery, pickup, or both.'), no price on the page — a generic web-shop builder, excluded",
+   "url": "https://www.zegashop.com/business/?p=72952",
+   "plans": []
+  },
+  {
    "country": "LK",
    "name": "Merpacc POS",
    "website": "https://merpacc.com",
    "stored": null,
    "reason": "Sri Lankan cloud till ('KOT, takeaway & table management' = in-house); no online ordering / pickup / ordering website, no prices on https://merpacc.com/pos",
    "url": "https://merpacc.com/pos",
+   "plans": []
+  },
+  {
+   "country": "LK",
+   "name": "possystem.lk (Applantics)",
+   "website": "https://possystem.lk",
+   "stored": null,
+   "reason": "Sri Lankan retail POS sold one-off ('Rs. 49,000' Cloud-Based POS, '+ Rs. 15,000/year Hosting'); its only order module is staff-side ('Manage phone orders, reserved items, delivery dispatches, and pickup collections from one organized panel.') for supermarkets / pharmacies — no customer online ordering",
+   "url": "https://possystem.lk",
+   "plans": []
+  },
+  {
+   "country": "LK",
+   "name": "FoodChow",
+   "website": "https://www.foodchow.com",
+   "stored": null,
+   "reason": "Indian ordering platform with a Sri Lanka landing page (takeaway pickup / scheduled pickup, 0% commission, per search), but its pricing page has no country/currency selector and only ₹ prices ('Online Food Ordering Life-time Plan' '₹5475', 'Growth Plan' '₹25,000'); no LKR price; its country pages are also restaurant-listing (marketplace-style) pages",
+   "url": "https://www.foodchow.com/pricing",
    "plans": []
   },
   {
@@ -6692,6 +6966,15 @@
    "plans": []
   },
   {
+   "country": "CO",
+   "name": "Siigo POS GastroBar",
+   "website": "https://www.siigo.com",
+   "stored": null,
+   "reason": "Colombian restaurant till ('Sistema POS GastroBar PRO $ 87.494 / mes*' — '*El pago es anual.'); its page covers waiter ordering at the table ('Toma pedidos desde el celular y envíalos directo a cocina o barra.'), inventory and DIAN invoicing — no customer online ordering, pickup or order-ahead wording (till-only)",
+   "url": "https://www.siigo.com/sistema-pos/restaurantes",
+   "plans": []
+  },
+  {
    "country": "EC",
    "name": "Illarli",
    "website": "https://www.illarli.com",
@@ -6707,6 +6990,15 @@
    "stored": null,
    "reason": "Ecuadorian POS: dorapos.com redirects to /login.php (a till login), nothing public about customer ordering or prices",
    "url": "https://dorapos.com/",
+   "plans": []
+  },
+  {
+   "country": "GT",
+   "name": "Quantika POS (cloudshop.gt)",
+   "website": "https://cloudshop.gt",
+   "stored": null,
+   "reason": "Guatemalan POS ('Quantika POS · Hecho en Guatemala', GTQ plans: Professional 'Q 199 /mes', Premium 'Q 520 /mes' with 'Tienda en línea (E-commerce)'); its restaurant page is dine-in (tables, KDS, reservations — 'El módulo de restaurante está incluido en el plan Premium'), and its online store is generic e-commerce ('comparte el enlace de tu catálogo … coordina el pago y la entrega') with no pickup / para llevar / order-ahead wording — not a food ordering-ahead tool",
+   "url": "https://cloudshop.gt/",
    "plans": []
   },
   {

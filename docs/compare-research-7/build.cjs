@@ -77,6 +77,7 @@ const UNCLEAR = [
   ['fritzy.be', 'BE', /./, 'a per-order fee with no subscription, close to a marketplace model — conservative (compare-research-7)'],
   ['gosufra.com', 'EG', /./, 'its EGP prices come only from its own /api/plans?country=EG and load only for visitors in Egypt; which plan includes the ordering website is uncertain — conservative (compare-research-7)'],
   ['quickclick.cc', 'TW', /./, 'the price is shown only as a bare "$" with no NT$/TWD (the Blink precedent) — conservative (compare-research-7)'],
+  ['quickresto.kz', 'KZ', /./, 'which plan carries the online ordering (Старт or the Бустер guest site) is uncertain, order-for-a-time appears only in a customer story, and Бустер\'s minimum commission is in roubles — conservative (compare-research-7)'],
   ['zunapro.com', 'TR', /ba[sş]lang[ıi][cç]/i, 'not confirmed that the entry package includes "Paket sipariş & gel-al"'],
 ]
 // A vendor whose page prices only ONE country ("Prices for Kuwait"): its plans are written for that country only; elsewhere it keeps
