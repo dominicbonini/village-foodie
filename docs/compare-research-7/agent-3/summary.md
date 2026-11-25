@@ -42,3 +42,4 @@ FLAG: Sabbor (GT) lives only on a pages.dev default host and shows no real custo
 - PA: Pedix (USD list names Panamá) -> 3
 - AR: Pedix (ARS 19.000 / 25.500 / 35.000) -> 3
 - CL, EC, PR, NG, ZA: nothing new -> 2
+- MA, EG, IN, MV (extra Block 6, local vendors only): nothing new -> 2 each. IN note: DineOpen (agent 2's reject) has a new /products/orders/online page with ₹ prices — agent 2 could re-check.
