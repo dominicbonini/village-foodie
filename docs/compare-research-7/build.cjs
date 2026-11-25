@@ -72,6 +72,7 @@ const UNCLEAR = [
   ['joinposter.kz', 'KZ', /^poster site/i, 'the ordering-website add-on on its own, not a whole monthly price (it needs a POS plan)'],
   ['joinposter.kz', 'KZ', /^mini/i, 'a POS plan; the ordering website is a separately priced add-on'],
   ['thinkerpos.com', 'MK', /./, 'no plan is shown to include online ordering (the Yabie rule, Dominic 25 Nov)'],
+  ['sisfood.com.br', 'BR', /./, 'a "from" price, but its food-truck page says the package is quoted by a specialist (compare-research-7, conservative)'],
   ['zunapro.com', 'TR', /ba[sş]lang[ıi][cç]/i, 'not confirmed that the entry package includes "Paket sipariş & gel-al"'],
 ]
 // A vendor whose page prices only ONE country ("Prices for Kuwait"): its plans are written for that country only; elsewhere it keeps
@@ -91,7 +92,9 @@ const PLAN_TOTAL = [
   ['joinposter.com', 'UA', 'Starter + Poster Site add-on', 1360, '540 ₴600 ₴/міс. · Вартість — 760 ₴/міс.', 'Starter 600 ₴ + Poster Site 760 ₴ a month, billed monthly (Starter 540 ₴ a month if billed yearly)'],
   ['joinposter.kz', 'KZ', 'Starter + Poster Site add-on', 21000, '8 640 ₸9 600 ₸/мес. · Стоимость — 11 400 ₸/мес.', 'Starter 9 600 ₸ + Poster Site 11 400 ₸ a month, billed monthly (Starter 8 640 ₸ a month if billed yearly)'],
 ]
-const INCOMPLETE = [['eats365pos.com', 'MO', 'marked eligible without an order-ahead quote; its Macau pricing page shows no amounts (compare-research-6 agent 2)'],
+const INCOMPLETE = [['qashier.com', 'SG', 'marked eligible without an order-ahead quote (compare-research-7 agent 2)'],
+  ['eats365pos.com', 'SG', 'marked eligible without an order-ahead quote (compare-research-7 agent 2)'],
+  ['eats365pos.com', 'MO', 'marked eligible without an order-ahead quote; its Macau pricing page shows no amounts (compare-research-6 agent 2)'],
   ['tossdown.com', 'PK', 'marked eligible without an order-ahead quote; still no rupee price (compare-research-6 agent 2)'],
   ['clickparapedir.com', 'PY', 'marked eligible without the food-truck and order-ahead quotes the rule needs, and still no price (compare-research-6 agent 2)'],
   ['tossplace.com', 'KR', 'its own site does not state the pickup-order fee in force today (compare-research-4 agent 2, raw/KR-toss.json); the stored KR plan is marked unclear by migration 20261133'],
