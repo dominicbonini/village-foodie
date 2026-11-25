@@ -74,3 +74,9 @@ count now: 0
 No vendor worth reading: marketplaces (Nham24, foodpanda, Grab, WOWNOW), a restaurant group's own app (Thalias), QR table menus (T-O Group, Miam Miam), payments (ABA PayWay). Aldelo: agent 3.
 Nothing eligible exists with a KHR price.
 count now: 0
+
+## LA (LAK)
+
+No vendor worth reading: foodpanda (marketplace), Yoosay (consumer dining app), TableCheck (booking), US/Thai tools with no Laos presence. Aldelo: agent 3.
+Nothing eligible exists with a LAK price.
+count now: 0
