@@ -100,3 +100,8 @@ count now: 0
 
 No new vendor worth reading: marketplaces (GoMamam, foodpanda, Dart, Ta-Pow!, pasarpbg), single-business apps (Pizza Hut Brunei), MY/SG tools with no Brunei page. StoreHub not re-read (rejected earlier). Take App: USD only.
 count now: 0
+
+## MU (MUR)
+
+No new vendor worth reading: OnlyEat, hungrydodo, Maribon, OrderManzer (marketplaces); directory-listed US/UK tools with no Mauritius presence. Resto-SaaS not relevant (no live product). Take App: USD only.
+count now: 0
