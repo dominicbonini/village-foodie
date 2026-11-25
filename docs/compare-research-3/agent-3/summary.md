@@ -188,3 +188,13 @@ count now: 2 (Take App + Menufy)
 Nothing eligible exists with a TZS price.
 
 count now: 0
+
+## UG (UGX)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Bamudda | nearest_local | not_relevant (generic shop builder, no pickup) | free in beta | https://bamudda.com/sell-online-uganda/ |
+
+Nothing eligible exists with a UGX price.
+
+count now: 0

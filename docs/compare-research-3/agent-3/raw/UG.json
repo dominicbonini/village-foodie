@@ -1,0 +1,27 @@
+{
+ "country": "UG",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Uganda restaurant online ordering platform own website pickup orders mobile money pricing \"UGX\" per month Kampala restaurants software (Capterra/GetApp/G2 excluded)"
+ ],
+ "vendors": [
+  {
+   "name": "Bamudda",
+   "website": "https://bamudda.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "generic Ugandan storefront builder ('Whether you sell clothes, electronics, food or crafts'), no restaurant offer and no pickup / order-ahead wording; free in beta, 'UGX 100,000/month' planned",
+   "eligibility": {
+    "country_quote": "Built for Ugandan businesses",
+    "country_url": "https://bamudda.com/sell-online-uganda/"
+   },
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://bamudda.com/sell-online-uganda/"
+   ]
+  }
+ ],
+ "notes": "Count now: 0. Nothing eligible exists with a UGX price that I could find (wave 2 + today ~5 candidates). Bamudda: generic shop builder, no pickup. Seen in search, not read: Jjuma Global (payment links / storefront tiers UGX 6,000–11,000, generic), SaleFlex Cloud and UgaPOS (tills), GoDoor, GeraEats, VubaVuba, Jumia Food, SafeBoda (marketplaces, never counted). Wave 2: Deonde (Indian white-label, unreadable), RestaurantOS (staff-entered orders only)."
+}
