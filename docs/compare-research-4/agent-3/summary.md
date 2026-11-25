@@ -25,3 +25,7 @@ count now: 1 (Sabbor, GTQ, stored)
 |---|---|---|---|---|
 | YaadBooks POS | pos | not_relevant (till-only, billed in USD) | — | https://yaadbooks.com/pos-system-jamaica |
 count now: 1 (Ezy Cart, JMD, stored)
+
+## UY
+No new vendor read (Reorder still press-only, OrderEAT is school cafeterias, POS search only e-invoicing).
+count now: 1 (Pedix, UYU, stored)
