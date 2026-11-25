@@ -1,0 +1,54 @@
+{
+ "country": "BH",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Blink (blinkco.io)",
+   "website": "https://www.blinkco.io",
+   "stored_id_prefix": "14ed815d",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Pakistan-based restaurant POS with branded ordering website/app; has a Bahrain page; '$' prices; pickup wording only on its Qatar ordering-website page (same product), not on the Bahrain page",
+   "eligibility": {
+    "order_quote": "Give your customers the option between delivery and pickup",
+    "order_url": "https://www.blinkco.io/?p=20107",
+    "country_quote": "Equip your restaurant with an all-in-one platform to expand your business in Bahrain.",
+    "country_url": "https://www.blinkco.io/bahrain/"
+   },
+   "plans": [
+    {
+     "plan_name": "Food & Beverages – Website Only",
+     "currency": "USD",
+     "price_major": 50,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "$50/branch /month",
+     "url": "https://www.blinkco.io/pricing",
+     "note": "'$' is the only currency marker, no code, no country stated for the prices (read as USD). 'Website + App' $100/branch /month."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Give your customers the option between delivery and pickup",
+     "url": "https://www.blinkco.io/?p=20107"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.blinkco.io/bahrain/",
+    "https://www.blinkco.io/pricing"
+   ],
+   "note": "pickup quote from compare-research-2 (Qatar page, not re-read today)"
+  }
+ ],
+ "notes": "BH: Blink re-read today. Bahrain page (no pickup wording, no price) + pricing page ('$50/branch /month', '$' only). Counts in USD if '$' is accepted as USD and the Qatar page's pickup wording is accepted for the same product. Zyda KWD only (not re-read). count now: 2 (Ordable BHD + Blink USD) if Blink accepted, else 1."
+}

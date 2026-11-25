@@ -44,3 +44,11 @@ count now: 1 confirmed (Ordable); 2 if the KSA page is accepted as SAR. No other
 | Foodics | nearest_local | eligible but USD only (does not count) | Advanced USD 1,500/year | https://www.foodics.com/foodics-pricing-qatar/ |
 
 No QAR-priced second tool found (Blink $, QFOODTECH / Zegashop no price). count now: 1 (Ordable)
+
+## BH (Bahrain, BHD or USD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Blink | nearest_local | eligible ('$' only; pickup wording on its Qatar page, not the Bahrain page) | Website Only $50/branch/month | https://www.blinkco.io/pricing |
+
+count now: 2 (Ordable BHD + Blink USD) if Blink's '$' and pickup evidence are accepted; else 1.
