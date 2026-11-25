@@ -1,0 +1,37 @@
+{
+  "country": "IS",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Teya OR Smartpay OR Straumur netpantanir veitingastaðir sækja pöntun kassakerfi verð kr. á mánuði",
+    "\"pantanakerfi\" OR \"pöntunarvefur\" OR \"pöntunarapp\" fyrir veitingastaði og kaffihús hugbúnaður \"sótt\" verðskrá",
+    "dk hugbúnaður dk Pos veitingastaðir netpantanir vefpantanir tenging verðskrá",
+    "online ordering restaurants pricing \"ISK\" per month pickup Iceland software"
+  ],
+  "vendors": [
+    {
+      "name": "Teya",
+      "website": "https://www.teya.com/is",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Icelandic-origin payments company: its Icelandic pages in search are card machines (posar) and a payment page (Greiðslusíða), no restaurant online-ordering / pickup product. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "dk Pos (DK Hugbúnaður ehf.)",
+      "website": "https://apps.apple.com/is/app/dk-pos/id1622173326",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Icelandic tablet till for waiters taking orders 'í sal eða útisvæði' (App Store listing in search); no customer online ordering ahead. Till only. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "IS counts Vitrina (ISK) only. Earlier rounds rejected or could not price: Dineout and Stefna (eligible but no price), Aha.is, FoxiFood (EUR only), myPOS, Subger, Noona, Yonoton, Munu, Glaze - not re-read. Four new searches (Icelandic: pantanakerfi / pöntunarvefur / pöntunarapp / netpantanir / sótt / verðskrá, the Icelandic POS and payment players Teya, Smartpay, Straumur, dk; and English 'ISK per month') returned only Wolt listings, directories (Capterra, GetApp, G2), tts.ai (AI phone ordering, no price; seen in round 4), and foreign tools with EUR/USD prices and no Iceland page (Flipdish, EasyOrder, Oddle, UpMenu, mobi2go). New candidates Teya and dk Pos are not ordering tools. Nothing eligible with an ISK price; IS stays at 1."
+}
