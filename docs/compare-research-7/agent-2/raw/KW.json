@@ -1,0 +1,108 @@
+{
+ "country": "KW",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Foodics (Foodics Online)",
+   "website": "https://www.foodics.com",
+   "stored_id_prefix": "4620b046",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Saudi restaurant POS; Foodics Online gives the restaurant its own ordering website with pick-up and curbside; its Kuwait pricing page is in KWD and the Advanced Bundle includes 'Foodics Online Web Creation'",
+   "eligibility": {
+    "order_quote": "Maximize your margins by accepting curbside, pick-up and delivery orders",
+    "order_url": "https://www.foodics.com/online/",
+    "country_quote": "Foodics Pricing Kuwait",
+    "country_url": "https://www.foodics.com/foodics-pricing-kuwait/"
+   },
+   "plans": [
+    {
+     "plan_name": "Advanced Bundle",
+     "currency": "KWD",
+     "price_major": 48.3,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "KWD 48.3 /mo",
+     "url": "https://www.foodics.com/foodics-pricing-kuwait/",
+     "note": "Toggle 'Quarterly / Yearly Save Big'. In the page HTML 48.3 sits in the 'monthly-content' block (the Quarterly option, billed quarterly) and 'KWD 45.7 /mo' in the 'yearly-content' block (billed yearly); the visible label under both reads 'Billed Annually'. Advanced lists 'Foodics Online Web Creation' as included. Basic Bundle (KWD 29 /mo, yearly 27.4) has 'Foodics Online Web' only as an unpriced optional add-on, so Advanced is the cheapest priced plan with the ordering website. Pickup wording is on /online/ (compare-research-2, not re-read today)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Maximize your margins by accepting curbside, pick-up and delivery orders",
+     "url": "https://www.foodics.com/online/"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+     "url": "https://www.foodics.com/online/"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Choose your own custom website domain",
+     "url": "https://www.foodics.com/online/"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "KWD 48.3 /mo",
+     "url": "https://www.foodics.com/foodics-pricing-kuwait/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "Say goodbye to paying third-party commission fees",
+     "url": "https://www.foodics.com/online/"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.foodics.com/foodics-pricing-kuwait/"
+   ]
+  }
+ ],
+ "notes": "KW count now: 3 (Ordable, Zyda + Foodics). Foodics' Kuwait pricing page (one of its country 'Pricing' links) is priced in KWD — KW accepts KWD. Read once (WebFetch + the same page's raw HTML to tell the toggle blocks apart). Reviewer: the price shown is the quarterly-billed one (no monthly billing option exists); 'Billed Annually' label is static under both amounts."
+}
