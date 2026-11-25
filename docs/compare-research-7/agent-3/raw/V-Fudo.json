@@ -1,0 +1,9 @@
+{
+  "vendor": "Fudo",
+  "stored_id_prefix": "7e12931c",
+  "countries": [],
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "notes": "Fudo Uruguay price page re-read today (https://fu.do/es-uy/precios/): 'Precios en dólares.'; 'Plan Avanzado' 'USD 35 /mes', 'Plan Pro' 'USD 45 /mes', module 'Tu Delivery' 'USD 30 /mes'; toggle 'Mensual' / 'Semestral −10%' / 'Anual −15%'. USD only, not UYU -> does not count in UY (same as compare-research-3). Its country selector lists only Argentina, Brasil (deli.com.br), Chile, Colombia, México, Perú, Paraguay, Uruguay: no Bolivia, República Dominicana, Guatemala, El Salvador or Jamaica site -> not plausible there. CO already counts (Plan Inicial + Tu Delivery): skipped. No new country rows."
+}
