@@ -3,7 +3,8 @@
  "researched_on": "2026-11-25",
  "searches": [
   "Singapore F&B online ordering website self-collection pre-order commission-free pricing \"S$\" \"/month\" POS integration hawker cafe",
-  "Singapore home-based food business bakery pre-order ordering page pickup slots plan S$ per month local startup"
+  "Singapore home-based food business bakery pre-order ordering page pickup slots plan S$ per month local startup",
+  "FoodZaps OR Aptsys OR Raptor POS Singapore online ordering self-collection pricing S$ per month F&B"
  ],
  "vendors": [
   {
@@ -62,7 +63,21 @@
    "check_urls": [
     "https://cococart.co/pricing"
    ]
+  },
+  {
+   "name": "FoodZaps",
+   "website": "https://www.foodzaps.com",
+   "stored_id_prefix": null,
+   "focus": "pos",
+   "verdict": "not_relevant",
+   "reason": "'All prices in USD.'; online ordering only on Carnival '$139.90/mth' ('Online Ordering (SMS, QR, Website, App, DBS Facebook program etc)'); no pickup / self-collection / order-ahead sentence; SGD needed",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.foodzaps.com/pricing"
+   ]
   }
  ],
- "notes": "SG count now: 2 (Klikit, Oddle) — unchanged. Qashier (stored) has a per-day price only (unclear); Eats365 SG unpriced; KPay no pickup ordering; Cococart '$' only and a generic store builder. Searches otherwise: Eats365 / Klikit / KPay blogs (vendor comparison posts, not sources), DBS / IMDA / RAS / GoBusiness pages (programmes), getapp.sg 'Nexordr' listing (directory, own site not found), SFA / HDB home-business rules. Take App (Singapore company) is USD only. Stopped after ~5 vendor sites with nothing new eligible and priced."
+ "notes": "SG count now: 2 (Klikit, Oddle) — unchanged. Qashier (stored) has a per-day price only (unclear); Eats365 SG unpriced; KPay no pickup ordering; Cococart '$' only and a generic store builder. Searches otherwise: Eats365 / Klikit / KPay blogs (vendor comparison posts, not sources), DBS / IMDA / RAS / GoBusiness pages (programmes), getapp.sg 'Nexordr' listing (directory, own site not found), SFA / HDB home-business rules. Take App (Singapore company) is USD only. Stopped after ~5 vendor sites with nothing new eligible and priced. Extra round: FoodZaps (USD only, no pickup wording) not relevant; Aptsys seen only in GoBusiness PSG annex PDFs (government catalogue, 2022–23, not a source)."
 }
