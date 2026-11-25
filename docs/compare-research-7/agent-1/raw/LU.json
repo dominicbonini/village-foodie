@@ -1,0 +1,115 @@
+{
+  "country": "LU",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "L'Addition",
+      "website": "https://www.laddition.com/fr",
+      "stored_id_prefix": "fca70222",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French (Bordeaux) restaurant till with a Click & Collect module (customers order online, orders land in the till) and a food-truck page offering customer ordering + click & collect; its own site says it is also available in Luxembourg; from 49 €/month on the food-truck page, full prices only by quote",
+      "eligibility": {
+        "food_quote": "Plus besoin d'investir dans un réseau wifi pour votre food truck.",
+        "food_url": "https://www.laddition.com/fr/etablissement/caisse-enregistreuse-tactile-food-truck",
+        "order_quote": "Avec notre module de Click & Collect, vos clients pourront savourer leurs plats préférés sur place comme chez eux.",
+        "order_url": "https://www.laddition.com/fr/laddition-click-and-collect",
+        "country_quote": "La caisse tactile L'Addition est également disponible en Suisse, au Luxembourg et en Espagne.",
+        "country_url": "https://www.laddition.com/fr/laddition-suite"
+      },
+      "plans": [
+        {
+          "plan_name": "Formule flexible (from)",
+          "currency": "EUR",
+          "price_major": 49,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Chez l'Addition nous proposons une formule flexible à partir de 49€/mois (hors coût du matériel).",
+          "url": "https://www.laddition.com/fr/etablissement/caisse-enregistreuse-tactile-food-truck",
+          "note": "'from' price on the French food-truck page, excluding hardware; the page does not say whether Click & Collect is inside the 49 € or an extra. The pricing page (/fr/prix-logiciel-caisse) is a quote form with no prices. No Luxembourg-specific page or price; the LU evidence is one sentence repeated on several pages. A search snippet (not quoted) mentioned ~59 € HT/mois + 1 % + 0,10 € per transaction; not confirmed on the vendor's site."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Intégré à votre site web ou vos réseaux sociaux, ce lien vers la commande à distance",
+          "url": "https://www.laddition.com/fr/laddition-click-and-collect"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "vous devez vous assurer que votre caisse peut fonctionner même lorsque vous n'avez pas de connexion.",
+          "url": "https://www.laddition.com/fr/etablissement/caisse-enregistreuse-tactile-food-truck"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "vos commandes en salle et celles en ligne sont toutes accessibles depuis votre caisse enregistreuse",
+          "url": "https://www.laddition.com/fr/laddition-click-and-collect"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Intégré à votre site web ou vos réseaux sociaux, ce lien vers la commande à distance",
+          "url": "https://www.laddition.com/fr/laddition-click-and-collect"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Chez l'Addition nous proposons une formule flexible à partir de 49€/mois (hors coût du matériel).",
+          "url": "https://www.laddition.com/fr/etablissement/caisse-enregistreuse-tactile-food-truck"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.laddition.com/fr/laddition-click-and-collect",
+        "https://www.laddition.com/fr",
+        "https://www.laddition.com/fr/prix-logiciel-caisse",
+        "https://www.laddition.com/fr/laddition-suite",
+        "https://www.laddition.com/fr/etablissement/caisse-enregistreuse-tactile-food-truck"
+      ],
+      "country": "LU"
+    }
+  ],
+  "notes": "LU counts FoxiFood and SumUp. Third: L'Addition (stored fca70222, French till with a Click & Collect module and a food-truck page) copied from compare-research-2 agent-4 (read today, 25 Nov; not re-read): 'Formule flexible' from 49 EUR a month. Food-truck focus. Stopped at 3."
+}
