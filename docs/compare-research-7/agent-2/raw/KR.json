@@ -7,7 +7,10 @@
   "링크 하나로 주문 받기 음식점 픽업 포장 주문 페이지 요금제 원/월 수수료 0% 사장님 가입",
   "\"픽업 주문\" 솔루션 \"요금 안내\" 월 원 매장 자체 주문 앱 웹 개인 카페",
   "소상공인 매장 픽업 선주문 서비스 출시 앱 설치 없이 링크 주문 월 구독료 원 2025",
-  "자체 주문앱 구축 솔루션 카페 픽업 주문 요금제 월 원 \"스마트오더\" 개인 매장 브랜드앱"
+  "자체 주문앱 구축 솔루션 카페 픽업 주문 요금제 월 원 \"스마트오더\" 개인 매장 브랜드앱",
+  "\"powered by\" 카페 픽업 주문 웹 주문 페이지 포장 주문하기 매장 온라인 주문",
+  "포스기 부가서비스 픽업주문 모바일 선주문 월 이용료 원 OKPOS OR 유니포스 OR 포스뱅크 OR 페이히어 요금 안내",
+  "토스플레이스 고객센터 픽업주문 수수료 결제 금액의 3.5% 부가세 별도 토스오더"
  ],
  "vendors": [
   {
@@ -101,5 +104,8 @@
    ]
   }
  ],
- "notes": "KR count now: 0 (unchanged). Block 1: Eats365 has a /kr/ region but its /kr/pricing shows no amounts (Online Ordering = unpriced Expansion Module) — see raw/V-eats365.json; MENU TIGER USD only (V-menu-tiger.json); Klikit not in KR. Block 2: five new Korean searches (픽업 예약주문 링크, 포스 스마트오더 연동, 링크 주문 요금제, '픽업 주문' 솔루션 '요금 안내', 선주문 서비스 출시) returned only Toss Order (no fee on its own site — product page re-read), Naver 주문 manuals (platform ordering, excluded), Shopify pickup apps (USD, generic web-shop add-ons), imweb / godo / Cafe24 (generic web-shop builders, excluded), Wix help pages, SK shieldus / KT-type table-order products (table only), kmong freelancer gigs (not vendors), Seoul public delivery apps (delivery marketplaces). No new vendor site with an own-site KRW pickup price was found to open; Korea's pickup ordering is platform-run (Naver / Kakao / Baemin / Toss). Stopped. A sixth search (자체 주문앱 / 스마트오더 브랜드앱) found only kmong gigs, wishket articles, godo and a single café's own app."
+ "notes": "KR count now: 0 (unchanged). Block 1: Eats365 has a /kr/ region but its /kr/pricing shows no amounts (Online Ordering = unpriced Expansion Module) — see raw/V-eats365.json; MENU TIGER USD only (V-menu-tiger.json); Klikit not in KR. Block 2: five new Korean searches (픽업 예약주문 링크, 포스 스마트오더 연동, 링크 주문 요금제, '픽업 주문' 솔루션 '요금 안내', 선주문 서비스 출시) returned only Toss Order (no fee on its own site — product page re-read), Naver 주문 manuals (platform ordering, excluded), Shopify pickup apps (USD, generic web-shop add-ons), imweb / godo / Cafe24 (generic web-shop builders, excluded), Wix help pages, SK shieldus / KT-type table-order products (table only), kmong freelancer gigs (not vendors), Seoul public delivery apps (delivery marketplaces). No new vendor site with an own-site KRW pickup price was found to open; Korea's pickup ordering is platform-run (Naver / Kakao / Baemin / Toss). Stopped. A sixth search (자체 주문앱 / 스마트오더 브랜드앱) found only kmong gigs, wishket articles, godo and a single café's own app. PASS 3 (angles a–c): (b) café 'powered by' search surfaced only consumer multi-café pre-order apps 패스오더 PassOrder and 올때아아 (App Store; customers pick cafés in the app = marketplace-like, excluded) and kmong gigs; (a) POS-reseller search (OKPOS, 유니포스, 포스뱅크, 페이히어) returned only Toss pages — read tossplace.com/sector/cafe (NEW page): '웨이팅 없이 모바일로 미리 주문할 수 있는 토스플레이스 픽업주문' but no fee ('가격 : 상담문의' for the terminal only); the '3.5% + 부가세' wording is still only on docs.channel.io/ishopcareguide (iShopCare, a third-party reseller's help desk) and in 2024 tossplace stories as a plan ('유료화 예정') — Toss stays unclear; (c) regional players with a Korea page: Eats365 /kr/ (unpriced), MENU TIGER (USD) — nothing new. KR stays 0.",
+ "check_urls_extra": [
+  "https://tossplace.com/sector/cafe"
+ ]
 }
