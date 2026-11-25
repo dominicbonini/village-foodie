@@ -14,7 +14,9 @@
    "reason": "Saudi restaurant POS with its own ordering website (eligibility from compare-research-2 SA file); KSA pricing page amounts shown with no currency word or symbol, so SAR is not confirmed",
    "eligibility": {
     "country_quote": "الباقة المطورة",
-    "country_url": "https://www.foodics.com/ar/foodics-pricing-ksa/"
+    "country_url": "https://www.foodics.com/ar/foodics-pricing-ksa/",
+    "order_quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+    "order_url": "https://www.foodics.com/online/"
    },
    "plans": [
     {
@@ -34,17 +36,22 @@
    "answers": [
     {
      "key": "ahead",
-     "value": "not_mentioned"
+     "value": "yes",
+     "quote": "Maximize your margins by accepting curbside, pick-up and delivery orders",
+     "url": "https://www.foodics.com/online/"
     },
     {
      "key": "preorder",
-     "value": "not_mentioned"
+     "value": "partial",
+     "quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+     "url": "https://www.foodics.com/online/"
     }
    ],
    "check_urls": [
     "https://www.foodics.com/ar/pricing/",
     "https://www.foodics.com/ar/foodics-pricing-ksa/"
-   ]
+   ],
+   "note": "order quotes from foodics.com/online/ as read by compare-research-2 today (not re-read)"
   }
  ],
  "notes": "SA: Foodics' Arabic KSA pricing page shows 248 / 450 / 765 '/شهر' with no currency mark readable (the Arabic /ar/pricing/ hub only links country pages). Only Advanced (765) lists the online website. Counts in SAR only if the reviewer accepts the KSA page as implicitly SAR. A search for another Saudi restaurant ordering tool with SAR prices found only general e-commerce (Salla, Zid, Shopify), MENU TIGER (USD). Not re-read: Zyda (KWD only), Blink ($), Sapaad (no price). count now: 1 confirmed (Ordable), 2 if the Foodics KSA page is accepted."

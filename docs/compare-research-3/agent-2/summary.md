@@ -52,3 +52,11 @@ No QAR-priced second tool found (Blink $, QFOODTECH / Zegashop no price). count 
 | Blink | nearest_local | eligible ('$' only; pickup wording on its Qatar page, not the Bahrain page) | Website Only $50/branch/month | https://www.blinkco.io/pricing |
 
 count now: 2 (Ordable BHD + Blink USD) if Blink's '$' and pickup evidence are accepted; else 1.
+
+## OM (Oman, OMR or USD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Foodics | nearest_local | eligible | Advanced USD 1,068/year (only plan listing 'Website') | https://www.foodics.com/foodics-pricing-oman/ |
+
+count now: 2 (Ordable OMR + Foodics USD)

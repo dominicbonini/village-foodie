@@ -1,0 +1,55 @@
+{
+ "country": "OM",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Foodics (Foodics Online)",
+   "website": "https://www.foodics.com",
+   "stored_id_prefix": "4620b046",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Saudi restaurant POS; Foodics Online gives the restaurant its own ordering website with pick-up and orders scheduled ahead; Oman pricing page in USD",
+   "eligibility": {
+    "order_quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+    "order_url": "https://www.foodics.com/online/",
+    "country_quote": "Advanced Bundle USD 1,068/year",
+    "country_url": "https://www.foodics.com/foodics-pricing-oman/"
+   },
+   "plans": [
+    {
+     "plan_name": "Advanced Bundle",
+     "currency": "USD",
+     "price_major": 1068,
+     "period": "year",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "USD 1,068/year",
+     "url": "https://www.foodics.com/foodics-pricing-oman/",
+     "note": "billed annually; Advanced is the only plan listing 'Website'. Starter 'USD 384/year', Basic 'USD 639/year' have no website line. Page does not say Foodics Online is the 'Website' item."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Maximize your margins by accepting curbside, pick-up and delivery orders",
+     "url": "https://www.foodics.com/online/"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+     "url": "https://www.foodics.com/online/"
+    }
+   ],
+   "check_urls": [
+    "https://www.foodics.com/foodics-pricing-oman/"
+   ],
+   "note": "order quotes from foodics.com/online/ as read by compare-research-2 today (not re-read)"
+  }
+ ],
+ "notes": "OM: Foodics' Oman pricing page shows USD (accepted for OM). With Ordable (OMR) count now: 2. Caveat: the ordering website is in Advanced only, and the page lists just 'Website' (not named Foodics Online)."
+}

@@ -14,7 +14,9 @@
    "reason": "Saudi restaurant POS with its own ordering website (eligibility: compare-research-2 SA file); its Qatar pricing page is priced in USD only, so it does not count in QAR",
    "eligibility": {
     "country_quote": "USD 1,500/year",
-    "country_url": "https://www.foodics.com/foodics-pricing-qatar/"
+    "country_url": "https://www.foodics.com/foodics-pricing-qatar/",
+    "order_quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+    "order_url": "https://www.foodics.com/online/"
    },
    "plans": [
     {
@@ -34,16 +36,21 @@
    "answers": [
     {
      "key": "ahead",
-     "value": "not_mentioned"
+     "value": "yes",
+     "quote": "Maximize your margins by accepting curbside, pick-up and delivery orders",
+     "url": "https://www.foodics.com/online/"
     },
     {
      "key": "preorder",
-     "value": "not_mentioned"
+     "value": "partial",
+     "quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+     "url": "https://www.foodics.com/online/"
     }
    ],
    "check_urls": [
     "https://www.foodics.com/foodics-pricing-qatar/"
-   ]
+   ],
+   "note": "order quotes from foodics.com/online/ as read by compare-research-2 today (not re-read)"
   }
  ],
  "notes": "QA: Foodics Qatar page is USD only (not counted in QAR). Search for a Qatari ordering tool priced in QAR found only marketplace diner subscriptions (Rafeeq, Talabat), USD tools (GloriaFood: agent 1; Blink $; Weevi unclear currency), QFOODTECH (no price) and Zegashop blog (no price). Nothing else in QAR found. count now: 1 (Ordable)."
