@@ -1,0 +1,104 @@
+{
+  "country": "SE",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Yabie",
+      "website": "https://yabie.com",
+      "stored_id_prefix": "5f613b54",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Swedish POS (Swedish site, SEK prices) with a foodtruck page; its Yabie Express page offers online ordering where guests collect their food without queuing and pay when ordering",
+      "eligibility": {
+        "food_quote": "Perfekt för dig som står på marknader, festivaler eller rullar mellan lunchstopp.",
+        "food_url": "https://yabie.com/branscher/kassasystem-foodtruck/",
+        "order_quote": "och dina gäster kan hämta ut sin mat utan att behöva stå i kö, och du får betalt direkt vid beställningen.",
+        "order_url": "https://yabie.com/kassasystem/yabie-express/"
+      },
+      "plans": [
+        {
+          "plan_name": "Yabie Express",
+          "currency": "SEK",
+          "price_major": 899,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Fr. 899 kr /månad",
+          "url": "https://yabie.com/kassasystem/yabie-express/",
+          "note": "NEW today: the Yabie Express page carries both this 'from' price and the online-ordering section ('Låt dina kunder beställa online', 'Inget krångel eller extra kostnad för dig eller dina kunder'), so online ordering appears to come with this plan at no extra cost; the page does not say in so many words that it is included. The foodtruck page instead recommends Yabie Start ('Månadsavgift fr. 499kr', 'Passar utmärkt för foodtrucks, kiosker och torghandel') but says nothing about online ordering. Moms not stated. Reviewer: borderline plan match."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "fungerar offline vid behov",
+          "url": "https://yabie.com/branscher/kassasystem-foodtruck/"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Fr. 899 kr /månad",
+          "url": "https://yabie.com/kassasystem/yabie-express/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://yabie.com/branscher/kassasystem-foodtruck/",
+        "https://yabie.com/kassasystem/yabie-express/"
+      ],
+      "country": "SE"
+    }
+  ],
+  "notes": "SE counts WEIQ and Vitrina. Third: Yabie (stored 5f613b54, food_truck: Swedish POS with a foodtruck page; Yabie Express online ordering where guests collect without queuing) copied from compare-research-2 agent-1 (read today, 25 Nov; not re-read): Yabie Express 899 SEK. Qopla (food truck) still shows no price. Storekit lists Sweden but GBP only. Stopped at 3."
+}
