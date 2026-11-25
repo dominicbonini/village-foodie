@@ -7,7 +7,9 @@
     "сайт доставки та самовивозу для ресторану під ключ підписка \"грн на місяць\" без комісії з замовлень Україна сервіс",
     "українська платформа сайт замовлень для закладів їжі \"з собою\" самовивіз тарифи \"₴\" OR \"грн\" на місяць для кав'ярень",
     "фудтрак онлайн-замовлення передзамовлення самовивіз сервіс для фудтраків Україна тариф грн",
-    "Gotovo app замовлення наперед самовивіз кав'ярні підключити заклад сайт"
+    "Gotovo app замовлення наперед самовивіз кав'ярні підключити заклад сайт",
+    "конструктор сайта доставки еды для ресторана Украина тариф грн в месяц самовывоз корзина заказов кафе",
+    "\"самовивіз\" \"₴\" \"на місяць\" сайт замовлень для закладу кафе піцерії тарифи підключення без комісії"
   ],
   "vendors": [
     {
@@ -35,7 +37,22 @@
       "check_urls": [
         "https://jitmeal.com/uk/pricing/"
       ]
+    },
+    {
+      "name": "Delivety",
+      "website": "https://delivety.com/uk/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Takeaway ordering system with a Ukrainian site and scheduled pickup slots (compare-research-2: USD only, '$9 for up to 1,000 orders'). Its Ukrainian pricing page (https://delivety.com/uk/pricing) shows 'Тарифні плани' with no amounts; the page HTML loads the plans in an iframe (https://delivety.com/public/uk/plans) that is a script-only app shell (no amounts in HTML; no plans endpoint found in its main script). No ₴ price readable; 'UKR' only as a language flag.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://delivety.com/uk/pricing",
+        "https://delivety.com/public/uk/plans"
+      ]
     }
   ],
-  "notes": "UA counts Poster and Vitrina. No third in UAH found. Earlier: FoxiFood (Ukrainian site, EUR only), Delivety (USD), Choice (403 on its UA pages; a search snippet of choiceqr.com/prices-2/ shows USD: 'Standard $30 $29 $28 per month' - not UAH, not opened), Diny (rejected). Three Ukrainian searches found Russian-market catalogues (a2is, startpack: Edaroo, On the Go, This Menu, Cashpad, Postilla), Expirenza (QR menu / pay at table, no price), Glovo On-Demand (couriers), Smartomato/DeliverLogic (Russian), and a kosht.media list that answered 403. UA stays at 2. Fourth search found only Uber Eats for Business, Glovo listings and Diny (rejected in compare-research-3). Stopped. Second pass (food-truck angles): Ukrainian 'фудтрак ... передзамовлення самовивіз' and App Store searches found Delivety (USD, earlier), Diny (rejected), Go їсти / Gotovo (consumer apps), Glovo/Uber; Ukrainian café apps in the App Store (Craft Coffee, Coffee House...) are built on Poster's coffee app (counted). UA stays at 2. Jitmeal (Estonian, food truck) has a Ukrainian site but € prices only - recorded, not counted."
+  "notes": "UA counts Poster and Vitrina. No third in UAH found. Earlier: FoxiFood (Ukrainian site, EUR only), Delivety (USD), Choice (403 on its UA pages; a search snippet of choiceqr.com/prices-2/ shows USD: 'Standard $30 $29 $28 per month' - not UAH, not opened), Diny (rejected). Three Ukrainian searches found Russian-market catalogues (a2is, startpack: Edaroo, On the Go, This Menu, Cashpad, Postilla), Expirenza (QR menu / pay at table, no price), Glovo On-Demand (couriers), Smartomato/DeliverLogic (Russian), and a kosht.media list that answered 403. UA stays at 2. Fourth search found only Uber Eats for Business, Glovo listings and Diny (rejected in compare-research-3). Stopped. Second pass (food-truck angles): Ukrainian 'фудтрак ... передзамовлення самовивіз' and App Store searches found Delivety (USD, earlier), Diny (rejected), Go їсти / Gotovo (consumer apps), Glovo/Uber; Ukrainian café apps in the App Store (Craft Coffee, Coffee House...) are built on Poster's coffee app (counted). UA stays at 2. Jitmeal (Estonian, food truck) has a Ukrainian site but € prices only - recorded, not counted. Third pass (restaurant tools): Russian/Ukrainian searches for sites with 'самовивіз' and ₴ monthly prices found only Russian ruble-priced builders (WelcomeApp 5 000 руб., FoodSoul $, lpmotor, Renderforest), MENU TIGER (agent 2's), Choice (blocked, USD) and Delivety, whose Ukrainian pricing iframe is script-rendered (no ₴ amount readable). UA stays at 2."
 }
