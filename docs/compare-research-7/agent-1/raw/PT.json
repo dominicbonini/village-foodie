@@ -1,0 +1,47 @@
+{
+  "country": "PT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "encomendas online para restaurantes take away levantamento no local site próprio sem comissões preço €/mês Portugal food truck software",
+    "\"GlobalFood Menu\" plataforma pedidos restaurantes take away preços pagamentos online 25€"
+  ],
+  "vendors": [
+    {
+      "name": "Kitch",
+      "website": "https://observador.pt/2020/11/20/quer-ter-um-servico-de-entrega-de-refeicoes-so-do-seu-restaurante-com-o-kitch-tech-consegue/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Portuguese own-store delivery platform (2020 news article): restaurant pays a percentage of new sales, no fixed price found; delivery-focused. Own site not found; not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Vendus",
+      "website": "https://www.vendus.pt/planos-precos/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Portuguese invoicing / POS software (plans from about 6,25 €/mês per search) - till/invoicing, not an online-ordering product. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "'GlobalFood Menu' (echoboomer.pt article)",
+      "website": "https://echoboomer.pt/?p=91844",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "News article about a 'free' ordering platform with paid extras (online payments 25 €/mês); a second search found no such vendor - almost certainly GloriaFood (rejected in PT, compare-research-1/-2). Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "PT counts Sistema Que Vende and Takego. No third found. Earlier: MENU TIGER and Take App (USD only), SumUp (generic web shop), Storekit (GBP), DineEasy, DISH, GloriaFood, Flipdish, UpMenu, Order Tiger, Sage GesRest II, Choice - not re-read. Two Portuguese searches found MENU TIGER (USD), Kitch (% of sales, delivery), Vendus (invoicing), POSbistro (Polish POS, rejected in PL), Deliverect (integration hub) and directories. PT stays at 2."
+}
