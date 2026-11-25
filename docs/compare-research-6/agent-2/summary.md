@@ -162,3 +162,8 @@ count now: 0
 
 None exists: only booking/travel listings and international tools with no Tonga page.
 count now: 0
+
+## KI (AUD)
+
+None exists: only travel listings; no ordering tool or app in Kiribati.
+count now: 0
