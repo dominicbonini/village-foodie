@@ -4,6 +4,126 @@
   "searches": [
     "verkkotilausjärjestelmä ravintolalle noutotilaukset ennakkotilaus oma verkkosivu hinta €/kk ruokarekka Suomi"
   ],
-  "vendors": [],
-  "notes": "FI counts Food4you and SumUp. No third found. Earlier: Storekit (lists Finland, GBP only), Creavo Order, Zettle, Superb, GastroSprint (rejected) - not re-read. One Finnish search returned MENU TIGER (USD, agent 2's), Jotform (form builder), Anolla (never), Odoo (generic ERP), Restimo (Polish, no Finland presence), Restolabs (agent 2's) and a comparison site. FI stays at 2."
+  "vendors": [
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com/",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Stored food-truck ordering platform (operator Elite Digital Services, LLC, USA; counted in BG, EE, LV, LU, SK, MT): food-truck page, pre-orders for a chosen date and time, EUR prices (0 € a month + 0,45 € per order paid by the customer). Its country-terms page, read today, names Finland among the countries 'where restaurants can register'.",
+      "eligibility": {
+        "food_quote": "Run your food truck business smarter.",
+        "food_url": "https://www.foxifood.com/use-cases/food-truck/",
+        "order_quote": "Let customers place orders in advance for a specific date and time.",
+        "order_url": "https://www.foxifood.com/features/",
+        "country_quote": "Finland",
+        "country_url": "https://www.foxifood.com/legal/country-terms/"
+      },
+      "plans": [
+        {
+          "plan_name": "FoxiFood (no monthly fee, per order)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.45,
+          "setup_major": 0,
+          "quote": "Monthly fee 0 €",
+          "url": "https://www.foxifood.com/pricing/",
+          "note": "0.45 € per pickup/dine-in order, 'paid by the customer on top of the order'; Stripe card fee 1.5/2% + 0.25 €; 'Setup fee 0 €'. Features page instead says 'Just 2% + 0.45 EUR per order, no monthly fees.' Plan quotes carried from compare-research-2 agent-4 (read 25 Nov, English site); country list re-read today."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Let customers place orders in advance for a specific date and time.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Let customers place orders in advance for a specific date and time.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Move your truck anywhere and keep taking orders.",
+          "url": "https://www.foxifood.com/use-cases/food-truck/"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Professional restaurant marketing services: Google Ads, social media campaigns, menu photography, SEO, and local strategy.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "See all orders in real time — QR, online, phone, and walk-in.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "See all orders in real time — QR, online, phone, and walk-in.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple restaurant locations from one dashboard.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Run your restaurant ordering website on your own domain.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Monthly fee 0 €",
+          "url": "https://www.foxifood.com/pricing/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "it is paid by the customer on top of the order.",
+          "url": "https://www.foxifood.com/pricing/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Card fee (Stripe)* 1.5/2% + 0.25 €",
+          "url": "https://www.foxifood.com/pricing/"
+        }
+      ],
+      "check_urls": [
+        "https://www.foxifood.com/legal/country-terms/",
+        "https://www.foxifood.com/pricing/",
+        "https://www.foxifood.com/features/",
+        "https://www.foxifood.com/use-cases/food-truck/"
+      ],
+      "country": "FI",
+      "note": "Country presence = named on the country-terms page ('the country addenda below set out the provisions specific to each country where restaurants can register'), the same evidence that counts it in MT. No local-language check this round."
+    }
+  ],
+  "notes": "FoxiFood (food truck, EUR, country-terms page names Finland, read today) added as the third, ahead of the earlier candidate(s), food-truck tools first. FI counts Food4you and SumUp. No third found. Earlier: Storekit (lists Finland, GBP only), Creavo Order, Zettle, Superb, GastroSprint (rejected) - not re-read. One Finnish search returned MENU TIGER (USD, agent 2's), Jotform (form builder), Anolla (never), Odoo (generic ERP), Restimo (Polish, no Finland presence), Restolabs (agent 2's) and a comparison site. FI stays at 2."
 }
