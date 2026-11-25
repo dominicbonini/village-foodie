@@ -1,0 +1,35 @@
+{
+  "country": "MD",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "сайт и приложение для доставки и самовывоза для ресторана Молдова Кишинёв подключение тариф лей в месяц сервис онлайн-заказов",
+    "platformă comenzi online pentru restaurante Moldova aplicație mobilă și site propriu \"ridicare\" abonament lunar lei dezvoltator Chișinău"
+  ],
+  "vendors": [
+    {
+      "name": "ECOM (ecom.md)",
+      "website": "https://ecom.md/en/about",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Moldovan generic e-commerce platform (online stores, mobile apps, B2B portals); nothing about restaurants or pickup, no price in the search result - a generic web-shop builder, never counts. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Straus",
+      "website": "https://apps.apple.com/ru/app/straus/id1438722558",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Chișinău food-delivery app - a delivery marketplace, never counts. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "MD counts Vitrina (MDL) only. HorecaSystems (Meniu QR, stored 08a78851) stays out: delivery-only ordering for a time window, priced 30 lei a day (delivery-only does not count; a per-day price is unclear) - not re-read. Earlier rounds also saw Glovo, MENU TIGER (agent 2), Paloma365 (KZ POS, agent 2), Poster (no Moldova page; /en/pages/md-main 404 today, see V-Poster.json) and Choice (403, see V-Choice.json). Two new searches (Russian 'доставка и самовывоз ... лей в месяц', Romanian 'comenzi online ... ridicare ... abonament lunar lei') found single-restaurant apps (Edison Pizza, SUSHKA Кишинёв - developers not named), 4mobile.me (Russian app builder, rejected in KZ round 6), Straus (marketplace), Glovo Prime and ECOM.md (generic). Nothing eligible; MD stays at 1."
+}
