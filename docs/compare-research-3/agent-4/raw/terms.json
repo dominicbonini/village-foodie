@@ -1,0 +1,26 @@
+[
+ {
+  "vendor": "Yoveletta",
+  "stored_id_prefix": "aebf5a80",
+  "url": "https://yoveletta.ch/allgemeine-geschaeftsbedingungen",
+  "limits_service": false,
+  "quote": "Dieser Vertag untersteht schweizerischem Recht.",
+  "note": "AGB read today: no sentence limits service to Switzerland or to Swiss-domiciled customers; Liechtenstein not named. Only Swiss law (s.17, quoted with the page's own typo 'Vertag'), Gerichtsstand Bern, Erfüllungsort at the seat in Ostermundigen, 'Hosting in Schweiz'. Home page likewise has no territory limit. Counts for LI under the neighbour rule."
+ },
+ {
+  "vendor": "Rent-a-Shop",
+  "stored_id_prefix": "6fa20b90",
+  "url": "https://www.rent-a-shop.ch/files/v250627113128/dokumente/rent-a-shop-AGB.pdf",
+  "limits_service": false,
+  "quote": "Auf das Vertragsverhältnis ist ausschliesslich Schweizer Recht anwendbar.",
+  "note": "AGB PDF (Metades The Growing Squares GmbH) read today, text extracted locally: no sentence limits service to Switzerland; Liechtenstein not named. Only Swiss law (5.3) and Gerichtsstand at Metades' seat (5.2). Home page: no territory limit, 'Schweizer Hosting & Support'. Counts for LI under the neighbour rule."
+ },
+ {
+  "vendor": "Ordea",
+  "stored_id_prefix": "6dc60fd2",
+  "url": "https://www.ordea.uk/terms",
+  "limits_service": false,
+  "quote": "These Terms are governed by the laws of England and Wales.",
+  "note": "Terms read today: no sentence limits service to the UK; Gibraltar and other countries not named. Only governing law (s.10) and exclusive jurisdiction of the courts. Home page: 'Trusted by 50+ food businesses across the UK', no exclusion. Counts for GI under the neighbour rule."
+ }
+]

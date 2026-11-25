@@ -8,3 +8,6 @@ Monthly-billing figures from joinposter.kz/pricing: Starter 9 600 KZT (8 640 yea
 
 ## NG: Restorant
 Sells software: yes. "Restorant gives you a branded storefront, online ordering with Paystack and a full workspace" (restorant.com.ng). Also runs a marketplace. Not in stored-list.txt, prefix null.
+
+## Terms (LI / GI neighbour rule)
+Yoveletta, Rent-a-Shop (AGB PDF), Ordea (/terms): none limits service to CH / UK or names Liechtenstein / Gibraltar; only governing-law clauses (Swiss law; laws of England and Wales).
