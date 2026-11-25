@@ -211,3 +211,8 @@ count now: 0
 
 FoxiFood, Storekit: not listed. One French search found nothing for Saint-Pierre-et-Miquelon. nothing eligible exists.
 count now: 0
+
+## WF
+
+FoxiFood, Storekit: not listed. One French search found nothing for Wallis-et-Futuna. nothing eligible exists.
+count now: 0
