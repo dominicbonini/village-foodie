@@ -137,3 +137,7 @@ None exists that I could find (NRestro and MeroMenu are table-QR only; others US
 ## MN (Mongolia, MNT)
 
 None exists that I could find (Songo.mn / Cookoo-T consumer apps; foreign USD tools; directories). count now: 0
+
+## MO (Macau, MOP)
+
+None found with a MOP price (mFood marketplace; Eats365 /mo price hidden). count now: 0
