@@ -1,0 +1,152 @@
+{
+  "country": "CO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Colombia \"pedidos para recoger\" OR \"recoger en tienda\" OR \"pedidos programados\" software para restaurantes canal propio de pedidos online planes \"$\" mes COP sin comisiones",
+    "Loggro Restobar OR Treinta OR \"Alegra POS\" menú digital pedidos en línea clientes \"para recoger\" restaurantes Colombia precio plan mensual",
+    "\"recoger en el punto\" OR \"recoger en sede\" OR \"pide y recoge\" página de pedidos propia para restaurantes Colombia plataforma colombiana precio mensual pesos",
+    "menú digital con pedidos por WhatsApp para restaurantes Colombia \"domicilio o recoger\" OR \"para recoger\" plan mensual \"COP\" precio colombiano",
+    "Menüpp menupp restaurantes pedidos en línea precios planes sitio oficial",
+    "food truck Colombia sistema de pedidos online ordenar desde el celular y recoger app para food trucks ferias precio mensual pesos"
+  ],
+  "vendors": [
+    {
+      "name": "Fudo (Tu Delivery)",
+      "website": "https://fu.do",
+      "stored_id_prefix": "7e12931c",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "clarified today: Tu Delivery is a module added to a Fudo plan ('Necesitas una cuenta activa en Fudo y sumar el módulo Tu Delivery a tu plan.') at COP 110.900/mes sin IVA, no per-sale commission; customers order online with 'Para retirar' (pickup) beside delivery. Cheapest total = base plan + module.",
+      "eligibility": {
+        "order_quote": "al momento de la entrega o retiro en el local",
+        "order_url": "https://fu.do/es-co/delivery/",
+        "country_quote": "Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.",
+        "country_url": "https://fu.do/es-co/delivery/"
+      },
+      "plans": [
+        {
+          "plan_name": "Tu Delivery (module, needs a Fudo plan)",
+          "currency": "COP",
+          "price_major": 110900,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.",
+          "url": "https://fu.do/es-co/delivery/",
+          "note": "'Necesitas una cuenta activa en Fudo y sumar el módulo Tu Delivery a tu plan.' (same page). 'No pagas comisiones por venta: el precio es el mismo vendas lo que vendas.' Mercado Pago fees extra ('Van aparte las comisiones de Mercado Pago si cobras online'). Cheapest real monthly cost = Plan Inicial $62.900 + module $110.900 = COP 173.800/mes sin IVA."
+        },
+        {
+          "plan_name": "Plan Inicial (base plan the module is added to)",
+          "currency": "COP",
+          "price_major": 62900,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$62.900 /mes",
+          "url": "https://fu.do/es-co/precios/",
+          "note": "read by compare-research-3 agent-3 today (25 Nov), not re-read; Plan Avanzado $118.900 /mes, Plan Pro $144.900 /mes; 'Precios en pesos colombianos, sin IVA.'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Horario de entrega: Lo antes posible",
+          "url": "https://fu.do/es-co/delivery/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Precio fijo por mes, sin comisiones por venta",
+          "url": "https://fu.do/es-co/delivery/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No pagas comisiones por venta: el precio es el mismo vendas lo que vendas.",
+          "url": "https://fu.do/es-co/delivery/"
+        }
+      ],
+      "check_urls": [
+        "https://fu.do/es-co/delivery/"
+      ]
+    },
+    {
+      "name": "Loggro Restobar",
+      "website": "https://www.loggro.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Colombian restaurant POS (COP plans, e.g. Básico $120.990/mes); its 'Menú Digital' is a QR menu ('Puedes tener un código QR por mesa o para pedidos online.') with orders sent to the till; no pickup / para llevar / scheduled-order wording; delivery only via marketplace integrations (Rappi). QR-menu-only for our rule.",
+      "eligibility": {
+        "country_quote": "Loggro es una empresa 100% colombiana",
+        "country_url": "https://www.loggro.com/restobar/"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.loggro.com/restobar/",
+        "https://www.loggro.com/restobar/menu-digital/"
+      ]
+    },
+    {
+      "name": "Menüpp",
+      "website": "https://home.menupp.co",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Colombian restaurant platform (digital menu, own online-ordering channel with delivery, pickup and table orders, reservations); no price anywhere on its site (home, FAQ, ordering page; demo booking only) — hidden price, does not count.",
+      "eligibility": {
+        "order_quote": "Activa tu canal directo de ventas a domicilio, para recoger o en mesa, para vender sin intermediarios",
+        "order_url": "https://home.menupp.co/pedidos-en-linea-para-restaurantes",
+        "country_quote": "Menüpp funciona en todo Colombia y en Latinoamérica (excepto Brasil) .",
+        "country_url": "https://home.menupp.co/faq"
+      },
+      "plans": [
+        {
+          "plan_name": "Plan (not shown)",
+          "currency": "COP",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Según el plan, puedes pagar una tarifa fija mensual o un valor por pedido exitoso",
+          "url": "https://home.menupp.co/faq",
+          "note": "no amounts on the site; 'Agenda tu sesión gratis' demo only. FAQ also says it has active restaurants in México, Puerto Rico, Panamá, República Dominicana, Nicaragua, Costa Rica, Ecuador, Venezuela y España — but with no price it counts nowhere."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "Según el plan, puedes pagar una tarifa fija mensual o un valor por pedido exitoso",
+          "url": "https://home.menupp.co/faq"
+        }
+      ],
+      "check_urls": [
+        "https://home.menupp.co/",
+        "https://home.menupp.co/faq",
+        "https://home.menupp.co/pedidos-en-linea-para-restaurantes"
+      ]
+    }
+  ],
+  "notes": "Count now: 1 if Fudo is counted (was 0). Fudo CO clarified from its own Tu Delivery page today: 'Necesitas una cuenta activa en Fudo y sumar el módulo Tu Delivery a tu plan.' and 'Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.' — so the real minimum is a base plan + the module (Plan Inicial $62.900 + $110.900 = COP 173.800/mes sin IVA; base-plan price from compare-research-3's read of /es-co/precios/ today); no per-sale commission; pickup 'retiro en el local' / 'Para retirar'. Focus recorded nearest_local here (earlier rounds used food_truck because /es-co/precios/ names 'food trucks y ferias' as a segment — BORDERLINE, unchanged). New: Menüpp (Colombian, own ordering channel with 'para recoger', 0% commission) is eligible but shows no price anywhere — hidden, does not count. Loggro Restobar (Colombian POS, COP plans) has only a QR menu ('código QR por mesa o para pedidos online') and Rappi integration — not_relevant. Not read: Colombia Move (free 'menú del día' listing, a directory), Kucharon / Cluvi (dead domains in wave 2), Justo (no pickup wording, wave 2 CL), Reorder (press only, ~11% commission), OlaClick (USD, rejected twice), Vendty (wave-3 BORDERLINE, not re-read), Menuestro (hidden price, wave 3), Capterra / GetApp listings, Square marketplace apps (Food Truck Pub, Flash Order — US). Stopped after ~5 vendors."
+}

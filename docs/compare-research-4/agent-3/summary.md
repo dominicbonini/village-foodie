@@ -29,3 +29,11 @@ count now: 1 (Ezy Cart, JMD, stored)
 ## UY
 No new vendor read (Reorder still press-only, OrderEAT is school cafeterias, POS search only e-invoicing).
 count now: 1 (Pedix, UYU, stored)
+
+## CO
+| vendor | focus | verdict | price | URL |
+|---|---|---|---|---|
+| Fudo Tu Delivery (stored) | nearest_local | eligible — clarified: module "se suma a tu plan de Fudo", COP 110.900/mes sin IVA + base plan (Inicial COP 62.900) = COP 173.800/mes | COP | https://fu.do/es-co/delivery/ |
+| Menüpp | nearest_local | eligible, price hidden (does not count) | — | https://home.menupp.co/faq |
+| Loggro Restobar | pos | not_relevant (QR menu only) | — | https://www.loggro.com/restobar/menu-digital/ |
+count now: 1 if Fudo's module + base plan is accepted (was 0)
