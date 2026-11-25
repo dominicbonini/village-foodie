@@ -1,0 +1,50 @@
+{
+  "country": "UZ",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "заказ онлайн самовывоз ресторан Узбекистан сайт для ресторана тариф сум в месяц",
+    "restoran uchun onlayn buyurtma tizimi olib ketish Telegram bot tarif so'm oyiga",
+    "zoomda самовывоз предзаказ (allowed: zoomda.uz)",
+    "платформа онлайн заказов для кафе Ташкент самовывоз предзаказ Telegram Mini App тарифы сум",
+    "Jowi ресторан онлайн заказ самовывоз тариф сум",
+    "kafe restoran uchun o'z sayti va ilovasi onlayn buyurtma \"olib ketish\" narxlar tariflar so'm",
+    "конструктор Telegram бота для ресторана Узбекистан самовывоз тариф сум в месяц"
+  ],
+  "vendors": [
+    {
+      "name": "Zoomda",
+      "website": "https://zoomda.uz",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Tashkent restaurant own-channel ordering platform (site, app, Telegram Mini App) priced in UZS, but no page read shows pickup / pre-order / order for a time: delivery and table ordering only.",
+      "eligibility": {
+        "order_quote": "Единая платформа для онлайн-заказов ресторанов",
+        "order_url": "https://zoomda.uz/"
+      },
+      "plans": [
+        {
+          "plan_name": "Старт", "currency": "UZS", "price_major": 1300000, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": 1000, "setup_major": null,
+          "quote": "Минимальный ежемесячный платёж — 1 300 000 сум.", "url": "https://zoomda.uz/ru/tariffs",
+          "note": "Not counted (no ordering-ahead evidence). Per order 'от1 000сум / заказ' on Старт; tiers 1 200 → 500 сум per order by volume; 'Подключение, обучение и поддержка уже включены.' A search result also showed 'from 1,500,000 UZS/month' on an English page (not read)."
+        }
+      ],
+      "answers": [],
+      "check_urls": ["https://zoomda.uz/", "https://zoomda.uz/ru/tariffs", "https://zoomda.uz/ru/products/website", "https://zoomda.uz/ru/products/telegram"]
+    },
+    {
+      "name": "Jowi",
+      "website": "https://jowi.club",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Uzbek restaurant till with a guest app (Jowi Club, a multi-restaurant app); no UZS price for online ordering and no pickup evidence seen in search results. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "Count stays 1 (Delever, UZS). Third round: Russian and Uzbek searches for pickup / olib ketish / предзаказ found only Zoomda as a new own-channel SaaS. It is priced in UZS, but its home, tariffs, website and Telegram pages show delivery and table ordering only, never pickup or ordering ahead, so it does not count. If Zoomda's own site later shows самовывоз it would be a valid second (1 300 000 сум minimum a month). Other results were marketplaces (Uzum Tezkor, Yandex Eda, Wolt, Tochka Eats, Choyxona24), freelancer bot builds (OLX, glotr.uz, fiverr; one-off quotes), Yandex NOSH Guide (no Uzbekistan page or price) and MENU TIGER (USD only). Rejected earlier and not re-read: Poster (USD, agent 1's), Smartomato, iiko / R-Keeper. Nothing eligible in UZS beyond Delever."
+}
