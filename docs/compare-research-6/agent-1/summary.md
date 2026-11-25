@@ -176,3 +176,8 @@ count now: 0
 
 FoxiFood, Storekit: not listed. Italian tools seen show no San Marino presence. nothing eligible exists.
 count now: 0
+
+## VA
+
+FoxiFood, Storekit: not listed. nothing eligible exists.
+count now: 0
