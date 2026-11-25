@@ -105,3 +105,10 @@ count now: 0
 
 No new vendor worth reading: OnlyEat, hungrydodo, Maribon, OrderManzer (marketplaces); directory-listed US/UK tools with no Mauritius presence. Resto-SaaS not relevant (no live product). Take App: USD only.
 count now: 0
+
+# Round 4 (never researched before)
+
+## TJ (TJS)
+
+Nothing eligible: EDA24.TJ / MotoTaxi.tj = marketplaces; Russian POS tools (agent 1) show no Tajikistan page.
+count now: 0

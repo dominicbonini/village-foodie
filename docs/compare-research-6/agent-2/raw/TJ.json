@@ -1,0 +1,10 @@
+{
+  "country": "TJ",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Таджикистан система онлайн заказов для ресторанов самовывоз предзаказ сомони в месяц Душанбе кафе",
+    "POS система для ресторанов Таджикистан онлайн-меню заказ с самовывозом тариф сомони iiko OR Poster OR \"R-Keeper\" Душанбе сайт"
+  ],
+  "vendors": [],
+  "notes": "Count now: 0. Round 4 (compare-research-6, never researched before): nothing eligible with a TJS price; no vendor site worth reading. Russian searches returned EDA24.TJ (Dushanbe multi-restaurant delivery aggregator since 2006) and MotoTaxi.tj (courier service) — marketplaces, never counted; Russian POS tools (Fusion POS, RUB only; iiko / R-Keeper / Poster named in results but with no Tajikistan page shown — European/Russian vendors belong to agent 1, not fetched); MENU TIGER (global, no TJS). No Tajik own-ordering or food-truck tool found."
+}
