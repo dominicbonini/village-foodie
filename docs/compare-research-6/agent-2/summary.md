@@ -192,3 +192,8 @@ count now: 0
 
 None exists: only restaurant/travel listings (phone takeout).
 count now: 0
+
+## NR (AUD)
+
+None exists: no ordering tool or app shows Nauru coverage.
+count now: 0
