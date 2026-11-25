@@ -178,3 +178,13 @@ count now: 0
 | Clover | pos | unreadable (serves PR: Clover-hosted San Juan ordering pages; pages script-rendered) | — | https://www.clover.com/pricing |
 
 count now: 2 (Take App + Menufy)
+
+## TZ (TZS)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| duka.direct | nearest_local | not_relevant (consumer marketplace) | — | https://duka.direct/ |
+
+Nothing eligible exists with a TZS price.
+
+count now: 0

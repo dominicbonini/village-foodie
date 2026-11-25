@@ -1,0 +1,24 @@
+{
+ "country": "TZ",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Tanzania restaurant online ordering system pickup \"TZS\" OR \"TSh\" per month Dar es Salaam ordering website restaurants cafes (Capterra/GetApp/G2 excluded)"
+ ],
+ "vendors": [
+  {
+   "name": "duka.direct",
+   "website": "https://duka.direct",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Tanzanian multi-vendor consumer marketplace ('bring buyers and sellers together across an array of product lines including food delivery'); merchants join it, no own shop, no merchant price",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://duka.direct/"
+   ]
+  }
+ ],
+ "notes": "Count now: 0. Nothing eligible exists with a TZS price that I could find (wave 2 + today ~5 candidates). duka.direct and FoodHub.co.tz are marketplaces; Piki is a delivery marketplace. SPICE UP (a single Dar es Salaam restaurant) runs its own pickup ordering page with GloriaFood-style wording ('manually confirmed by us directly') — GloriaFood is agent 1's, only named. Wave 2: Sakura Host (web host), tills / ERP (Samba POS, Inaya POS, Smartbiashara), Take App (agent 2) does not list Tanzania."
+}
