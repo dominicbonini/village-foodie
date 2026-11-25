@@ -3,7 +3,8 @@
  "researched_on": "2026-11-25",
  "searches": [
   "香港 餐廳 網上點餐 外賣自取 預約 系統 月費 HK$ 收費 方案 Mezzofy OR Gingersoft OR OmniWe OR Ninja",
-  "Hong Kong restaurant online ordering self pick-up system \"HK$\" per month plan takeaway pre-order website POS vendor pricing page"
+  "Hong Kong restaurant online ordering self pick-up system \"HK$\" per month plan takeaway pre-order website POS vendor pricing page",
+  "餐廳 網上落單 外賣自取 預約自取時間 系統 月費 港幣 收費 香港 自家網店 免佣金"
  ],
  "vendors": [
   {
@@ -35,5 +36,5 @@
    ]
   }
  ],
- "notes": "HK count now: 2 (Oddle, Eats365) — unchanged. Searches (Chinese and English) returned mostly Cyberport DTSPP / HKPC catalogue listings (government directories, never sources: VGather 1,200–2,900 HK$/month on 24-month contracts, DimPOS, Link F&B POS, DoLA, eRun, 'Catering POS+QR plan' — prices not on the vendors' own sites), the Consumer Council table (PDF, not a source), MENU TIGER (USD; rejected), Eats365 pages (counted), e-commerce builder blogs (Aspire, Airwallex). Earlier-rejected vendors not re-read: iCHEF, KPay, DimOrder, Boutir (403 twice), VGather (no price on own site). New sites opened: Mezzofy (no ordering product), OmniWe (404). Stopped: nothing new eligible and priced."
+ "notes": "HK count now: 2 (Oddle, Eats365) — unchanged. Searches (Chinese and English) returned mostly Cyberport DTSPP / HKPC catalogue listings (government directories, never sources: VGather 1,200–2,900 HK$/month on 24-month contracts, DimPOS, Link F&B POS, DoLA, eRun, 'Catering POS+QR plan' — prices not on the vendors' own sites), the Consumer Council table (PDF, not a source), MENU TIGER (USD; rejected), Eats365 pages (counted), e-commerce builder blogs (Aspire, Airwallex). Earlier-rejected vendors not re-read: iCHEF, KPay, DimOrder, Boutir (403 twice), VGather (no price on own site). New sites opened: Mezzofy (no ordering product), OmniWe (404). Stopped: nothing new eligible and priced. Extra round (Cantonese 網上落單 / 外賣自取): only DimOrder (App Store, rejected), MoneyHero blogs, Consumer Council PDF, Odoo POS, Eats365 TW page — nothing new."
 }
