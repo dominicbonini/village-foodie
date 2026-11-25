@@ -558,6 +558,237 @@
    "set_focus": true
   },
   {
+   "id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
+   "name": "Ocuioso",
+   "website": "https://www.ocuioso.com",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: AO.",
+   "check_urls": [
+    "https://www.ocuioso.com",
+    "https://www.ocuioso.com/precos"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Pede sem filas",
+     "source_url": "https://www.ocuioso.com",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "name": "Fudo",
+   "website": "https://fu.do",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: CO.",
+   "check_urls": [
+    "https://fu.do/es-co/precios/",
+    "https://fu.do/es-co/delivery/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Entrega a domicilio Para retirar",
+     "source_url": "https://fu.do/es-co/delivery/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "f025fc79-dc1a-5c8e-a433-ab5775843efe",
+   "name": "Menuestro",
+   "website": "https://www.menuestro.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: CO.",
+   "check_urls": [
+    "https://www.menuestro.com"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Domicilio, recoger en tu sede o servido en la mesa.",
+     "source_url": "https://www.menuestro.com"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
    "id": "873c5c65-258d-55e1-8450-ed6a1da33609",
    "name": "TOI",
    "website": "https://web.toi.do",
@@ -577,6 +808,322 @@
      "value": "partial",
      "quote": "Pre-orden en comida con aviso al estar lista",
      "source_url": "https://web.toi.do"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
+   "name": "Mylo",
+   "website": "https://mylo.africa",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: NG.",
+   "check_urls": [
+    "https://mylo.africa/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Pickup, delivery or dine-in: the customer chooses.",
+     "source_url": "https://mylo.africa/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "₦7,500/ month",
+     "source_url": "https://mylo.africa/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "No commission on your orders.",
+     "source_url": "https://mylo.africa/"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "9af04d84-0659-5c20-b571-9cefadb7a04e",
+   "name": "Restorant",
+   "website": "https://restorant.com.ng",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: NG.",
+   "check_urls": [
+    "https://restorant.com.ng",
+    "https://restorant.com.ng/pricing",
+    "https://restorant.com.ng/guides/how-to-start-online-ordering-for-your-restaurant-in-nigeria"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "they choose delivery or pickup,",
+     "source_url": "https://restorant.com.ng/guides/how-to-start-online-ordering-for-your-restaurant-in-nigeria"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "no",
+     "quote": "No monthly fee, no setup fee, no minimum.",
+     "source_url": "https://restorant.com.ng/pricing"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "Of the order value, when a customer pays online.",
+     "source_url": "https://restorant.com.ng/pricing"
+    },
+    {
+     "key": "cardfee",
+     "value": "partial",
+     "quote": "Commission is separate from Paystack's own processing fee.",
+     "source_url": "https://restorant.com.ng/pricing"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "afe2f58d-df5f-5b96-9a77-5a8bd4f08cc7",
+   "name": "Resto",
+   "website": "https://resto.co.za",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: ZA.",
+   "check_urls": [
+    "https://resto.co.za/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "allows restaurants to take online orders, for either delivery or collection.",
+     "source_url": "https://resto.co.za/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "fedc794a-993d-5890-9dbb-4e01c042042b",
+   "name": "Bizzfo",
+   "website": "https://bizzfo.co.za",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: ZA.",
+   "check_urls": [
+    "https://bizzfo.co.za/restaurant-pos/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Delivery and pickup options",
+     "source_url": "https://bizzfo.co.za/restaurant-pos/"
     },
     {
      "key": "preorder",
@@ -1032,6 +1579,136 @@
    "notes": "compare-research-3, read 25 Nov 2026: \"NT$3,000/月 起\" — '起' (from) price, '月繳' (paid monthly); the plan lists '線上訂單' and '每月最高 NT$25K 線上訂單' (online orders up to NT$25K a month). Tax not stated."
   },
   {
+   "id": "73db4f6a-6c4c-59fa-a113-6a6af27daac5",
+   "competitor_id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
+   "country_code": "AO",
+   "plan_name": "(plan cards)",
+   "currency": "AOA",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "hidden",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.ocuioso.com/precos",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"Preços em kwanzas · período indicado em cada plano\" — amounts not readable (script-rendered cards); '14 dias gratuitos para conhecer o Ocuioso'"
+  },
+  {
+   "id": "3631eb83-6734-5692-aba3-b6dec73b64f8",
+   "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "country_code": "CO",
+   "plan_name": "Tu Delivery (add-on)",
+   "currency": "COP",
+   "price_hidden": false,
+   "monthly_minor": 11090000,
+   "monthly_major": 110900,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://fu.do/es-co/precios/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"$110.900 /mes\" — add-on on top of a Fudo base plan; 'Precios en pesos colombianos, sin IVA.'"
+  },
+  {
+   "id": "fa700135-7d88-5239-a4f3-5d0e965454d4",
+   "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "country_code": "CO",
+   "plan_name": "Plan Inicial (base plan)",
+   "currency": "COP",
+   "price_hidden": false,
+   "monthly_minor": 6290000,
+   "monthly_major": 62900,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://fu.do/es-co/precios/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"$62.900 /mes\" — cheapest base plan; Tu Delivery is added to it (Plan Avanzado $118.900 /mes, Plan Pro $144.900 /mes)"
+  },
+  {
+   "id": "1d45cf1a-112a-5fbc-b22c-1dca6079ef57",
+   "competitor_id": "f025fc79-dc1a-5c8e-a433-ab5775843efe",
+   "country_code": "CO",
+   "plan_name": "Pago único / Anualidad",
+   "currency": "COP",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "hidden",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.menuestro.com",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"a cotizar\" (yearly price ÷ 12) — price on request; 'Comisión por pedido' '$0, siempre'. Currency not shown (assumed COP)."
+  },
+  {
    "id": "84eb63d5-cae2-5528-b726-606c8d164df7",
    "competitor_id": "873c5c65-258d-55e1-8450-ed6a1da33609",
    "country_code": "DO",
@@ -1062,6 +1739,204 @@
    "verified_at": null,
    "verified_by": null,
    "notes": "compare-research-3, read 25 Nov 2026: \"A medida\" — price on request (custom after an on-site assessment); the page says all prices exclude ITBIS. Restaurant plan 'RD$ 5,500 /mes' (+0.40% above RD$1.3MM sales) has no customer online ordering ahead, so not used."
+  },
+  {
+   "id": "86457318-8577-53a0-8181-cb139b49abef",
+   "competitor_id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
+   "country_code": "NG",
+   "plan_name": "Essentials",
+   "currency": "NGN",
+   "price_hidden": false,
+   "monthly_minor": 750000,
+   "monthly_major": 7500,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://mylo.africa/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"₦7,500/ month\" — 'No commission on your orders.' 'No setup fee'"
+  },
+  {
+   "id": "cbec4103-eb66-5749-9ab8-aa64ee0ce8be",
+   "competitor_id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
+   "country_code": "NG",
+   "plan_name": "Growth",
+   "currency": "NGN",
+   "price_hidden": false,
+   "monthly_minor": 3500000,
+   "monthly_major": 35000,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://mylo.africa/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"₦35,000/ month\""
+  },
+  {
+   "id": "79214a7a-312d-5824-874d-bfeb1a8ce1eb",
+   "competitor_id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
+   "country_code": "NG",
+   "plan_name": "Business",
+   "currency": "NGN",
+   "price_hidden": false,
+   "monthly_minor": 7500000,
+   "monthly_major": 75000,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://mylo.africa/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"₦75,000/ month\""
+  },
+  {
+   "id": "44c16279-225a-5017-8fa6-2b8758d61f01",
+   "competitor_id": "9af04d84-0659-5c20-b571-9cefadb7a04e",
+   "country_code": "NG",
+   "plan_name": "Free",
+   "currency": "NGN",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 500,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://restorant.com.ng/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"No monthly fee, no setup fee, no minimum.\" — 5% 'Of the order value, when a customer pays online.'; cash/transfer orders confirmed at the counter carry no commission; 8% on a marketplace-found customer's first order; Paystack fees separate. A search snippet's 'Starter ₦30,000 a month' is not on today's pages."
+  },
+  {
+   "id": "a83cd6f5-4a94-5e89-b740-d27882ec379d",
+   "competitor_id": "afe2f58d-df5f-5b96-9a77-5a8bd4f08cc7",
+   "country_code": "ZA",
+   "plan_name": "Shop",
+   "currency": "ZAR",
+   "price_hidden": false,
+   "monthly_minor": 100000,
+   "monthly_major": 1000,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://resto.co.za/#cost",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"R1000 gets you started.\" — page reader summary: R1000/month for a shop; optional white label 'R5000' once off; no commissions (summary only, not quoted)."
+  },
+  {
+   "id": "d2bdd393-b134-56b4-9681-9b3868a000a5",
+   "competitor_id": "fedc794a-993d-5890-9dbb-4e01c042042b",
+   "country_code": "ZA",
+   "plan_name": "Start (1 product, e.g. Online)",
+   "currency": "ZAR",
+   "price_hidden": false,
+   "monthly_minor": 45000,
+   "monthly_major": 450,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "incl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://bizzfo.co.za/restaurant-pos/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"R450\" — per branch per month; prices 'include VAT at South Africa's standard rate of 15%'; Combine (2 products) R850, Grow (3) R1,250"
   }
  ],
  "entries": [
@@ -1166,10 +2041,80 @@
    "verified_by": null
   },
   {
+   "id": "aa60d7d1-2806-57c8-ab5d-5a8f4d354b8c",
+   "country_code": "AO",
+   "competitor_id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "4c7b81d5-d076-5644-920b-7bcb9626e74a",
+   "country_code": "CO",
+   "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "primary_plan_id": "fa700135-7d88-5239-a4f3-5d0e965454d4",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "cb073b84-1bef-58ad-9081-0f5bafb79367",
+   "country_code": "CO",
+   "competitor_id": "f025fc79-dc1a-5c8e-a433-ab5775843efe",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
    "id": "33752d1a-f57f-5f11-a4de-2ba81f80bae9",
    "country_code": "DO",
    "competitor_id": "873c5c65-258d-55e1-8450-ed6a1da33609",
    "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "f04525e0-0911-5f35-8e31-3e2cde676d43",
+   "country_code": "NG",
+   "competitor_id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
+   "primary_plan_id": "86457318-8577-53a0-8181-cb139b49abef",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "f893f99d-18f0-5c86-9cd9-427810c68993",
+   "country_code": "NG",
+   "competitor_id": "9af04d84-0659-5c20-b571-9cefadb7a04e",
+   "primary_plan_id": "44c16279-225a-5017-8fa6-2b8758d61f01",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "91e6d993-8342-54d2-8674-365b0b6479b4",
+   "country_code": "ZA",
+   "competitor_id": "afe2f58d-df5f-5b96-9a77-5a8bd4f08cc7",
+   "primary_plan_id": "a83cd6f5-4a94-5e89-b740-d27882ec379d",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "93c2b8e6-28e6-5850-9b83-ab8ad57d2fa6",
+   "country_code": "ZA",
+   "competitor_id": "fedc794a-993d-5890-9dbb-4e01c042042b",
+   "primary_plan_id": "d2bdd393-b134-56b4-9681-9b3868a000a5",
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -1302,6 +2247,49 @@
    ]
   },
   {
+   "name": "Ocuioso",
+   "evidence": [
+    {
+     "country": "AO",
+     "food_quote": "Boa comida, por perto",
+     "food_url": "https://www.ocuioso.com",
+     "order_quote": "Pede sem filas",
+     "order_url": "https://www.ocuioso.com",
+     "country_quote": "Preços em kwanzas · período indicado em cada plano",
+     "country_url": "https://www.ocuioso.com/precos",
+     "reason": "as in wave 2 (BORDERLINE): Luanda ordering from a public menu, 'Roulotes' category; re-read today for a price: the price page says prices are in kwanzas but the amounts are not in the page text (script-rendered plan cards) — hidden"
+    }
+   ]
+  },
+  {
+   "name": "Fudo",
+   "evidence": [
+    {
+     "country": "CO",
+     "food_quote": "Movilidad para food trucks y ferias",
+     "food_url": "https://fu.do/es-co/precios/",
+     "order_quote": "Entrega a domicilio Para retirar",
+     "order_url": "https://fu.do/es-co/delivery/",
+     "country_quote": "Precios en pesos colombianos, sin IVA.",
+     "country_url": "https://fu.do/es-co/precios/",
+     "reason": "Fudo's Colombian site: Tu Delivery online-shop add-on with 'Para retirar' (wave-2 quote from its delivery page), COP prices read today; food trucks y ferias named as a segment. BORDERLINE food_truck (segment label only)."
+    }
+   ]
+  },
+  {
+   "name": "Menuestro",
+   "evidence": [
+    {
+     "country": "CO",
+     "order_quote": "Domicilio, recoger en tu sede o servido en la mesa.",
+     "order_url": "https://www.menuestro.com",
+     "country_quote": "¿Funciona fuera de Colombia?",
+     "country_url": "https://www.menuestro.com",
+     "reason": "Colombian restaurant online menu / ordering with pickup and 0% commission; price only on quote (hidden)"
+    }
+   ]
+  },
+  {
    "name": "TOI",
    "evidence": [
     {
@@ -1313,6 +2301,58 @@
      "country_quote": "Facturación electrónica e-CF",
      "country_url": "https://web.toi.do",
      "reason": "BORDERLINE: Dominican POS whose cashless events app lets festival-goers pre-order food from all vendors with a ready alert; that events offer is priced 'A medida' (hidden). The RD$ 5,500/mes restaurant plan has only kiosks, digital menu and PedidosYa/Uber Eats, no own online ordering ahead, so it is not used as this tool's price."
+    }
+   ]
+  },
+  {
+   "name": "Mylo",
+   "evidence": [
+    {
+     "country": "NG",
+     "order_quote": "Pickup, delivery or dine-in: the customer chooses.",
+     "order_url": "https://mylo.africa/",
+     "country_quote": "For restaurants, bars, hotels and shops in Nigeria.",
+     "country_url": "https://mylo.africa/",
+     "reason": "Nigerian ordering storefront for restaurants, bars and food vendors: one ordering link where the customer chooses pickup or delivery; flat NGN monthly fee, zero commission"
+    }
+   ]
+  },
+  {
+   "name": "Restorant",
+   "evidence": [
+    {
+     "country": "NG",
+     "order_quote": "they choose delivery or pickup,",
+     "order_url": "https://restorant.com.ng/guides/how-to-start-online-ordering-for-your-restaurant-in-nigeria",
+     "country_quote": "Restorant is a product of Brandyeast, based in Nnewi, Anambra State, Nigeria.",
+     "country_url": "https://restorant.com.ng",
+     "reason": "Nigerian restaurant ordering platform (Brandyeast, Nnewi): branded storefront where customers 'choose delivery or pickup'; free with 5% commission on online-paid orders (8% on a marketplace-found customer's first order). Also runs a marketplace listing, but the storefront is the restaurant's own."
+    }
+   ]
+  },
+  {
+   "name": "Resto",
+   "evidence": [
+    {
+     "country": "ZA",
+     "order_quote": "allows restaurants to take online orders, for either delivery or collection.",
+     "order_url": "https://resto.co.za/",
+     "country_quote": "Resto is a proudly South African software platform. Built in SA, by SA, for SA!",
+     "country_url": "https://resto.co.za/",
+     "reason": "South African restaurant online-ordering shop for delivery or collection, no commissions; ZAR price"
+    }
+   ]
+  },
+  {
+   "name": "Bizzfo",
+   "evidence": [
+    {
+     "country": "ZA",
+     "order_quote": "Delivery and pickup options",
+     "order_url": "https://bizzfo.co.za/restaurant-pos/",
+     "country_quote": "Built for South African Restaurants",
+     "country_url": "https://bizzfo.co.za/restaurant-pos/",
+     "reason": "South African restaurant POS with a stackable Online product: customers order from the restaurant's branded platform with delivery and pickup options; ZAR per-branch prices incl. VAT"
     }
    ]
   }
@@ -1522,6 +2562,24 @@
    "plans": []
   },
   {
+   "country": "CO",
+   "name": "Vendty",
+   "website": "https://vendty.com",
+   "stored": null,
+   "reason": "BORDERLINE: Colombian POS ('hecho para Colombia') with a virtual store / online menu and delivery module, COP prices ($155.000 / $85.000 / $140.000 per month), but no pickup / para llevar / scheduled-order wording on the home or restaurant page",
+   "url": "https://vendty.com",
+   "plans": []
+  },
+  {
+   "country": "CR",
+   "name": "Avify",
+   "website": "https://avify.com",
+   "stored": null,
+   "reason": "Costa Rican e-commerce / POS (operates in Costa Rica and Central America, e-invoicing 'para Costa Rica'), but no restaurant offer, no pickup or ordering-ahead wording, and 'Todos los precios están en USD.'",
+   "url": "https://avify.com",
+   "plans": []
+  },
+  {
    "country": "GT",
    "name": "Midelivery Food",
    "website": "https://www.mideliveryfood.com",
@@ -1538,6 +2596,38 @@
    "reason": "Jamaican consumer visual-menu app listing many restaurants (diners 'see every dish before you order for pickup or delivery'); a multi-restaurant marketplace, restaurants book a demo, no price",
    "url": "https://visueats.com",
    "plans": []
+  },
+  {
+   "country": "NI",
+   "name": "Neolo Menú QR",
+   "website": "https://www.neolo.com/nicaragua/menu-qr/",
+   "stored": null,
+   "reason": "QR menu to view only ('Tus clientes escanean el QR y ven el menú directo en el navegador. Sin descargar nada.'), no ordering; NIO prices (C$ 323 /mes)",
+   "url": "https://www.neolo.com/nicaragua/menu-qr/",
+   "plans": []
+  },
+  {
+   "country": "PE",
+   "name": "Fudo (Tu Delivery)",
+   "website": "https://fu.do",
+   "stored": "7e12931c",
+   "reason": "Peruvian price page now exists but is USD only ('Precios en dólares.'; Plan Avanzado USD 35/mes, Plan Pro USD 45/mes, Tu Delivery USD 30/mes) and shows no retiro / pickup wording; no PEN price",
+   "url": "https://fu.do/es-pe/precios/",
+   "plans": [
+    {
+     "plan_name": "Tu Delivery (add-on)",
+     "currency": "USD",
+     "price_major": 30,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "USD 30 /mes",
+     "url": "https://fu.do/es-pe/precios/",
+     "note": "USD, not PEN — does not count in PE"
+    }
+   ]
   },
   {
    "country": "SV",
@@ -1574,6 +2664,47 @@
      "note": "billed yearly"
     }
    ]
+  },
+  {
+   "country": "UY",
+   "name": "Fudo (Tu Delivery)",
+   "website": "https://fu.do",
+   "stored": "7e12931c",
+   "reason": "Uruguayan price page exists but shows USD only ('Precios en dólares.'; Plan Avanzado USD 35/mes, Plan Pro USD 45/mes, Tu Delivery add-on USD 30/mes) and no retiro / pickup wording; no UYU price",
+   "url": "https://fu.do/es-uy/precios/",
+   "plans": [
+    {
+     "plan_name": "Tu Delivery (add-on)",
+     "currency": "USD",
+     "price_major": 30,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "USD 30 /mes",
+     "url": "https://fu.do/es-uy/precios/",
+     "note": "USD, not UYU — does not count in UY; on top of Plan Avanzado 'USD 35 /mes' or Plan Pro 'USD 45 /mes'"
+    }
+   ]
+  },
+  {
+   "country": "ZA",
+   "name": "Ordev",
+   "website": "https://ordev.io",
+   "stored": null,
+   "reason": "BORDERLINE: South African ordering platform ('Built for South African restaurant operators.'), Ordev.online R515/mo, but no collection / pickup / order-ahead wording ('Web-based ordering for direct sales.')",
+   "url": "https://ordev.io/",
+   "plans": []
+  },
+  {
+   "country": "ZA",
+   "name": "WebOrder",
+   "website": "https://weborder.co.za",
+   "stored": null,
+   "reason": "BORDERLINE: 'South Africa's Simple Online Ordering System' (Bronze R199 connection + R99 per month; Eatery add-on), but no collection / pickup wording, only a delivery module",
+   "url": "https://weborder.co.za/",
+   "plans": []
   }
  ],
  "unreadable": [
@@ -1597,6 +2728,20 @@
    "website": "https://tossplace.com",
    "stored": null,
    "reason": "already counted from compare-research-2 (0 KRW); re-check of tossplace.com/pricing returned HTTP 404, so the fee was not re-confirmed today"
+  },
+  {
+   "country": "HN",
+   "name": "HNMenu",
+   "website": "https://www.hnmenu.com",
+   "stored": null,
+   "reason": "retried once today (wave 2 also): script-rendered, the page reader sees only the title 'HNMenu - Menús Digitales para Restaurantes en Honduras.'"
+  },
+  {
+   "country": "PY",
+   "name": "RestoPRO",
+   "website": "https://restopro.com.py",
+   "stored": null,
+   "reason": "retried once today (wave 2 also): script-rendered, only the title 'RestoPRO | Software para restaurantes en Paraguay' is readable"
   }
  ],
  "not_needed": []
