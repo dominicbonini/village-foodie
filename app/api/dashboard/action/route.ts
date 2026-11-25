@@ -343,6 +343,14 @@ export async function POST(req: NextRequest) {
     const tillRole = tillRoleOf(actor)
     const tillFromSeq = ['cancel', 'undo_collected', 'undo_mark_paid', 'edit', 'refund'].includes(String(action)) ? await tillHeadSeq(supabase, truck.id) : 0
     const tillClosed = async (e: unknown) => (isTillGuardError(e) ? NextResponse.json(await kErr('sale_closed'), { status: 409 }) : null)
+    // till-pack-4 (Part B): an UNDO asks the till FIRST whether its guard would refuse this correction (public.till_correction_check: 'HGT02'
+    // only in ENFORCE mode for a sealed order whose day is closed — always NULL in observe mode, so nothing changes today). So once the guard
+    // enforces, an undo is wholly done or wholly refused before any write — never the payment reversed with the status left, or the reverse.
+    // If the check itself cannot run (an error), the undo goes ahead exactly as before; the guard's own refusal still answers 409 below.
+    const tillPrecheck = async () => {
+      const { data, error } = await supabase.rpc('till_correction_check', { p_order_key: orderKey })
+      return !error && typeof data === 'string' ? tillClosed({ code: data }) : null
+    }
     // ── dashboard-auth-2: THE MEMBER GATE, IN LOG MODE (lib/auth/require-member.ts) ─────────────────────────────────
     // Records — after the response, never refusing — a write (or read) the planned "signed-in team members only" rule
     // would refuse. Reuses `actor` above, so it adds no lookup. Flipping AUTH_MODE for a group makes this line refuse.
@@ -720,6 +728,7 @@ export async function POST(req: NextRequest) {
 
     // ── UNDO COLLECTED ────────────────────────────────────────────────────────
     if (action === 'undo_collected') {
+      { const refusal = await tillPrecheck(); if (refusal) return refusal }
       const { data: order } = await supabase.from('orders').select('slot, event_date, event_id, status_before_collected').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       // Revert ONE stage, to the order's ACTUAL previous status (recorded by 'collected'): 'ready' if it
       // was ready, 'confirmed'/'modified' if collected directly. Fallback 'confirmed' for legacy rows with
@@ -2929,6 +2938,7 @@ export async function POST(req: NextRequest) {
     // delete is aborted and the undo refused. FAILS CLOSED, deliberately: erasing a payment record with
     // no log of the erasure is the exact state action_audit_log exists to prevent.
     if (action === 'undo_mark_paid') {
+      { const refusal = await tillPrecheck(); if (refusal) return refusal }
       try {
         // till-pack-2: reversed, never deleted (see undo_collected).
         await reverseCollectionPayment(supabase, {

@@ -142,6 +142,7 @@ import { normaliseRegion } from '@/lib/event-address'
 import { readMenuReview, closeMenuReview } from '@/lib/demo-menu-carry'   // demo-claim-2: the carried-over menu's review state
 import { withLineNotes } from '@/lib/line-notes'   // france-notes-1
 import { NETTING_COLUMNS, netted } from '@/lib/payments/reversals'   // till-pack-2
+import { loadDailyInputs } from '@/lib/accounts/daily-inputs'   // till-pack-4
 /* ⛔ `readImageInfo` WAS IMPORTED HERE (5 October 2026). It measured an uploaded `place_pictures` row
  * server-side rather than trusting the browser's numbers. That pane and its four routes are deleted;
  * the POST picture is measured by the same function on /api/weekly-post, which is where it always was. */
@@ -1984,49 +1985,17 @@ export async function POST(req: NextRequest) {
     const tz = await truckTimeZone(truck)
     const startIso = new Date(instantOfLocal(from, '00:00', tz)).toISOString()
     const endIso = new Date(instantOfLocal(addDaysYmd(to, 1), '00:00', tz)).toISOString()
-    const COLS = 'order_key, status, created_at, placed_at, updated_at, total, total_minor, currency, food_minor, tax_minor, tax_inclusive, tax_rate_milli, tax_breakdown, receipt_no'
-    const paged = async <T,>(build: (a: number, b: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>) => {
-      const out: T[] = []
-      for (let i = 0; ; i += 1000) { const { data, error } = await build(i, i + 999); if (error) throw new Error(error.message); out.push(...(data ?? [])); if (!data || data.length < 1000) return out }
-    }
     try {
-      const placed = await paged(async (a, b) => supabase.from('orders').select(COLS).eq('truck_id', truck.id).gte('created_at', startIso).lt('created_at', endIso).order('created_at').order('order_key').range(a, b))
-      const refundRowsAll = await paged(async (a, b) => supabase.from('order_payments').select('order_key, id').eq('truck_id', truck.id).eq('kind', 'refund').eq('state', 'succeeded').gte('created_at', startIso).lt('created_at', endIso).order('created_at').range(a, b))
-      // till-pack-2: a refund a reversal cancels (a refund that failed) is no refund — it used to be deleted. Looked up only when refunds exist.
-      const refundIds = (refundRowsAll as { id: string }[]).map(r => r.id)
-      const reversedRefunds = new Set<string>()
-      for (let i = 0; i < refundIds.length; i += 150) {
-        const { data, error } = await supabase.from('order_payments').select('reverses_payment_id').eq('kind', 'reversal').in('reverses_payment_id', refundIds.slice(i, i + 150))
-        if (error) throw new Error(error.message)
-        for (const r of (data ?? []) as { reverses_payment_id: string | null }[]) if (r.reverses_payment_id) reversedRefunds.add(r.reverses_payment_id)
-      }
-      const refundRows = (refundRowsAll as { order_key: string; id: string }[]).filter(r => !reversedRefunds.has(r.id)).map(r => ({ order_key: r.order_key }))
-      const cancelRows = await paged(async (a, b) => supabase.from('action_audit_log').select('order_key, created_at').eq('truck_id', truck.id).eq('action', 'order_cancelled').gte('created_at', startIso).lt('created_at', endIso).order('created_at').range(a, b))
-      const cancelledNoAudit = await paged(async (a, b) => supabase.from('orders').select(COLS).eq('truck_id', truck.id).eq('status', 'cancelled').gte('updated_at', startIso).lt('updated_at', endIso).order('updated_at').range(a, b))
-      const have = new Set((placed as { order_key: string }[]).map(o => o.order_key))
-      const extraKeys = [...new Set([...(refundRows as { order_key: string }[]), ...(cancelRows as { order_key: string }[])].map(r => r.order_key))].filter(k => k && !have.has(k))
-      const extra: unknown[] = []
-      for (let i = 0; i < extraKeys.length; i += 150) {
-        const { data, error } = await supabase.from('orders').select(COLS).eq('truck_id', truck.id).in('order_key', extraKeys.slice(i, i + 150))
-        if (error) throw new Error(error.message)
-        extra.push(...(data ?? []))
-      }
-      const orders = [...(placed as { order_key: string }[]), ...(extra as { order_key: string }[]), ...(cancelledNoAudit as { order_key: string }[]).filter(o => !have.has(o.order_key) && !extraKeys.includes(o.order_key))]
-      const keys = orders.map(o => o.order_key)
-      const payments: unknown[] = []
-      for (let i = 0; i < keys.length; i += 150) {
-        const { data, error } = await supabase.from('order_payments').select(`order_key, kind, amount_minor, state, created_at, ${NETTING_COLUMNS}`).eq('truck_id', truck.id).in('order_key', keys.slice(i, i + 150))
-        if (error) throw new Error(error.message)
-        payments.push(...netted(data ?? []))   // till-pack-2: reversal pairs removed, today's columns kept
-      }
-      const cancelledAt: Record<string, string> = {}
-      for (const r of cancelRows as { order_key: string; created_at: string }[]) if (r.order_key && !cancelledAt[r.order_key]) cancelledAt[r.order_key] = r.created_at
+      // till-pack-4: the rows come from the ONE loader the till's day close uses too (lib/accounts/daily-inputs.ts), so the file and the Z
+      // read the same rows; it adds the orders SERVED in the period (event_date — Q3: a pre-order counts on its trading day).
+      const { orders, payments, cancelledAt } = await loadDailyInputs(supabase, { truckId: truck.id, startIso, endIso, from, to })
       const rules = await loadChargeRules(truck)
       return NextResponse.json({ ok: true, orders, payments, cancelledAt, tax: { inclusive: rules.taxInclusive, rateMilli: rules.taxRateMilli ?? null }, timeZone: tz, from, to })
     } catch (e) {
       return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 })
     }
   }
+
 
   if (action === 'update_trade_area') {
     const cs = await countrySettingsForTruck(truck)

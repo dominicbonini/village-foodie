@@ -246,6 +246,7 @@
     "france-privacy-2.cjs",
     "till-pack-1.cjs",
     "till-pack-2.cjs",
+    "till-pack-4.cjs",
     "compare-fix-1.cjs",
     "compare-fix-2.cjs"
   ],
@@ -456,7 +457,8 @@
         "partners-offer-templates.cjs",
         "partners-3-import.cjs",
         "partners-2-screens.cjs",
-        "partners-3-screens.cjs"
+        "partners-3-screens.cjs",
+        "till-signing-keygen.cjs"
       ]
     },
     "needs_a_browser": {

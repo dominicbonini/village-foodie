@@ -127,6 +127,30 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  // ── 🔴 Guard 2b: THE TILL'S SEALED RECORDS (till-pack-4, docs/till-pack-4-report.md Part B). ──────────────────────────────────
+  // A truck in the till (any till_chain entry, or any sealed order) holds the fiscal record the law requires us to keep: its chain is
+  // append-only and the cascade below would delete the orders it seals. Refused BEFORE anything is touched, with no override — like
+  // Guard 3, the escape hatch is a deliberate, hand-run archive (till-pack-5), never this button. A failed check refuses too.
+  {
+    const [{ count: chainCount, error: chainErr }, { count: sealCount, error: sealErr }] = await Promise.all([
+      supabase.from('till_chain').select('seq', { count: 'exact', head: true }).eq('truck_id', truckId),
+      supabase.from('till_order_seals').select('order_key', { count: 'exact', head: true }).eq('truck_id', truckId),
+    ])
+    if (chainErr || sealErr) {
+      console.error('[delete-truck] till records check failed — refusing:', chainErr ?? sealErr)
+      return NextResponse.json({ error: 'Could not check this truck for till records. Nothing was deleted.', code: 'till_check_failed' }, { status: 500 })
+    }
+    if ((chainCount ?? 0) > 0 || (sealCount ?? 0) > 0) {
+      return NextResponse.json(
+        {
+          error: `This truck has sealed till records (${chainCount ?? 0} chain entries, ${sealCount ?? 0} sealed orders) that must be kept. Nothing was deleted.`,
+          code: 'till_records_present',
+        },
+        { status: 409 },
+      )
+    }
+  }
+
   // ── 🔴 Guard 3: ACCOUNTING RECORDS. THIS IS A LIVE-DEFECT FIX, NOT PART OF A FEATURE. ───────────
   // deleteTruckCascade deletes `orders` FIRST (it is the guaranteed FK blocker), and order_payments has
   // TWO foreign keys — order_key -> orders and truck_id -> trucks — BOTH `on delete cascade`. So a hard

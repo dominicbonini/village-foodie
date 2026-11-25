@@ -8,7 +8,11 @@
 //   WHICH ORDERS   accepted ones: confirmed, modified, cooking, ready, collected. PENDING and REJECTED never count. A CANCELLED order
 //                  counts only if money was taken (a succeeded charge) — its sale on the day it was placed, and its money given back as
 //                  a refund on the day it was given back.
-//   SALE DATE      the day the order was PLACED (placed_at, else created_at), in the truck's time zone.
+//   SALE DATE      🔴 till-pack-4 (Q3, Dominic 25 November 2026): the order's TRADING DAY — its event_date, so a pre-order counts on the
+//                  day it is served and the file matches the till's day close (lib/till/close.ts). ONE EXCEPTION, the till's late
+//                  record: an order RECORDED after its day's close (06:00 the next day, truck time — an offline walk-up synced late) counts
+//                  on the day it was recorded, because that closed day is never reopened. (Before till-pack-4: the day it was PLACED.)
+//                  An order with no event_date (none live) keeps the placed day.
 //   REFUND DATE    the day the refund was MADE (order_payments.created_at). A refund takes back each rate's share in proportion:
 //                  sales incl. VAT and VAT, each split by the order's rates (largest remainder), scaled by refund ÷ the order's total.
 //   THE CANCELLED-AFTER-PAYMENT CASE (readiness §4): a cancelled order with a succeeded charge and no refund row (money taken at the
@@ -24,6 +28,7 @@ import { allocate } from '@/lib/order-tax'
 import { localParts } from '@/lib/accounts/ledger'
 import { csvAmount, csvFile } from '@/lib/accounts/csv'
 import { formatRateMilli } from '@/lib/order-charge-lines'
+import { addDaysYmd, instantOfLocal } from '@/lib/time-utils'
 
 export interface DailyOrder {
   order_key: string
@@ -31,6 +36,8 @@ export interface DailyOrder {
   created_at: string | null
   placed_at?: string | null
   updated_at?: string | null
+  /** till-pack-4 (Q3): the trading day. */
+  event_date?: string | null
   total?: number | string | null
   total_minor?: number | null
   currency?: string | null
@@ -56,6 +63,22 @@ export interface DailyRow { date: string; rate: number; salesMinor: number; refu
 export interface DailyResult { rows: DailyRow[]; totals: DailyRow[]; noRateOrders: number }
 
 const ACCEPTED = new Set(['confirmed', 'modified', 'cooking', 'ready', 'collected'])
+/** The accepted statuses (the till's 'accepted' and 'collected'). */
+export const ACCEPTED_STATUSES: ReadonlySet<string> = ACCEPTED
+
+/** till-pack-2's close of trading day D: 06:00 on D + 1, truck time (Q2). */
+export const CLOSE_TIME = '06:00'
+/** The instant trading day `ymd` closes, in `timeZone`. */
+export const closeInstantOf = (ymd: string, timeZone: string): number => instantOfLocal(addDaysYmd(ymd, 1), CLOSE_TIME, timeZone)
+/** 🔴 THE ONE DATING RULE (Q3) — shared by this file and the till's day close, so the two can never disagree. An order's day is its
+ *  event_date; an order RECORDED (created_at) after that day's close is a late record and counts on the day it was recorded. */
+export function saleDayOf(o: Pick<DailyOrder, 'event_date' | 'created_at' | 'placed_at'>, timeZone: string): { day: string; late: boolean } {
+  const ed = typeof o.event_date === 'string' && /^\d{4}-\d{2}-\d{2}/.test(o.event_date) ? o.event_date.slice(0, 10) : null
+  if (!ed) return { day: localParts(o.placed_at ?? o.created_at ?? null, timeZone).date, late: false }
+  const rec = o.created_at ? Date.parse(o.created_at) : NaN
+  if (Number.isFinite(rec) && rec >= closeInstantOf(ed, timeZone)) return { day: localParts(o.created_at ?? null, timeZone).date, late: true }
+  return { day: ed, late: false }
+}
 const int = (v: unknown) => { const n = Number(v); return Number.isFinite(n) ? Math.round(n) : 0 }
 
 /** An order's food by rate: [{ rate, gross, tax }] (gross incl. VAT), or null when it has no rate at all. */
@@ -99,7 +122,7 @@ export function dailyTotals(input: DailyInput): DailyResult {
     const pays = byOrder.get(o.order_key) ?? []
     const charged = pays.filter(p => p.kind === 'charge').reduce((s, p) => s + int(p.amount_minor), 0)
     if (!(ACCEPTED.has(status) || (status === 'cancelled' && charged > 0))) continue
-    const saleDay = day(o.placed_at ?? o.created_at)
+    const saleDay = saleDayOf(o, input.timeZone).day   // till-pack-4 (Q3): the trading day (see the header)
     const refunds = pays.filter(p => p.kind === 'refund').map(p => ({ minor: int(p.amount_minor), date: day(p.created_at) }))
     // The cancelled-after-payment case: what was taken and not refunded comes back on the day of the cancellation.
     if (status === 'cancelled') {

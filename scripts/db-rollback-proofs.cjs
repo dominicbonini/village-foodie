@@ -24,6 +24,9 @@
 //   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --preflight-till-2 supabase/migrations/20261133_till_pack_2.sql
 //   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --till-2-check
 //        till-pack-1: the tamper-evident chain in observe mode (see tillProofs below), before and after applying, rolled back.
+//   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --preflight-till-4 supabase/migrations/20261140_till_pack_4.sql
+//   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --till-4-check
+//        till-pack-4: the closes, signed, and Part B (see till4Proofs below) — the real close run inside the rolled-back transaction.
 //
 // 🔴 THE SAFEGUARDS (Dominic, 24 November 2026), each enforced below, not just promised:
 //   • DEMO TRUCKS ONLY — every truck it touches is in TRUCKS, and it refuses to start unless each one exists, is NOT a customer, and
@@ -1258,10 +1261,334 @@ async function till2Proofs(file) {
   ok('the demo trucks\' counts (orders, payments, audit rows, counters, the till tables, the new till tables) are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
 }
 
+// ══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// till-pack-4 (25 November 2026, docs/till-pack-4-report.md): THE CLOSES, SIGNED, AND PART B.
+/**
+ *   --preflight-till-4 <migration>  ONE transaction, ROLLED BACK: 20261140_till_pack_4's statements, then the proofs below.
+ *   --till-4-check                  After it is applied: the same proofs, ROLLED BACK.
+ * THE REAL CLOSE RUN (lib/till/close-run.ts, bundled with esbuild) runs INSIDE the rolled-back transaction, through a small adapter that
+ * speaks the PostgREST builder subset the code uses (select / eq / gte / gt / lt / lte / in / order / range / single / maybeSingle, rpc) as
+ * SQL on this one connection — every statement printed, each in a SAVEPOINT so a refusal (HGT20 …) leaves the transaction usable.
+ * The fixture, on the French demo truck (Europe/Paris), its fiscal year set to end 31 October (not December):
+ *   D1 = 30 Oct 2026: O1 mixed rates (10 / 20 / 5.5 %) on an EVENT, cash; O2 an online pre-order placed and paid on D1 for D2; O3 on a VAN,
+ *        accepted, nothing paid (Q4); O4 cash, REVERSED, then card (a reversal pair); O5 a Q5 cancelled counter sale (cash in, cash back);
+ *        O6 a franchise order at 0 %; O9 served after midnight (00:30 on 31 Oct) on D1's event.
+ *   run 1 (unsigned, until D1) → the D1 close.
+ *   D2 = 31 Oct: L1 a LATE offline replay for D1 (recorded 10:00 on D2, after D1's close); R1 a LATE refund of O1 (D2); O7 a D2 card sale.
+ *   run 2 (signed, until D2) → the D2 close, the October month close, the fiscal-year close (1 Nov 2025 – 31 Oct 2026), and the D1 close
+ *        signed late. run 3 (until 2 Nov) → two days with no activity: scanned, no close.
+ */
+const TILL4_STATIC = `select
+  (select bool_and(relrowsecurity) from pg_class where relnamespace = 'public'::regnamespace and relname in ('till_closes', 'till_close_signatures', 'till_truck_settings')) as rls_on,
+  (select bool_or(has_table_privilege(r, 'public.' || t, 'SELECT')) from unnest(array['anon', 'authenticated']) r, unnest(array['till_closes', 'till_close_signatures', 'till_truck_settings']) t) as api_reads,
+  (select bool_or(has_table_privilege('service_role', 'public.' || t, p)) from unnest(array['till_closes', 'till_close_signatures', 'till_truck_settings']) t, unnest(array['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE']) p) as service_writes,
+  (select bool_and(has_function_privilege('service_role', f, 'EXECUTE')) from unnest(array['public.till_close_context(text)', 'public.till_mark_scanned(text,date)', 'public.till_close_commit(text,text,date,date,text,timestamptz,uuid[],uuid[],jsonb,text)', 'public.till_register_signing_key(text,text)', 'public.till_sign_close(text,bigint,text,text)', 'public.till_correction_check(uuid)', 'public.till_verify(text)']) f) as service_calls,
+  (select bool_or(has_function_privilege(r, f, 'EXECUTE')) from unnest(array['anon', 'authenticated']) r, unnest(array['public.till_close_context(text)', 'public.till_mark_scanned(text,date)', 'public.till_close_commit(text,text,date,date,text,timestamptz,uuid[],uuid[],jsonb,text)', 'public.till_register_signing_key(text,text)', 'public.till_sign_close(text,bigint,text,text)', 'public.till_correction_check(uuid)', 'public.till_verify(text)', 'public.till_row_as_sealed(public.orders,jsonb)']) f) as api_calls,
+  has_function_privilege('service_role', 'public.till_row_as_sealed(public.orders,jsonb)', 'EXECUTE') as service_row_as_sealed,
+  (select count(*) from pg_trigger where tgname in ('till_closes_append_only', 'till_closes_no_truncate', 'till_close_signatures_append_only', 'till_close_signatures_no_truncate'))::int as append_triggers,
+  (select string_agg(column_name || ':' || is_nullable || ':' || coalesce(column_default, 'none'), ',' order by column_name) from information_schema.columns where table_schema = 'public' and table_name = 'till_settings' and column_name in ('signing_public_key', 'signing_key_id')) as settings_cols,
+  (select guard_mode from public.till_settings where id) as guard_mode,
+  md5(pg_get_functiondef('public.place_order_atomic_v2(jsonb,text,text,uuid,text,date,jsonb)'::regprocedure)) as v2_md5`
+function checkStatic4(s) {
+  ok('V1 · till_closes, till_close_signatures, till_truck_settings: RLS on; anon / authenticated cannot read them; the service role cannot write them', s.rls_on === true && s.api_reads === false && s.service_writes === false, s)
+  ok('V2 · the service role may call the close functions, till_correction_check and till_verify; anon / authenticated may call none of them (nor till_row_as_sealed, which the service role cannot call either)', s.service_calls === true && s.api_calls === false && s.service_row_as_sealed === false, s)
+  ok('V3 · the two record tables are append-only (4 triggers: update / delete / truncate refused)', s.append_triggers === 4, s.append_triggers)
+  ok('V4 · till_settings gains signing_public_key / signing_key_id, nullable, no default; the guard is still in OBSERVE mode', s.settings_cols === 'signing_key_id:YES:none,signing_public_key:YES:none' && s.guard_mode === 'observe', s)
+  ok('V5 · place_order_atomic_v2 untouched: md5 e4b273abcf8e7609c6ca54033ed59332', s.v2_md5 === 'e4b273abcf8e7609c6ca54033ed59332', s.v2_md5)
+}
+function till4Helpers() {
+  return `create function pg_temp.rbp4_order(p_truck text, p_day date, p_at timestamptz, p_status text, p_source text, p_van uuid, p_event uuid, p_items jsonb, p_bd jsonb, p_minor integer, p_rate integer)
+returns uuid language sql as $f$
+  insert into public.orders (id, truck_id, customer_name, order_type, event_date, event_id, van_id, items, subtotal, discount_amt, total, total_minor, food_minor,
+    tax_minor, tax_rate_milli, tax_inclusive, tax_label, tax_breakdown, card_fee_payer, status, payment_status, source, created_at, placed_at, currency)
+  values ('rbp-' || substr(md5(random()::text), 1, 8), p_truck, 'rollback proof', 'collection', p_day, p_event, p_van, p_items, round(p_minor / 100.0, 2), 0,
+    round(p_minor / 100.0, 2), p_minor, p_minor, 0, p_rate, true, 'TVA', p_bd,
+    'truck', p_status, 'unpaid', p_source, p_at, p_at, 'EUR')
+  returning order_key $f$;
+create function pg_temp.rbp4_pay(p_key uuid, p_kind text, p_channel text, p_method text, p_amount integer, p_at timestamptz) returns uuid language sql as $f$
+  insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_by, method, livemode, created_at)
+  select o.order_key, o.truck_id, p_kind, p_channel, p_amount, o.currency, 'succeeded', null, 'rollback proof', 'rbp4:' || gen_random_uuid(), 'rbp-staff-user', p_method, true, p_at
+  from public.orders o where o.order_key = p_key
+  returning id $f$;
+create function pg_temp.rbp4_reverse(p_pay uuid, p_at timestamptz) returns uuid language sql as $f$
+  insert into public.order_payments (order_key, truck_id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_by, method, livemode, reverses_payment_id, reason, created_at)
+  select p.order_key, p.truck_id, 'reversal', p.channel, p.amount_minor, p.currency, 'succeeded', null, 'rollback proof reversal', 'reversal:' || p.id, 'rbp-staff-user', p.method, p.livemode, p.id, 'undo_mark_paid', p_at
+  from public.order_payments p where p.id = p_pay
+  returning id $f$;`
+}
+/** The PostgREST builder subset lib/accounts/daily-inputs.ts and lib/till/close-run.ts use, as SQL on ONE connection (each call in a
+ *  savepoint; rows through row_to_json, so timestamps come back as ISO text and numbers as numbers, as PostgREST sends them). */
+function pgDb(c, tag) {
+  let sp = 0
+  const ident = s => { if (!/^[a-z_][a-z0-9_]*$/.test(s)) throw new Error(`pgDb: bad identifier ${s}`); return s }
+  async function run(sql, params) {
+    const name = `rbp4_sp_${++sp}`
+    await q(c, tag, `savepoint ${name}`)
+    try { const r = await q(c, tag, sql, params); await q(c, tag, `release savepoint ${name}`); return { rows: r.rows, error: null } }
+    catch (e) { await q(c, tag, `rollback to savepoint ${name}`); return { rows: null, error: { message: e.message, code: e.code } } }
+  }
+  function from(table) {
+    const st = { table: ident(table), cols: '*', where: [], params: [], order: [], range: null, single: null, head: false }
+    const cmp = op => (col, v) => { st.params.push(v); st.where.push(`${ident(col)} ${op} $${st.params.length}`); return b }
+    const b = {
+      select(cols, opts) { if (cols !== '*' && !/^[a-z0-9_, ]+$/.test(cols)) throw new Error(`pgDb: bad columns ${cols}`); st.cols = cols; st.head = !!(opts && opts.head); return b },
+      eq: cmp('='), gt: cmp('>'), gte: cmp('>='), lt: cmp('<'), lte: cmp('<='),
+      in(col, arr) { st.params.push(arr.map(String)); st.where.push(`${ident(col)}::text = any ($${st.params.length}::text[])`); return b },
+      order(col, o) { st.order.push(`${ident(col)}${o && o.ascending === false ? ' desc' : ''}`); return b },
+      range(a, z) { st.range = [a, z]; return b },
+      single() { st.single = 'one'; return b },
+      maybeSingle() { st.single = 'maybe'; return b },
+      then(res, rej) { return exec().then(res, rej) },
+    }
+    async function exec() {
+      const where = st.where.length ? ` where ${st.where.join(' and ')}` : ''
+      if (st.head) { const r = await run(`select count(*)::int as n from public.${st.table}${where}`, st.params); return r.error ? { data: null, count: null, error: r.error } : { data: null, count: r.rows[0].n, error: null } }
+      const lim = st.range ? ` limit ${st.range[1] - st.range[0] + 1} offset ${st.range[0]}` : ''
+      const r = await run(`select row_to_json(t)::text as j from (select ${st.cols} from public.${st.table}${where}${st.order.length ? ` order by ${st.order.join(', ')}` : ''}${lim}) t`, st.params)
+      if (r.error) return { data: null, error: r.error }
+      const rows = r.rows.map(x => JSON.parse(x.j))
+      if (st.single === 'one') return rows.length === 1 ? { data: rows[0], error: null } : { data: null, error: { message: `${rows.length} rows`, code: 'PGRST116' } }
+      if (st.single === 'maybe') return { data: rows[0] ?? null, error: null }
+      return { data: rows, error: null }
+    }
+    return b
+  }
+  async function rpc(fn, args = {}) {
+    const keys = Object.keys(args)
+    // the till functions return jsonb, text, boolean or void: node-pg hands back the parsed jsonb, the text, the boolean ('' for void)
+    const r = await run(`select public.${ident(fn)}(${keys.map((k, i) => `${ident(k)} => $${i + 1}`).join(', ')}) as r`, keys.map(k => { const v = args[k]; return v !== null && typeof v === 'object' && !Array.isArray(v) ? JSON.stringify(v) : v }))
+    if (r.error) return { data: null, error: r.error }
+    const v = r.rows[0].r
+    return { data: v === '' ? null : v, error: null }
+  }
+  return { from, rpc }
+}
+async function bundleTill4() {
+  const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
+  const PURE = new Set(['next-intl', 'react'])
+  globalThis.__tp4inert = pkg => { const inert = new Proxy(function () {}, { get: (_t, k) => (k === 'then' ? undefined : k === Symbol.toPrimitive ? () => '' : k === '__esModule' ? true : inert), apply: () => inert, construct: () => inert }); return inert }
+  const plugins = [{ name: 'inert', setup(b) {
+    b.onResolve({ filter: /^[^./]/ }, a => {
+      if (a.path.startsWith('@/')) return undefined
+      if (a.path.startsWith('node:')) return { path: a.path, external: true }
+      const pkg = a.path.startsWith('@') ? a.path.split('/').slice(0, 2).join('/') : a.path.split('/')[0]
+      return PURE.has(pkg) ? { path: a.path, external: true } : { path: a.path, namespace: 'inert' }
+    })
+    b.onLoad({ filter: /.*/, namespace: 'inert' }, a => ({ contents: `module.exports = globalThis.__tp4inert(${JSON.stringify(a.path)})`, loader: 'js' }))
+  } }]
+  const contents = `export { runTillCloses, runTruckCloses } from '@/lib/till/close-run'
+export { loadDailyInputs } from '@/lib/accounts/daily-inputs'
+export { dailyTotals } from '@/lib/accounts/daily-totals'
+export { loadSigningKey, verifySignature, keyIdOf } from '@/lib/till/signing'
+export { instantOfLocal } from '@/lib/time-utils'`
+  const out = (await esbuild.build({ stdin: { contents, resolveDir: REPO, loader: 'ts', sourcefile: 'entry.ts' }, bundle: true, write: false, platform: 'node', format: 'cjs', logLevel: 'silent', alias: { '@': REPO }, plugins })).outputFiles[0].text
+  const mod = { exports: {} }
+  new Function('module', 'exports', 'require', out)(mod, mod.exports, require)
+  return mod.exports
+}
+async function till4Counts(label) {
+  const base = await till2Counts(label)
+  const extra = await inRollback(`till4-counts-${label}`, async c => {
+    await q(c, `till4-counts-${label}`, 'set transaction read only')
+    const has = (await q(c, `till4-counts-${label}`, "select to_regclass('public.till_closes') is not null as has")).rows[0].has
+    if (!has) return { till4: 'not applied' }
+    return (await q(c, `till4-counts-${label}`, `select (select count(*) from public.till_closes)::int as closes_anywhere,
+        (select count(*) from public.till_close_signatures)::int as signatures_anywhere,
+        (select count(*) from public.till_truck_settings)::int as truck_settings_anywhere,
+        (select signing_key_id from public.till_settings where id) as key_id,
+        (select guard_mode from public.till_settings where id) as guard_mode`)).rows[0]
+  })
+  say(`  till-pack-4 counts ${label}: ${JSON.stringify(extra)}`)
+  return { ...base, ...extra }
+}
+async function till4Proofs(file) {
+  let body = null
+  if (file) {
+    const rel = path.relative(REPO, path.resolve(REPO, file)).split(path.sep).join('/')
+    if (!/^supabase\/migrations\/[^/]+\.sql$/.test(rel)) die(`${rel} is not a migration file`)
+    body = fs.readFileSync(path.join(REPO, rel), 'utf8').replace(/--[^\n]*/g, '').replace(/^\s*set lock_timeout[^;]*;/im, '').replace(/^\s*begin;\s*$/im, '').replace(/^\s*commit;\s*$/im, '').replace(/^\s*notify pgrst[^;]*;/im, '')
+    if (/^\s*(begin|commit|rollback)\s*;/im.test(body) || /\bcommit\b/i.test(body)) die('the migration body still has a transaction statement after stripping')
+    say(`\n══ PRE-FLIGHT — ${rel} inside ONE transaction that is ROLLED BACK ══`)
+  } else say('\n══ TILL-PACK-4, LIVE — every transaction ROLLED BACK ══')
+  const M = await bundleTill4()
+  const before = await till4Counts('before')
+  const tag = file ? 'preflight4' : 'till4'
+  const A = TRUCKS.A, TZ = 'Europe/Paris', D1 = '2026-10-30', D2 = '2026-10-31'
+  const at = (day, hm) => new Date(M.instantOfLocal(day, hm, TZ)).toISOString()
+  const keyB64 = () => crypto.generateKeyPairSync('ed25519').privateKey.export({ format: 'der', type: 'pkcs8' }).toString('base64')
+  const K = M.loadSigningKey(keyB64()), K2 = M.loadSigningKey(keyB64())
+  await inRollback(tag, async c => {
+    await guard(c)
+    const t0 = Date.now()
+    let wrote = null
+    if (body) { await q(c, tag, body); wrote = (await q(c, tag, TILL_WROTE)).rows[0] }
+    if (wrote) ok('U0 · the migration itself wrote NO row of orders, order_payments, action_audit_log or trucks (no row carries this transaction\'s xid after it)', Object.values(wrote).every(n => n === 0), wrote)
+    checkStatic4((await q(c, tag, TILL4_STATIC)).rows[0])
+    await q(c, tag, "set local timezone = 'UTC'")
+    await q(c, tag, "set local till.include_demo = 'on'")
+    await q(c, tag, tillHelpers() + '\n' + till2Helpers() + '\n' + till4Helpers())
+    const one = async (sql, p = []) => (await q(c, tag, sql, p)).rows[0]
+    const val = async (sql, p = []) => Object.values(await one(sql, p))[0]
+    const db = pgDb(c, tag)
+    const logs = []
+    const opts = extra => ({ taxOf: async () => ({ inclusive: true, rateMilli: 10000 }), isDemo: () => false, trucks: [A], fromDay: D1, log: m => logs.push(m), ...extra })
+    const bd = (rate, gross) => JSON.stringify([{ rate_milli: rate, food_minor: gross, gross_minor: gross, tax_minor: Math.round(gross * rate / (100000 + rate)), net_minor: gross - Math.round(gross * rate / (100000 + rate)) }])
+    const item = (name, minor) => JSON.stringify([{ name, quantity: 1, unit_price: minor / 100 }])
+    const order = (day, atIso, status, source, van, ev, items, bdj, minor, rate) => val('select pg_temp.rbp4_order($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9::jsonb, $10, $11) as k', [A, day, atIso, status, source, van, ev, items, bdj, minor, rate])
+    const pay = (k, kind, ch, method, amount, atIso) => val('select pg_temp.rbp4_pay($1, $2, $3, $4, $5, $6) as id', [k, kind, ch, method, amount, atIso])
+    const closesOf = async () => (await q(c, tag, 'select period_type, period_start::text as ps, period_end::text as pe, totals, gt_incl_minor::int as gi, gt_abs_minor::int as ga, gt_period_minor::int as gp, seq::int as seq, hash, signing_at_commit as sg from public.till_closes where truck_id = $1 order by period_end, period_type', [A])).rows
+    const snap = () => val('select pg_temp.rbp_snap($1::text[]) as s', [[A]])
+
+    // ── the fixture ──
+    say('  — seeding D1 (30 Oct 2026, Europe/Paris) on the demo truck —')
+    await q(c, tag, 'insert into public.till_truck_settings (truck_id, fiscal_year_end_month, fiscal_year_end_day) values ($1, 10, 31) on conflict (truck_id) do update set fiscal_year_end_month = 10, fiscal_year_end_day = 31, days_scanned_through = null', [A])
+    const E = await val("insert into public.truck_events (truck_id, venue_name, event_date) values ($1, 'rollback proof market', $2) returning id", [A, D1])
+    const V = await val("insert into public.truck_vans (truck_id, name) values ($1, 'rollback proof van') returning id", [A])
+    const O1 = await order(D1, at(D1, '12:00'), 'collected', 'manual', null, E, JSON.stringify([{ name: 'Galette', quantity: 2, unit_price: 7.5, tax_rate_milli: 10000 }, { name: 'Cidre', quantity: 1, unit_price: 4, tax_rate_milli: 20000 }, { name: 'Pain', quantity: 3, unit_price: 1.1, tax_rate_milli: 5500 }]),
+      JSON.stringify([{ rate_milli: 5500, food_minor: 330, gross_minor: 330, net_minor: 313, tax_minor: 17 }, { rate_milli: 10000, food_minor: 1500, gross_minor: 1500, net_minor: 1364, tax_minor: 136 }, { rate_milli: 20000, food_minor: 400, gross_minor: 400, net_minor: 333, tax_minor: 67 }]), 2230, 10000)
+    await pay(O1, 'charge', 'in_person_other', 'cash', 2230, at(D1, '12:01'))
+    const O2 = await order(D2, at(D1, '09:00'), 'confirmed', 'web', null, null, item('Crêpe box', 1100), bd(10000, 1100), 1100, 10000)
+    await pay(O2, 'charge', 'online', null, 1100, at(D1, '09:01'))
+    const O3 = await order(D1, at(D1, '13:00'), 'confirmed', 'manual', V, null, item('Crêpe', 500), bd(10000, 500), 500, 10000)
+    const O4 = await order(D1, at(D1, '14:00'), 'collected', 'manual', null, null, item('Galette', 800), bd(10000, 800), 800, 10000)
+    const P4 = await pay(O4, 'charge', 'in_person_other', 'cash', 800, at(D1, '14:01'))
+    await val('select pg_temp.rbp4_reverse($1, $2) as id', [P4, at(D1, '14:02')])
+    await pay(O4, 'charge', 'in_person_other', 'card', 800, at(D1, '14:03'))
+    const O5 = await order(D1, at(D1, '15:00'), 'cancelled', 'manual', null, null, item('Crêpe', 600), bd(10000, 600), 600, 10000)
+    await pay(O5, 'charge', 'in_person_other', 'cash', 600, at(D1, '15:01'))
+    await pay(O5, 'refund', 'in_person_other', 'cash', 600, at(D1, '15:05'))
+    const O6 = await order(D1, at(D1, '16:00'), 'collected', 'manual', null, null, item('Café', 400), JSON.stringify([{ rate_milli: 0, food_minor: 400, gross_minor: 400, net_minor: 400, tax_minor: 0 }]), 400, 0)
+    await pay(O6, 'charge', 'in_person_other', 'cash', 400, at(D1, '16:01'))
+    const O9 = await order(D1, at(D2, '00:30'), 'collected', 'manual', null, E, item('Crêpe', 450), bd(10000, 450), 450, 10000)
+    await pay(O9, 'charge', 'in_person_other', 'cash', 450, at(D2, '00:31'))
+
+    // ── run 1: unsigned, until D1 ──
+    let s0 = await snap()
+    const r1 = await M.runTillCloses(db, opts({ signingKey: null, untilDay: D1 }))
+    ok('C1 · run 1 (no key, until D1): ONE day close, nothing stopped, till_verify ok', r1.failed === 0 && r1.trucks[0].days === 1 && !r1.trucks[0].stopped && r1.trucks[0].verifyOk === true, { r1, logs })
+    ok('C2 · the close run wrote NO order or payment row (every order / payment row unchanged: ctid, xmin, updated_at)', (await snap()) === s0)
+    let cl = await closesOf()
+    const z1 = cl.find(x => x.period_type === 'day' && x.ps === D1)
+    ok('C3 · the D1 close is written UNSIGNED (no key set) and has no signature row', z1 && z1.sg === 'unsigned' && Number(await val('select count(*)::int from public.till_close_signatures where truck_id = $1', [A])) === 0, z1 && z1.sg)
+    const t1 = z1 ? z1.totals : {}
+    ok('C4 · D1 payments by method: cash 2230 + 400 + 450 + 600 (the Q5 sale\'s cash in) = 3680; card in person 800 (the re-payment after the reversal); online 0 (O2\'s card payment belongs to D2, its trading day)', t1.payments && t1.payments.cash === 3680 && t1.payments.card_in_person === 800 && t1.payments.card_online === 0, t1.payments)
+    ok('C5 · D1 refunds: cash 600 (the Q5 counter refund); received for later days: 1100, one payment (O2, served D2)', t1.refunds && t1.refunds.cash === 600 && t1.received_for_later_days.total === 1100 && t1.received_for_later_days.count === 1, { r: t1.refunds, l: t1.received_for_later_days })
+    ok('C6 · D1 accepted with no payment (Q4): one order, 500 — and it IS in the sales; the reversal pair: one, 800, counted nothing', t1.accepted_no_payment && t1.accepted_no_payment.count === 1 && t1.accepted_no_payment.minor === 500 && t1.reversals_netted.count === 1 && t1.reversals_netted.minor === 800, { a: t1.accepted_no_payment, r: t1.reversals_netted })
+    ok('C7 · D1 rates: 0 % (the franchise order), 5.5 %, 10 %, 20 %; the order served at 00:30 on 31 Oct counts on D1 (its trading day)', JSON.stringify((t1.rates || []).map(r => r.rate)) === '[0,5500,10000,20000]' && t1.by_van[V] === 500, { rates: t1.rates, by_van: t1.by_van })
+    ok('C8 · the first close starts the grand totals: GT = the day\'s sales + refunds; absolute GT = |sales| + |refunds| + the reversed 800; gt_period = GT', z1 && z1.gi === t1.totals.salesMinor + t1.totals.refundsMinor && z1.ga === Math.abs(t1.totals.salesMinor) + Math.abs(t1.totals.refundsMinor) + 800 && z1.gp === z1.gi, z1 && { gi: z1.gi, ga: z1.ga, gp: z1.gp, totals: t1.totals })
+
+    // ── D2: a late offline replay, a late refund, a normal sale ──
+    say('  — D2 (31 Oct): a late replay for D1, a late refund of O1, a D2 sale —')
+    const L1 = await order(D1, at(D2, '10:00'), 'collected', 'manual', null, null, item('Crêpe', 700), bd(10000, 700), 700, 10000)
+    await pay(L1, 'charge', 'in_person_other', 'cash', 700, at(D2, '10:01'))
+    await pay(O1, 'refund', 'in_person_other', 'cash', 1000, at(D2, '11:00'))
+    const O7 = await order(D2, at(D2, '12:00'), 'collected', 'manual', null, null, item('Cidre', 900), bd(20000, 900), 900, 20000)
+    await pay(O7, 'charge', 'in_person_other', 'card', 900, at(D2, '12:01'))
+
+    // ── run 2: signed, until D2 ──
+    s0 = await snap()
+    const r2 = await M.runTillCloses(db, opts({ signingKey: K, untilDay: D2 }))
+    ok('C9 · run 2 (key set, until D2): the D2 close, the October month close and the fiscal-year close (year ending 31 Oct); 4 closes signed (D1 late)', r2.failed === 0 && r2.trucks[0].days === 1 && r2.trucks[0].months === 1 && r2.trucks[0].years === 1 && r2.trucks[0].signed === 4 && !r2.trucks[0].stopped, { r2, logs })
+    ok('C10 · run 2 wrote NO order or payment row', (await snap()) === s0)
+    cl = await closesOf()
+    const z2 = cl.find(x => x.period_type === 'day' && x.ps === D2), zm = cl.find(x => x.period_type === 'month'), zy = cl.find(x => x.period_type === 'year')
+    const t2 = z2 ? z2.totals : {}
+    ok('C11 · the late replay (served D1, recorded D2 after D1\'s close) lands in D2\'s close, listed with its own day; the late refund of O1 too', t2.late_records && t2.late_records.orders.length === 1 && t2.late_records.orders[0].order_key === L1 && t2.late_records.orders[0].own_day === D1 && t2.late_records.refunds.length === 1 && t2.late_records.refunds[0].order_key === O1 && t2.late_records.refunds[0].minor === 1000 && t2.late_records.total_minor === -300, t2.late_records)
+    ok('C12 · D2 payments: cash 700, card in person 900, online 1100 (O2 — paid on D1, its trading day D2); refunds cash 1000', t2.payments && t2.payments.cash === 700 && t2.payments.card_in_person === 900 && t2.payments.card_online === 1100 && t2.refunds.cash === 1000, { p: t2.payments, r: t2.refunds })
+    ok('C13 · D1 is NOT reopened: its close is unchanged (one D1 close row, same figures)', cl.filter(x => x.period_type === 'day' && x.ps === D1).length === 1 && JSON.stringify(cl.find(x => x.ps === D1 && x.period_type === 'day').totals) === JSON.stringify(t1))
+    ok('C14 · GT carries: GT(D2) = GT(D1) + D2\'s sales + refunds; absolute GT(D2) = absolute GT(D1) + |sales| + |refunds|; gt_period carries (same fiscal year)', z2 && z2.gi === z1.gi + t2.totals.salesMinor + t2.totals.refundsMinor && z2.ga === z1.ga + Math.abs(t2.totals.salesMinor) + Math.abs(t2.totals.refundsMinor) && z2.gp === z1.gp + t2.totals.salesMinor + t2.totals.refundsMinor, z2 && { z1: [z1.gi, z1.ga, z1.gp], z2: [z2.gi, z2.ga, z2.gp] })
+    ok('C15 · the month close (1–31 Oct) sums its two day closes and carries GT(D2); the year close (1 Nov 2025 – 31 Oct 2026) the same', zm && zy && zm.ps === '2026-10-01' && zm.pe === '2026-10-31' && zy.ps === '2025-11-01' && zy.pe === D2 && zm.totals.days_closed === 2 && zm.totals.totals.salesMinor === t1.totals.salesMinor + t2.totals.salesMinor && zm.totals.totals.refundsMinor === t1.totals.refundsMinor + t2.totals.refundsMinor && zm.gi === z2.gi && zy.gi === z2.gi && zy.ga === z2.ga && zy.gp === z2.gp, zm && zy && { m: [zm.ps, zm.pe, zm.gi], y: [zy.ps, zy.pe, zy.gi] })
+
+    // ── the Z IS the daily-totals file ──
+    const csvOf = async (from, to) => {
+      // exactly as /api/manage get_daily_totals: the period's first instant, and midnight after its last day (truck time)
+      const startIso = new Date(M.instantOfLocal(from, '00:00', TZ)).toISOString()
+      const endExact = new Date(M.instantOfLocal(new Date(Date.parse(to + 'T12:00:00Z') + 86400000).toISOString().slice(0, 10), '00:00', TZ)).toISOString()
+      const inp = await M.loadDailyInputs(db, { truckId: A, startIso, endIso: endExact, from, to })
+      return M.dailyTotals({ orders: inp.orders, payments: inp.payments, cancelledAt: inp.cancelledAt, tax: { inclusive: true, rateMilli: 10000 }, timeZone: TZ, from, to }).rows
+    }
+    const rowsOf = rows => JSON.stringify(rows.map(r => [r.date, r.rate, r.salesMinor, r.refundsMinor, r.netMinor, r.vatMinor]))
+    const csv12 = await csvOf(D1, D2), csv1 = await csvOf(D1, D1), csv2 = await csvOf(D2, D2)
+    ok('C16 · the Z equals the daily-totals file for D1 — the file for D1 alone, and the D1 rows of the file for 30–31 Oct (read now, after the late records)', rowsOf(t1.rates) === rowsOf(csv1) && rowsOf(t1.rates) === rowsOf(csv12.filter(r => r.date === D1)), { z: t1.rates, csv: csv1 })
+    ok('C17 · the Z equals the daily-totals file for D2 — alone, and inside 30–31 Oct', rowsOf(t2.rates) === rowsOf(csv2) && rowsOf(t2.rates) === rowsOf(csv12.filter(r => r.date === D2)), { z: t2.rates, csv: csv2 })
+
+    // ── signing ──
+    const sigs = (await q(c, tag, 'select x.period_type, x.hash, g.key_id, g.signature from public.till_closes x join public.till_close_signatures g on g.truck_id = x.truck_id and g.seq = x.seq where x.truck_id = $1', [A])).rows
+    const reg = await one('select signing_public_key as pub, signing_key_id as id from public.till_settings where id')
+    ok('S1 · the key registered itself on first use (till_settings: its public key and id — never the private key)', reg.pub === K.publicKeyB64 && reg.id === K.keyId && M.keyIdOf(reg.pub) === reg.id)
+    ok('S2 · every close is signed — D1 (written unsigned, signed by the later run), D2, month, year — and every signature verifies with the public key alone', sigs.length === 4 && sigs.every(s => s.key_id === K.keyId && M.verifySignature(reg.pub, s.hash, s.signature)), sigs.length)
+    ok('S3 · a signature does not verify for another hash, or under another key', sigs.length > 0 && !M.verifySignature(reg.pub, sigs[0].hash.replace(/^./, ch => (ch === '0' ? '1' : '0')), sigs[0].signature) && !M.verifySignature(K2.publicKeyB64, sigs[0].hash, sigs[0].signature))
+    ok('S4 · D2, month and year were committed "pending" (the key named in the chain entry), D1 "unsigned"', cl.filter(x => x.sg === 'pending').length === 3 && z1.sg === 'unsigned')
+    const reg2 = await db.rpc('till_register_signing_key', { p_public_key: K2.publicKeyB64, p_key_id: K2.keyId })
+    ok('S5 · a DIFFERENT key is refused (HGT22) — a key is changed on purpose, by a person, never silently', reg2.error && reg2.error.code === 'HGT22', reg2.error)
+    const sig2 = await db.rpc('till_sign_close', { p_truck: A, p_seq: z1.seq, p_key_id: K2.keyId, p_signature: 'A'.repeat(88) })
+    ok('S6 · a signature by an unregistered key is refused (HGT22); a second signature of a signed close is ignored', sig2.error && sig2.error.code === 'HGT22' && (await db.rpc('till_sign_close', { p_truck: A, p_seq: z1.seq, p_key_id: K.keyId, p_signature: sigs[0].signature })).data === false, sig2.error)
+
+    // ── refusals ──
+    const again = await M.runTillCloses(db, opts({ signingKey: K, untilDay: D2 }))
+    ok('R1 · running again closes nothing (every due period is already closed)', again.trucks[0].days === 0 && again.trucks[0].months === 0 && again.trucks[0].years === 0 && again.trucks[0].signed === 0, again)
+    const now0 = await val('select now()::text as n')
+    const dup = await db.rpc('till_close_commit', { p_truck: A, p_type: 'day', p_start: D1, p_end: D1, p_currency: 'EUR', p_computed_at: now0, p_input_keys: [], p_seal_keys: [], p_totals: t1, p_key_id: null })
+    ok('R2 · a second close of D1 is REFUSED by the database (HGT20 "already closed")', dup.error && dup.error.code === 'HGT20' && /already closed/.test(dup.error.message), dup.error)
+    const today = await val("select (now() at time zone 'Europe/Paris')::date::text as d")
+    const early = await db.rpc('till_close_commit', { p_truck: A, p_type: 'day', p_start: today, p_end: today, p_currency: 'EUR', p_computed_at: now0, p_input_keys: [], p_seal_keys: [], p_totals: t1, p_key_id: null })
+    ok('R3 · today cannot be closed before 06:00 tomorrow (HGT20 "not due")', early.error && early.error.code === 'HGT20' && /not due/.test(early.error.message), early.error)
+    const stale = await db.rpc('till_close_commit', { p_truck: A, p_type: 'day', p_start: '2026-11-03', p_end: '2026-11-03', p_currency: 'EUR', p_computed_at: '2000-01-01T00:00:00Z', p_input_keys: [O7], p_seal_keys: [], p_totals: t1, p_key_id: null })
+    ok('R4 · a close computed before its rows last changed is REFUSED (HGT21) — the next run recomputes', stale.error && stale.error.code === 'HGT21', stale.error)
+    await q(c, tag, "set local till.include_demo = 'off'")
+    const outside2 = await db.rpc('till_close_commit', { p_truck: TRUCKS.B, p_type: 'day', p_start: D1, p_end: D1, p_currency: 'GBP', p_computed_at: now0, p_input_keys: [], p_seal_keys: [], p_totals: t1, p_key_id: null })
+    const demoRun = await M.runTillCloses(db, { ...opts({ signingKey: null }), trucks: [TRUCKS.B, A], isDemo: id => id.startsWith('demo-') })
+    await q(c, tag, "set local till.include_demo = 'on'")
+    ok('R5 · a demo truck is outside the till: its close is refused (HGT20 "outside the till"), and the run skips demo ids', outside2.error && outside2.error.code === 'HGT20' && /outside the till/.test(outside2.error.message) && demoRun.trucks.length === 1 && demoRun.trucks[0].truck === TRUCKS.B && demoRun.trucks[0].stopped === 'outside the till', { outside2: outside2.error, demoRun })
+    const upd = await db.rpc('till_verify', { p_truck: A })
+    const tamper = await (async () => { await q(c, tag, 'savepoint rbp4_tamper'); try { await q(c, tag, 'update public.till_closes set gt_incl_minor = gt_incl_minor + 1 where truck_id = $1', [A]); return 'allowed' } catch (e) { return e.code } finally { await q(c, tag, 'rollback to savepoint rbp4_tamper') } })()
+    ok('R6 · a close row cannot be changed (HGT01, append-only)', tamper === 'HGT01', tamper)
+
+    // ── verify after every close ──
+    const ver = (await q(c, tag, "select c.payload::jsonb -> 'data' as d from public.till_chain c where c.truck_id = $1 and c.kind = 'event' and c.ref = 'verify' order by c.seq", [A])).rows.map(r => r.d)
+    ok('V6 · after EVERY close (4) a verify entry is chained, each ok; till_verify is ok now (chain intact, every close its own chain entry)', ver.length === 4 && ver.every(d => d.ok === true) && upd.data && upd.data.ok === true && upd.data.mismatch_count === 0, { n: ver.length, verify: upd.data && { ok: upd.data.ok, mismatch: upd.data.mismatch_count } })
+
+    // ── run 3: two days with no activity ──
+    const r3 = await M.runTillCloses(db, opts({ signingKey: K, untilDay: '2026-11-02' }))
+    ok('C18 · days with no activity (1 and 2 Nov) get NO close — only scanned (Q12)', r3.trucks[0].days === 0 && r3.trucks[0].scanned === 2 && (await val('select days_scanned_through::text from public.till_truck_settings where truck_id = $1', [A])) === '2026-11-02', r3)
+
+    // ── PART B ──
+    say('  — Part B: what enforce mode will need —')
+    const chk = async k => (await db.rpc('till_correction_check', { p_order_key: k })).data
+    const T1 = await order(today, new Date().toISOString(), 'confirmed', 'manual', null, null, item('Crêpe', 500), bd(10000, 500), 500, 10000)
+    ok('B1 · till_correction_check in OBSERVE mode refuses nothing (NULL) — the undo routes behave exactly as today', (await chk(O1)) === null && (await chk(T1)) === null)
+    await q(c, tag, "update public.till_settings set guard_mode = 'enforce' where id")
+    ok('B2 · …in ENFORCE mode it answers HGT02 for a sealed order whose day is closed (O1, D1), NULL for today\'s order — so an undo is refused before any write', (await chk(O1)) === 'HGT02' && (await chk(T1)) === null)
+    const entries = async k => Number(await val("select count(*)::int from public.till_chain where truck_id = $1 and kind = 'order' and ref = $2", [A, String(k)]))
+    const gev = async () => Number(await val('select count(*)::int from public.till_guard_events where truck_id = $1', [A]))
+    const e1 = await entries(O1), e9 = await entries(O9), e3 = await entries(O3), g0 = await gev()
+    await q(c, tag, 'delete from public.truck_events where id = $1', [E])
+    await q(c, tag, 'delete from public.truck_vans where id = $1', [V])
+    const nulls = await one('select (select count(*) from public.orders where order_key = any($1::uuid[]) and event_id is null)::int as ev, (select van_id from public.orders where order_key = $2) as van', [[O1, O9], O3])
+    const vAfter = (await db.rpc('till_verify', { p_truck: A })).data
+    ok('B3 · deleting an EVENT and a VAN with sealed orders on them SUCCEEDS with the guard in enforce mode: the foreign key sets event_id / van_id to NULL', nulls.ev === 2 && nulls.van === null, nulls)
+    ok('B4 · …and the guard ignores it: no new version of those orders, no would-be refusal recorded', (await entries(O1)) === e1 && (await entries(O9)) === e9 && (await entries(O3)) === e3 && (await gev()) === g0, { e1, e9, e3, g0, now: [await entries(O1), await entries(O9), await entries(O3), await gev()] })
+    ok('B5 · …and till_verify stays true (the order is compared with the event / van it was sealed with)', vAfter && vAfter.ok === true && vAfter.mismatch_count === 0, vAfter && { ok: vAfter.ok, mismatches: vAfter.mismatches })
+    const V2 = await val("insert into public.truck_vans (truck_id, name) values ($1, 'rollback proof van 2') returning id", [A])
+    const O10 = await order(today, new Date().toISOString(), 'confirmed', 'manual', V2, null, item('Crêpe', 500), bd(10000, 500), 500, 10000)
+    const e10 = await entries(O10)
+    await q(c, tag, 'update public.orders set van_id = null where order_key = $1', [O10])
+    ok('B6 · the exception is narrow: a DIRECT update that clears van_id (not the foreign key) is still a new sealed version', (await entries(O10)) === e10 + 1, { before: e10, after: await entries(O10) })
+    await q(c, tag, "update public.till_settings set guard_mode = 'observe' where id")
+    const vEnd = (await db.rpc('till_verify', { p_truck: A })).data
+    ok('B7 · till_verify true at the end', vEnd && vEnd.ok === true, vEnd && { ok: vEnd.ok, mismatches: vEnd.mismatches })
+    say(`  ${body ? 'the migration and ' : ''}the proofs ran in ${Date.now() - t0} ms`)
+  })
+  const after = await till4Counts('after')
+  ok('the demo trucks\' counts and every till table\'s counts are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
+}
+
 async function main() {
   const args = process.argv.slice(2)
   URL_ = dbUrl()
-  if (args[0] === '--preflight-till-2' && args[1]) await till2Proofs(args[1])
+  if (args[0] === '--preflight-till-4' && args[1]) await till4Proofs(args[1])
+  else if (args[0] === '--till-4-check') await till4Proofs(null)
+  else if (args[0] === '--preflight-till-2' && args[1]) await till2Proofs(args[1])
   else if (args[0] === '--till-2-check') await till2Proofs(null)
   else if (args[0] === '--preflight-till-1' && args[1]) await tillProofs(args[1])
   else if (args[0] === '--till-1-check') await tillProofs(null)
@@ -1272,7 +1599,7 @@ async function main() {
   else if (args[0] === '--preflight' && args[1]) await preflight(args[1])
   else if (args[0] === '--concurrency') await concurrency()
   else if (args[0] === '--old-style-call') await oldStyleCall()
-  else die('usage: --preflight <migration.sql> | --concurrency | --old-style-call | --preflight-regime <migration.sql> | --regime-check | --preflight-notes <migration.sql> | --notes-check | --preflight-till-1 <migration.sql> | --till-1-check | --preflight-till-2 <migration.sql> | --till-2-check')
+  else die('usage: --preflight <migration.sql> | --concurrency | --old-style-call | --preflight-regime <migration.sql> | --regime-check | --preflight-notes <migration.sql> | --notes-check | --preflight-till-1 <migration.sql> | --till-1-check | --preflight-till-2 <migration.sql> | --till-2-check | --preflight-till-4 <migration.sql> | --till-4-check')
   say(failed ? `\n🔴 ${failed} proof(s) FAILED` : '\n✅ every proof passed')
   process.exit(failed ? 1 : 0)
 }
