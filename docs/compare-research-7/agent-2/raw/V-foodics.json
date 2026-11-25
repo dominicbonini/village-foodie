@@ -1,0 +1,7 @@
+{
+  "vendor": "Foodics (Foodics Online)",
+  "researched_on": "2026-11-25",
+  "searches": ["foodics.com Jordan pricing JOD فودكس الأردن الأسعار (site:foodics.com)"],
+  "vendors": [],
+  "notes": "Foodics (4620b046) counts in none of QA BH JO. BH: https://www.foodics.com/foodics-pricing-bahrain/ serves the homepage (no plans, no prices); the homepage's country 'Pricing' links are only KSA, Egypt, UAE, Kuwait, Oman, Qatar. JO: rejected in compare-research-3 (foodics-pricing-jordan serves the homepage); a site-restricted search today found no Jordan price page either (Jordan only as an office / bank account). QA: its Qatar pricing page is priced in USD only (compare-research-3), QAR needed, so it still doesn't count; not re-read. Nothing new."
+}
