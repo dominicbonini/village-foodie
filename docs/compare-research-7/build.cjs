@@ -73,6 +73,8 @@ const UNCLEAR = [
   ['joinposter.kz', 'KZ', /^mini/i, 'a POS plan; the ordering website is a separately priced add-on'],
   ['thinkerpos.com', 'MK', /./, 'no plan is shown to include online ordering (the Yabie rule, Dominic 25 Nov)'],
   ['sisfood.com.br', 'BR', /./, 'a "from" price, but its food-truck page says the package is quoted by a specialist (compare-research-7, conservative)'],
+  ['gopos.pl', 'PL', /goorder/i, 'GoOrder may also need the 79 zł GoPOS licence (module on a paid plan, not confirmed) — conservative (compare-research-7)'],
+  ['fritzy.be', 'BE', /./, 'a per-order fee with no subscription, close to a marketplace model — conservative (compare-research-7)'],
   ['zunapro.com', 'TR', /ba[sş]lang[ıi][cç]/i, 'not confirmed that the entry package includes "Paket sipariş & gel-al"'],
 ]
 // A vendor whose page prices only ONE country ("Prices for Kuwait"): its plans are written for that country only; elsewhere it keeps
