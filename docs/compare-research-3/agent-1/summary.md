@@ -107,3 +107,7 @@ No other tool priced in UZS: Smartomato, iiko and R-Keeper show no UZS ordering 
 ## KZ (Kazakhstan, KZT)
 
 Poster (0802a7c8) has the same ambiguity as UA: '8 640 ₸9 600 ₸/мес.' with only the 'Оплата за год' toggle, and the ordering site is the paid add-on 'Стоимость — 11 400 ₸/мес.'. Vitrina has no KZ page (404). Local Kazakh tools are agent 2's. count now: 0 (1 if Poster's KZT price is accepted)
+
+## GE (Georgia, GEL)
+
+None found: Restimo is EUR only, MENU TIGER is agent 2's, and Kovzy, XPOS and Poster were already dead ends in compare-research-2. count now: 0

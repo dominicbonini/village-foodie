@@ -1,0 +1,10 @@
+{
+  "country": "GE",
+  "researched_on": "2026-11-25",
+  "searches": ["ონლაინ შეკვეთის სისტემა რესტორნისთვის თვითგატანა წინასწარი შეკვეთა ფასი ₾ თვეში"],
+  "vendors": [
+    { "name": "Restimo", "website": "https://restimo.com", "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Polish online-ordering tool. A search summary claims it is available in Georgia, but it is priced in EUR (19 / 64 EUR a month per the help-centre snippet), not GEL. Not opened, so the Georgia claim is unverified.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] }
+  ],
+  "notes": "None found priced in GEL. Results were MENU TIGER (agent 2's), Jotform (generic forms), Restaumatic (no prices, no Georgia presence) and Restimo (EUR). Compare-research-2 dead ends weren't repeated: Kovzy and XPOS (Georgian, no customer pickup ordering) and Poster (Georgia page, USD only). Vitrina has no Georgian price page (its country price-list links checked today). Count: 0."
+}
