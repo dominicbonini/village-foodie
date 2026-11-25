@@ -1,0 +1,29 @@
+[
+  {
+    "vendor": "Menufy",
+    "country": "PR",
+    "stored_id_prefix": "832a682c",
+    "found": true,
+    "quote": "Menufy is $179 a month month-to-month, or $149 a month on a 12-month agreement, which saves you $360 a year and includes equipment.",
+    "url": "https://restaurant.menufy.com/pricing",
+    "note": "From the pricing page's FAQ ('What does Menufy cost?'). The text is in the page's static HTML (a plain GET returns it, along with the plan cards 'Month-to-month Flexible $179 / month Billed monthly. No agreement.' and 'Annual Best value $149 / month 12-month agreement, billed monthly.'), though the WebFetch page reader showed only navigation in wave 3. Monthly-billing price = USD 179/month; 12-month agreement USD 149/month (USD 1,788 a year). This replaces the stored 'price 0, customer pays processing fee' reading. Home, how-it-works and get.menufy.com/spanish show no price."
+  },
+  {
+    "vendor": "Fudo",
+    "country": "CL",
+    "stored_id_prefix": "7e12931c",
+    "found": false,
+    "quote": "Las primeras 25 ventas son sin costo. Luego pagas una tasa de servicio del 1,9% + IVA por cada venta realizada a través de Tu Delivery, con la opción de trasladar este costo a tus clientes.",
+    "url": "https://fu.do/es-cl/delivery/",
+    "note": "No Chilean sentence says 'no monthly fee' in so many words (no 'abono mensual' on the CL delivery page). Closest: the FAQ '¿Tu Delivery tiene costo adicional?' answered with the per-sale fee above, plus 'Activa Tu Delivery en minutos y sin costo adicional' and '¿Qué necesito para activar Tu Delivery? + Solo necesitas una cuenta activa en Fudo.' (same page). fu.do/es-cl/precios/ says 'El único costo de Fudo es el abono mensual.' about the base system, nothing on Tu Delivery's fee. So in CL Tu Delivery = 1,9% + IVA per sale on top of an active Fudo account; whether that account needs a paid plan is not stated on the CL page (the CO page says the module 'se suma a tu plan de Fudo')."
+  },
+  {
+    "vendor": "Pedix",
+    "country": "*",
+    "stored_id_prefix": "c615e67d",
+    "found": true,
+    "quote": "La opción \"Retiro en persona\" permite que tus clientes hagan el pedido desde el catálogo online y pasen luego a buscarlo por el local.",
+    "url": "https://ayuda.pedix.app/es/article/como-configurar-la-opcion-retiro-en-persona",
+    "note": "First sentence of the article body (under '¿Para qué sirve?'); the next sentence is 'Es ideal para comercios que ofrecen take away.' Applies to every country where Pedix is stored."
+  }
+]

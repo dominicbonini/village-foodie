@@ -37,3 +37,8 @@ count now: 1 (Pedix, UYU, stored)
 | Menüpp | nearest_local | eligible, price hidden (does not count) | — | https://home.menupp.co/faq |
 | Loggro Restobar | pos | not_relevant (QR menu only) | — | https://www.loggro.com/restobar/menu-digital/ |
 count now: 1 if Fudo's module + base plan is accepted (was 0)
+
+## Top-ups (raw/topups.json)
+- Menufy PR: found — "Menufy is $179 a month month-to-month, or $149 a month on a 12-month agreement…" (restaurant.menufy.com/pricing FAQ, static HTML). Monthly-billing USD 179.
+- Fudo CL: not found as worded — CL page gives only the per-sale fee ("primeras 25 ventas sin costo. Luego … 1,9% + IVA por cada venta") and "Activa Tu Delivery … sin costo adicional"; no "sin abono mensual" sentence.
+- Pedix: found — "La opción "Retiro en persona" permite que tus clientes hagan el pedido desde el catálogo online y pasen luego a buscarlo por el local."
