@@ -11,3 +11,6 @@ Sells software: yes. "Restorant gives you a branded storefront, online ordering 
 
 ## Terms (LI / GI neighbour rule)
 Yoveletta, Rent-a-Shop (AGB PDF), Ordea (/terms): none limits service to CH / UK or names Liechtenstein / Gibraltar; only governing-law clauses (Swiss law; laws of England and Wales).
+
+## KR: Toss Place (87b9b92a)
+Pickup order fee: 0 won per the newest own page (story/pickup_order, 2025-04-08, '주문 수수료 0원으로 써보기', no end date). The 2024-02-29 launch story planned 3.5% excl. VAT after end-2024. No current fee table on product page or FAQ.

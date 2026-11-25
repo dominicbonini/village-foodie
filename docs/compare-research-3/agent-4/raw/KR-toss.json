@@ -1,0 +1,11 @@
+{
+ "vendor": "Toss Place",
+ "stored_id_prefix": "87b9b92a",
+ "fee_found": true,
+ "fee_pct": 0,
+ "vat": "unknown",
+ "free_period": "no end date stated in the newest page (2025-04-08 story: '주문 수수료 0원으로 써보기'); the 2024-02-29 launch story said free '연말까지' (to end-2024), then a planned 3.5% excl. VAT",
+ "quote": "픽업주문 설정 방법 ✅ 포스 메뉴 [≡] > [토스오더] > [픽업주문 써보기] > '주문 수수료 0원으로 써보기' > 정산 서류 제출 > 승인",
+ "url": "https://tossplace.com/story/pickup_order",
+ "note": "Newest own page (story, 2025.04.08) offers pickup ordering with a 0 won order fee: '프랜차이즈 매장에서만 사용하던 기능을 개인 매장에서도 무료로 사용할 수 있게 됐어요!'. Older own launch story (https://tossplace.com/story/toss-order, 2024.02.29): '지금부터 사용하면 연말까지는 주문 수수료가 무료예요. 이후에는 유료화 예정(3.5%, 부가세 별도)…' — 3.5% + VAT was a planned fee after end-2024, apparently superseded by the 2025 free offer, but no page states the fee in force today or how long '0원으로 써보기' lasts ('써보기' = try). Product page /product/toss-order/pickup and FAQ guide.tossplace.com/trouble/faq: no fee stated. Card-payment fees separate and not stated for pickup. Keep 0 KRW with that caveat; 3.5% excl. VAT is the fallback if Dominic reads the 2025 offer as a trial."
+}
