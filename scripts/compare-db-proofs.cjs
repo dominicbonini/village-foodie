@@ -122,6 +122,39 @@ async function preflightGeneral(file) {
   ok('inside: competitors, plans, entries and answers counts unchanged (it only updates rows)', inside.competitors === before.competitors && inside.plans === before.plans && inside.entries === before.entries && inside.current_answers === before.current_answers, { before, inside })
   ok('after the ROLLBACK: every count and checksum exactly as before', JSON.stringify(after) === JSON.stringify(before), { before, after })
 }
+/** checker-prep-1: the Competitor check's two database-only migrations (settings; the next_check_at stagger), inside ONE transaction that
+ *  ROLLBACKs — the settings row, the competitors' request / due-date counts, a checksum of every OTHER competitors column, and the counts
+ *  of plans, entries and answers, before / inside / after. Everything outside settings and those two columns must be unchanged inside. */
+async function checkerState(c, tag) {
+  const r = await q(c, tag, `select (select row_to_json(s) from (select check_interval_days, tier_intervals, deep_requested_at, deep_country, deep_per_day, pass_requested_at, semi_deep->>'status' semi_deep_status, daily_cap_usd, monthly_cap_usd from public.competitor_check_settings where id) s) settings,
+     (select md5(row_to_json(s)::text) from (select id, paused, extractor_model, verifier_model, prices, deep_queue, pass_extractor_model, pass_verifier_model, pass_per_day, pass_country, pass_max_fetches, pass_max_searches, pass_max_page_tokens, pass_batch, max_output_tokens, deep_time_limit_seconds, pass_batches_reread, pass_fetch_help from public.competitor_check_settings where id) s) settings_other_md5,
+     (select count(*) from public.competitors where check_requested_at is not null)::int requested,
+     (select count(*) from public.competitors where next_check_at is not null)::int with_next,
+     (select min(next_check_at)::text from public.competitors where lifecycle = 'active') min_next, (select max(next_check_at)::text from public.competitors where lifecycle = 'active') max_next,
+     (select md5(string_agg(t::text, '|' order by t->>'id')) from (select to_jsonb(c) - 'next_check_at' - 'check_requested_at' t from public.competitors c) x) competitors_other_md5,
+     (select count(*) from public.competitor_plans)::int plans, (select count(*) from public.comparison_entries)::int entries, (select count(*) from public.competitor_feature_values)::int answers`)
+  say(`  state ${tag}: ${JSON.stringify(r.rows[0])}`)
+  return r.rows[0]
+}
+async function preflightChecker(file) {
+  const rel = path.relative(REPO, path.resolve(REPO, file))
+  if (!/^supabase\/migrations\/[^/]+\.sql$/.test(rel)) die('the pre-flight takes one supabase/migrations/*.sql file')
+  const body = fs.readFileSync(path.join(REPO, rel), 'utf8').replace(/^\s*begin\s*;\s*$/gim, '').replace(/^\s*commit\s*;\s*$/gim, '')
+  if (/\bcommit\b/i.test(body.replace(/--[^\n]*/g, ''))) die('the migration still contains a COMMIT after stripping — refusing')
+  if (/\b(trucks|orders|plan_prices|plan_features|country_settings)\b|pizzeria-gusto/i.test(body.replace(/--[^\n]*/g, ''))) die('this pre-flight is for the competitor check only')
+  say(`\n══ before (read-only, rolled back)`)
+  const before = await inRollback('before', async c => { await q(c, 'before', 'set transaction read only'); return checkerState(c, 'before') })
+  say(`\n══ the migration inside ONE transaction that ROLLBACKs (${rel})`)
+  const inside = await inRollback('preflight', async c => { await q(c, 'preflight', body); return checkerState(c, 'inside') })
+  say(`\n══ after the rollback (read-only)`)
+  const after = await inRollback('after', async c => { await q(c, 'after', 'set transaction read only'); return checkerState(c, 'after') })
+  say(`\n══ checks`)
+  ok('inside: the migration ran, its own guards passed', !!inside)
+  ok('inside: the other settings columns unchanged', inside.settings_other_md5 === before.settings_other_md5, { before: before.settings_other_md5, inside: inside.settings_other_md5 })
+  ok('inside: every competitors column except next_check_at / check_requested_at unchanged', inside.competitors_other_md5 === before.competitors_other_md5)
+  ok('inside: plans, entries and answers unchanged', inside.plans === before.plans && inside.entries === before.entries && inside.answers === before.answers, { before, inside })
+  ok('after the ROLLBACK: everything exactly as before', JSON.stringify(after) === JSON.stringify(before), { before, after })
+}
 async function repairCheck() {
   const s = await inRollback('check', async c => { await q(c, 'check', 'set transaction read only'); return stateOf(c, 'now') })
   ok(`${s.current_answers} current answers = 8,012`, s.current_answers === 8012, s)
@@ -136,7 +169,8 @@ async function repairCheck() {
   if (args[0] === '--preflight-repair' && args[1]) await preflightRepair(args[1])
   else if (args[0] === '--repair-check') await repairCheck()
   else if (args[0] === '--preflight' && args[1]) await preflightGeneral(args[1])
-  else die('usage: --preflight-repair <migration.sql> | --repair-check | --preflight <competitor-data migration.sql>')
+  else if (args[0] === '--preflight-checker' && args[1]) await preflightChecker(args[1])
+  else die('usage: --preflight-repair <migration.sql> | --repair-check | --preflight <competitor-data migration.sql> | --preflight-checker <competitor-check migration.sql>')
   say(failed ? `\n🔴 compare-db-proofs: ${failed} check(s) failed` : '\n✓ compare-db-proofs: every check passed — nothing was committed')
   process.exit(failed ? 1 : 0)
 })().catch(e => die(e && e.message ? e.message : String(e)))
