@@ -19,3 +19,9 @@ count now: 1 (Pedix, USD, stored)
 ## GT
 No new vendor read (two new-angle searches surfaced only generic/ERP tools, directories, marketplaces and foreign tools).
 count now: 1 (Sabbor, GTQ, stored)
+
+## JM
+| vendor | focus | verdict | price | URL |
+|---|---|---|---|---|
+| YaadBooks POS | pos | not_relevant (till-only, billed in USD) | — | https://yaadbooks.com/pos-system-jamaica |
+count now: 1 (Ezy Cart, JMD, stored)

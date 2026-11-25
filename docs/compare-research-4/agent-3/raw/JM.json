@@ -1,0 +1,23 @@
+{
+  "country": "JM",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Jamaica restaurant \"order ahead\" OR \"order online for pickup\" software POS Jamaican company \"JMD\" OR \"J$\" subscription online ordering module",
+    "Jamaican online ordering platform for restaurants and cookshops customers order pickup \"per month\" J$ no commission Kingston startup own ordering website"
+  ],
+  "vendors": [
+    {
+      "name": "YaadBooks POS",
+      "website": "https://yaadbooks.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Jamaican till / accounting POS with JMD support; its POS page has no online ordering, online store, order-ahead or pickup wording (till-only); price stated as ≈J$ but 'billed in US dollars'.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://yaadbooks.com/pos-system-jamaica"]
+    }
+  ],
+  "notes": "Count now: 1 (Ezy Cart, JMD, stored). No second JMD-priced tool. YaadBooks (new, Jamaican) is till-only. Searches otherwise returned KFC Jamaica's in-house ordering (a chain, not a vendor), delivery services / marketplaces (Cutdiline, Pekkish, Driva Ja, Island Run, 7Krave — never counted), visuEats (rejected in wave 3, not re-read) and directories (SoftwareSuggest, Capterra, SourceForge, G2 — not sources). Square / Toast / Clover / Owner.com: no Jamaica presence (wave 2). Stopped."
+}
