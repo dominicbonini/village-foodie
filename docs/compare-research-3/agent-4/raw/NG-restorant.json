@@ -1,0 +1,8 @@
+{
+ "vendor": "Restorant",
+ "stored_id_prefix": null,
+ "sells_software": true,
+ "quote": "Restorant gives you a branded storefront, online ordering with Paystack and a full workspace",
+ "url": "https://restorant.com.ng",
+ "note": "Home page read today: restaurant-facing pitch plus 'Branded storefront, live cart, and Paystack checkout on one link customers actually trust.' and sign-up CTA 'List your restaurant free'. It also runs a customer marketplace ('Discover restaurants in your city and order with ease.'), but the storefront is sold to the restaurant, so it is software, not marketplace-only. Prefix: Restorant is not in docs/compare-research-3/stored-list.txt (no row matches), so stored_id_prefix left null."
+}
