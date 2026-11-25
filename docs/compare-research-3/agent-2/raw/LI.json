@@ -1,0 +1,228 @@
+{
+ "country": "LI",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Yoveletta",
+   "website": "https://yoveletta.ch",
+   "stored_id_prefix": "aebf5a80",
+   "neighbour": "CH",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "serves LI from CH: Swiss cloud till whose food-truck page offers order-ahead pickup at the truck; CHF prices; its own pages do not exclude Liechtenstein (no country list, no 'nur in der Schweiz')",
+   "eligibility": {
+    "food_quote": "Yoveletta startet für Foodtrucks bei einem Tarif ab CHF 29.– pro Monat.",
+    "food_url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck",
+    "order_quote": "Gäste bestellen vorab über deine Website und holen ihr Essen direkt am Truck ab.",
+    "order_url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck",
+    "country_quote": "Made in Switzerland — Hosting in Schweiz",
+    "country_url": "https://yoveletta.ch/preise-fuer-dein-kassensystem"
+   },
+   "plans": [
+    {
+     "plan_name": "Gastro (monthly)",
+     "currency": "CHF",
+     "price_major": 49,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "ab Fr. 49.–/Monat oder Fr. 490.–/Jahr · jede weitere Lizenz Fr. 39.–/Monat oder Fr. 390.–/Jahr",
+     "url": "https://yoveletta.ch/preise-fuer-dein-kassensystem",
+     "note": "'ab' price; MwSt not stated; pricing page says nothing about whether online ordering is included. Handel tariff: 'ab Fr. 29.–/Monat oder Fr. 290.–/Jahr' (the food-truck page's 'ab CHF 29.–' figure)."
+    },
+    {
+     "plan_name": "Food truck (from)",
+     "currency": "CHF",
+     "price_major": 29,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Yoveletta startet für Foodtrucks bei einem Tarif ab CHF 29.– pro Monat.",
+     "url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck",
+     "note": "matches the Handel tariff 'ab Fr. 29.–/Monat oder Fr. 290.–/Jahr' on the pricing page"
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Gäste bestellen vorab über deine Website und holen ihr Essen direkt am Truck ab.",
+     "url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck",
+    "https://yoveletta.ch/preise-fuer-dein-kassensystem"
+   ],
+   "note": "serves LI from CH"
+  },
+  {
+   "name": "Rent-a-Shop",
+   "website": "https://www.rent-a-shop.ch",
+   "stored_id_prefix": "6fa20b90",
+   "neighbour": "CH",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "serves LI from CH: Swiss till/shop builder with a food-truck page offering online pre-order and local pickup; CHF prices excl. MwSt; its pages do not exclude Liechtenstein (food-truck page mentions trading 'im In- und Ausland')",
+   "eligibility": {
+    "food_quote": "Kassensystem für Foodtruck",
+    "food_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+    "order_quote": "Online vorbestellen, lokal abholen",
+    "order_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+    "country_quote": "Mit unserem Kassensystem kannst du alle gängigen Zahlungsmittel in der Schweiz anbieten.",
+    "country_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem"
+   },
+   "plans": [
+    {
+     "plan_name": "Kassensystem für Foodtruck",
+     "currency": "CHF",
+     "price_major": 44.9,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "ab CHF 44.90 pro Monat",
+     "url": "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+     "note": "'ab' price; /preise: 'Alle Preise verstehen sich exkl. MwSt.' Whether online pre-ordering is included is not stated; the Onlineshop module is priced separately."
+    },
+    {
+     "plan_name": "Onlineshop – Bis zu 100 Produkte",
+     "currency": "CHF",
+     "price_major": 25.0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Bis zu 100 Produkte | 25.00 CHF |",
+     "url": "https://www.rent-a-shop.ch/preise",
+     "note": "Onlineshop module monthly; 'Bis zu 25 Produkte | 0.00 CHF', 5'000 Produkte 55.00 CHF, Unlimitierte 85.00 CHF; 'Alle Preise verstehen sich exkl. MwSt.'"
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Online vorbestellen, lokal abholen",
+     "url": "https://www.rent-a-shop.ch/foodtruck-kassensystem"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+    "https://www.rent-a-shop.ch/preise"
+   ],
+   "note": "serves LI from CH"
+  }
+ ],
+ "notes": "Neighbouring-market rule (Swiss tool in CHF counts unless its own site excludes LI). Stopped at 2 (both food_truck). Neither site mentions Liechtenstein at all, positively or negatively, on the pages read; no 'nur in der Schweiz' found. Terms pages not read (lean round). Ordero (515a8c44) and SwissPOS (369127ec) not re-read (stop rule). Pikit not used (stored as not sold in LI)."
+}
