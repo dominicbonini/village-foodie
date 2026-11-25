@@ -6,7 +6,7 @@
     {
       "name": "Sparissimo Food",
       "website": "https://www.sparissimofood.com",
-      "stored_id_prefix": null,
+      "stored_id_prefix": "9c2e5c2a",
       "focus": "nearest_local",
       "verdict": "eligible",
       "reason": "Swiss (Pfäffikon SZ) restaurant online-ordering platform: pickup and delivery orders from the restaurant's own Sparissimo page/website; a Liechtenstein restaurant (Nendeln) takes pickup orders on a sparissimofood.com subdomain; CHF prices + commission; no pickup-time choice stated, no food-truck wording",
