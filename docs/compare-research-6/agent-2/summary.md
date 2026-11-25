@@ -244,3 +244,8 @@ count now: 0
 
 Nothing eligible: Island Direct = marketplace; US tools are agent 3's.
 count now: 0
+
+## TC (USD)
+
+Nothing eligible: Order Up = delivery marketplace; restaurants take takeout by phone.
+count now: 0
