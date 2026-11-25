@@ -2,7 +2,8 @@
  "country": "TH",
  "researched_on": "2026-11-25",
  "searches": [
-  "ระบบสั่งอาหารออนไลน์ ร้านอาหาร สั่งล่วงหน้า รับเองที่ร้าน เว็บไซต์ของร้าน ไม่เก็บค่า GP ราคา บาท/เดือน แพ็กเกจ"
+  "ระบบสั่งอาหารออนไลน์ ร้านอาหาร สั่งล่วงหน้า รับเองที่ร้าน เว็บไซต์ของร้าน ไม่เก็บค่า GP ราคา บาท/เดือน แพ็กเกจ",
+  "POS ร้านอาหาร ระบบสั่งออนไลน์ ลูกค้าสั่งล่วงหน้า มารับที่ร้าน (pickup) ราคาแพ็กเกจ บาทต่อเดือน POSPOS OR Eats365 OR Qashier OR Zort"
  ],
  "vendors": [
   {
@@ -125,7 +126,21 @@
    "check_urls": [
     "https://www.wongnai.com/pos/"
    ]
+  },
+  {
+   "name": "Wongnai POS Order & Pay",
+   "website": "https://www.wongnai.com/pos-articles/wongnaipos-order-pay",
+   "stored_id_prefix": null,
+   "focus": "pos",
+   "verdict": "not_relevant",
+   "reason": "in-store scan-to-order-and-pay add-on for quick-service shops ('ลูกค้าสั่งปุ๊บ ออเดอร์เข้าครัวทันที ไม่ต้องผ่านพนักงาน'); no ordering from elsewhere for pickup; priced per day ('พิเศษ ! เพียงวันละ 20.-*') on top of the Quick Service package",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.wongnai.com/pos-articles/wongnaipos-order-pay"
+   ]
   }
  ],
- "notes": "TH count now: 2 (Klikit, StoreHub) — unchanged unless Dominic accepts Wongnai POS (borderline: pickup via LINE MINI Eats, package inclusion unstated — the same doubts as compare-research-1, which is why it was never counted). Ocha POS still script-only. The Thai search found only MENU TIGER (USD, rejected), Toast (US), FlowAccount blog, Restolabs / Capterra / WordPress plugin / Popmenu (foreign or not sources). Earlier rejects not re-read: GloriaFood, Take App, Qashier TH (in-store QR only), Hato Hub (delivery), Loyverse (till), Restolabs (no Thai presence). Stopped."
+ "notes": "TH count now: 2 (Klikit, StoreHub) — unchanged unless Dominic accepts Wongnai POS (borderline: pickup via LINE MINI Eats, package inclusion unstated — the same doubts as compare-research-1, which is why it was never counted). Ocha POS still script-only. The Thai search found only MENU TIGER (USD, rejected), Toast (US), FlowAccount blog, Restolabs / Capterra / WordPress plugin / Popmenu (foreign or not sources). Earlier rejects not re-read: GloriaFood, Take App, Qashier TH (in-store QR only), Hato Hub (delivery), Loyverse (till), Restolabs (no Thai presence). Stopped. Extra round: Wongnai POS Order & Pay is in-store QR (per-day price) — not relevant; Kasikorn Food Solution (bank bundle 'เริ่มต้น 550 บาท/เดือน', snippet only) is a partner-POS bundle page, not a vendor's own ordering product."
 }
