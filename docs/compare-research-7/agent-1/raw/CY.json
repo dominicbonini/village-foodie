@@ -1,0 +1,35 @@
+{
+  "country": "CY",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Κύπρος σύστημα online παραγγελιών για εστιατόρια παραλαβή από το κατάστημα δική σας ιστοσελίδα τιμή €/μήνα",
+    "Orpay Cyprus order and pay app restaurants pricing pickup"
+  ],
+  "vendors": [
+    {
+      "name": "Orpay (Alt-a-Vie Ltd)",
+      "website": "https://apps.apple.com/cy/app/orpay/id1607674325",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Cyprus consumer ordering app (delivery, pickup, dine-in across many venues; App Store only, fee per transaction not stated) - a shared consumer app/marketplace, no own site or price found. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Foody Pro",
+      "website": "https://cyprus-mail.com/2023/10/07/foodypro-the-new-monthly-subscription-service-from-foody",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Foody is a Cypriot delivery marketplace; Foody Pro is a consumer subscription. Never counts. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "CY counts Wiiz Eat and SumUp. No third found. Storekit lists Cyprus but is priced in GBP only (re-checked today, V-Storekit.json); KantinApp unreadable and GloriaFood not relevant earlier - not re-read. Two new searches (Greek; Orpay) found MENU TIGER (USD, agent 2's), Worldline All-in-One Platform Ordering (Greek el-gr page; no Cyprus page seen - not opened), Flipdish (no Cyprus), Restimo, mobi2go, Wolt/Foody (marketplaces) and Orpay (consumer app). CY stays at 2. Lead: Worldline's ordering platform, if a Cyprus page with a € price exists."
+}
