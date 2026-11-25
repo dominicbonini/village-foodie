@@ -18,7 +18,7 @@ end $$;
 
 update public.competitors
    set lifecycle = 'not_relevant',
-       notes = coalesce(notes || ' · ', '') || 'not relevant (compare-research-7, 25 Nov; V16.38 "not a confirmed live product"): its only site is a pages.dev default host and it shows no real customers (sample orders, demo / free-trial buttons, a waitlist)'
+       notes = coalesce(notes || ' · ', '') || 'not relevant (compare-research-7, 25 Nov; V16.38 "not a confirmed live product"): its only site is a pages.dev default host and it shows no real customers (sample order cards, demo / free-trial buttons, a waitlist)'
  where id = '065d9dc6-6975-52b1-9eeb-d4d0b288e9b4' and lifecycle = 'active';
 
 do $$
