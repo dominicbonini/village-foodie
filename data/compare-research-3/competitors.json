@@ -87,6 +87,80 @@
    "set_focus": true
   },
   {
+   "id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "name": "Poster",
+   "website": "https://joinposter.kz",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: KZ.",
+   "check_urls": [
+    "https://joinposter.kz/pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
    "id": "c06e5b78-6f2f-5a3f-a85d-96881a273bb3",
    "name": "Asila",
    "website": "https://asila.ma",
@@ -155,6 +229,80 @@
      "value": "yes",
      "quote": "300 MAD/mois",
      "source_url": "https://asila.ma/"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "c0793a8a-4bf4-5693-9008-e45e28bbc78f",
+   "name": "Delivety",
+   "website": "https://delivety.com/uk",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: UA.",
+   "check_urls": [
+    "https://delivety.com/uk/pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
     },
     {
      "key": "perorder",
@@ -424,6 +572,160 @@
      "value": "yes",
      "quote": "Online vorbestellen, lokal abholen",
      "source_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "f7343532-5b7f-5e93-aac3-c97906980b3d",
+   "name": "Ewity POS",
+   "website": "https://ewity.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: MV.",
+   "check_urls": [
+    "https://ewity.com/pricing",
+    "https://ewity.com",
+    "https://ewity.com/features/online-ordering"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Offer timed delivery and pickup windows with capacity limits, so orders arrive at a pace your team can handle.",
+     "source_url": "https://ewity.com/features/online-ordering"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "85c5360a-221f-555c-90bd-7ca4f0a9d551",
+   "name": "tossdown",
+   "website": "https://tossdown.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: PK.",
+   "check_urls": [
+    "https://tossdown.com/pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Accept commission-free pickup and delivery orders.",
+     "source_url": "https://tossdown.com/pricing"
     },
     {
      "key": "preorder",
@@ -865,6 +1167,90 @@
    "set_focus": true
   },
   {
+   "id": "465f1ff8-1782-5364-a7bf-723f350c744f",
+   "name": "Resto-SaaS (Digital Bonsaï Ltd)",
+   "website": "https://resto-saas-production-a095.up.railway.app/",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: MU.",
+   "check_urls": [
+    "https://resto-saas-production-a095.up.railway.app/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Customers choose their slot, you control capacity. No more counter rush at peak hours.",
+     "source_url": "https://resto-saas-production-a095.up.railway.app/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "yes",
+     "quote": "Customers choose their slot, you control capacity. No more counter rush at peak hours.",
+     "source_url": "https://resto-saas-production-a095.up.railway.app/"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "1 800 MUR + VAT",
+     "source_url": "https://resto-saas-production-a095.up.railway.app/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "No commission on your sales.",
+     "source_url": "https://resto-saas-production-a095.up.railway.app/"
+    },
+    {
+     "key": "cardfee",
+     "value": "partial",
+     "quote": "One fixed monthly price that includes the platform, MIPS and MCB fees, and support.",
+     "source_url": "https://resto-saas-production-a095.up.railway.app/"
+    }
+   ],
+   "set_focus": true
+  },
+  {
    "id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
    "name": "Mylo",
    "website": "https://mylo.africa",
@@ -1024,6 +1410,88 @@
      "value": "partial",
      "quote": "Commission is separate from Paystack's own processing fee.",
      "source_url": "https://restorant.com.ng/pricing"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "832a682c-2814-5f0a-8fa7-b45d3b76dd08",
+   "name": "Menufy",
+   "website": "https://restaurant.menufy.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: PR.",
+   "check_urls": [
+    "https://restaurant.menufy.com/article/online-ordering-features",
+    "https://www.menufy.com/PR",
+    "https://restaurant.menufy.com/pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "gives them the opportunity to schedule their order ahead of time.",
+     "source_url": "https://restaurant.menufy.com/article/online-ordering-features"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "You can offer customers more ways to order online by enabling Advance Orders.",
+     "source_url": "https://restaurant.menufy.com/article/online-ordering-features"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "partial",
+     "quote": "With Menufy, the customer pays the fee required to process the order.",
+     "source_url": "https://restaurant.menufy.com/article/online-ordering-features"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
     }
    ],
    "set_focus": true
@@ -1214,6 +1682,72 @@
    "verified_at": null,
    "verified_by": null,
    "notes": "compare-research-3, read 25 Nov 2026 — serves GI from GB (neighbouring-market rule, Dominic 25 Nov): \"No monthly fees. No lock-in. Just 3% per order when you make a sale.\" — Stripe fees separate ('3% per order (Stripe fees separate)'). Terms: 'Ordea charges a commission of 3% per order processed through the platform.' (https://www.ordea.uk/terms)"
+  },
+  {
+   "id": "c240e8b4-18a9-511b-bfd9-4cec7f3b5051",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "country_code": "KZ",
+   "plan_name": "Starter + Poster Site add-on",
+   "currency": "KZT",
+   "price_hidden": false,
+   "monthly_minor": 864000,
+   "monthly_major": 8640,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://joinposter.kz/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"8 640 ₸9 600 ₸/мес.\" — Only billing label on the page: 'Оплата за год' (no monthly label, no yearly total). 8 640 = 9 600 × 0.9, so 8 640 is likely billed yearly and 9 600 monthly-billed. The ordering website is extra: 'Стоимость — 11 400 ₸/мес.' (Poster Site, 'Сайт для заказов из вашего заведения — за 5 минут'), listed only under paid 'Расширения'."
+  },
+  {
+   "id": "f911f34c-5ea3-58e8-af22-0be0d70095d8",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "country_code": "KZ",
+   "plan_name": "Poster Site (ordering website add-on)",
+   "currency": "KZT",
+   "price_hidden": false,
+   "monthly_minor": 1140000,
+   "monthly_major": 11400,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://joinposter.kz/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"Стоимость — 11 400 ₸/мес.\" — Add-on on top of a POS plan; not included in Starter/Mini/Business/Pro."
   },
   {
    "id": "ae735226-20f0-5863-b186-92543b5ef790",
@@ -1546,6 +2080,138 @@
    "notes": "compare-research-3, read 25 Nov 2026 — serves LI from CH (neighbouring-market rule, Dominic 25 Nov): \"Bis zu 100 Produkte | 25.00 CHF |\" — Onlineshop module monthly; 'Bis zu 25 Produkte | 0.00 CHF', 5'000 Produkte 55.00 CHF, Unlimitierte 85.00 CHF; 'Alle Preise verstehen sich exkl. MwSt.'"
   },
   {
+   "id": "b483e0f3-71b9-5acb-ac83-d9fdd4f67b05",
+   "competitor_id": "f7343532-5b7f-5e93-aac3-c97906980b3d",
+   "country_code": "MV",
+   "plan_name": "Free",
+   "currency": "MVR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://ewity.com/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"MVR 0/month\" — 'Free forever'. Home page: 'Every Ewity business gets a beautiful online store and ordering site at no extra cost.' (read as included in every plan)"
+  },
+  {
+   "id": "94c73b5f-fb85-5171-ab44-a55534c4e0d1",
+   "competitor_id": "f7343532-5b7f-5e93-aac3-c97906980b3d",
+   "country_code": "MV",
+   "plan_name": "Starter",
+   "currency": "MVR",
+   "price_hidden": false,
+   "monthly_minor": 45000,
+   "monthly_major": 450,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://ewity.com/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"MVR 450/month\" — 'Billed MVR 5,400 yearly'"
+  },
+  {
+   "id": "e2b98f76-3a30-5964-8b22-791840351331",
+   "competitor_id": "f7343532-5b7f-5e93-aac3-c97906980b3d",
+   "country_code": "MV",
+   "plan_name": "Pro",
+   "currency": "MVR",
+   "price_hidden": false,
+   "monthly_minor": 75000,
+   "monthly_major": 750,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://ewity.com/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"MVR 750/month\" — 'Billed MVR 9,000 yearly'"
+  },
+  {
+   "id": "bfc35861-13c3-59c9-9891-e1608a80bcdc",
+   "competitor_id": "85c5360a-221f-555c-90bd-7ca4f0a9d551",
+   "country_code": "PK",
+   "plan_name": "Direct Ordering",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 9900,
+   "monthly_major": 99,
+   "yearly_only": false,
+   "setup_minor": 50000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://tossdown.com/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"$99/ location / mo.\" — $ not PKR (geo-priced; rupee amounts not readable). Core platform \"$49/ month\" with \"One-time base setup of $500.\""
+  },
+  {
    "id": "7af3dec8-be67-5e98-b90c-f0179ea56692",
    "competitor_id": "110abdac-c213-5f20-bada-10b1b9b8c9f0",
    "country_code": "TW",
@@ -1741,6 +2407,72 @@
    "notes": "compare-research-3, read 25 Nov 2026: \"A medida\" — price on request (custom after an on-site assessment); the page says all prices exclude ITBIS. Restaurant plan 'RD$ 5,500 /mes' (+0.40% above RD$1.3MM sales) has no customer online ordering ahead, so not used."
   },
   {
+   "id": "35a16e3d-1bf6-5f8d-91b1-d70534c9b537",
+   "competitor_id": "465f1ff8-1782-5364-a7bf-723f350c744f",
+   "country_code": "MU",
+   "plan_name": "Starter",
+   "currency": "MUR",
+   "price_hidden": false,
+   "monthly_minor": 180000,
+   "monthly_major": 1800,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://resto-saas-production-a095.up.railway.app/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"1 800 MUR + VAT\" — 'per month · All inclusive'; MIPS and MCB fees included; 30-day free trial"
+  },
+  {
+   "id": "e82a1c61-c42c-58cf-a275-1479f2e19de0",
+   "competitor_id": "465f1ff8-1782-5364-a7bf-723f350c744f",
+   "country_code": "MU",
+   "plan_name": "Pro",
+   "currency": "MUR",
+   "price_hidden": false,
+   "monthly_minor": 440000,
+   "monthly_major": 4400,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://resto-saas-production-a095.up.railway.app/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"4 400 MUR + VAT\" — per month"
+  },
+  {
    "id": "86457318-8577-53a0-8181-cb139b49abef",
    "competitor_id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
    "country_code": "NG",
@@ -1873,6 +2605,39 @@
    "notes": "compare-research-3, read 25 Nov 2026: \"No monthly fee, no setup fee, no minimum.\" — 5% 'Of the order value, when a customer pays online.'; cash/transfer orders confirmed at the counter carry no commission; 8% on a marketplace-found customer's first order; Paystack fees separate. A search snippet's 'Starter ₦30,000 a month' is not on today's pages."
   },
   {
+   "id": "369df200-6c38-549f-8292-411e0e14fc0b",
+   "competitor_id": "832a682c-2814-5f0a-8fa7-b45d3b76dd08",
+   "country_code": "PR",
+   "plan_name": "Menufy online ordering",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://restaurant.menufy.com/article/online-ordering-features",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"With Menufy, the customer pays the fee required to process the order.\" — no monthly price to the restaurant stated on the readable pages; the diner pays a processing fee (amount not shown); delivery 'set at 12.5%'. restaurant.menufy.com/pricing is script-rendered (only navigation readable). BORDERLINE price."
+  },
+  {
    "id": "a83cd6f5-4a94-5e89-b740-d27882ec379d",
    "competitor_id": "afe2f58d-df5f-5b96-9a77-5a8bd4f08cc7",
    "country_code": "ZA",
@@ -1951,10 +2716,30 @@
    "verified_by": null
   },
   {
+   "id": "e01244ee-cbbf-5451-8ac2-dada1e0b6bcd",
+   "country_code": "KZ",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "primary_plan_id": "c240e8b4-18a9-511b-bfd9-4cec7f3b5051",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
    "id": "f50c7bc4-210b-5844-b7e8-87cee57ace16",
    "country_code": "MA",
    "competitor_id": "c06e5b78-6f2f-5a3f-a85d-96881a273bb3",
    "primary_plan_id": "ae735226-20f0-5863-b186-92543b5ef790",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "d96dd9d7-9a9f-5956-b7b0-30d77d467814",
+   "country_code": "UA",
+   "competitor_id": "c0793a8a-4bf4-5693-9008-e45e28bbc78f",
+   "primary_plan_id": null,
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -2031,6 +2816,26 @@
    "verified_by": null
   },
   {
+   "id": "b232c0c3-c923-5fe4-9420-2f45ddccfa11",
+   "country_code": "MV",
+   "competitor_id": "f7343532-5b7f-5e93-aac3-c97906980b3d",
+   "primary_plan_id": "b483e0f3-71b9-5acb-ac83-d9fdd4f67b05",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "537984b1-b031-5e8c-8a0a-242c3d36d189",
+   "country_code": "PK",
+   "competitor_id": "85c5360a-221f-555c-90bd-7ca4f0a9d551",
+   "primary_plan_id": "bfc35861-13c3-59c9-9891-e1608a80bcdc",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
    "id": "024e8a59-173a-56fe-8b07-23faea71434e",
    "country_code": "TW",
    "competitor_id": "110abdac-c213-5f20-bada-10b1b9b8c9f0",
@@ -2081,6 +2886,16 @@
    "verified_by": null
   },
   {
+   "id": "46766461-4b56-5544-a8bd-fa8c03b3d520",
+   "country_code": "MU",
+   "competitor_id": "465f1ff8-1782-5364-a7bf-723f350c744f",
+   "primary_plan_id": "35a16e3d-1bf6-5f8d-91b1-d70534c9b537",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
    "id": "f04525e0-0911-5f35-8e31-3e2cde676d43",
    "country_code": "NG",
    "competitor_id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
@@ -2095,6 +2910,16 @@
    "country_code": "NG",
    "competitor_id": "9af04d84-0659-5c20-b571-9cefadb7a04e",
    "primary_plan_id": "44c16279-225a-5017-8fa6-2b8758d61f01",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "7d755c09-61c6-5bdb-91a1-9ffae8f254fa",
+   "country_code": "PR",
+   "competitor_id": "832a682c-2814-5f0a-8fa7-b45d3b76dd08",
+   "primary_plan_id": "369df200-6c38-549f-8292-411e0e14fc0b",
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -2139,6 +2964,17 @@
    ]
   },
   {
+   "name": "Poster",
+   "evidence": [
+    {
+     "country": "KZ",
+     "country_quote": "Русский (Казахстан)",
+     "country_url": "https://joinposter.kz/pricing",
+     "reason": "Own Kazakhstan site with a food-truck page (compare-research-2). Its ordering website is the paid Poster Site add-on, not part of any plan. Prices show the same billed-yearly ambiguity as UA, so count it only if Dominic accepts that."
+    }
+   ]
+  },
+  {
    "name": "Asila",
    "evidence": [
     {
@@ -2148,6 +2984,15 @@
      "country_quote": "Caisse, commandes en ligne, stocks et back-office dans un seul système conçu pour les restaurants et cafés marocains.",
      "country_url": "https://asila.ma/",
      "reason": "Moroccan restaurant/café POS + online-ordering platform: orders taken online on the business's own channel, for takeaway and delivery. One all-in plan priced in MAD. Borderline: no explicit 'order for a time' / pre-order wording."
+    }
+   ]
+  },
+  {
+   "name": "Delivety",
+   "evidence": [
+    {
+     "country": "UA",
+     "reason": "Eligible per compare-research-2 (takeaway time slots), but its Ukrainian pricing page shows no plans or prices at all ('У нас є ідеальний план саме для вас'; maybe loaded by script), and compare-research-2 saw USD only. No UAH price, so not counted."
     }
    ]
   },
@@ -2234,6 +3079,32 @@
    ]
   },
   {
+   "name": "Ewity POS",
+   "evidence": [
+    {
+     "country": "MV",
+     "order_quote": "Offer timed delivery and pickup windows with capacity limits, so orders arrive at a pace your team can handle.",
+     "order_url": "https://ewity.com/features/online-ordering",
+     "country_quote": "Built in the Maldives. Used worldwide.",
+     "country_url": "https://ewity.com/features/online-ordering",
+     "reason": "Maldivian POS whose online ordering site (included for every business) offers timed pickup windows with capacity limits, orders sent to the kitchen; MVR prices"
+    }
+   ]
+  },
+  {
+   "name": "tossdown",
+   "evidence": [
+    {
+     "country": "PK",
+     "order_quote": "Accept commission-free pickup and delivery orders.",
+     "order_url": "https://tossdown.com/pricing",
+     "country_quote": "Canada uses Canadian dollar pricing and Pakistan uses rupee pricing (Rs.).",
+     "country_url": "https://tossdown.com/pricing",
+     "reason": "commission-free pickup and delivery ordering; its FAQ says Pakistan uses rupee pricing, but the pricing page (served with a US country flag, no region selector) shows only $ amounts, so no PKR price"
+    }
+   ]
+  },
+  {
    "name": "Oddle",
    "evidence": [
     {
@@ -2305,6 +3176,19 @@
    ]
   },
   {
+   "name": "Resto-SaaS (Digital Bonsaï Ltd)",
+   "evidence": [
+    {
+     "country": "MU",
+     "order_quote": "Customers choose their slot, you control capacity. No more counter rush at peak hours.",
+     "order_url": "https://resto-saas-production-a095.up.railway.app/",
+     "country_quote": "The takeaway ordering platform built for Mauritius restaurants.",
+     "country_url": "https://resto-saas-production-a095.up.railway.app/",
+     "reason": "Mauritian takeaway ordering platform for restaurants: customers order from their phones and choose a pickup slot, capacity controlled; MUR monthly prices, no commission. Vendor's own site is on a railway.app subdomain."
+    }
+   ]
+  },
+  {
    "name": "Mylo",
    "evidence": [
     {
@@ -2327,6 +3211,19 @@
      "country_quote": "Restorant is a product of Brandyeast, based in Nnewi, Anambra State, Nigeria.",
      "country_url": "https://restorant.com.ng",
      "reason": "Nigerian restaurant ordering platform (Brandyeast, Nnewi): branded storefront where customers 'choose delivery or pickup'; free with 5% commission on online-paid orders (8% on a marketplace-found customer's first order). Also runs a marketplace listing, but the storefront is the restaurant's own."
+    }
+   ]
+  },
+  {
+   "name": "Menufy",
+   "evidence": [
+    {
+     "country": "PR",
+     "order_quote": "gives them the opportunity to schedule their order ahead of time.",
+     "order_url": "https://restaurant.menufy.com/article/online-ordering-features",
+     "country_quote": "Puerto Rico, Order Food Online!",
+     "country_url": "https://www.menufy.com/PR",
+     "reason": "US restaurant online-ordering tool (carryout, curbside, advance orders); its own diner site has a Puerto Rico page listing Caguas, Canóvanas, Carolina and San Juan restaurants; restaurant pays no fee, the customer pays the processing fee (BORDERLINE price: amount not stated)"
     }
    ]
   },
@@ -2359,6 +3256,42 @@
  ],
  "not_relevant": [
   {
+   "country": "AL",
+   "name": "doXmenu",
+   "website": "https://www.doxmenu.com/qr-menu/albania/",
+   "stored": null,
+   "reason": "QR digital menu only (EUR prices); same product compare-research-2 found to have no ordering in RS. Not opened.",
+   "url": "https://www.doxmenu.com/qr-menu/albania/",
+   "plans": []
+  },
+  {
+   "country": "AL",
+   "name": "logic.al",
+   "website": "https://logic.al",
+   "stored": null,
+   "reason": "Albanian POS; search snippet shows loyalty and marketing features only, no online ordering. Not opened.",
+   "url": "https://logic.al",
+   "plans": []
+  },
+  {
+   "country": "AM",
+   "name": "Waiterio",
+   "website": "https://waiterio.com/hy",
+   "stored": null,
+   "reason": "Restaurant POS with online orders and an Armenian-language page, but Armenia isn't named, there's no AMD price (only 'All restaurants come with a Free plan that allows up to 100 orders (tables served) per month.'), and no pickup or order-ahead wording on the page. A language translation only; not counted.",
+   "url": "https://waiterio.com/hy",
+   "plans": []
+  },
+  {
+   "country": "AZ",
+   "name": "Dostavka.az",
+   "website": null,
+   "stored": null,
+   "reason": "Consumer aggregator of delivery services (marketplace), App Store only. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
    "country": "CV",
    "name": "Vendus (Cegid / Vendus by Shine)",
    "website": "https://www.vendus.pt",
@@ -2383,6 +3316,15 @@
    "stored": null,
    "reason": "ERP for Cabo Verde businesses, not a food ordering tool. Not opened.",
    "url": "https://www.cegid.com/cv/",
+   "plans": []
+  },
+  {
+   "country": "GE",
+   "name": "Restimo",
+   "website": "https://restimo.com",
+   "stored": null,
+   "reason": "Polish online-ordering tool. A search summary claims it is available in Georgia, but it is priced in EUR (19 / 64 EUR a month per the help-centre snippet), not GEL. Not opened, so the Georgia claim is unverified.",
+   "url": "https://restimo.com",
    "plans": []
   },
   {
@@ -2437,6 +3379,42 @@
    "stored": "d0eb16fa",
    "reason": "No Monaco country site in search results (only fr-fr, fr-be, fr-lu, fr-ch); generic web shop anyway. Not opened.",
    "url": "https://www.sumup.com",
+   "plans": []
+  },
+  {
+   "country": "ME",
+   "name": "MontEat",
+   "website": null,
+   "stored": null,
+   "reason": "Montenegrin consumer food app (App Store, one-line description; looks like a marketplace). Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "ME",
+   "name": "COrdering",
+   "website": null,
+   "stored": null,
+   "reason": "B2B app for restaurants supplying companies (workplace catering), no price or Montenegro coverage. App Store only.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "MK",
+   "name": "Naracaj.com",
+   "website": null,
+   "stored": null,
+   "reason": "Consumer ordering app listing many restaurants (marketplace), App Store only. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "MK",
+   "name": "Klikni Jadi",
+   "website": null,
+   "stored": null,
+   "reason": "Delivery marketplace ('170 ресторани'), App Store only. Not opened.",
+   "url": null,
    "plans": []
   },
   {
@@ -2544,12 +3522,93 @@
    "plans": []
   },
   {
+   "country": "UA",
+   "name": "Diny",
+   "website": null,
+   "stored": null,
+   "reason": "Consumer pre-order/takeaway app listing many venues (a marketplace channel), App Store only. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "UZ",
+   "name": "Smartomato",
+   "website": null,
+   "stored": null,
+   "reason": "Russian restaurant delivery/ordering platform ('9 countries'); no Uzbekistan presence or UZS price in the results. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "UZ",
+   "name": "iiko / R-Keeper",
+   "website": null,
+   "stored": null,
+   "reason": "Restaurant tills used in Uzbekistan (news articles); no online-ordering price in UZS seen. Not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "BD",
+   "name": "Cloudwave BD",
+   "website": "https://cloudwavebd.com",
+   "stored": null,
+   "reason": "the restaurant-POS page from search (cloudwavebd.com/?p=25988) shows only hosting/domain prices and no online pickup or order-ahead wording",
+   "url": "https://cloudwavebd.com/?p=25988",
+   "plans": []
+  },
+  {
+   "country": "BD",
+   "name": "HisabPlus",
+   "website": "https://hisabplus.com",
+   "stored": null,
+   "reason": "its restaurant POS guide describes table QR ordering only (no takeaway/pickup/advance online ordering) and gives no BDT amount",
+   "url": "https://hisabplus.com/Blog/restaurant-pos-software-bangladesh-guide",
+   "plans": []
+  },
+  {
+   "country": "BN",
+   "name": "Mint (MintyPOS)",
+   "website": "https://mint.com.bn",
+   "stored": null,
+   "reason": "Brunei digital agency (websites, hosting, MintyPOS); home page has no F&B online ordering/pickup wording and no prices",
+   "url": "https://mint.com.bn/",
+   "plans": []
+  },
+  {
+   "country": "IN",
+   "name": "DineOpen",
+   "website": "https://www.dineopen.com",
+   "stored": null,
+   "reason": "₹ price ('from ₹899/month in India') but home page describes online/WhatsApp ordering for delivery and table service only; no takeaway/pickup/pre-order wording",
+   "url": "https://www.dineopen.com",
+   "plans": []
+  },
+  {
    "country": "JO",
    "name": "Foodics (Foodics Online)",
    "website": "https://www.foodics.com",
    "stored": "4620b046",
    "reason": "no Jordan pricing page: https://www.foodics.com/foodics-pricing-jordan/ serves the homepage; country pricing links cover only KSA, Egypt, UAE, Kuwait, Oman, Qatar; Jordan appears only as a phone number",
    "url": "https://www.foodics.com/foodics-pricing-jordan/",
+   "plans": []
+  },
+  {
+   "country": "PK",
+   "name": "Moneypex",
+   "website": "https://www.moneypex.com/pk",
+   "stored": null,
+   "reason": "Pakistan restaurant POS page shows \"£30 /month\" (GBP) and \"Web Ordering £10\" add-on; no PKR price and no pickup/order-ahead sentence",
+   "url": "https://www.moneypex.com/pk/restaurant-pos",
+   "plans": []
+  },
+  {
+   "country": "PK",
+   "name": "Oscar",
+   "website": "https://oscar.pk",
+   "stored": null,
+   "reason": "restaurant e-commerce page: online ordering in general, no pickup/takeaway/order-ahead sentence, no prices",
+   "url": "https://oscar.pk/solutions/restaurant-ecommerce",
    "plans": []
   },
   {
@@ -2560,6 +3619,29 @@
    "reason": "re-read today: no pickup / recoger / para llevar wording on the home page, and the plans now show USD only (Sazón $4.99/mes etc.) with Venezuelan Pago Móvil payment; no BOB price",
    "url": "https://pideme.online",
    "plans": []
+  },
+  {
+   "country": "BZ",
+   "name": "My Belize Food",
+   "website": "https://mybelizefood.com",
+   "stored": null,
+   "reason": "BORDERLINE: Belizean online menu where customers build the order and send it to the restaurant's WhatsApp, BZD prices (Basic 'BZD 25 /month', Premium 'BZD 60 /month', also 'now free'), but no pickup / takeout / order-ahead wording",
+   "url": "https://mybelizefood.com/en",
+   "plans": [
+    {
+     "plan_name": "Basic",
+     "currency": "BZD",
+     "price_major": 25,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "BZD 25 /month",
+     "url": "https://mybelizefood.com/en",
+     "note": "recorded for reference; the same page says 'Belize Food Restaurant ordering system is now free.' Premium 'BZD 60 /month'."
+    }
+   ]
   },
   {
    "country": "CO",
@@ -2580,6 +3662,15 @@
    "plans": []
   },
   {
+   "country": "DZ",
+   "name": "NResto",
+   "website": "https://nresto.com",
+   "stored": null,
+   "reason": "Algerian QR menu with table ordering and a delivery (COD) system; no à emporter / retrait / click-and-collect / pre-order wording ('Livraison seule : 9 000 DZD / 3 mois.')",
+   "url": "https://nresto.com/",
+   "plans": []
+  },
+  {
    "country": "GT",
    "name": "Midelivery Food",
    "website": "https://www.mideliveryfood.com",
@@ -2595,6 +3686,24 @@
    "stored": null,
    "reason": "Jamaican consumer visual-menu app listing many restaurants (diners 'see every dish before you order for pickup or delivery'); a multi-restaurant marketplace, restaurants book a demo, no price",
    "url": "https://visueats.com",
+   "plans": []
+  },
+  {
+   "country": "MU",
+   "name": "MauriPros",
+   "website": "https://www.mauripros.com",
+   "stored": null,
+   "reason": "'Digital Marketing Agency' listing an 'All-in-one Restaurant Platform'; the page names only Louisville, Kentucky, no Mauritius, no pickup wording, no price",
+   "url": "https://www.mauripros.com/services/restaurant-platform",
+   "plans": []
+  },
+  {
+   "country": "NA",
+   "name": "FlashTap",
+   "website": "https://www.flashtap.app",
+   "stored": null,
+   "reason": "Namibian QR table ordering only (customers 'scan, order and pay from their phone' at the table); no takeaway / pickup / order-ahead wording; N$499 / N$999 per month",
+   "url": "https://www.flashtap.app/",
    "plans": []
   },
   {
@@ -2666,6 +3775,24 @@
    ]
   },
   {
+   "country": "TZ",
+   "name": "duka.direct",
+   "website": "https://duka.direct",
+   "stored": null,
+   "reason": "Tanzanian multi-vendor consumer marketplace ('bring buyers and sellers together across an array of product lines including food delivery'); merchants join it, no own shop, no merchant price",
+   "url": "https://duka.direct/",
+   "plans": []
+  },
+  {
+   "country": "UG",
+   "name": "Bamudda",
+   "website": "https://bamudda.com",
+   "stored": null,
+   "reason": "generic Ugandan storefront builder ('Whether you sell clothes, electronics, food or crafts'), no restaurant offer and no pickup / order-ahead wording; free in beta, 'UGX 100,000/month' planned",
+   "url": "https://bamudda.com/sell-online-uganda/",
+   "plans": []
+  },
+  {
    "country": "UY",
    "name": "Fudo (Tu Delivery)",
    "website": "https://fu.do",
@@ -2716,11 +3843,32 @@
    "reason": "Help-centre pages (search snippets) describe 'client QR order, pay and pick up' and mention 'UK £ Easy Pay'; both help-centre pages opened returned 404. No EUR price or Malta presence could be read from its own site."
   },
   {
+   "country": "UA",
+   "name": "Choice",
+   "website": "https://choiceqr.com/ua",
+   "stored": "70b34967",
+   "reason": "https://choiceqr.com/ua/pricing answered HTTP 403 again today (tried once, as asked)."
+  },
+  {
    "country": "IL",
    "name": "Wix (Wix Restaurants Orders)",
    "website": "https://www.wix.com",
    "stored": null,
    "reason": "https://he.wix.com/plans returned HTTP 404; www.wix.com/plans rendered only its title last round; Wix prices are geo-dependent, no ILS price obtainable"
+  },
+  {
+   "country": "IN",
+   "name": "Petpooja",
+   "website": "https://www.petpooja.com",
+   "stored": null,
+   "reason": "pricing page renders plan names (Core, Growth, Scale) and 'OOW (Website)' in Growth/Scale but no prices; no takeaway/pickup/order-ahead wording"
+  },
+  {
+   "country": "IN",
+   "name": "Thrive",
+   "website": "https://thrivenow.in",
+   "stored": null,
+   "reason": "/pricing renders only the domain name (JavaScript-only)"
   },
   {
    "country": "KR",
@@ -2730,6 +3878,13 @@
    "reason": "already counted from compare-research-2 (0 KRW); re-check of tossplace.com/pricing returned HTTP 404, so the fee was not re-confirmed today"
   },
   {
+   "country": "DZ",
+   "name": "BorneDZ",
+   "website": "https://bornedz.com",
+   "stored": null,
+   "reason": "Algerian kiosk / till with an online-ordering page (search snippet: 'votre site, 0% commission', Essentiel 3 900 DA / Complet 6 900 DA par mois); both bornedz.com and its online-ordering page answered HTTP 410 Gone today"
+  },
+  {
    "country": "HN",
    "name": "HNMenu",
    "website": "https://www.hnmenu.com",
@@ -2737,11 +3892,25 @@
    "reason": "retried once today (wave 2 also): script-rendered, the page reader sees only the title 'HNMenu - Menús Digitales para Restaurantes en Honduras.'"
   },
   {
+   "country": "PR",
+   "name": "Clover",
+   "website": "https://www.clover.com",
+   "stored": "8ceb8696",
+   "reason": "Clover hosts online-ordering pages for Puerto Rico restaurants on its own domain (e.g. clover.com/online-ordering/puerto-rico-bagel-co-san-juan, 'SAN JUAN, PR' — search result titles), but its online-ordering, pricing and help pages render only the title 'POS System & Credit Card Readers | Clover' to the page reader; no price or quote readable"
+  },
+  {
    "country": "PY",
    "name": "RestoPRO",
    "website": "https://restopro.com.py",
    "stored": null,
    "reason": "retried once today (wave 2 also): script-rendered, only the title 'RestoPRO | Software para restaurantes en Paraguay' is readable"
+  },
+  {
+   "country": "ZW",
+   "name": "Storelync",
+   "website": "https://storelync.com",
+   "stored": null,
+   "reason": "Harare WhatsApp store builder ($9 / $29 per month per a wave-2 snippet, generic e-commerce); storelync.com answered HTTP 404 (domain guessed from the name)"
   }
  ],
  "not_needed": []
