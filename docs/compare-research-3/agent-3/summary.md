@@ -1,0 +1,11 @@
+# compare-research-3 · agent 3 · summary (25 Nov 2026)
+
+## BO (BOB)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Pídeme.online | nearest_local | not_relevant (USD only now, no pickup wording) | — | https://pideme.online |
+
+Nothing new eligible in BOB after three searches; Mezzita (stored) is the only one.
+
+count now: 1

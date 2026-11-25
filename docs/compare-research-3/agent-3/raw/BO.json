@@ -1,0 +1,24 @@
+{
+  "country": "BO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Bolivia menú digital pedidos online restaurante \"para recoger\" OR \"retiro en tienda\" OR \"recojo\" plan mensual Bs",
+    "software boliviano restaurantes pedidos en línea delivery y \"recojo en tienda\" precios \"Bs.\" por mes Santa Cruz La Paz Cochabamba",
+    "\"Bolivia\" plataforma tienda online para restaurantes pedidos WhatsApp \"pasar a recoger\" OR \"recoger en el local\" planes bolivianos"
+  ],
+  "vendors": [
+    {
+      "name": "Pídeme.online",
+      "website": "https://pideme.online",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "re-read today: no pickup / recoger / para llevar wording on the home page, and the plans now show USD only (Sazón $4.99/mes etc.) with Venezuelan Pago Móvil payment; no BOB price",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://pideme.online"]
+    }
+  ],
+  "notes": "Count now: 1 (Mezzita, BOB, stored). No second eligible BOB-priced tool found: three searches returned only consumer delivery apps (Mr Delivery, Ready Delivery — marketplaces / single-app ordering, never counted), Neolo's free QR menu (no ordering ahead), Ganvent Eats (generic store builder, not_relevant in PE), MENU TIGER (agent 2, USD) and Capterra listings (not sources). Pídeme.online, the wave-2 BOB borderline, now shows USD-only plans and still no pickup wording. Pedix and OlaClick remain USD-only (do not count). Fudo has no Bolivian site. Stopped after ~5 sites/candidates with nothing new."
+}
