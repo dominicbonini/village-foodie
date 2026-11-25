@@ -1,0 +1,776 @@
+[
+  {
+    "vendor": "Ordea",
+    "parent": "GB",
+    "territory": "JE",
+    "says": "nothing",
+    "quote": "These Terms are governed by the laws of England and Wales.",
+    "url": "https://www.ordea.uk/terms",
+    "note": "Terms name no territory, no UK/mainland and no service area; only the governing law."
+  },
+  {
+    "vendor": "Ordea",
+    "parent": "GB",
+    "territory": "GG",
+    "says": "nothing",
+    "quote": "These Terms are governed by the laws of England and Wales.",
+    "url": "https://www.ordea.uk/terms",
+    "note": "Terms name no territory, no UK/mainland and no service area; only the governing law."
+  },
+  {
+    "vendor": "Ordea",
+    "parent": "GB",
+    "territory": "IM",
+    "says": "nothing",
+    "quote": "These Terms are governed by the laws of England and Wales.",
+    "url": "https://www.ordea.uk/terms",
+    "note": "Terms name no territory, no UK/mainland and no service area; only the governing law."
+  },
+  {
+    "vendor": "Order Tiger",
+    "parent": "GB",
+    "territory": "JE",
+    "says": "nothing",
+    "quote": "An incredible opportunity for aspiring entrepreneurs in the UK to establish their own business in their hometown",
+    "url": "https://www.ordertiger.com/franchise",
+    "note": "Franchise page names the UK and one existing location, Gibraltar ('Consider our Gibraltar location, which experienced remarkable growth'); no Jersey/Guernsey/Isle of Man."
+  },
+  {
+    "vendor": "Order Tiger",
+    "parent": "GB",
+    "territory": "GG",
+    "says": "nothing",
+    "quote": "An incredible opportunity for aspiring entrepreneurs in the UK to establish their own business in their hometown",
+    "url": "https://www.ordertiger.com/franchise",
+    "note": "Franchise page names the UK and one existing location, Gibraltar ('Consider our Gibraltar location, which experienced remarkable growth'); no Jersey/Guernsey/Isle of Man."
+  },
+  {
+    "vendor": "Order Tiger",
+    "parent": "GB",
+    "territory": "IM",
+    "says": "nothing",
+    "quote": "An incredible opportunity for aspiring entrepreneurs in the UK to establish their own business in their hometown",
+    "url": "https://www.ordertiger.com/franchise",
+    "note": "Franchise page names the UK and one existing location, Gibraltar ('Consider our Gibraltar location, which experienced remarkable growth'); no Jersey/Guernsey/Isle of Man."
+  },
+  {
+    "vendor": "Perkss",
+    "parent": "GB",
+    "territory": "JE",
+    "says": "nothing",
+    "quote": "Built for UK restaurants and takeaways, with your website, branded apps, hardware, and training included",
+    "url": "https://perkss.co.uk/",
+    "note": "/terms answered 404, so the home page was read; it says 'UK' only, never a Crown Dependency or 'mainland'."
+  },
+  {
+    "vendor": "Perkss",
+    "parent": "GB",
+    "territory": "GG",
+    "says": "nothing",
+    "quote": "Built for UK restaurants and takeaways, with your website, branded apps, hardware, and training included",
+    "url": "https://perkss.co.uk/",
+    "note": "/terms answered 404, so the home page was read; it says 'UK' only, never a Crown Dependency or 'mainland'."
+  },
+  {
+    "vendor": "Perkss",
+    "parent": "GB",
+    "territory": "IM",
+    "says": "nothing",
+    "quote": "Built for UK restaurants and takeaways, with your website, branded apps, hardware, and training included",
+    "url": "https://perkss.co.uk/",
+    "note": "/terms answered 404, so the home page was read; it says 'UK' only, never a Crown Dependency or 'mainland'."
+  },
+  {
+    "vendor": "Grafterr",
+    "parent": "GB",
+    "territory": "JE",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.grafterr.com/",
+    "note": "/terms-and-conditions 404; home page names no country or service area (only a 'uk Flag' image and /uk/, /gb/ paths). No quotable sentence."
+  },
+  {
+    "vendor": "Grafterr",
+    "parent": "GB",
+    "territory": "GG",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.grafterr.com/",
+    "note": "/terms-and-conditions 404; home page names no country or service area (only a 'uk Flag' image and /uk/, /gb/ paths). No quotable sentence."
+  },
+  {
+    "vendor": "Grafterr",
+    "parent": "GB",
+    "territory": "IM",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.grafterr.com/",
+    "note": "/terms-and-conditions 404; home page names no country or service area (only a 'uk Flag' image and /uk/, /gb/ paths). No quotable sentence."
+  },
+  {
+    "vendor": "Food4you",
+    "parent": "FI",
+    "territory": "AX",
+    "says": "nothing",
+    "quote": "Näihin ehtoihin sovelletaan Suomen lakia.",
+    "url": "https://food4you.fi/kayttoehdot/",
+    "note": "Terms name Finland only as governing law; no Åland/Ahvenanmaa, no Manner-Suomi, no service area."
+  },
+  {
+    "vendor": "Qromo",
+    "parent": "IT",
+    "territory": "SM",
+    "says": "nothing",
+    "quote": "Le Condizioni Generali sono regolate e devono essere interpretate in conformità alla legge italiana.",
+    "url": "https://qromo.it/terms/",
+    "note": "Terms name no San Marino / Vatican and no service area; Italian law and the Milan court only."
+  },
+  {
+    "vendor": "Qromo",
+    "parent": "IT",
+    "territory": "VA",
+    "says": "nothing",
+    "quote": "Le Condizioni Generali sono regolate e devono essere interpretate in conformità alla legge italiana.",
+    "url": "https://qromo.it/terms/",
+    "note": "Terms name no San Marino / Vatican and no service area; Italian law and the Milan court only."
+  },
+  {
+    "vendor": "MenuForma",
+    "parent": "IT",
+    "territory": "SM",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://menuforma.com/terms",
+    "note": "Terms page is script-rendered: only the title came back ('Free QR Code Menu & Online Ordering System - MenuForma'). Nothing readable about any territory."
+  },
+  {
+    "vendor": "MenuForma",
+    "parent": "IT",
+    "territory": "VA",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://menuforma.com/terms",
+    "note": "Terms page is script-rendered: only the title came back ('Free QR Code Menu & Online Ordering System - MenuForma'). Nothing readable about any territory."
+  },
+  {
+    "vendor": "Software Food Good (Boom srl)",
+    "parent": "IT",
+    "territory": "SM",
+    "says": "mainland_only",
+    "quote": "Operiamo a Catania e in tutta Italia.",
+    "url": "https://boomsrl.it/",
+    "note": "No terms link on the home page, so the home page was read: 'in tutta Italia' (all of Italy) only; San Marino and Vatican not named."
+  },
+  {
+    "vendor": "Software Food Good (Boom srl)",
+    "parent": "IT",
+    "territory": "VA",
+    "says": "mainland_only",
+    "quote": "Operiamo a Catania e in tutta Italia.",
+    "url": "https://boomsrl.it/",
+    "note": "No terms link on the home page, so the home page was read: 'in tutta Italia' (all of Italy) only; San Marino and Vatican not named."
+  },
+  {
+    "vendor": "Tilby",
+    "parent": "IT",
+    "territory": "SM",
+    "says": "nothing",
+    "quote": "Sede legale: Piazza Mino Zucchetti, 1 - 26900 Lodi - Italy",
+    "url": "https://tilby.com/it/note-legali/",
+    "note": "Legal notes give only Italian company addresses; no service area, no San Marino / Vatican."
+  },
+  {
+    "vendor": "Tilby",
+    "parent": "IT",
+    "territory": "VA",
+    "says": "nothing",
+    "quote": "Sede legale: Piazza Mino Zucchetti, 1 - 26900 Lodi - Italy",
+    "url": "https://tilby.com/it/note-legali/",
+    "note": "Legal notes give only Italian company addresses; no service area, no San Marino / Vatican."
+  },
+  {
+    "vendor": "pidopago",
+    "parent": "ES",
+    "territory": "AD",
+    "says": "nothing",
+    "quote": "y domicilio social en Calle Zalaeta, 7B, 15002 A Coruña.",
+    "url": "https://pidopago.com/sistema-pedidos-gratis-para-recoger-enviar-a-domicilio/gmx-niv43.htm",
+    "note": "No terms link on its home page (only raffle rules); its ordering-system page names no Andorra, no España / península and no service area - only the A Coruña address."
+  },
+  {
+    "vendor": "TopEstrellas",
+    "parent": "ES",
+    "territory": "AD",
+    "says": "nothing",
+    "quote": "Facturación y cobros Con VeriFactu, tarjeta y Bizum",
+    "url": "https://topestrellas.com/condiciones-generales-contratacion/",
+    "note": "Contract-terms body loads by script ('Cargando documento legal...'); no Andorra / España / law readable. VeriFactu and Bizum are Spanish-only systems (not a territory statement)."
+  },
+  {
+    "vendor": "Nomad (nomadcaisse.fr)",
+    "parent": "FR",
+    "territory": "AD",
+    "says": "nothing",
+    "quote": "Droit français – Tribunal de Dax.",
+    "url": "https://www.nomadcaisse.fr/cgv",
+    "note": "CGV name no Andorra, no DOM/outre-mer and no service area; French law and the Dax court only."
+  },
+  {
+    "vendor": "Nomad (nomadcaisse.fr)",
+    "parent": "FR",
+    "territory": "RE",
+    "says": "nothing",
+    "quote": "Droit français – Tribunal de Dax.",
+    "url": "https://www.nomadcaisse.fr/cgv",
+    "note": "CGV name no Andorra, no DOM/outre-mer and no service area; French law and the Dax court only."
+  },
+  {
+    "vendor": "Nomad (nomadcaisse.fr)",
+    "parent": "FR",
+    "territory": "GP",
+    "says": "nothing",
+    "quote": "Droit français – Tribunal de Dax.",
+    "url": "https://www.nomadcaisse.fr/cgv",
+    "note": "CGV name no Andorra, no DOM/outre-mer and no service area; French law and the Dax court only."
+  },
+  {
+    "vendor": "Nomad (nomadcaisse.fr)",
+    "parent": "FR",
+    "territory": "MQ",
+    "says": "nothing",
+    "quote": "Droit français – Tribunal de Dax.",
+    "url": "https://www.nomadcaisse.fr/cgv",
+    "note": "CGV name no Andorra, no DOM/outre-mer and no service area; French law and the Dax court only."
+  },
+  {
+    "vendor": "Nomad (nomadcaisse.fr)",
+    "parent": "FR",
+    "territory": "GF",
+    "says": "nothing",
+    "quote": "Droit français – Tribunal de Dax.",
+    "url": "https://www.nomadcaisse.fr/cgv",
+    "note": "CGV name no Andorra, no DOM/outre-mer and no service area; French law and the Dax court only."
+  },
+  {
+    "vendor": "Nomad (nomadcaisse.fr)",
+    "parent": "FR",
+    "territory": "YT",
+    "says": "nothing",
+    "quote": "Droit français – Tribunal de Dax.",
+    "url": "https://www.nomadcaisse.fr/cgv",
+    "note": "CGV name no Andorra, no DOM/outre-mer and no service area; French law and the Dax court only."
+  },
+  {
+    "vendor": "Nomad (nomadcaisse.fr)",
+    "parent": "FR",
+    "territory": "BL",
+    "says": "nothing",
+    "quote": "Droit français – Tribunal de Dax.",
+    "url": "https://www.nomadcaisse.fr/cgv",
+    "note": "CGV name no Andorra, no DOM/outre-mer and no service area; French law and the Dax court only."
+  },
+  {
+    "vendor": "Nomad (nomadcaisse.fr)",
+    "parent": "FR",
+    "territory": "MF",
+    "says": "nothing",
+    "quote": "Droit français – Tribunal de Dax.",
+    "url": "https://www.nomadcaisse.fr/cgv",
+    "note": "CGV name no Andorra, no DOM/outre-mer and no service area; French law and the Dax court only."
+  },
+  {
+    "vendor": "Nomad (nomadcaisse.fr)",
+    "parent": "FR",
+    "territory": "PM",
+    "says": "nothing",
+    "quote": "Droit français – Tribunal de Dax.",
+    "url": "https://www.nomadcaisse.fr/cgv",
+    "note": "CGV name no Andorra, no DOM/outre-mer and no service area; French law and the Dax court only."
+  },
+  {
+    "vendor": "Place à emporter",
+    "parent": "FR",
+    "territory": "AD",
+    "says": "nothing",
+    "quote": "Le contrat est soumis au droit français.",
+    "url": "https://placeaemporter.fr/conditions-generales-de-vente/",
+    "note": "CGV name no Andorra / outre-mer / France métropolitaine; Lorient courts; no service area."
+  },
+  {
+    "vendor": "Place à emporter",
+    "parent": "FR",
+    "territory": "RE",
+    "says": "nothing",
+    "quote": "Le contrat est soumis au droit français.",
+    "url": "https://placeaemporter.fr/conditions-generales-de-vente/",
+    "note": "CGV name no Andorra / outre-mer / France métropolitaine; Lorient courts; no service area."
+  },
+  {
+    "vendor": "Place à emporter",
+    "parent": "FR",
+    "territory": "GP",
+    "says": "nothing",
+    "quote": "Le contrat est soumis au droit français.",
+    "url": "https://placeaemporter.fr/conditions-generales-de-vente/",
+    "note": "CGV name no Andorra / outre-mer / France métropolitaine; Lorient courts; no service area."
+  },
+  {
+    "vendor": "Place à emporter",
+    "parent": "FR",
+    "territory": "MQ",
+    "says": "nothing",
+    "quote": "Le contrat est soumis au droit français.",
+    "url": "https://placeaemporter.fr/conditions-generales-de-vente/",
+    "note": "CGV name no Andorra / outre-mer / France métropolitaine; Lorient courts; no service area."
+  },
+  {
+    "vendor": "Place à emporter",
+    "parent": "FR",
+    "territory": "GF",
+    "says": "nothing",
+    "quote": "Le contrat est soumis au droit français.",
+    "url": "https://placeaemporter.fr/conditions-generales-de-vente/",
+    "note": "CGV name no Andorra / outre-mer / France métropolitaine; Lorient courts; no service area."
+  },
+  {
+    "vendor": "Place à emporter",
+    "parent": "FR",
+    "territory": "YT",
+    "says": "nothing",
+    "quote": "Le contrat est soumis au droit français.",
+    "url": "https://placeaemporter.fr/conditions-generales-de-vente/",
+    "note": "CGV name no Andorra / outre-mer / France métropolitaine; Lorient courts; no service area."
+  },
+  {
+    "vendor": "Place à emporter",
+    "parent": "FR",
+    "territory": "BL",
+    "says": "nothing",
+    "quote": "Le contrat est soumis au droit français.",
+    "url": "https://placeaemporter.fr/conditions-generales-de-vente/",
+    "note": "CGV name no Andorra / outre-mer / France métropolitaine; Lorient courts; no service area."
+  },
+  {
+    "vendor": "Place à emporter",
+    "parent": "FR",
+    "territory": "MF",
+    "says": "nothing",
+    "quote": "Le contrat est soumis au droit français.",
+    "url": "https://placeaemporter.fr/conditions-generales-de-vente/",
+    "note": "CGV name no Andorra / outre-mer / France métropolitaine; Lorient courts; no service area."
+  },
+  {
+    "vendor": "Place à emporter",
+    "parent": "FR",
+    "territory": "PM",
+    "says": "nothing",
+    "quote": "Le contrat est soumis au droit français.",
+    "url": "https://placeaemporter.fr/conditions-generales-de-vente/",
+    "note": "CGV name no Andorra / outre-mer / France métropolitaine; Lorient courts; no service area."
+  },
+  {
+    "vendor": "Beau Camion",
+    "parent": "FR",
+    "territory": "AD",
+    "says": "nothing",
+    "quote": "sont régies exclusivement par le Droit Français.",
+    "url": "https://beaucamion.fr/cgu",
+    "note": "CGU name no Andorra / outre-mer; Tribunal de Commerce de Thonon-les-Bains; no service area."
+  },
+  {
+    "vendor": "Beau Camion",
+    "parent": "FR",
+    "territory": "RE",
+    "says": "nothing",
+    "quote": "sont régies exclusivement par le Droit Français.",
+    "url": "https://beaucamion.fr/cgu",
+    "note": "CGU name no Andorra / outre-mer; Tribunal de Commerce de Thonon-les-Bains; no service area."
+  },
+  {
+    "vendor": "Beau Camion",
+    "parent": "FR",
+    "territory": "GP",
+    "says": "nothing",
+    "quote": "sont régies exclusivement par le Droit Français.",
+    "url": "https://beaucamion.fr/cgu",
+    "note": "CGU name no Andorra / outre-mer; Tribunal de Commerce de Thonon-les-Bains; no service area."
+  },
+  {
+    "vendor": "Beau Camion",
+    "parent": "FR",
+    "territory": "MQ",
+    "says": "nothing",
+    "quote": "sont régies exclusivement par le Droit Français.",
+    "url": "https://beaucamion.fr/cgu",
+    "note": "CGU name no Andorra / outre-mer; Tribunal de Commerce de Thonon-les-Bains; no service area."
+  },
+  {
+    "vendor": "Beau Camion",
+    "parent": "FR",
+    "territory": "GF",
+    "says": "nothing",
+    "quote": "sont régies exclusivement par le Droit Français.",
+    "url": "https://beaucamion.fr/cgu",
+    "note": "CGU name no Andorra / outre-mer; Tribunal de Commerce de Thonon-les-Bains; no service area."
+  },
+  {
+    "vendor": "Beau Camion",
+    "parent": "FR",
+    "territory": "YT",
+    "says": "nothing",
+    "quote": "sont régies exclusivement par le Droit Français.",
+    "url": "https://beaucamion.fr/cgu",
+    "note": "CGU name no Andorra / outre-mer; Tribunal de Commerce de Thonon-les-Bains; no service area."
+  },
+  {
+    "vendor": "Beau Camion",
+    "parent": "FR",
+    "territory": "BL",
+    "says": "nothing",
+    "quote": "sont régies exclusivement par le Droit Français.",
+    "url": "https://beaucamion.fr/cgu",
+    "note": "CGU name no Andorra / outre-mer; Tribunal de Commerce de Thonon-les-Bains; no service area."
+  },
+  {
+    "vendor": "Beau Camion",
+    "parent": "FR",
+    "territory": "MF",
+    "says": "nothing",
+    "quote": "sont régies exclusivement par le Droit Français.",
+    "url": "https://beaucamion.fr/cgu",
+    "note": "CGU name no Andorra / outre-mer; Tribunal de Commerce de Thonon-les-Bains; no service area."
+  },
+  {
+    "vendor": "Beau Camion",
+    "parent": "FR",
+    "territory": "PM",
+    "says": "nothing",
+    "quote": "sont régies exclusivement par le Droit Français.",
+    "url": "https://beaucamion.fr/cgu",
+    "note": "CGU name no Andorra / outre-mer; Tribunal de Commerce de Thonon-les-Bains; no service area."
+  },
+  {
+    "vendor": "Eatch",
+    "parent": "FR",
+    "territory": "AD",
+    "says": "nothing",
+    "quote": "Contrat de droit français",
+    "url": "https://eatch.app/",
+    "note": "No terms link found; home page + FAQ name no territory ('Fait pour les règles françaises', 'Hébergé en France, RGPD, caisse sécurisée')."
+  },
+  {
+    "vendor": "Eatch",
+    "parent": "FR",
+    "territory": "RE",
+    "says": "nothing",
+    "quote": "Contrat de droit français",
+    "url": "https://eatch.app/",
+    "note": "No terms link found; home page + FAQ name no territory ('Fait pour les règles françaises', 'Hébergé en France, RGPD, caisse sécurisée')."
+  },
+  {
+    "vendor": "Eatch",
+    "parent": "FR",
+    "territory": "GP",
+    "says": "nothing",
+    "quote": "Contrat de droit français",
+    "url": "https://eatch.app/",
+    "note": "No terms link found; home page + FAQ name no territory ('Fait pour les règles françaises', 'Hébergé en France, RGPD, caisse sécurisée')."
+  },
+  {
+    "vendor": "Eatch",
+    "parent": "FR",
+    "territory": "MQ",
+    "says": "nothing",
+    "quote": "Contrat de droit français",
+    "url": "https://eatch.app/",
+    "note": "No terms link found; home page + FAQ name no territory ('Fait pour les règles françaises', 'Hébergé en France, RGPD, caisse sécurisée')."
+  },
+  {
+    "vendor": "Eatch",
+    "parent": "FR",
+    "territory": "GF",
+    "says": "nothing",
+    "quote": "Contrat de droit français",
+    "url": "https://eatch.app/",
+    "note": "No terms link found; home page + FAQ name no territory ('Fait pour les règles françaises', 'Hébergé en France, RGPD, caisse sécurisée')."
+  },
+  {
+    "vendor": "Eatch",
+    "parent": "FR",
+    "territory": "YT",
+    "says": "nothing",
+    "quote": "Contrat de droit français",
+    "url": "https://eatch.app/",
+    "note": "No terms link found; home page + FAQ name no territory ('Fait pour les règles françaises', 'Hébergé en France, RGPD, caisse sécurisée')."
+  },
+  {
+    "vendor": "Eatch",
+    "parent": "FR",
+    "territory": "BL",
+    "says": "nothing",
+    "quote": "Contrat de droit français",
+    "url": "https://eatch.app/",
+    "note": "No terms link found; home page + FAQ name no territory ('Fait pour les règles françaises', 'Hébergé en France, RGPD, caisse sécurisée')."
+  },
+  {
+    "vendor": "Eatch",
+    "parent": "FR",
+    "territory": "MF",
+    "says": "nothing",
+    "quote": "Contrat de droit français",
+    "url": "https://eatch.app/",
+    "note": "No terms link found; home page + FAQ name no territory ('Fait pour les règles françaises', 'Hébergé en France, RGPD, caisse sécurisée')."
+  },
+  {
+    "vendor": "Eatch",
+    "parent": "FR",
+    "territory": "PM",
+    "says": "nothing",
+    "quote": "Contrat de droit français",
+    "url": "https://eatch.app/",
+    "note": "No terms link found; home page + FAQ name no territory ('Fait pour les règles françaises', 'Hébergé en France, RGPD, caisse sécurisée')."
+  },
+  {
+    "vendor": "Storekit",
+    "parent": "GB",
+    "territory": "JE",
+    "says": "nothing",
+    "quote": "If you're looking to launch in a country not listed above, contact our team",
+    "url": "https://storekit.com/docs/getting-started/supported-regions",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its supported-regions page lists 36 countries (United Kingdom GBP, ...) and none of these territories. RE/GP/MQ/GF/YT not recorded in compare-research-6."
+  },
+  {
+    "vendor": "Storekit",
+    "parent": "GB",
+    "territory": "GG",
+    "says": "nothing",
+    "quote": "If you're looking to launch in a country not listed above, contact our team",
+    "url": "https://storekit.com/docs/getting-started/supported-regions",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its supported-regions page lists 36 countries (United Kingdom GBP, ...) and none of these territories. RE/GP/MQ/GF/YT not recorded in compare-research-6."
+  },
+  {
+    "vendor": "Storekit",
+    "parent": "GB",
+    "territory": "IM",
+    "says": "nothing",
+    "quote": "If you're looking to launch in a country not listed above, contact our team",
+    "url": "https://storekit.com/docs/getting-started/supported-regions",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its supported-regions page lists 36 countries (United Kingdom GBP, ...) and none of these territories. RE/GP/MQ/GF/YT not recorded in compare-research-6."
+  },
+  {
+    "vendor": "Storekit",
+    "parent": "GB",
+    "territory": "AX",
+    "says": "nothing",
+    "quote": "If you're looking to launch in a country not listed above, contact our team",
+    "url": "https://storekit.com/docs/getting-started/supported-regions",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its supported-regions page lists 36 countries (United Kingdom GBP, ...) and none of these territories. RE/GP/MQ/GF/YT not recorded in compare-research-6."
+  },
+  {
+    "vendor": "Storekit",
+    "parent": "GB",
+    "territory": "SM",
+    "says": "nothing",
+    "quote": "If you're looking to launch in a country not listed above, contact our team",
+    "url": "https://storekit.com/docs/getting-started/supported-regions",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its supported-regions page lists 36 countries (United Kingdom GBP, ...) and none of these territories. RE/GP/MQ/GF/YT not recorded in compare-research-6."
+  },
+  {
+    "vendor": "Storekit",
+    "parent": "GB",
+    "territory": "VA",
+    "says": "nothing",
+    "quote": "If you're looking to launch in a country not listed above, contact our team",
+    "url": "https://storekit.com/docs/getting-started/supported-regions",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its supported-regions page lists 36 countries (United Kingdom GBP, ...) and none of these territories. RE/GP/MQ/GF/YT not recorded in compare-research-6."
+  },
+  {
+    "vendor": "Storekit",
+    "parent": "GB",
+    "territory": "AD",
+    "says": "nothing",
+    "quote": "If you're looking to launch in a country not listed above, contact our team",
+    "url": "https://storekit.com/docs/getting-started/supported-regions",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its supported-regions page lists 36 countries (United Kingdom GBP, ...) and none of these territories. RE/GP/MQ/GF/YT not recorded in compare-research-6."
+  },
+  {
+    "vendor": "Storekit",
+    "parent": "GB",
+    "territory": "BL",
+    "says": "nothing",
+    "quote": "If you're looking to launch in a country not listed above, contact our team",
+    "url": "https://storekit.com/docs/getting-started/supported-regions",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its supported-regions page lists 36 countries (United Kingdom GBP, ...) and none of these territories. RE/GP/MQ/GF/YT not recorded in compare-research-6."
+  },
+  {
+    "vendor": "Storekit",
+    "parent": "GB",
+    "territory": "MF",
+    "says": "nothing",
+    "quote": "If you're looking to launch in a country not listed above, contact our team",
+    "url": "https://storekit.com/docs/getting-started/supported-regions",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its supported-regions page lists 36 countries (United Kingdom GBP, ...) and none of these territories. RE/GP/MQ/GF/YT not recorded in compare-research-6."
+  },
+  {
+    "vendor": "Storekit",
+    "parent": "GB",
+    "territory": "PM",
+    "says": "nothing",
+    "quote": "If you're looking to launch in a country not listed above, contact our team",
+    "url": "https://storekit.com/docs/getting-started/supported-regions",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its supported-regions page lists 36 countries (United Kingdom GBP, ...) and none of these territories. RE/GP/MQ/GF/YT not recorded in compare-research-6."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "JE",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "GG",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "IM",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "AX",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "SM",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "VA",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "AD",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "RE",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "GP",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "MQ",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "GF",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "YT",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "BL",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "MF",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "FoxiFood",
+    "parent": "multi",
+    "territory": "PM",
+    "says": "nothing",
+    "quote": "",
+    "url": "https://www.foxifood.com/legal/country-terms/",
+    "note": "From compare-research-6 (read 25 Nov, not re-read): its country-terms page lists 70 countries and none of these territories (no overseas / outre-mer / Crown Dependency wording). No verbatim quote kept."
+  },
+  {
+    "vendor": "NemTakeAway",
+    "parent": "DK",
+    "territory": "FO",
+    "says": "nothing",
+    "quote": "applies to +45 numbers",
+    "url": "https://www.nemtakeaway.dk/en/price/",
+    "note": "For the record (DK territories are not in this block's list): from compare-research-6, its price page names no Faroe Islands / Greenland; SMS fees 'applies to +45 numbers'. None of the block's territories has a DK parent."
+  },
+  {
+    "vendor": "NemTakeAway",
+    "parent": "DK",
+    "territory": "GL",
+    "says": "nothing",
+    "quote": "applies to +45 numbers",
+    "url": "https://www.nemtakeaway.dk/en/price/",
+    "note": "For the record (DK territories are not in this block's list): from compare-research-6, its price page names no Faroe Islands / Greenland; SMS fees 'applies to +45 numbers'. None of the block's territories has a DK parent."
+  }
+]
