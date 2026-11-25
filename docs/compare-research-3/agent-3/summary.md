@@ -198,3 +198,9 @@ count now: 0
 Nothing eligible exists with a UGX price.
 
 count now: 0
+
+## ET (ETB)
+
+No vendor site worth reading (Deliver Addis marketplace; FoodChow not mine). Nothing eligible exists with an ETB price.
+
+count now: 0
