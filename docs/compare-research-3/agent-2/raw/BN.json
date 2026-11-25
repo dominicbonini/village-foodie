@@ -1,0 +1,23 @@
+{
+ "country": "BN",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Brunei restaurant online ordering pickup system pricing BND B$ per month POS"
+ ],
+ "vendors": [
+  {
+   "name": "Mint (MintyPOS)",
+   "website": "https://mint.com.bn",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Brunei digital agency (websites, hosting, MintyPOS); home page has no F&B online ordering/pickup wording and no prices",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://mint.com.bn/"
+   ]
+  }
+ ],
+ "notes": "BN: none exists that I could find with a BND price. Search returned StoreHub Brunei landing (redirects, compare-research-2), MyDineHub and others via directories only (SGD/USD, never sources), Eats365 US page (USD), POSAPT (Australian). The government AITI MSME POS list (used only to find vendors) names Alif, Asaff, Dalplus, Dynamik, Mint, TechBru; none described with online ordering; Mint read: no. Take App (USD) eligible but not in BND (compare-research-2). count now: 0."
+}
