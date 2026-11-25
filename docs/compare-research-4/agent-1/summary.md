@@ -31,3 +31,11 @@ Count now: 1 (Vitrina). Nothing more is eligible after about 5 new vendors.
 | iiko | pos | not_relevant (RUB, no Serbian presence found; search only) | — | — |
 
 Count now: 1 (Vitrina). Nothing more is eligible.
+
+## ZA (ZAR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Resto (afe2f58d) | nearest_local | eligible | R1000 / month ("Resto's simple pricing - R1000/month"), no commission | https://resto.co.za/ |
+
+Count now: 2 (Bizzfo + Resto). Stopped at 2.

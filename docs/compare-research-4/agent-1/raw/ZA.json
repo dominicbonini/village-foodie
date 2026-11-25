@@ -1,0 +1,45 @@
+{
+  "country": "ZA",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Resto",
+      "website": "https://resto.co.za",
+      "stored_id_prefix": "afe2f58d",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "South African restaurant online-ordering shop for delivery or collection, no commissions; ZAR price now quoted verbatim ('Resto's simple pricing - R1000/month')",
+      "eligibility": {
+        "order_quote": "Resto is a software service that allows restaurants to take online orders, for either delivery or collection.",
+        "order_url": "https://resto.co.za/"
+      },
+      "plans": [
+        {
+          "plan_name": "Resto shop", "currency": "ZAR", "price_major": 1000, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "Resto's simple pricing - R1000/month", "url": "https://resto.co.za/",
+          "note": "Also on the page: 'R1000/month for a shop'. Optional 'R5000 White label (once off)' add-on (not a setup fee). No commission: 'We do not take any type of commission.' VAT not stated."
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "partial", "quote": "Resto is a software service that allows restaurants to take online orders, for either delivery or collection.", "url": "https://resto.co.za/" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "not_mentioned" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "not_mentioned" },
+        { "key": "monthly", "value": "yes", "quote": "R1000/month for a shop", "url": "https://resto.co.za/" },
+        { "key": "perorder", "value": "no", "quote": "We do not take any type of commission.", "url": "https://resto.co.za/" },
+        { "key": "cardfee", "value": "not_mentioned" }
+      ],
+      "check_urls": ["https://resto.co.za/"]
+    }
+  ],
+  "notes": "Count now: 2 (Bizzfo fedc794a R450/month per branch incl. VAT, stored and counted; Resto afe2f58d R1000/month, now quoted verbatim from its home page on the one allowed re-read). Stopped at 2, so no new searches. 'ahead' is partial: the page says orders are for delivery or collection, with no time-choice wording. Answers other than ahead/preorder/monthly/perorder come from this one page only (lean rule)."
+}
