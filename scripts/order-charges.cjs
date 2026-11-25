@@ -142,7 +142,10 @@ async function run(fn, seed) {
     const out = await kit.quietAsync(() => fn(m, db))
     return {
       out,
-      rpcs: JSON.parse(JSON.stringify(rpcs)),
+      // RE-PINNED by till-pack-2 (25 November 2026, docs/till-pack-2-report.md): the routes now also call the till's two best-effort role
+      // RPCs (till_head_seq before a correction, till_record_actor after it — lib/till/actor-role.ts). They write only till tables, so they are
+      // set aside here; every other call must still be byte-identical to BEFORE.
+      rpcs: JSON.parse(JSON.stringify(rpcs.filter(r => r.fn !== 'till_head_seq' && r.fn !== 'till_record_actor'))),
       writes: JSON.parse(JSON.stringify(db.writes.filter(w => w.table !== 'booking_locks'))),
       emails: globalThis.__rec.emails.map(e => ({ to: e.to, subject: e.subject, html: e.html, text: e.text, senderName: e.senderName ?? null, truckName: e.truckName ?? null })),
       push: JSON.parse(JSON.stringify(globalThis.__rec.push)),
