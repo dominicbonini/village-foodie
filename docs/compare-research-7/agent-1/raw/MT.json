@@ -6,7 +6,10 @@
     "Malta restaurant POS software company online ordering website pickup module € price Gozo hospitality",
     "\"Malta\" commission-free ordering platform restaurants own website app \"made in Malta\" OR \"Maltese startup\" takeaway pickup sign up restaurant",
     "Malta POS dealer \"online ordering\" restaurants \"Malta\" EPOS Mosta OR Birkirkara OR Qormi OR Naxxar click collect web orders",
-    "Sixteen Malta Storekit order and pay restaurants price"
+    "Sixteen Malta Storekit order and pay restaurants price",
+    "Malta takeaway \"order online\" \"powered by\" pickup Valletta OR Sliema OR \"St Julian's\" pizzeria order collection",
+    "Malta EPOS company \"online ordering\" add-on price \"€\" per month restaurants Malta POS packages",
+    "MobiRest restaurant software Malta online ordering pickup pricing"
   ],
   "vendors": [
     {
@@ -34,7 +37,19 @@
       "plans": [],
       "answers": [],
       "check_urls": []
+    },
+    {
+      "name": "MobiRest",
+      "website": "https://www.capterra.com/p/10035585/MobiRest/",
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Cloud restaurant POS listing online ordering (Capterra only); no own site found, no Malta presence, no price. Not opened.",
+      "stored_id_prefix": null,
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
     }
   ],
-  "notes": "MT counts FoxiFood only. Earlier rounds already rejected FoxiFood(counted), H360 ORDER, Time To Eat Malta, Storekit, Order Tiger, Zaype, SumUp, Maltix, UpMenu, MENU.mt, Choice, Flipdish, Wiiz Eat, Deliwee, KantinApp - not re-read. Five new searches (English; the Maltese-language search was done in compare-research-4) found only marketplaces (Wolt, Bolt Food), directories, global tools with no Malta page (Restomax, Eats365, Lightspeed, Square, QikServe, Foodhub, EasyOrder, Jamezz - none shows it sells in Malta; Lightspeed/Square/Eats365 owned by other agents), a Malta agency on a dead throwaway host, and Storekit's Maltese reseller Sixteen. Storekit re-checked today: £ only. Nothing eligible found; MT stays at 1 (strict rule)."
+  "notes": "MT counts FoxiFood only. Earlier rounds already rejected FoxiFood(counted), H360 ORDER, Time To Eat Malta, Storekit, Order Tiger, Zaype, SumUp, Maltix, UpMenu, MENU.mt, Choice, Flipdish, Wiiz Eat, Deliwee, KantinApp - not re-read. Five new searches (English; the Maltese-language search was done in compare-research-4) found only marketplaces (Wolt, Bolt Food), directories, global tools with no Malta page (Restomax, Eats365, Lightspeed, Square, QikServe, Foodhub, EasyOrder, Jamezz - none shows it sells in Malta; Lightspeed/Square/Eats365 owned by other agents), a Malta agency on a dead throwaway host, and Storekit's Maltese reseller Sixteen. Storekit re-checked today: £ only. Nothing eligible found; MT stays at 1 (strict rule). Third pass (coordinator angles a-c): Maltese venues' own ordering pages ('powered by') - results were Wolt listings only (pickup-only venues on Wolt); Malta POS resellers with an online-ordering add-on price - none surfaced (Lightspeed UK €, agent 3's; TouchBistro, Epos Now AU, Flipdish, Foodhub IE: no Malta page); MobiRest (directory only). MT stays at 1 (strict)."
 }
