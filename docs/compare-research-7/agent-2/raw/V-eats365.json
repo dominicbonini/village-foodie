@@ -1,0 +1,7 @@
+{
+  "vendor": "Eats365",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "notes": "Eats365 (647628e6): its region selector (https://www.eats365pos.com/hk) includes South Korea (/kr/) and Sri Lanka (/lk/en/) among 17 regions; not BD QA BH JO KZ UZ. KR: https://www.eats365pos.com/kr/pricing shows no amounts at all (only 'FREE FOR 14 DAYS', 'NO PAYMENT required'); 'Online Ordering' (Branded Online Store, Eats365 Marketplace) is an Expansion Module added to a Core Module ('Pick and choose the Expansion Modules you need by adding them to your Core Module*.'), unpriced. LK: https://www.eats365pos.com/lk/en/pricing likewise shows no amounts. Module on a paid base plan with neither priced → no count in KR or LK (unpriced). Nothing new."
+}
