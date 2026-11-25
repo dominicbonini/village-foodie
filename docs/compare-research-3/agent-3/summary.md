@@ -264,3 +264,9 @@ count now: 0
 | My Belize Food | nearest_local | not_relevant (BORDERLINE: WhatsApp ordering, no pickup wording) | BZD 25 / 60 per month (also "now free") | https://mybelizefood.com/en |
 
 count now: 0
+
+## GY (GYD)
+
+No vendor site worth reading (GT Eats, ZIP.GY marketplaces; single-restaurant pages). Nothing eligible exists with a GYD price.
+
+count now: 0
