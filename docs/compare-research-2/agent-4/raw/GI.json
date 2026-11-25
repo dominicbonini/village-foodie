@@ -1,0 +1,65 @@
+{
+  "country": "GI",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Gibraltar (restricted to beatthequeue.co.uk, ordea.uk, perkss.co.uk, grafterr.com, slerp.com, whatthetruck.ai, yoello.com, eposnow.com, foxifood.com, restolabs.com, ordering.co, hungrytrucks.com, weevi.com)",
+    "Gibraltar online ordering system for restaurants takeaway collection own website local company app for businesses £ per month"
+  ],
+  "vendors": [
+    {
+      "name": "Hungry Monkey",
+      "website": "https://www.hungrymonkey.gi",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Gibraltar consumer takeaway app listing many venues ('Gibraltar's dedicated take away & food ordering app'): a marketplace, not software a food business runs; no partner terms on the homepage",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.hungrymonkey.gi/"
+      ]
+    },
+    {
+      "name": "La Parrilla On The Go (restaurant site)",
+      "website": "https://www.laparrillago.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "a Gibraltar restaurant's own ordering site, not a vendor; its cookie notice names Oracle with *.globalfoodsoft.com / *.restaurantlogin.com, i.e. GloriaFood (agent 1's) is in use in Gibraltar ('Online ordering NOW enabled for pick-up or delivery.')",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.laparrillago.com/"
+      ]
+    },
+    {
+      "name": "Ayurveda (restaurant site)",
+      "website": "https://www.ayurveda.gi",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "a Gibraltar restaurant's own ordering site seen in search (same 'Food delivery - Gibraltar - Order online' title pattern as La Parrilla); domain does not resolve (ENOTFOUND)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.ayurveda.gi/"
+      ]
+    },
+    {
+      "name": "NomNoms",
+      "website": "https://www.nomnoms.gi",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Gibraltar delivery/loyalty/reservations consumer app (marketplace), seen only in search results; not opened",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "GI: 0 eligible priced in GBP found by me. Nothing eligible exists among the vendors I may read: a site search for 'Gibraltar' on the stored UK food-truck/ordering tools (Beat The Queue, Ordea, Perkss, Grafterr, Slerp, What The Truck, Yoello, Epos Now, Restolabs, HungryTrucks, Weevi) and FoxiFood found nothing except Ordering.co's payment-integration pages (Gibraltar only in Stripe/Cybersource country lists; Ordering.co is a multi-region white-label tool, not mine — not opened). FoxiFood's country-terms page lists the United Kingdom but not Gibraltar. Local apps (Hungry Monkey, NomNoms) are consumer marketplaces. Restaurants' own sites (La Parrilla On The Go) run on GloriaFood (Oracle) — owned by agent 1, not fetched. Order Tiger (agent 1) was the only GI tool in round 1 (franchise page names a Gibraltar marketplace, GBP prices) — not fetched by me. Owned elsewhere: Order Tiger, GloriaFood, Flipdish, Storekit, SumUp (agent 1); Square (agent 3)."
+}

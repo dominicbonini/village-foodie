@@ -1,0 +1,245 @@
+{
+  "country": "SI",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "spletno naročanje za restavracije lastna spletna stran prevzem brez provizije mesečna naročnina € slovensko podjetje",
+    "\"spletna naročila\" OR \"naročilo za prevzem\" gostinska blagajna modul spletna trgovina za gostince cenik €/mesec"
+  ],
+  "vendors": [
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/sl-si/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "SumUp sells in Slovenia (Slovenian site, € prices); its free spletna trgovina offers in-store pickup; generic shop, no food wording — single fallback",
+      "eligibility": {
+        "order_quote": "Strankam ponudite dostavo, prevzem v trgovini in storitev na lokacijah.",
+        "order_url": "https://www.sumup.com/sl-si/spletna-trgovina/",
+        "country_quote": "Strankam ponudite dostavo, prevzem v trgovini in storitev na lokacijah.",
+        "country_url": "https://www.sumup.com/sl-si/spletna-trgovina/"
+      },
+      "plans": [
+        {
+          "plan_name": "Spletna trgovina",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.5,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0 €",
+          "url": "https://www.sumup.com/sl-si/spletna-trgovina/",
+          "note": "'0 €' labelled 'mesečni stroški'; '0 €' for 'Ustvarite spletno trgovino'; '2,50 %' labelled 'Konkurenčne provizije za transakcijo' (payment fee per online sale). VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "2,50 %",
+          "url": "https://www.sumup.com/sl-si/spletna-trgovina/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/sl-si/spletna-trgovina/"
+      ]
+    },
+    {
+      "name": "Restaumatic",
+      "website": "https://www.restaumatic.com/sl/",
+      "stored_id_prefix": "3d587bd6",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Polish ordering platform with a Slovenian site ('Strankam omogočite udobno spletno naročanje hrane'), but neither its Slovenian home page nor its online-sale page mentions pickup or ordering ahead, and no price or cenik link exists; fails the order-ahead evidence test for SI today.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.restaumatic.com/sl/",
+        "https://www.restaumatic.com/sl/online-sale/"
+      ]
+    },
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": "98c064da",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK restaurant/takeaway ordering platform with scheduled pickup pre-orders; its own supported-regions doc lists Slovenia (English, EUR payments). Prices shown only in GBP (no currency selector), so not counted for the local currency.",
+      "eligibility": {
+        "order_quote": "Scheduled pre-orders (pickup & delivery slots)",
+        "order_url": "https://storekit.com/pricing",
+        "country_quote": "Slovenia | ✓ English | ✓ EUR",
+        "country_url": "https://storekit.com/docs/getting-started/supported-regions"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Free",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only. 'All prices are per location and exclude VAT.' 'Every plan adds a flat per-order rate, never a commission' (amount not shown)."
+        },
+        {
+          "plan_name": "Connect",
+          "currency": "GBP",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£49",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; plus a flat per-order rate (amount not shown). Set-up self-serve."
+        },
+        {
+          "plan_name": "Grow",
+          "currency": "GBP",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "£99",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; set-up '£199 per location'; plus a flat per-order rate."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Capacity controls (slot limits)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "£49",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Every plan adds a flat per-order rate, never a commission, plus unlimited items and your own customer data.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://storekit.com/pricing",
+        "https://storekit.com/docs/getting-started/supported-regions"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible except the generic SumUp spletna trgovina (prevzem v trgovini, 0 € + 2,50 %). No Slovenian food-truck or restaurant online-ordering tool with an own-site price exists that I could find: compare-research-1's 8 searches and today's 2 returned marketplaces (Wolt, Glovo, Bolt Food, ehrana), foreign tools without Slovenian presence (UpMenu /sl 404, Owner.com, Ecwid, Gastronovi, Restimo — the last two seen only in search, no Slovenia shown) and a school project. Restaumatic re-read: Slovenian pages, online ordering, but no pickup wording and no price. DISH has no Slovenia site (METRO not present; dish.co/SI 404 in compare-research-1). Anolla not recorded (rule). Stop rule applied. Storekit (owned by agent 1): its supported-regions doc lists Slovenia (English, EUR payments), but prices are GBP only, so it is recorded and not counted."
+}

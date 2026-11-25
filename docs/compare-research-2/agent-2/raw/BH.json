@@ -1,0 +1,351 @@
+{
+  "country": "BH",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Blink (blinkco.io)",
+      "website": "https://www.blinkco.io",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Pakistan-based restaurant POS and branded ordering website/app with delivery or pickup; Locations menu lists PK, SA, BH, QA, UAE, KW and ZA; prices in '$' per branch per month (BH: stored currency USD, so the $ price counts — '$' not labelled USD on the page)",
+      "eligibility": {
+        "order_quote": "Give your customers the option between delivery and pickup",
+        "order_url": "https://www.blinkco.io/?p=20107",
+        "country_quote": "Equip your restaurant with an all-in-one platform to expand your business in Bahrain.",
+        "country_url": "https://www.blinkco.io/bahrain/"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering F&B — Website Only",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "Only '$' shown (no currency code; read as USD), not tied to any country. No commission mentioned."
+        },
+        {
+          "plan_name": "Online Ordering F&B — Website + App",
+          "currency": "USD",
+          "price_major": 100,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$100/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "'$' only (read as USD)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Give your customers the option between delivery and pickup",
+          "url": "https://www.blinkco.io/?p=20107",
+          "note": "no chosen-time ordering stated"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "priced per branch"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "welcome your customers to a fully branded website showcasing your restaurant.",
+          "url": "https://www.blinkco.io/?p=20107"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.blinkco.io/pricing",
+        "https://www.blinkco.io/?p=20107",
+        "https://www.blinkco.io/bahrain/"
+      ]
+    },
+    {
+      "name": "Ordable",
+      "website": "https://www.itsordable.com",
+      "stored_id_prefix": "69a3cfce",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Kuwait-based restaurant ordering-website platform with pick-up from any branch and on-demand and scheduled orders; country pricing page with local-currency yearly prices, 0% commission (BH: BHD only, not counted — stored currency USD)",
+      "eligibility": {
+        "order_quote": "Enable pick-up from any of your branches, or deliver to any location with integrated delivery companies.",
+        "order_url": "https://www.itsordable.com/en/ksa/product/online-ordering",
+        "country_quote": "199 BD / year",
+        "country_url": "https://www.itsordable.com/en/bahrain/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering Basic",
+          "currency": "BHD",
+          "price_major": 199,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "199 BD / year",
+          "url": "https://www.itsordable.com/en/bahrain/pricing",
+          "note": "BD only; BH is stored as USD, so not counted."
+        },
+        {
+          "plan_name": "Online Ordering Advanced",
+          "currency": "BHD",
+          "price_major": 249,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "249 BD / year",
+          "url": "https://www.itsordable.com/en/bahrain/pricing",
+          "note": "'Most Popular'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "On Demand and Scheduled Orders",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "On Demand and Scheduled Orders",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "SMS or Whatsapp Notifications",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Deep integrations with Facebook, Instagram, TikTok, Google, and SnapChat for pixel perfect targeting.",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Branch Management",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Own Domain",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "We do not take commissions on any packages.",
+          "url": "https://www.itsordable.com/en/bahrain/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.itsordable.com/en/bahrain/pricing",
+        "https://www.itsordable.com/en/ksa/product/online-ordering"
+      ]
+    },
+    {
+      "name": "Zyda",
+      "website": "https://www.zyda.com",
+      "stored_id_prefix": "797df612",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Gulf/Egypt restaurant ordering-website platform: pickup & curbside in every plan ('Order ahead, collect fast'), orders for a date; pricing page lists the country but shows prices in KWD only (BH: KWD prices only, not counted)",
+      "eligibility": {
+        "order_quote": "Order ahead, collect fast",
+        "order_url": "https://www.zyda.com/pricing",
+        "country_quote": "Bahrain",
+        "country_url": "https://www.zyda.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "KWD",
+          "price_major": 20,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "20 KWD a month",
+          "url": "https://www.zyda.com/pricing",
+          "note": "'Prices for Kuwait. Prices for new merchants.' Shown on the quarterly toggle (billed quarterly); yearly '240 KWD billed yearly'. Up to two branches. KWD only — no price in this country's currency on the page (zyda.com/sa/pricing also shows Kuwait prices)."
+        },
+        {
+          "plan_name": "Growth",
+          "currency": "KWD",
+          "price_major": 36,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "36 KWD a month",
+          "url": "https://www.zyda.com/pricing",
+          "note": "Quarterly toggle; yearly '430 KWD billed yearly'. Up to five branches. KWD only."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Order ahead, collect fast",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Orders for a date, daily items and occasion peaks.",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "20 KWD a month",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.zyda.com/pricing",
+        "https://www.zyda.com/sa/pricing"
+      ]
+    }
+  ],
+  "notes": "BH count: 1 eligible priced in USD, the stored BH currency (food-truck: 0) — Blink ('Restaurant Website Ordering in Bahrain'; $50/branch /month; pickup wording only on its Qatar page, same product). Ordable (199 / 249 BD a year) and Zyda (lists Bahrain; KWD prices) are eligible but not in USD. Researched briefly (step 4); no Bahraini food-truck tool searched for beyond these. Never counted: Talabat, Jahez (marketplaces)."
+}

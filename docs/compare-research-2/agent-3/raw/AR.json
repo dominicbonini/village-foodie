@@ -1,0 +1,412 @@
+{
+  "country": "AR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "sistema pedidos online food truck Argentina retiro precio",
+    "app para food trucks pedidos anticipados retiro sin fila Latinoamérica plataforma precios",
+    "OlaClick \"para llevar\" OR \"recoger en tienda\" OR \"retiro en local\" pedidos",
+    "tienda online para gastronomía Argentina pedidos take away retiro en local sin comisión plan mensual $"
+  ],
+  "vendors": [
+    {
+      "name": "Pedix",
+      "website": "https://pedix.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Argentine online catalogue / ordering shop: customers build the order online and it arrives by WhatsApp; 'Retiro en persona' (pickup) is a delivery option; ARS prices; sells in 6 countries (Latin-American multi-country tool, owned by agent 3). No food-truck wording; no chosen pickup time stated",
+      "eligibility": {
+        "order_quote": "¿Cómo configurar la opción \"Retiro en persona\"?",
+        "order_url": "https://ayuda.pedix.app/es/article/precios-pedix",
+        "country_quote": "por +3.000 tiendas activas en 6 países",
+        "country_url": "https://info.pedix.app/"
+      },
+      "plans": [
+        {
+          "plan_name": "Principiante",
+          "currency": "ARS",
+          "price_major": 19000,
+          "period": "month",
+          "quote": "$19.000/mes",
+          "url": "https://info.pedix.app/",
+          "note": "yearly $190.000 'con 2 meses bonificados' (help page). 'no cobra comisiones por venta ni por pedido'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        },
+        {
+          "plan_name": "Especialista",
+          "currency": "ARS",
+          "price_major": 25500,
+          "period": "month",
+          "quote": "$25.500/mes",
+          "url": "https://info.pedix.app/",
+          "note": "",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        },
+        {
+          "plan_name": "PRO",
+          "currency": "ARS",
+          "price_major": 35000,
+          "period": "month",
+          "quote": "$35.000/mes",
+          "url": "https://info.pedix.app/",
+          "note": "own domain only on PRO yearly",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "recibir pedidos organizados por WhatsApp",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Dominio web propio (mitienda.com)",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$19.000/mes",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "no cobra comisiones por venta ni por pedido",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://info.pedix.app/",
+        "https://ayuda.pedix.app/es/article/precios-pedix"
+      ]
+    },
+    {
+      "name": "Fudo (Tu Delivery)",
+      "website": "https://fu.do",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Argentine restaurant system; its 'Tu Delivery' online shop takes customer orders for delivery or pickup ('Para retirar'); food trucks and ferias named as a business type; ARS fees. BORDERLINE food_truck: the food-truck line is a business-type label, not tied to the shop; no chosen pickup time ('Lo antes posible')",
+      "eligibility": {
+        "food_quote": "Movilidad para food trucks y ferias",
+        "food_url": "https://fu.do/es-ar/delivery/",
+        "order_quote": "Los clientes te compran directo.",
+        "order_url": "https://fu.do/es-ar/delivery/",
+        "country_quote": "Precios finales en pesos argentinos.",
+        "country_url": "https://fu.do/es-ar/precios/"
+      },
+      "plans": [
+        {
+          "plan_name": "Tu Delivery (no monthly fee)",
+          "currency": "ARS",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 1.9,
+          "quote": "Por cada venta que entra por Tu Delivery pagás una tasa de servicio del 1,9% + IVA.",
+          "url": "https://fu.do/es-ar/delivery/",
+          "note": "'No tiene abono mensual: solo pagás cuando vendés.' Fee capped: 'con tope de $99.000 + IVA por mes'. Currency not named on this page; ARS by the es-ar site",
+          "per_order_fixed_major": null,
+          "setup_major": null
+        },
+        {
+          "plan_name": "Plan Inicial (POS)",
+          "currency": "ARS",
+          "price_major": 23900,
+          "period": "month",
+          "vat": "incl",
+          "quote": "$23.900 /mes",
+          "url": "https://fu.do/es-ar/precios/",
+          "note": "till plan; 'Precio final' incl. national taxes ($19.752 sin impuestos nacionales). Pricing page does not say the online shop is included",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Para retirar",
+          "url": "https://fu.do/es-ar/delivery/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Nuestro agente con IA atiende consultas y toma pedidos 24/7 por tu WhatsApp.",
+          "url": "https://fu.do/es-ar/delivery/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "No tiene abono mensual: solo pagás cuando vendés.",
+          "url": "https://fu.do/es-ar/delivery/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Por cada venta que entra por Tu Delivery pagás una tasa de servicio del 1,9% + IVA.",
+          "url": "https://fu.do/es-ar/delivery/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://fu.do/es-ar/",
+        "https://fu.do/es-ar/delivery/",
+        "https://fu.do/es-ar/precios/"
+      ]
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap, same as compare-research-1 BR): own online menu / WhatsApp ordering with delivery management, but neither the Spanish home page nor the Spanish pricing page says pickup / para llevar / retiro / scheduled orders; a web search found no own-site pickup page; plan prices USD only (no local currency)",
+      "eligibility": {
+        "order_quote": "Centraliza los pedidos de WhatsApp en una sola fila, sin copiar y pegar, sin errores manuales.",
+        "order_url": "https://www.olaclick.com/es/",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, no local-currency price; 'Los precios son para suscripciones anuales pagadas al momento de la compra' (billed yearly). Others: Premium US$ 25.00/mes, Elite US$ 59.00/mes, Impulso US$ 160.00/mes. Home page: '0% de comisión.'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es"
+      ]
+    },
+    {
+      "name": "Ojapo",
+      "website": "https://www.ojapo.com.ar",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Argentine food-business online store ('Hecho en Argentina'): each business gets its own ordering homepage, 'Pedir online' button, pickup points ('puntos retiro'), 0% commission; ARS plans. The consumer home page also lists producers (directory-like), but the gastronomía page sells the business its own shop. No chosen pickup time or food-truck wording",
+      "eligibility": {
+        "order_quote": "Botón «Pedir online» en tu ficha de Google, que lleva directo a tu tienda y sin comisiones",
+        "order_url": "https://www.ojapo.com.ar/gastronomia",
+        "country_quote": "Hecho en Argentina",
+        "country_url": "https://www.ojapo.com.ar/"
+      },
+      "plans": [
+        {
+          "plan_name": "Inicio Gastronómico",
+          "currency": "ARS",
+          "price_major": 0,
+          "period": "month",
+          "quote": "$0por mes, para siempre",
+          "url": "https://www.ojapo.com.ar/gastronomia",
+          "note": "free forever, 0% per sale; whether pickup points are in the free plan was not stated in what was read",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        },
+        {
+          "plan_name": "Brote Gastronómico",
+          "currency": "ARS",
+          "price_major": 19000,
+          "period": "month",
+          "quote": "$19.000por mes",
+          "url": "https://www.ojapo.com.ar/gastronomia",
+          "note": "includes '3 zonas + 3 puntos retiro'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        },
+        {
+          "plan_name": "Crecimiento Gastronómico",
+          "currency": "ARS",
+          "price_major": 29000,
+          "period": "month",
+          "quote": "$29.000por mes",
+          "url": "https://www.ojapo.com.ar/gastronomia",
+          "note": "",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "3 zonas + 3 puntos retiro",
+          "url": "https://www.ojapo.com.ar/gastronomia"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "3 zonas + 3 puntos retiro",
+          "url": "https://www.ojapo.com.ar/gastronomia"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$19.000por mes",
+          "url": "https://www.ojapo.com.ar/gastronomia"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Cobrás el 100% de tus ventas. Sin porcentajes, sin sorpresas.",
+          "url": "https://www.ojapo.com.ar/gastronomia"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.ojapo.com.ar/",
+        "https://www.ojapo.com.ar/gastronomia"
+      ]
+    }
+  ],
+  "notes": "No Argentine (or Latin-American) food-truck pre-order tool found in two searches; Fudo is recorded as focus food_truck only because its own Tu Delivery page names 'food trucks y ferias' as a business type beside an online shop with pickup ('Para retirar') — BORDERLINE, a reviewer may prefer nearest_local. Ojapo (ARS 0 / 19.000 / 29.000 por mes, own online shop with pickup points, 0% commission; first read as a directory from its consumer home page, then its /gastronomia page showed the business offer) and Pedix (ARS, WhatsApp-based online shop with 'Retiro en persona') are eligible nearest_local; for Pedix its pickup evidence is a help-centre article title. Fudo and Pedix are Latin-American multi-country tools (owned by agent 3). OlaClick: USD-only prices and no pickup wording -> borderline not_relevant, as in BR. Tiendanube (generic e-commerce, ARS prices) and Mercado Libre restaurants (marketplace) seen in search results only, not fetched / not counted. Square, Toast, Clover, Lightspeed: no Argentine country site checked here; see OWNED.json / summary for their country coverage."
+}

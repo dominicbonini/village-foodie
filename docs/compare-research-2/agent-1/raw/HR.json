@@ -1,0 +1,359 @@
+{
+  "country": "HR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "dish.co HR foodtruck štand s hranom DISH (dish.co only)",
+    "online narudžbe za restorane web shop osobno preuzimanje bez provizije cijena €/mjesečno PDV hrvatski softver Remaris OR Eurocomp OR \"naruči\""
+  ],
+  "vendors": [
+    {
+      "name": "DISH Professional Order (METRO)",
+      "website": "https://www.dish.co/HR/hr/",
+      "stored_id_prefix": "b94c7a14",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "METRO's DISH has a Croatian site with a 'Foodtruck i štand s hranom' page offering DISH Professional Order: guests order online from the business's website or Google for delivery or pickup; € monthly prices excl. PDV",
+      "eligibility": {
+        "food_quote": "Sve za Vaš food truck",
+        "food_url": "https://www.dish.co/HR/hr/foodtruck-and-foodstand/",
+        "order_quote": "omogućuje vam jednostavno upravljanje narudžbama za dostavu i osobno preuzimanje",
+        "order_url": "https://www.dish.co/HR/hr/dish-professional-order/",
+        "country_quote": "Vaši gosti naručuju izravno putem Vaše web stranice ili Googlea – bez dodatnih troškova za Vas.",
+        "country_url": "https://www.dish.co/HR/hr/foodtruck-and-foodstand/"
+      },
+      "plans": [
+        {
+          "plan_name": "DISH Professional Order (no commitment)",
+          "currency": "EUR",
+          "price_major": 39,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 250,
+          "quote": "39,00 €* / mjesečno, bez obveze",
+          "url": "https://www.dish.co/HR/hr/dish-professional-order/",
+          "note": "'*Sve cijene ne uključuju PDV.' One-off 'Jednokratna naknada za sklapanje novih ugovora: 250,00 €*.' Plus 1,89% of gross revenue when guests pay online."
+        },
+        {
+          "plan_name": "DISH Professional Order (12-month term)",
+          "currency": "EUR",
+          "price_major": 35,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 250,
+          "quote": "35,00 €*",
+          "url": "https://www.dish.co/HR/hr/dish-professional-order/",
+          "note": "Per month on a 12-month term; excl. PDV; same 250 € contract fee."
+        },
+        {
+          "plan_name": "DISH Premium (bundle)",
+          "currency": "EUR",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 250,
+          "quote": "49,00 €* /mjesečno, bez obveze",
+          "url": "https://www.dish.co/HR/hr/dish-professional-order/",
+          "note": "Bundle incl. Order; 45,00 €* per month on a 12-month term; excl. PDV."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Gosti mogu naručivati izravno s vaše web-stranice putem DISH Professional Order widgeta.",
+          "url": "https://www.dish.co/HR/hr/dish-professional-order/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "39,00 €* / mjesečno, bez obveze",
+          "url": "https://www.dish.co/HR/hr/dish-professional-order/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Ne plaćate naknade po narudžbi, već transparentnu mjesečnu fiksnu cijenu.",
+          "url": "https://www.dish.co/HR/hr/dish-professional-order/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Nema provizije – plaćate samo mjesečnu naknadu i 1,89% na bruto prihod ako vaš gost koristi online sustav plaćanja.",
+          "url": "https://www.dish.co/HR/hr/dish-professional-order/"
+        }
+      ],
+      "check_urls": [
+        "https://www.dish.co/HR/hr/dish-professional-order/",
+        "https://www.dish.co/HR/hr/foodtruck-and-foodstand/"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/hr-hr/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "Croatian SumUp site: free Internetska trgovina; its Croatian help centre has a page on pickup methods for the online store; 2,50 % per online payment — generic fallback",
+      "eligibility": {
+        "order_quote": "Načini preuzimanja u Internetskoj trgovini",
+        "order_url": "https://help.sumup.com/hr-HR/articles/2e2BybR2UdkUcCcKaspr5J-internetska-trgovina-preuzimanje",
+        "country_quote": "Za naše opcije plaćanja putem interneta, plaćate 2,50 % po transakciji.",
+        "country_url": "https://www.sumup.com/hr-hr/online-placanja/"
+      },
+      "plans": [
+        {
+          "plan_name": "Internetska trgovina / Online plaćanja",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.5,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "0 €",
+          "url": "https://www.sumup.com/hr-hr/online-placanja/",
+          "note": "'0 €' shown under 'Mjesečni trošak'; 'Za naše opcije plaćanja putem interneta, plaćate 2,50 % po transakciji.' The pickup evidence today is only the help-article title (its body is script-rendered); the hr-hr/internetska-trgovina/ page is 404. VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Za naše opcije plaćanja putem interneta, plaćate 2,50 % po transakciji.",
+          "url": "https://www.sumup.com/hr-hr/online-placanja/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/hr-hr/online-placanja/",
+        "https://help.sumup.com/hr-HR/articles/2e2BybR2UdkUcCcKaspr5J-internetska-trgovina-preuzimanje",
+        "https://www.sumup.com/hr-hr/internetska-trgovina/"
+      ]
+    },
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": "98c064da",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK restaurant/takeaway ordering platform with scheduled pickup pre-orders; its own supported-regions doc lists Croatia (English, EUR payments). Prices shown only in GBP (no currency selector), so not counted for the local currency.",
+      "eligibility": {
+        "order_quote": "Scheduled pre-orders (pickup & delivery slots)",
+        "order_url": "https://storekit.com/pricing",
+        "country_quote": "Croatia | ✓ English | ✓ EUR",
+        "country_url": "https://storekit.com/docs/getting-started/supported-regions"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Free",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only. 'All prices are per location and exclude VAT.' 'Every plan adds a flat per-order rate, never a commission' (amount not shown)."
+        },
+        {
+          "plan_name": "Connect",
+          "currency": "GBP",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£49",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; plus a flat per-order rate (amount not shown). Set-up self-serve."
+        },
+        {
+          "plan_name": "Grow",
+          "currency": "GBP",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "£99",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; set-up '£199 per location'; plus a flat per-order rate."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Capacity controls (slot limits)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "£49",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Every plan adds a flat per-order rate, never a commission, plus unlimited items and your own customer data.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://storekit.com/pricing",
+        "https://storekit.com/docs/getting-started/supported-regions"
+      ]
+    }
+  ],
+  "notes": "NEW: DISH Professional Order (METRO's DISH, stored b94c7a14) has a Croatian page with € prices (39 €/mj. no commitment, 35 € on 12 months, + PDV, 250 € contract fee, 1,89 % on online payments) and the Croatian 'Foodtruck i štand s hranom' page sells it to food trucks — counted food_truck, but note: the food-truck page's own focus is payments, and no ordering-for-a-chosen-time wording exists (pickup only). SumUp kept as the generic fallback (0 € + 2,50 %). Still no Croatian-made ordering tool found (compare-research-1's 7 searches + 1 today return Wolt/Glovo/directories). Anolla not recorded (rule). UpMenu has no Croatian site (compare-research-1). Restolabs and Flipdish appeared in search without Croatian presence; Flipdish (mine) has no HR site per compare-research-1's checks of other countries — not re-read. Storekit (owned by agent 1): its supported-regions doc lists Croatia (English, EUR payments), but prices are GBP only, so it is recorded and not counted."
+}

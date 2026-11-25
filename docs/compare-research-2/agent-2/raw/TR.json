@@ -1,0 +1,393 @@
+{
+  "country": "TR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "restoran online sipariş sistemi gel al önceden sipariş kendi web sitesi komisyonsuz fiyat aylık TL",
+    "food truck online sipariş sistemi QR menü gel al önceden sipariş paket fiyatları ₺ aylık restoran yazılımı",
+    "Komisyonsuz restoran kendi online sipariş sitesi gel al fiyat paket komisyonsuz.com"
+  ],
+  "vendors": [
+    {
+      "name": "İletmen (TekMenü / TekEkran)",
+      "website": "https://www.iletmen.com.tr",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Turkish restaurant order system: TekMenü commission-free ordering link (Instagram/WhatsApp/Google) and one panel for delivery, gel-al (pickup) and table orders; flat 5.99 TL per order. Borderline: gel-al appears only in one FAQ sentence and no ordering for a chosen time is stated",
+      "eligibility": {
+        "order_quote": "Paket servis, gel-al ve masa siparişlerini tek panelde birleştirir.",
+        "order_url": "https://www.iletmen.com.tr",
+        "country_quote": "Komisyonsuz sipariş kanalınız — tek link, her yerde.",
+        "country_url": "https://www.iletmen.com.tr"
+      },
+      "plans": [
+        {
+          "plan_name": "TekMenü (per order)",
+          "currency": "TRY",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 5.99,
+          "setup_major": null,
+          "quote": "You pay a flat service fee per order; ours is 5.99 TL. No commission.",
+          "url": "https://www.iletmen.com.tr/en/blog/restoran-komisyonsuz-siparis-nasil-alinir",
+          "note": "From İletmen's own blog post (English version, dated 10 Apr 2026). Home page shows no plan prices: pricing for the TekEkran panel depends on order volume/platforms/modules (quote after demo). Recorded as 0 + 5.99 TL per order; any monthly fee for TekEkran is unknown."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Paket servis, gel-al ve masa siparişlerini tek panelde birleştirir.",
+          "url": "https://www.iletmen.com.tr"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "Komisyonsuz sipariş kanalınız — tek link, her yerde.",
+          "url": "https://www.iletmen.com.tr",
+          "note": "link for Instagram, WhatsApp and Google per the page reader"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Paket servis, gel-al ve masa siparişlerini tek panelde birleştirir.",
+          "url": "https://www.iletmen.com.tr"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "You pay a flat service fee per order; ours is 5.99 TL. No commission.",
+          "url": "https://www.iletmen.com.tr/en/blog/restoran-komisyonsuz-siparis-nasil-alinir"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.iletmen.com.tr",
+        "https://www.iletmen.com.tr/en/blog/restoran-komisyonsuz-siparis-nasil-alinir"
+      ]
+    },
+    {
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (TR: no TRY price, so not counted)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "TurkeyTRY",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "name": "Zunapro (restoran web sitesi)",
+      "website": "https://www.zunapro.com/turkey/tr",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Restaurant/café website builder for Turkey with own-site orders: 'Paket sipariş & gel-al' with online payment via iyzico/PayTR, no per-order commission; yearly ₺ prices incl. KDV. Borderline: the page doesn't say which package includes ordering, and no chosen-time ordering is stated",
+      "eligibility": {
+        "order_quote": "Paket sipariş & gel-al (iyzico/PayTR ödeme, harita ile bölge kontrolü)",
+        "order_url": "https://www.zunapro.com/turkey/tr/restoran-kafe-web-sitesi-fiyatlari",
+        "country_quote": "Tüm fiyatlar yıllıktır ve KDV dahildir.",
+        "country_url": "https://www.zunapro.com/turkey/tr/restoran-kafe-web-sitesi-fiyatlari"
+      },
+      "plans": [
+        {
+          "plan_name": "Başlangıç",
+          "currency": "TRY",
+          "price_major": 5900,
+          "period": "year",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "5.900 ₺/yıl",
+          "url": "https://www.zunapro.com/turkey/tr/restoran-kafe-web-sitesi-fiyatlari",
+          "note": "Not confirmed that the entry package includes 'Paket sipariş & gel-al' — a floor."
+        },
+        {
+          "plan_name": "Kurumsal",
+          "currency": "TRY",
+          "price_major": 15900,
+          "period": "year",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "15.900 ₺/yıl",
+          "url": "https://www.zunapro.com/turkey/tr/restoran-kafe-web-sitesi-fiyatlari",
+          "note": ""
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "TRY",
+          "price_major": 25900,
+          "period": "year",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "25.900 ₺/yıl",
+          "url": "https://www.zunapro.com/turkey/tr/restoran-kafe-web-sitesi-fiyatlari",
+          "note": ""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Paket sipariş & gel-al (iyzico/PayTR ödeme, harita ile bölge kontrolü)",
+          "url": "https://www.zunapro.com/turkey/tr/restoran-kafe-web-sitesi-fiyatlari"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yemeksepeti ve Trendyol Yemek komisyon alırken kendi sitenizden gelen siparişte yalnız iyzico/PayTR ödeme komisyonu ödersiniz.",
+          "url": "https://www.zunapro.com/turkey/tr/restoran-kafe-web-sitesi-fiyatlari"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Sipariş başı komisyon ödemezsiniz, müşteri verisi sizde kalır, kendi sadakat programınızı kurarsınız.",
+          "url": "https://www.zunapro.com/turkey/tr/restoran-kafe-web-sitesi-fiyatlari"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Yemeksepeti ve Trendyol Yemek komisyon alırken kendi sitenizden gelen siparişte yalnız iyzico/PayTR ödeme komisyonu ödersiniz.",
+          "url": "https://www.zunapro.com/turkey/tr/restoran-kafe-web-sitesi-fiyatlari"
+        }
+      ],
+      "check_urls": [
+        "https://www.zunapro.com/turkey/tr/restoran-kafe-web-sitesi-fiyatlari"
+      ]
+    },
+    {
+      "name": "Adisyo",
+      "website": "https://www.adisyo.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Turkish restaurant POS with ₺ prices (Lite ₺1.250, Standart ₺1.850, Pro ₺2.580 a month), but its pricing page shows no own online ordering / gel-al / pre-order — only paid marketplace integrations (Yemeksepeti, Uber Eats)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.adisyo.com/fiyatlar"
+      ]
+    }
+  ],
+  "notes": "TR count: 2 eligible priced in TRY (food-truck: 0) — İletmen TekMenü (NEW: commission-free ordering link, one panel for delivery/gel-al/table; flat 5.99 TL per order from its own blog, recorded as 0 + 5.99; TekEkran panel price on quote; gel-al evidence is one FAQ sentence) and Zunapro restaurant websites (NEW: 'Paket sipariş & gel-al' on the restaurant's own site, 5.900 / 15.900 / 25.900 ₺ a year incl. KDV; which package includes ordering not stated). Both borderline: no ordering for a chosen time stated. Take App lists Turkey (TRY) but USD only. Adisyo: POS only (marketplace integrations). MENU TIGER has a /tr/ pricing page (USD, per search; not fetched — compare-research-1 found no pickup-ahead wording on its pages). Karekod.org: QR menu / table packages without prices (not fetched). No Turkish food-truck ordering tool found. Never counted: Yemeksepeti, Getir, Trendyol Yemek (marketplaces)."
+}

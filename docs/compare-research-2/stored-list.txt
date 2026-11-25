@@ -1,0 +1,221 @@
+a9825e32 4SaleFood | https://4salefood.net | active | food_truck
+356a620b ABS POS | https://abspos.pl | not_relevant | None
+a8ecbf68 Achil | https://achil.com | active | food_truck
+9f932a75 AdvaNceD IoT キッチンカー＆屋台スマートオーダーシステム (Device Agency) | https://and-iot.jp | not_relevant | nearest_local
+1217609a Anota AI | https://anota.ai | active | nearest_local
+f07f8ff1 Aparece | https://aparece.mx | active | nearest_local
+875ca26d apetitio | https://apetitio.pl | not_relevant | None
+93cd38bf Aphelios | https://apheliossoftware.com | not_relevant | food_truck
+878164f6 Appy POS | https://appy.ro | candidate | None
+c413ad17 ared | https://ared.lt | active | nearest_local
+b459885d Asky | https://asky.ai | active | food_truck
+0b177e65 Beat The Queue | https://beatthequeue.co.uk | active | food_truck
+640ecd44 Beau Camion | https://beaucamion.fr | active | food_truck
+9a4e55c0 Best Food Trucks (BFT) | https://customers.bestfoodtrucks.com | active | food_truck
+fc80e04f Bestelltheke | https://bestelltheke.de | active | nearest_local
+f349ff27 Bestelly | https://bestelly.nl | active | nearest_local
+2338937d Bistriqx | https://bistriqx.com | candidate | None
+4eff2bd5 bonappli | https://bonappli.fr | active | food_truck
+a8ba9459 Bopple | https://bopple.com | active | nearest_local
+fdcd9f95 Cardápio Web | https://www.cardapioweb.com | active | nearest_local
+113508e1 Check | https://foodtruckya.com | not_relevant | None
+e22529b7 Cheerfy Shop | https://en.cheerfy.com | active | nearest_local
+70b34967 Choice | https://choiceqr.com | active | nearest_local
+9bce2002 ChowNow | https://get.chownow.com | active | nearest_local
+d06ae0d2 Click & Collection | https://clickandcollection.com | active | food_truck
+5bb315aa CliqMenu | https://cliqmenu.com | candidate | None
+b3ab941b CloudOrders | https://cloudorders.co | candidate | None
+8ceb8696 Clover | https://www.clover.com/ | candidate | pos
+34a72bd1 Creavo Order | https://creavo.fi | not_relevant | None
+678a4310 DigiCommerce | https://stage.app.digicommerce.be | active | nearest_local
+ece796a2 Digitale Menukaart | https://digitalemenukaart.nl | active | food_truck
+0e42d25f Digitaste | https://www.digitaste.be | active | food_truck
+57790b35 Dine360 | https://dine360.ca | not_relevant | None
+b030b97d DineEasy | https://www.dineeasy.app | not_relevant | nearest_local
+b94c7a14 DISH | https://www.dish.co | active | nearest_local
+3d81b4a1 EasyEats | https://easyeats.com | active | food_truck
+a207b996 Eatch | https://eatch.app | active | food_truck
+647628e6 Eats365 | https://www.eats365pos.com/hk | active | nearest_local
+47a1fbe0 EatSelf | https://www.eatself.com | active | None
+0b6a0e02 Epos Now | https://www.eposnow.com | candidate | None
+c0542ae9 eSystem | https://vendeglatoprogram.com | active | nearest_local
+6afa79bc Eventifood | https://eventifood.com | active | food_truck
+2f50461f ExtendaGO Ordin | https://www.extendago.com | candidate | None
+58b9820f Favrit | https://web.favrit.com | active | nearest_local
+3ec3fbaa Feadys | https://feadys.com | active | food_truck
+ff78ffa2 FesteaPay | https://foodtruckya.com | active | food_truck
+28016a1b Flash Order | https://flashordr.com | candidate | None
+5b50f4e3 Flipdish | https://www.flipdish.com | active | nearest_local
+598df7ba Food Pronto | https://www.foodpronto.com.br | active | food_truck
+5286c363 Food Truck Concept | https://foodtruck-concept.com | not_relevant | None
+b7b74ca7 Food Truck ONE (Food Truck OS) | https://foodtruckone.com | active | food_truck
+18f621da Food Truck Pub | https://foodtruck.pub | active | food_truck
+f6a04474 Food4you | https://food4you.fi | active | nearest_local
+196dc923 FoodChow | https://www.foodchow.com | candidate | None
+938f3a06 Foodeliver | https://4bsystems.pl | active | nearest_local
+a59d5659 Foodlz | https://foodlz.io | candidate | None
+9df2dcd4 FoodsHero | https://foodshero.de | active | nearest_local
+662c9884 Foodticket | https://foodticket.nl | active | food_truck
+c762b9c2 FoodTruck POS | https://foodtruckpos.nl | not_relevant | food_truck
+42e450a6 FoodTrucker - Find & Order | https://apps.apple.com | active | food_truck
+d03a6e1f FoxiFood | https://www.foxifood.com/de/ | active | food_truck
+80a8b5b2 Fritzy | https://fritzy.be | active | nearest_local
+fbfecac2 Frivo | https://frivo.pl | active | food_truck
+24aa846b funfo | https://www.lycbiz.com | active | nearest_local
+a59dfb20 gastro25 | https://www.gastro25.de/ | active | food_truck
+9ed5a6b1 GASTRODIGITAL | https://gastro.digital | active | nearest_local
+abd86253 GastroDok | https://gastrodok.de/ | active | food_truck
+a431bf75 GastroOnline & Winorder | https://gastro-online.at | active | food_truck
+dc1d8f05 GloriaFood | https://www.gloriafood.com | active | nearest_local
+10aba63d Goodfynd | https://goodfynd.com | active | food_truck
+5c808451 Goomer | https://goomer.com.br | active | nearest_local
+b10476b9 GoPOS / GoOrder | https://gopos.pl | active | nearest_local
+b32f19c9 Grafterr | https://www.grafterr.com | active | food_truck
+f508b55e Gustoco | https://www.gustoco.de | not_relevant | None
+6d6a20e9 Happy Gastro | https://www.happygastro.hu | candidate | None
+fbbf6c37 Hatches Up | None | active | food_truck
+334357d0 Heustach | https://heustach.fr | active | food_truck
+d35d4efa Homegrown | https://findhomegrown.com | active | street_food_markets
+4cde17cb Hotplate | https://www.hotplate.com | active | food_truck
+1b6afb43 HungryHungry | https://www.hungryhungry.com | active | nearest_local
+2f51f8db HungryTrucks | https://www.hungrytrucks.com | active | food_truck
+89a12466 iButler | https://www.i-butler.nl | active | nearest_local
+eac8099e INFI | https://infi.us | candidate | None
+5c901b17 iShopo | https://ishopo.ca | active | food_truck
+2392b933 ISSUE PANDA (3bitter) | https://saas.imitsu.jp | active | nearest_local
+ce1df15a Jamezz | https://jamezz.com | active | food_truck
+11889b66 JMENU | https://www.jmenu.it | active | nearest_local
+fbea19b8 KitchenCarMenu (キッチンカーメニュー) | https://kitchencarmenu.com | active | food_truck
+f44927e4 Klikit | https://klikit.io | active | food_truck
+fca70222 L'Addition | https://commande-en-ligne.laddition.com | active | food_truck
+5eb5b42d leafsystems | https://leaf-systems.eu | candidate | None
+79fcc90d Liefersoft | https://liefersoft.de | active | food_truck
+1774b420 Lightspeed | https://www.lightspeedhq.com/ | candidate | pos
+4524d8f0 Liven | https://liven.love | not_relevant | nearest_local
+5bb256b3 LivePepper | https://www.livepepper.fr | active | food_truck
+d00d6bfd MENU TIGER | https://www.menutiger.com | active | nearest_local
+040f4b59 Menu55 | https://menu55.cz | active | nearest_local
+3d6e4599 Menuella | https://www.menuella.com | candidate | None
+b70bbf5e MenuForma | https://menuforma.com | active | food_truck
+832a682c Menufy | https://restaurant.menufy.com | active | nearest_local
+55cd958d Menuthere | https://menuthere.com | active | food_truck
+83a101fb MetaPOS | https://metapos.com.au | candidate | None
+1311faad MOBI (formerly Mobi2Go) | https://mobihq.com | active | food_truck
+64e49b93 Moduurn | https://www.capterra.ca | not_relevant | nearest_local
+647a5e78 Moonrise | https://ordermoonrise.com | active | food_truck
+54922ec3 NemTakeAway | https://www.nemtakeaway.dk | active | nearest_local
+45429d1b NewPOS | https://www.newpos.ai | candidate | None
+11e41caa Nomad (nomadcaisse.fr) | https://www.nomadcaisse.fr | active | food_truck
+ac1f084d NOQ | https://noqgroup.com | not_relevant | None
+2b36ed33 O:der ToGo (Showcase Gig) | https://saas.imitsu.jp | active | nearest_local
+110abdac Oddle | https://www.uob.com.sg | active | nearest_local
+c400f63a OlaClick | https://pricing.olaclick.app | active | nearest_local
+50f273c2 ord.to | https://ord.to | candidate | None
+69a3cfce Ordable | https://www.itsordable.com | active | nearest_local
+6dc60fd2 Ordea | https://www.ordea.uk | active | food_truck
+4b9bd6dd Ordeliya | https://ordeliya.com | candidate | None
+2c389cf4 Ordeno App | https://foodtruckya.com | not_relevant | food_truck
+a7218fda Order Local | https://getorderlocal.com | candidate | None
+aed7bf67 Order Tiger | https://www.ordertiger.com | active | food_truck
+96ce7971 Order Up! (moving to Nomni) | https://www.orderup.com.au | active | nearest_local
+5143bd80 OrderEatRepeat | https://ordereatrepeat.com | active | nearest_local
+683bf425 OrderFront | https://www.orderfront.de/ | active | nearest_local
+4c350e59 Ordering.co | https://www.ordering.co | active | food_truck
+1cccb6df Orderly | https://orderly.hu | active | food_truck
+515a8c44 Ordero | https://ordero.ch | active | nearest_local
+09cbaaeb Ordinalo | https://www.ordinalo.com | active | nearest_local
+cd9f8f3d Orsys | https://www.orsys.hu | not_relevant | None
+213c6cc6 Ounti | https://ounti.com | candidate | None
+f8d9d52d Outbites | https://outbites.com | active | food_truck
+1a32fe8f Owner.com | https://www.owner.com | active | nearest_local
+000f94fa Payli | https://payli.be | active | food_truck
+b4d82532 PAYMEZONE | https://paymezone.com | not_relevant | None
+630bcb18 Pedizap | https://pedizap.com.br | active | nearest_local
+c71ae83d Perkss | https://perkss.co.uk | active | food_truck
+51e6b79e pidopago | https://pidopago.com | active | nearest_local
+2cbec3e7 Pikit | https://pikit.ch | active | nearest_local
+0947b3fc Place à emporter | https://placeaemporter.fr | active | food_truck
+07509d43 Plick | https://plick.com.mx | active | nearest_local
+a65c8f98 Point (pointmeup) | https://www.pointmeup.com | not_relevant | None
+78b5be7c POSbistro | https://posbistro.com | not_relevant | None
+0802a7c8 Poster | https://joinposter.com | active | food_truck
+239e19cb Preorder | https://order-pre.com | candidate | None
+2e6f0051 Qashier (QashierEats) | https://qashier.com/my | active | nearest_local
+e192197c Qhop | https://www.qhop.com.au | active | food_truck
+f5707721 Qopla | https://www.qopla.com | active | food_truck
+3cc2b17f Qrder | https://qrder.app | active | food_truck
+e796f041 QRico | https://qrico.mx | active | nearest_local
+53395fcb QRM.hu | https://qrm.hu | active | food_truck
+b6a1a595 Qromo | https://qromo.it | active | food_truck
+7fbcd197 RapidOrderz | None | active | None
+ef6eec53 Refektorius | https://refektorius.lt | active | nearest_local
+6869d76d Regulars | https://tryregulars.com | candidate | None
+6fa20b90 Rent-a-Shop | https://www.rent-a-shop.ch | active | food_truck
+fd3008f4 RestApp | https://www.restapp.com | candidate | None
+3d587bd6 Restaumatic | https://www.restaumatic.com | active | nearest_local
+bea75bdc restauracja.online | https://restauracja.online | active | nearest_local
+75a79897 Restaurant-internet.com | https://restaurant-internet.com | active | food_truck
+1c3ade45 Restolabs | https://restolabs.com | active | food_truck
+7734b770 Restomax | https://www.restomax.be | active | food_truck
+ffac93b0 Ritual | https://ritual.co | not_relevant | None
+304ad1a7 Sapaad | https://www.sapaad.com | candidate | None
+5f69d328 Simpliza | https://simpliza.com.br | active | food_truck
+20c3683b SisFood | https://www.sisfood.com.br | active | food_truck
+e86ba596 Slerp | https://www.slerp.com | active | nearest_local
+d41b0ca7 SmakSpace | https://smakspace.co.nz | active | food_truck
+30bb8773 Snackpass | https://www.snackpass.co | active | nearest_local
+0c786162 Soften Food | https://www.softensistemas.com.br | not_relevant | food_truck
+9c855eec Software Food Good | https://boomsrl.it | active | food_truck
+54b82bfa Spevdo | https://spevdo.gr | active | nearest_local
+30664554 Spot (Spot – Drive Thru Pickup app) | https://www.hospitalitynewsmag.com | active | food_truck
+9acae7b6 Square | https://squareup.com | active | pos
+c4972b72 StandMágus / OnlineMágus | https://www.vendeglato-szoftver.hu | active | food_truck
+ddc61529 StoreHub | https://www.storehub.com/my | active | nearest_local
+98c064da Storekit | https://storekit.com | active | nearest_local
+4f54a28d Street Food Spot | https://streetfoodspot.nz | active | food_truck
+7bf0553c StreetFoodFinder | https://streetfoodfinder.com | active | food_truck
+d0eb16fa SumUp | https://www.sumup.com/ | active | pos
+a09713bc Superb | https://www.superbexperience.com | active | nearest_local
+369127ec SwissPOS | https://www.swisspos.ch | active | nearest_local
+2a58410a Take App | https://www.take.app | active | nearest_local
+e5153771 TapaPOS | https://tapapay.app | candidate | None
+3fc43b3e TapTasty | https://www.taptasty.com | candidate | None
+1bf6d752 Taptouch POS | https://taptouchpos.com | candidate | None
+5c805a29 The Foody Gram | https://www.thefoodygram.com | active | nearest_local
+5f28f634 Tilby | https://tilby.com | active | food_truck
+757fad52 Toast | https://pos.toasttab.com/ | candidate | pos
+034d1e1a TopEstrellas (Pedidos module) | https://topestrellas.com | active | nearest_local
+71f255ff Truckfindr | https://truckfindr.com | active | food_truck
+a36488cf Truckly | https://truckly.dk | active | food_truck
+b82dcffe Truckons | https://truckons.com | active | food_truck
+0ccb6996 Truckster | https://apps.apple.com | active | food_truck
+0b332418 TuMenúDigital | https://tumenudigital.mx | active | food_truck
+ef9dcbd8 UpMenu | https://www.upmenu.com | active | nearest_local
+5bec1864 Vev | https://vev.co | active | food_truck
+cff055db VexMenu | https://vexmenu.com | active | food_truck
+01fa170d VGather self-ordering service | https://dtspp.cyberport.hk | active | nearest_local
+1af3a80c VirtualLine | https://virtualline.com.br | not_relevant | food_truck
+86a8eea4 Vroomeat | https://vroomeat.fr | active | food_truck
+73a31845 Waiterio | https://www.waiterio.com | candidate | None
+e72778c0 Weevi | https://www.weevi.com | active | food_truck
+462996c6 WEIQ | https://weiq.tech | active | food_truck
+3f0b6c2e What The Truck | https://whatthetruck.ai | active | food_truck
+92a350ce Where The Truck (AMFVG) | https://wherethetruck.at | not_relevant | None
+ccd6121e Where's The Foodtruck | https://wheresthefoodtruck.com | active | food_truck
+430c8cb2 Wiiz Eat | https://wiizeat.com | active | nearest_local
+d3218f9c Wollopit | https://wollopit.com.au | active | food_truck
+27ec5274 Wongnai POS (formerly FoodStory) | https://www.wongnai.com/pos/ | active | nearest_local
+30f495eb Worldline All-in-One Platform Ordering | https://worldline.com/el-gr | active | pos
+2e7c69aa xMenu | https://www.xmenu.it | active | nearest_local
+93b88e3b XPRIO | https://xprio.com | candidate | None
+8c7188e7 Y wait | https://ywait.com.au | active | food_truck
+5f613b54 Yabie | https://yabie.com | active | food_truck
+34c0c62f Yoello | https://www.yoello.com | active | nearest_local
+aebf5a80 Yoveletta | https://yoveletta.ch | active | food_truck
+29eec8ec Zay-OS (Zayos) | https://zay-os.com | active | food_truck
+e31a7d92 Zegashop | https://www.zegashop.com | candidate | None
+aa8cf034 Zettle (PayPal) | https://www.zettle.com/ | not_relevant | pos
+797df612 Zyda | https://www.zyda.com | active | nearest_local
+da91c9a7 どこでも注文くん (Chuzmonster) | https://lme.jp | active | nearest_local
+9f2ee7a6 テイクイーツ (Take Eats) | https://take-eats.jp | active | nearest_local
+e6a09d6e モバレジ (Mobaregi, EDDYS FACTORY) | https://mobaregi.jp | active | food_truck

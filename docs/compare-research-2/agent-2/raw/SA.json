@@ -1,0 +1,372 @@
+{
+  "country": "SA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Foodics Online pickup order ahead own website app restaurants price riyal foodics.com (site:foodics.com)",
+    "site:zyda.com pricing SAR OR QAR OR EGP a month Starter Growth",
+    "itsordable.com pricing plans KD month ordable (site:itsordable.com)",
+    "نظام طلبات أونلاين للمطاعم استلام من الفرع طلب مسبق عربات الطعام فود ترك السعودية باقات ريال شهريا"
+  ],
+  "vendors": [
+    {
+      "name": "Foodics (Foodics Online)",
+      "website": "https://www.foodics.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Saudi restaurant POS; Foodics Online gives the restaurant its own ordering website/app with pick-up, curbside and orders scheduled ahead, commission-free",
+      "eligibility": {
+        "order_quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+        "order_url": "https://www.foodics.com/online/",
+        "country_quote": "Save up to SAR21,000 a year in commissions",
+        "country_url": "https://www.foodics.com/online/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced Bundle",
+          "currency": "SAR",
+          "price_major": 765,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "765",
+          "url": "https://www.foodics.com/pricing/",
+          "note": "KSA pricing page; amounts shown WITHOUT a currency symbol (SAR assumed from the KSA page and 'SAR21,000' on the Online page). 'Per branch'; 704/mo billed annually; 'No upfront payments. Hardware Included.' Includes a 'Website' item, but the page doesn't say Foodics Online ordering is included or price it separately. VAT not stated. The 'Foodics Pricing KSA' page (foodics.com/foodics-pricing-ksa/) shows the same amounts, also with no currency text (the symbol is probably an image)."
+        },
+        {
+          "plan_name": "Basic Bundle",
+          "currency": "SAR",
+          "price_major": 450,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "450",
+          "url": "https://www.foodics.com/pricing/",
+          "note": "No currency symbol shown; not shown to include online ordering."
+        },
+        {
+          "plan_name": "Starter Bundle",
+          "currency": "SAR",
+          "price_major": 248,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "248",
+          "url": "https://www.foodics.com/pricing/",
+          "note": "No currency symbol shown; not shown to include online ordering."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Maximize your margins by accepting curbside, pick-up and delivery orders",
+          "url": "https://www.foodics.com/online/"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+          "url": "https://www.foodics.com/online/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage your branches, menus and employees from one place",
+          "url": "https://www.foodics.com/online/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Choose your own custom website domain",
+          "url": "https://www.foodics.com/online/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Per branch, covered by your daily sales.",
+          "url": "https://www.foodics.com/pricing/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Say goodbye to paying third-party commission fees",
+          "url": "https://www.foodics.com/online/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.foodics.com/pricing/",
+        "https://www.foodics.com/online/",
+        "https://www.foodics.com/foodics-pricing-ksa/"
+      ]
+    },
+    {
+      "name": "Zyda",
+      "website": "https://www.zyda.com",
+      "stored_id_prefix": "797df612",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Gulf/Egypt restaurant ordering-website platform: pickup & curbside in every plan ('Order ahead, collect fast'), orders for a date; pricing page lists the country but shows prices in KWD only (SA: no SAR price, so not counted)",
+      "eligibility": {
+        "order_quote": "Order ahead, collect fast",
+        "order_url": "https://www.zyda.com/pricing",
+        "country_quote": "Saudi Arabia",
+        "country_url": "https://www.zyda.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "KWD",
+          "price_major": 20,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "20 KWD a month",
+          "url": "https://www.zyda.com/pricing",
+          "note": "'Prices for Kuwait. Prices for new merchants.' Shown on the quarterly toggle (billed quarterly); yearly '240 KWD billed yearly'. Up to two branches. KWD only — no price in this country's currency on the page (zyda.com/sa/pricing also shows Kuwait prices)."
+        },
+        {
+          "plan_name": "Growth",
+          "currency": "KWD",
+          "price_major": 36,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "36 KWD a month",
+          "url": "https://www.zyda.com/pricing",
+          "note": "Quarterly toggle; yearly '430 KWD billed yearly'. Up to five branches. KWD only."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Order ahead, collect fast",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Orders for a date, daily items and occasion peaks.",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "20 KWD a month",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.zyda.com/pricing",
+        "https://www.zyda.com/sa/pricing"
+      ]
+    },
+    {
+      "name": "Ordable",
+      "website": "https://www.itsordable.com",
+      "stored_id_prefix": "69a3cfce",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Kuwait-based restaurant ordering-website platform with pick-up from any branch and on-demand and scheduled orders; country pricing page with local-currency yearly prices, 0% commission",
+      "eligibility": {
+        "order_quote": "Enable pick-up from any of your branches, or deliver to any location with integrated delivery companies.",
+        "order_url": "https://www.itsordable.com/en/ksa/product/online-ordering",
+        "country_quote": "3500 SAR / year",
+        "country_url": "https://www.itsordable.com/en/ksa/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering Basic",
+          "currency": "SAR",
+          "price_major": 3500,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "3500 SAR / year",
+          "url": "https://www.itsordable.com/en/ksa/pricing",
+          "note": "Yearly price; 2 branches. 'Prices may vary from add-ons'. VAT not stated."
+        },
+        {
+          "plan_name": "Online Ordering Advanced",
+          "currency": "SAR",
+          "price_major": 6000,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "6000 SAR / year",
+          "url": "https://www.itsordable.com/en/ksa/pricing",
+          "note": "'Most Popular'; 5 branches."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "On Demand and Scheduled Orders",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "On Demand and Scheduled Orders",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "SMS or Whatsapp Notifications",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Deep integrations with Facebook, Instagram, TikTok, Google, and SnapChat for pixel perfect targeting.",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Branch Management",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Own Domain",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "We do not take commissions on any packages.",
+          "url": "https://www.itsordable.com/en/ksa/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.itsordable.com/en/ksa/pricing",
+        "https://www.itsordable.com/en/ksa/product/online-ordering",
+        "https://www.itsordable.com/pricing"
+      ]
+    }
+  ],
+  "notes": "SA count: 2 eligible priced in SAR (food-truck: 0) — Ordable (KSA pricing page: Online Ordering Basic 3500 SAR / year, Advanced 6000 SAR / year, 0% commission; pick-up and scheduled orders) and Foodics (Foodics Online: own website/app with pick-up, curbside, orders scheduled ahead; KSA bundles 248 / 450 / 765 a month per branch, CAUTION: amounts shown without a currency symbol and the page doesn't say Foodics Online is included — Advanced lists a 'Website' item). Zyda: eligible on evidence and lists Saudi Arabia, but its pricing page shows only Kuwait prices in KWD (also at /sa/pricing) — not counted. No Saudi food-truck ordering tool found. Qoyod Flavours (POS, not checked for ordering), MENU TIGER /ar/ (USD) not fetched. Never counted: HungerStation, Jahez, Talabat, Careem (marketplaces). Take App does not list SA."
+}

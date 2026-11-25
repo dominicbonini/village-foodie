@@ -21,6 +21,9 @@ export const DATA_FILES = [
   // compare-research-1 (24 Nov 2026): competitors read on their own websites for the countries closest to a live comparison
   // page — eligible ones only (online ordering ahead), quoted answers, plans in minor units, entries, and check requests.
   { path: 'data/compare-research-1/competitors.json', label: 'Comparison research (24 Nov)', kind: 'research' },
+  // compare-research-2 (25 Nov 2026): the same research for the countries not yet live, by four region agents (built by
+  // docs/compare-research-2/build.cjs; plans the review found without a stated currency or without online ordering are unclear).
+  { path: 'data/compare-research-2/competitors.json', label: 'Comparison research 2 (25 Nov)', kind: 'research' },
 ] as const
 export type DataFile = (typeof DATA_FILES)[number]
 

@@ -1,0 +1,488 @@
+{
+  "country": "PT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "software encomendas online restaurante take-away levantamento \"€/mês\" sem comissões Portugal",
+    "\"GlobalFood Menu\" Portugal restaurantes encomendas",
+    "loja online para restaurantes encomendas take-away \"hora de levantamento\" planos preços IVA empresa portuguesa",
+    "ZoneSoft OR Winrest OR \"Sage\" \"encomendas online\" restauração take-away módulo preço mensal levantamento",
+    "plataforma encomendas online restaurantes Portugal \"take away\" sem comissão subscrição mensal € site próprio app própria restaurante (extended)",
+    "roulote food truck eventos festivais encomendar antecipadamente app pagamento levantamento Portugal plataforma para vendedores"
+  ],
+  "vendors": [
+    {
+      "name": "Takego",
+      "website": "https://takego.pt",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Portuguese (\"Feito com em Portugal\") commission-free online ordering for restaurants: takeaway and delivery, orders can be scheduled up to 7 days ahead; € monthly plans",
+      "eligibility": {
+        "order_quote": "Permite agendamento de pedidos até 7 dias antes.",
+        "order_url": "https://takego.pt/",
+        "country_quote": "Sem fidelização · Cancele quando quiser · Suporte em português",
+        "country_url": "https://takego.pt/"
+      },
+      "plans": [
+        {
+          "plan_name": "Takeaway & Delivery",
+          "currency": "EUR",
+          "price_major": 99.99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "99,99€/mês",
+          "url": "https://takego.pt/",
+          "note": "Cheapest plan with online ordering ('Pedidos online ilimitados', 'Takeaway + Entregas ao domicílio', 'Ecrã de Cozinha (KDS)'); '0% Comissões para sempre'. IVA and set-up fee not stated. The 24,99€/mês Ementa Digital plan is a digital menu only (no online ordering), so it is left out."
+        },
+        {
+          "plan_name": "Total",
+          "currency": "EUR",
+          "price_major": 149.99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "149,99€/mês",
+          "url": "https://takego.pt/",
+          "note": "'Tudo do plano Takeaway & Delivery' plus QR dine-in, table bookings, CRM. IVA not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Permite agendamento de pedidos até 7 dias antes.",
+          "url": "https://takego.pt/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "O KDS (Kitchen Display System) da Takego organiza o caos.",
+          "url": "https://takego.pt/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Uma marca. Múltiplos locais.",
+          "url": "https://takego.pt/"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Subdomínio próprio (loja.takego.pt)",
+          "url": "https://takego.pt/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "99,99€/mês",
+          "url": "https://takego.pt/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% Comissões para sempre",
+          "url": "https://takego.pt/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://takego.pt/"
+      ]
+    },
+    {
+      "name": "SQV (Sistema Que Vende)",
+      "website": "http://sistemaquevende.pt",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Portuguese (Caparica) online shop + branded app for restaurants: take-away or delivery, now or scheduled, pickup at the shop; 0% commission; € monthly plans + IVA",
+      "eligibility": {
+        "order_quote": "Menu com fotos, extras e opções. Take-away ou delivery, para agora ou agendado.",
+        "order_url": "http://sistemaquevende.pt/",
+        "country_quote": "Rua dos Inventores, 2825-182 Caparica, Portugal",
+        "country_url": "http://sistemaquevende.pt/"
+      },
+      "plans": [
+        {
+          "plan_name": "Loja Online + App (Android & iOS)",
+          "currency": "EUR",
+          "price_major": 100.8,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 399.9,
+          "quote": "100,80€ /mês",
+          "url": "http://sistemaquevende.pt/",
+          "note": "'Valores + IVA'; set-up 'Adesão 399,90€ · pagamento único'; '0% de comissão por pedido'. The cheaper Website + Reservas Online plan (56,20€/mês, adesão 159,90€) is a website with bookings, not ordering, so left out."
+        },
+        {
+          "plan_name": "Loja Online + App + Reservas Online",
+          "currency": "EUR",
+          "price_major": 129.9,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 399.9,
+          "quote": "129,90€ /mês",
+          "url": "http://sistemaquevende.pt/",
+          "note": "'Valores + IVA'; 'Adesão 399,90€ · pagamento único'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Take-away ou delivery, para agora ou agendado.",
+          "url": "http://sistemaquevende.pt/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Cada pedido toca no tablet e sai impresso para a cozinha.",
+          "url": "http://sistemaquevende.pt/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Loja online com o seu domínio",
+          "url": "http://sistemaquevende.pt/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "100,80€ /mês",
+          "url": "http://sistemaquevende.pt/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% de comissão por pedido",
+          "url": "http://sistemaquevende.pt/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "http://sistemaquevende.pt/"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/pt-pt/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "SumUp Portugal's free online store (pt-pt site, € prices) offers in-store pickup; generic shop builder, nothing food-specific — single fallback",
+      "eligibility": {
+        "order_quote": "Ofereça aos clientes envio, recolha na loja e locais de prestação do serviço.",
+        "order_url": "https://www.sumup.com/pt-pt/loja-online/",
+        "country_quote": "Ofereça aos clientes envio, recolha na loja e locais de prestação do serviço.",
+        "country_url": "https://www.sumup.com/pt-pt/loja-online/"
+      },
+      "plans": [
+        {
+          "plan_name": "Loja online",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.75,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0 €",
+          "url": "https://www.sumup.com/pt-pt/loja-online/",
+          "note": "'0 €' next to 'Custos mensais' and '0 €' next to 'Crie uma loja online'; '2,75%' next to 'Taxa de transação competitiva' (payment fee per online sale). Country evidence is the Portuguese-language pt-pt page with € prices. VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "2,75%",
+          "url": "https://www.sumup.com/pt-pt/loja-online/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/pt-pt/loja-online/"
+      ]
+    },
+    {
+      "name": "Choice",
+      "website": "https://choiceqr.com",
+      "stored_id_prefix": "70b34967",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "choiceqr.com/pt/pricing answered HTTP 403 on 25 Nov 2026 (one try); could not check a Portuguese page or prices.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://choiceqr.com/pt/pricing"
+      ]
+    },
+    {
+      "name": "Sage GesRest II",
+      "website": "https://sage.com/pt-pt/produtos/sage-gesrestii/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Seen only in a search result: a restaurant till whose take-away is staff-entered (order taken and pickup time scheduled at the till); no customer online ordering shown; not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": "98c064da",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK restaurant/takeaway ordering platform with scheduled pickup pre-orders; its own supported-regions doc lists Portugal (Portuguese, EUR payments). Prices shown only in GBP (no currency selector), so not counted for the local currency.",
+      "eligibility": {
+        "order_quote": "Scheduled pre-orders (pickup & delivery slots)",
+        "order_url": "https://storekit.com/pricing",
+        "country_quote": "Portugal | ✓ Portuguese | ✓ EUR",
+        "country_url": "https://storekit.com/docs/getting-started/supported-regions"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Free",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only. 'All prices are per location and exclude VAT.' 'Every plan adds a flat per-order rate, never a commission' (amount not shown)."
+        },
+        {
+          "plan_name": "Connect",
+          "currency": "GBP",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£49",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; plus a flat per-order rate (amount not shown). Set-up self-serve."
+        },
+        {
+          "plan_name": "Grow",
+          "currency": "GBP",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "£99",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; set-up '£199 per location'; plus a flat per-order rate."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Capacity controls (slot limits)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "£49",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Every plan adds a flat per-order rate, never a commission, plus unlimited items and your own customer data.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://storekit.com/pricing",
+        "https://storekit.com/docs/getting-started/supported-regions"
+      ]
+    }
+  ],
+  "notes": "No Portuguese food-truck / roulote / event ordering tool exists that I could find (searches return only foreign guides, App Store apps and marketplaces). NEW: two genuine Portuguese restaurant online-ordering tools with € prices on their own sites: Takego (Takeaway & Delivery 99,99€/mês, Total 149,99€/mês, scheduling up to 7 days ahead, 0% commission) and SQV / Sistema Que Vende (Loja Online + App 100,80€/mês + IVA, 129,90€/mês with bookings; adesão 399,90€; 'para agora ou agendado'). SumUp pt-pt online store (recolha na loja, 0 €/mês + 2,75 %) kept as the generic fallback. Choice /pt/pricing 403. 'GlobalFood Menu' (an old article's 'first Portuguese free ordering platform') could not be found — likely a GloriaFood rebrand; GloriaFood itself was found not relevant for PT in compare-research-1 (USD, Brazil-only Portuguese pages, end of life). WinRest / ZoneSoft show no public online-ordering price. MENU TIGER (agent 2) has a /pt site with USD prices only. Takego shows no IVA statement. Storekit (owned by agent 1): its supported-regions doc lists Portugal (Portuguese, EUR payments), but prices are GBP only, so it is recorded and not counted."
+}

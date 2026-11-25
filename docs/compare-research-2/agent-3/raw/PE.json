@@ -1,0 +1,116 @@
+{
+  "country": "PE",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Perú sistema pedidos online restaurante recojo en tienda sin comisión plan mensual S/ food truck carta digital",
+    "\"recojo en tienda\" carta digital pedidos WhatsApp restaurantes Perú plataforma planes \"S/\" mensual",
+    "plataforma peruana pedidos online propios restaurantes sin comisiones \"recojo\" programar pedido precio soles mes"
+  ],
+  "vendors": [
+    {
+      "name": "Foodiv",
+      "website": "https://www.foodiv.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "US/India online-ordering tool (addresses Lincoln, Nebraska and Gandhinagar); found via a Capterra Peru listing but its own site shows no Peruvian presence or PEN price; not a local tool",
+      "check_urls": [
+        "https://foodiv.com/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap, same as compare-research-1 BR): own online menu / WhatsApp ordering with delivery management, but neither the Spanish home page nor the Spanish pricing page says pickup / para llevar / retiro / scheduled orders; a web search found no own-site pickup page; plan prices USD only (no local currency)",
+      "eligibility": {
+        "order_quote": "Centraliza los pedidos de WhatsApp en una sola fila, sin copiar y pegar, sin errores manuales.",
+        "order_url": "https://www.olaclick.com/es/",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, no local-currency price; 'Los precios son para suscripciones anuales pagadas al momento de la compra' (billed yearly). Others: Premium US$ 25.00/mes, Elite US$ 59.00/mes, Impulso US$ 160.00/mes. Home page: '0% de comisión.'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es"
+      ]
+    },
+    {
+      "name": "Restaurant.pe",
+      "website": "https://restaurant.pe",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Peruvian restaurant software with e-invoicing; the home page rendered only its title ('Software para restaurante con Facturación Electrónica - Restaurant.pe') to the page reader (script-rendered), so no ordering or price facts could be read",
+      "check_urls": [
+        "https://restaurant.pe/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Ganvent",
+      "website": "https://ganvent.com",
+      "stored_id_prefix": null,
+      "focus": null,
+      "verdict": "not_relevant",
+      "reason": "generic online-store / inventory builder (demo store sells blazers); no food, pickup or order-ahead wording on its home page; 'Ganvent Eats' app not mentioned on the site",
+      "check_urls": [
+        "https://ganvent.com/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Mesa 24/7",
+      "website": "https://www.mesa247.pe",
+      "stored_id_prefix": null,
+      "focus": null,
+      "verdict": "not_relevant",
+      "reason": "Peruvian multi-restaurant reservations / ordering marketplace ('Los mejores restaurantes y experiencias gastronómicas en un solo lugar'); restaurant plans are reservations, web and marketing; no restaurant plan price on the home page",
+      "check_urls": [
+        "https://www.mesa247.pe/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Fudo (Tu Delivery)",
+      "website": "https://fu.do",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "no Peruvian Fudo page: https://fu.do/es-pe/delivery/ answered 404 (Fudo has AR, CL, CO pages); no stated presence in Peru",
+      "check_urls": [
+        "https://fu.do/es-pe/delivery/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    }
+  ],
+  "notes": "Nothing eligible exists in PEN after ~8 vendors / three searches: Foodiv (US/India, no Peru presence), Restaurant.pe (script-rendered, unreadable), Ganvent (generic shop builder), Mesa 24/7 (marketplace / reservations), Fudo (no Peru page, 404), OlaClick (USD only, no pickup wording). Justo sells in Peru per press (pide.getjusto.com marketplace too) but its site shows no pickup wording and only Chilean UF prices (see CL). KOM (kom.pe) is a Peruvian web agency quoting one-off builds (S/ 1,950 + IGV for a WhatsApp ordering carta, per search snippet) — an agency, not an ordering tool; site not read, not counted. 'What The Truck!' on the Peruvian App Store is a locator; the stored What The Truck (whatthetruck.ai) is a UK tool with GBP prices and no Peru mention (read once; agent 1 region). Pedix lists only USD prices for countries outside AR/CL/MX/BR/UY."
+}

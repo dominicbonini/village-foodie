@@ -1,0 +1,157 @@
+{
+  "country": "MT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Malta company online ordering system for restaurants takeaways click and collect own website €/month Maltese software",
+    "Malta food truck OR \"street food\" pre-order app for vendors events Gozo order ahead collect platform",
+    "POS system Malta restaurants \"online ordering\" pickup module Maltese provider pricing"
+  ],
+  "vendors": [
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com/",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "ordering platform (operator Elite Digital Services, LLC, USA) whose country-terms page lists Malta; English site, EUR prices, a food-truck page and pre-orders for a chosen date and time; 0 € a month, 0.45 € per order paid by the customer. No Malta-specific page or language",
+      "eligibility": {
+        "food_quote": "Run your food truck business smarter.",
+        "food_url": "https://www.foxifood.com/use-cases/food-truck/",
+        "order_quote": "Let customers place orders in advance for a specific date and time.",
+        "order_url": "https://www.foxifood.com/features/",
+        "country_quote": "Malta",
+        "country_url": "https://www.foxifood.com/legal/country-terms/"
+      },
+      "plans": [
+        {
+          "plan_name": "FoxiFood (no monthly fee, per order)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.45,
+          "setup_major": 0,
+          "quote": "Monthly fee 0 €",
+          "url": "https://www.foxifood.com/pricing/",
+          "note": "0.45 € per pickup/dine-in order, 'paid by the customer on top of the order'; Stripe card fee 1.5/2% + 0.25 €; 'Setup fee 0 €'. Features page instead says 'Just 2% + 0.45 EUR per order, no monthly fees.'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Let customers place orders in advance for a specific date and time.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Let customers place orders in advance for a specific date and time.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Move your truck anywhere and keep taking orders.",
+          "url": "https://www.foxifood.com/use-cases/food-truck/"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Professional restaurant marketing services: Google Ads, social media campaigns, menu photography, SEO, and local strategy.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "See all orders in real time — QR, online, phone, and walk-in.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "See all orders in real time — QR, online, phone, and walk-in.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple restaurant locations from one dashboard.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Run your restaurant ordering website on your own domain.",
+          "url": "https://www.foxifood.com/features/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Monthly fee 0 €",
+          "url": "https://www.foxifood.com/pricing/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "it is paid by the customer on top of the order.",
+          "url": "https://www.foxifood.com/pricing/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Card fee (Stripe)* 1.5/2% + 0.25 €",
+          "url": "https://www.foxifood.com/pricing/"
+        }
+      ],
+      "check_urls": [
+        "https://www.foxifood.com/features/",
+        "https://www.foxifood.com/use-cases/food-truck/",
+        "https://www.foxifood.com/pricing/",
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    },
+    {
+      "name": "H360 ORDER (OARC Digital)",
+      "website": "https://oarcdigital.com/h360/restaurant-table-ordering-qr-malta",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Malta-targeted QR ordering mainly for guests at the table, with takeout pickup only as an optional extra; no price for H360 ORDER on the page, company base not stated; the page reader would not give verbatim sentences",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://oarcdigital.com/h360/restaurant-table-ordering-qr-malta"
+      ]
+    },
+    {
+      "name": "Time To Eat Malta",
+      "website": "https://timetoeat.com.mt",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "found by search; timetoeat.com.mt does not resolve (DNS ENOTFOUND), so nothing could be checked; probably a consumer ordering marketplace",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://timetoeat.com.mt/"
+      ]
+    }
+  ],
+  "notes": "MT: 1 eligible with an EUR price: FoxiFood (stored d03a6e1f, food_truck), whose country-terms page lists Malta; English site only (no Maltese page), 0 € a month + 0.45 € per order paid by the customer, pre-orders for a chosen date and time, food-truck page; operator Elite Digital Services, LLC (USA). No Maltese ordering tool was found: search results are dominated by Wolt/Bolt listings, directories (FoodChow listing, maltamenu.com.mt delivery platform — not opened, marketplace) and review sites. Checked: H360 ORDER (OARC Digital, Malta-targeted QR table ordering, pickup only as an aside, no price) not_relevant; Time To Eat Malta does not resolve. ATS Malta (PI Electronique tills) shows no online ordering in the search snippet; not opened. Round-1 dead ends not repeated: Deliwee (connection refused), KantinApp (Cyprus). Owned elsewhere, not fetched: Storekit and SumUp (agent 1; Storekit's supported-regions doc listed Malta in round 1, GBP prices), Jamezz (stored ce1df15a, Dutch multi-country — agent 1's). Stop rule applied."
+}

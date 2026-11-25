@@ -1,0 +1,384 @@
+{
+  "country": "FI",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "verkkotilausjärjestelmä ravintolalle noutotilaus ennakkotilaus \"€/kk\" oma verkkokauppa ravintola ilman provisiota",
+    "GastroSprint verkkotilaus ravintola hinnasto",
+    "kassajärjestelmä ravintola verkkotilaukset noutoaika asiakas tilaa etukäteen hinta kuukausi suomalainen",
+    "\"tilaa ja nouda\" OR \"noutotilaukset\" palvelu ravintoloille kahviloille oma tilaussivu hinnat kk alv"
+  ],
+  "vendors": [
+    {
+      "name": "Food4you",
+      "website": "https://food4you.fi",
+      "stored_id_prefix": "f6a04474",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Finnish restaurant online ordering on the restaurant's own channel with ordering ahead and queue-free pickup by order code; EUR prices + ALV; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Ennakkoon tilaaminen ja jonoton nouto",
+        "order_url": "https://food4you.fi/",
+        "country_quote": "+ Alv 25,5%",
+        "country_url": "https://food4you.fi/"
+      },
+      "plans": [
+        {
+          "plan_name": "Startti",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 3,
+          "per_order_fixed_major": null,
+          "setup_major": 490,
+          "quote": "0€ / kk",
+          "url": "https://food4you.fi/",
+          "note": "Commission 'Komissio: 3% / tilaus'; '+ Alv 25,5%'. Set-up 'Perus Käyttöönotto' 490€ + Alv (Laaja käyttöönotto 790€); set-up is listed separately, not per plan."
+        },
+        {
+          "plan_name": "Aktiivinen",
+          "currency": "EUR",
+          "price_major": 39,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 1.8,
+          "per_order_fixed_major": null,
+          "setup_major": 490,
+          "quote": "39€ / kk",
+          "url": "https://food4you.fi/",
+          "note": "'Komissio: 1,8% / tilaus'; '+ Alv 25,5%'. Set-up as above."
+        },
+        {
+          "plan_name": "Kasvu",
+          "currency": "EUR",
+          "price_major": 89,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 1.2,
+          "per_order_fixed_major": null,
+          "setup_major": 490,
+          "quote": "89€ / kk",
+          "url": "https://food4you.fi/",
+          "note": "'Komissio: 1,2% / tilaus'; '+ Alv 25,5%'. Set-up as above."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Ennakkoon tilaaminen ja jonoton nouto",
+          "url": "https://food4you.fi/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Tilaukset tulevat suoraan keittiön tai myyntipisteen näytölle",
+          "url": "https://food4you.fi/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Food4You voidaan asentaa myös valmiiseen sivustoon",
+          "url": "https://food4you.fi/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "39€ / kk",
+          "url": "https://food4you.fi/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Komissio: 1,8% / tilaus",
+          "url": "https://food4you.fi/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://food4you.fi/"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/fi-fi/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "SumUp Verkkokauppa on its Finnish site offers orders for pickup; 0 € a month + 1,49 %; generic shop, no food wording — single fallback",
+      "eligibility": {
+        "order_quote": "Tarjoa tilauksille toimitus tai nouto tai myy paikan päällä suoritettavia palveluita.",
+        "order_url": "https://www.sumup.com/fi-fi/verkkokauppa/",
+        "country_quote": "Tarjoa tilauksille toimitus tai nouto tai myy paikan päällä suoritettavia palveluita.",
+        "country_url": "https://www.sumup.com/fi-fi/verkkokauppa/"
+      },
+      "plans": [
+        {
+          "plan_name": "Verkkokauppa",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 1.49,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0 €",
+          "url": "https://www.sumup.com/fi-fi/verkkokauppa/",
+          "note": "'0 €' with 'Kuukausimaksu'; '0 €' with 'Verkkokaupan perustaminen'; '1,49 %' with 'Kilpailukykyinen välityspalkkio' (payment fee per online sale). Finnish fi-fi page. VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "1,49 %",
+          "url": "https://www.sumup.com/fi-fi/verkkokauppa/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/fi-fi/verkkokauppa/"
+      ]
+    },
+    {
+      "name": "Superb",
+      "website": "https://www.superbexperience.com",
+      "stored_id_prefix": "a09713bc",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "No Finnish site: superbexperience.com/fi/pricing returns 404; nothing shows it sells in Finland.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.superbexperience.com/fi/pricing"
+      ]
+    },
+    {
+      "name": "GastroSprint",
+      "website": "https://gastrosprint.de",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Seen only on Capterra listings (available country: Germany); no Finnish presence found; own site not opened. German tool — agent for DE (not researched in compare-research-2).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": "98c064da",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK restaurant/takeaway ordering platform with scheduled pickup pre-orders; its own supported-regions doc lists Finland (English, EUR payments). Prices shown only in GBP (no currency selector), so not counted for the local currency.",
+      "eligibility": {
+        "order_quote": "Scheduled pre-orders (pickup & delivery slots)",
+        "order_url": "https://storekit.com/pricing",
+        "country_quote": "Finland | ✓ English | ✓ EUR",
+        "country_url": "https://storekit.com/docs/getting-started/supported-regions"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Free",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only. 'All prices are per location and exclude VAT.' 'Every plan adds a flat per-order rate, never a commission' (amount not shown)."
+        },
+        {
+          "plan_name": "Connect",
+          "currency": "GBP",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£49",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; plus a flat per-order rate (amount not shown). Set-up self-serve."
+        },
+        {
+          "plan_name": "Grow",
+          "currency": "GBP",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "£99",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; set-up '£199 per location'; plus a flat per-order rate."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Capacity controls (slot limits)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "£49",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Every plan adds a flat per-order rate, never a commission, plus unlimited items and your own customer data.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://storekit.com/pricing",
+        "https://storekit.com/docs/getting-started/supported-regions"
+      ]
+    }
+  ],
+  "notes": "Still no Finnish food-truck / ruokarekka ordering tool: searches (here and in compare-research-1's six) return Wolt, Foodora, Jotform, MENU TIGER (owned by agent 2; USD), comparison sites and a consumer app (Kavolia, App Store only). One real Finnish food tool with EUR prices: Food4you (0/39/89 €/kk + ALV, commission 3/1,8/1,2 %, set-up 490 €). SumUp verkkokauppa (nouto, 0 € + 1,49 %) as the generic fallback. Superb has no /fi site. DISH Order pages exist for other countries but METRO/DISH shows no Finland site in results (not opened). Creavo Order (table ordering only) stays not relevant per compare-research-1. Stop rule applied. Storekit (owned by agent 1): its supported-regions doc lists Finland (English, EUR payments), but prices are GBP only, so it is recorded and not counted."
+}

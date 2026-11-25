@@ -1,0 +1,759 @@
+{
+  "country": "SE",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "weiq.tech take away foodtruck beställ online",
+    "Karma kassasystem restaurang pris kr/mån onlinebeställning take away karma.life",
+    "Caspeco take away onlinebeställning pris kr/mån hämta (caspeco.com/.se only)",
+    "beställningssystem foodtruck förbeställ online hämta \"kr/mån\" Sverige",
+    "onlinebeställning för restauranger egen hemsida avhämtning ingen provision pris per månad kr exkl moms",
+    "Yabie Online beställning take away pris kr/mån (yabie.com only)",
+    "Qopla priser kr/mån kassasystem onlinebeställning (qopla.se/.com only)"
+  ],
+  "vendors": [
+    {
+      "name": "WEIQ",
+      "website": "https://weiq.tech",
+      "stored_id_prefix": "462996c6",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Swedish till with WEIQ Take Away: guests order and pay ahead on the business's website and get a notice to collect; take-away page names foodtrucks; SEK prices",
+      "eligibility": {
+        "food_quote": "Mindre restauranger, caféer och foodtrucks som arbetar med take-away",
+        "food_url": "https://weiq.tech/take-away/",
+        "order_quote": "Gör take-away enkelt – låt gästerna beställa och betala direkt via din hemsida.",
+        "order_url": "https://weiq.tech/take-away/"
+      },
+      "plans": [
+        {
+          "plan_name": "WEIQ Pro",
+          "currency": "SEK",
+          "price_major": 750,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Från 750 SEK /mån",
+          "url": "https://weiq.tech/pris/",
+          "note": "'Från' (from) price; Pro includes 'Online order på hemsida' and 'QR-beställningar'. Plus a transaction fee per payment; the take-away page says 'Låg transaktionsavgift (1–2 %)' (a range, so per_order_pct left null). Moms not stated."
+        },
+        {
+          "plan_name": "Säsongspaket (WEIQ Pro for a season)",
+          "currency": "SEK",
+          "price_major": 8000,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "För 8000 SEK per år får du allt som ingår i WEIQ PRO, samt 1 WEIQ MAX (den större terminalen).",
+          "url": "https://weiq.tech/pris/",
+          "note": "Yearly price exactly as stated; includes everything in Pro plus one terminal."
+        },
+        {
+          "plan_name": "WEIQ Easy (+ online ordering add-on)",
+          "currency": "SEK",
+          "price_major": 250,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Från 250 SEK /mån",
+          "url": "https://weiq.tech/pris/",
+          "note": "Online ordering is only an optional add-on on Easy ('Beställningar via QR kod eller hemsida' under Tillval) and the add-on's price is not shown, so the real price with online ordering is higher. FAQ example fee 't.ex. 0,8% för WEIQ Easy'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Du får beställningar utskrivna direkt och kan svara med en beräknad tid",
+          "url": "https://weiq.tech/take-away/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Om du saknar hemsida kan du använda en egen WEIQ-länk som du enkelt delar på sociala medier",
+          "url": "https://weiq.tech/take-away/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "WEIQ sätter upp din meny åt dig och kopplar den direkt till din befintliga hemsida.",
+          "url": "https://weiq.tech/take-away/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Du betalar bara det som står – månadsavgift + transaktionsavgift.",
+          "url": "https://weiq.tech/pris/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Låg transaktionsavgift (1–2 %)",
+          "url": "https://weiq.tech/take-away/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Transaktionsavgiften är den procent som dras vid varje betalning (t.ex. 0,8% för WEIQ Easy).",
+          "url": "https://weiq.tech/pris/"
+        }
+      ],
+      "check_urls": [
+        "https://weiq.tech/",
+        "https://weiq.tech/pris/",
+        "https://weiq.tech/take-away/"
+      ]
+    },
+    {
+      "name": "Yabie",
+      "website": "https://yabie.com",
+      "stored_id_prefix": "5f613b54",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Swedish POS (Swedish site, SEK prices) with a foodtruck page; its Yabie Express page offers online ordering where guests collect their food without queuing and pay when ordering",
+      "eligibility": {
+        "food_quote": "Perfekt för dig som står på marknader, festivaler eller rullar mellan lunchstopp.",
+        "food_url": "https://yabie.com/branscher/kassasystem-foodtruck/",
+        "order_quote": "och dina gäster kan hämta ut sin mat utan att behöva stå i kö, och du får betalt direkt vid beställningen.",
+        "order_url": "https://yabie.com/kassasystem/yabie-express/"
+      },
+      "plans": [
+        {
+          "plan_name": "Yabie Express",
+          "currency": "SEK",
+          "price_major": 899,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Fr. 899 kr /månad",
+          "url": "https://yabie.com/kassasystem/yabie-express/",
+          "note": "NEW today: the Yabie Express page carries both this 'from' price and the online-ordering section ('Låt dina kunder beställa online', 'Inget krångel eller extra kostnad för dig eller dina kunder'), so online ordering appears to come with this plan at no extra cost; the page does not say in so many words that it is included. The foodtruck page instead recommends Yabie Start ('Månadsavgift fr. 499kr', 'Passar utmärkt för foodtrucks, kiosker och torghandel') but says nothing about online ordering. Moms not stated. Reviewer: borderline plan match."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "fungerar offline vid behov",
+          "url": "https://yabie.com/branscher/kassasystem-foodtruck/"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Fr. 899 kr /månad",
+          "url": "https://yabie.com/kassasystem/yabie-express/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://yabie.com/branscher/kassasystem-foodtruck/",
+        "https://yabie.com/kassasystem/yabie-express/"
+      ]
+    },
+    {
+      "name": "Qopla",
+      "website": "https://qopla.se",
+      "stored_id_prefix": "f5707721",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Swedish POS + online ordering; home page names food trucks; guests choose 'Hämta / Leverera senare' with a time. No price on the site (contact sales).",
+      "eligibility": {
+        "food_quote": "Oavsett om du driver en foodtruck eller flera restauranger funkar Qopla lika bra.",
+        "food_url": "https://qopla.se/",
+        "order_quote": "I kassan väljer gästen enkelt “Hämta / Leverera senare” och anger önskad tid.",
+        "order_url": "https://qopla.se/onlinebestaellningar"
+      },
+      "plans": [
+        {
+          "plan_name": "Onlinebeställningar",
+          "currency": "SEK",
+          "price_major": null,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://qopla.se/onlinebestaellningar",
+          "note": "No price on qopla.se today either (a site-restricted search for priser/kr/mån found no price list; only contact sales). Eligibility quotes and answers carried from compare-research-1 (24 Nov) and not re-fetched today because the plan has no price and does not count."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "I kassan väljer gästen enkelt “Hämta / Leverera senare” och anger önskad tid.",
+          "url": "https://qopla.se/onlinebestaellningar"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Beställningen landar automatiskt på köksskärmen",
+          "url": "https://qopla.se/onlinebestaellningar"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Oavsett om du driver en foodtruck eller flera restauranger funkar Qopla lika bra.",
+          "url": "https://qopla.se/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Vi integrerar eller tar fram en ny hemsida där dina gäster kan beställa från direkt.",
+          "url": "https://qopla.se/onlinebestaellningar"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://qopla.se/",
+        "https://qopla.se/onlinebestaellningar"
+      ]
+    },
+    {
+      "name": "Caspeco",
+      "website": "https://caspeco.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Swedish restaurant system with an online-order module: guests order and pay digitally and collect the order themselves; no price anywhere on its site",
+      "eligibility": {
+        "order_quote": "Erbjud bordsservering, take-away eller låt gästen hämta upp beställningen själva.",
+        "order_url": "https://caspeco.com/online-order"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Order",
+          "currency": "SEK",
+          "price_major": null,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://caspeco.com/online-order",
+          "note": "No price on the Online Order page or on Caspeco's own article about till costs (caspeco.com/artiklar/vad-kostar-ett-kassasystem-i-manaden/: 'Priset beror ofta på vilka behov din restaurang har'); contact info@caspeco.se. No pickup-time choice stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Effektivisera orderhanteringen – oavsett om dina gäster är på plats, online eller beställer via telefon.",
+          "url": "https://caspeco.com/online-order"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://caspeco.com/online-order",
+        "https://caspeco.com/artiklar/vad-kostar-ett-kassasystem-i-manaden/"
+      ]
+    },
+    {
+      "name": "Purspot",
+      "website": "https://purspot.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Swedish restaurant POS with an Online-order module: customers order online for pickup, straight into the till; no price on its site (sales contact only)",
+      "eligibility": {
+        "order_quote": "Oavsett om det gäller take-away, hemleverans eller beställning för upphämtning integreras beställningen direkt i ditt kassasystem.",
+        "order_url": "https://purspot.com/produkter/online-order"
+      },
+      "plans": [
+        {
+          "plan_name": "Online-order",
+          "currency": "SEK",
+          "price_major": null,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://purspot.com/produkter/online-order",
+          "note": "No price on the home page or the Online-order page; sales@purspot.com / phone only. No pickup-time choice stated; no food-truck page any more."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Oavsett om det gäller take-away, hemleverans eller beställning för upphämtning integreras beställningen direkt i ditt kassasystem.",
+          "url": "https://purspot.com/produkter/online-order"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://purspot.com",
+        "https://purspot.com/produkter/online-order"
+      ]
+    },
+    {
+      "name": "Karma",
+      "website": "https://karma.life",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Stockholm restaurant platform with 'Order online via website or QR', but its pricing page (karma.life/pricing) shows no plans to the page reader (script-rendered); /sv/priser, /pos-system, /pos-system/food-truck and /en/products/takeaway all 404; the old food-truck page now serves the home page. No pickup/order-ahead sentence could be read.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://karma.life/sv",
+        "https://karma.life/pricing",
+        "https://karma.life/en/customer-types/food-truck"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/sv-se/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "SumUp's Swedish site sells a free webbutik with in-store pickup (butiksupphämtning); generic web shop, nothing food-specific — single fallback only",
+      "eligibility": {
+        "order_quote": "Erbjud leverans, butiksupphämtning och visa din verksamhets adress.",
+        "order_url": "https://www.sumup.com/sv-se/webbutik/",
+        "country_quote": "Öppna en webbutik utan abonnemangskostnader eller dolda avgifter.",
+        "country_url": "https://www.sumup.com/sv-se/webbutik/"
+      },
+      "plans": [
+        {
+          "plan_name": "Webbutik",
+          "currency": "SEK",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 1.49,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0 kr",
+          "url": "https://www.sumup.com/sv-se/webbutik/",
+          "note": "'0 kr' shown with the label 'Månadskostnader'; '1,49 %' with 'Prisvärd transaktionsavgift' (payment fee per online sale, so in per_order_pct). Swedish-language sv-se page priced in kr. No pickup-time choice, no food wording. compare-research-1 marked it not_relevant for lack of food wording; recorded here as the generic fallback per the compare-research-2 rule."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Öppna en webbutik utan abonnemangskostnader eller dolda avgifter.",
+          "url": "https://www.sumup.com/sv-se/webbutik/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "1,49 %",
+          "url": "https://www.sumup.com/sv-se/webbutik/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/sv-se/webbutik/"
+      ]
+    },
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": "98c064da",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK restaurant/takeaway ordering platform with scheduled pickup pre-orders; its own supported-regions doc lists Sweden (Swedish, SEK payments). Prices shown only in GBP (no currency selector), so not counted for the local currency.",
+      "eligibility": {
+        "order_quote": "Scheduled pre-orders (pickup & delivery slots)",
+        "order_url": "https://storekit.com/pricing",
+        "country_quote": "Sweden | ✓ Swedish | ✓ SEK",
+        "country_url": "https://storekit.com/docs/getting-started/supported-regions"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Free",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only. 'All prices are per location and exclude VAT.' 'Every plan adds a flat per-order rate, never a commission' (amount not shown)."
+        },
+        {
+          "plan_name": "Connect",
+          "currency": "GBP",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£49",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; plus a flat per-order rate (amount not shown). Set-up self-serve."
+        },
+        {
+          "plan_name": "Grow",
+          "currency": "GBP",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "£99",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; set-up '£199 per location'; plus a flat per-order rate."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Capacity controls (slot limits)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "£49",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Every plan adds a flat per-order rate, never a commission, plus unlimited items and your own customer data.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://storekit.com/pricing",
+        "https://storekit.com/docs/getting-started/supported-regions"
+      ]
+    }
+  ],
+  "notes": "Two food-truck tools now have a SEK price: WEIQ (Pro från 750 SEK/mån; Säsongspaket 8000 SEK per år; Easy från 250 + unpriced ordering add-on) and Yabie (NEW: the Yabie Express page shows 'Fr. 899 kr /månad' together with its online-ordering section; it does not say outright that online ordering is in that plan, so borderline). Qopla still shows no price. The three restaurant tools compare-research-1 left unfinished: Caspeco and Purspot do take online orders for pickup but show no price anywhere; Karma's pricing page is script-rendered (no plans visible) and its takeaway/food-truck pages 404 or redirect home, so unreadable. A Swedish search for other food-truck ordering tools with kr prices found only foreign tools (UpMenu, Restolabs, Vev, Snackpass — none Swedish-priced), MENU TIGER (owned by agent 2; USD), NemTakeaway (Danish, DKK) and Norwegian FINN ads. SumUp's sv-se webbutik with butiksupphämtning recorded as the generic fallback. Zettle not re-read (not relevant). VAT is never stated on these pages. Storekit (owned by agent 1): its supported-regions doc lists Sweden (Swedish, SEK payments), but prices are GBP only, so it is recorded and not counted."
+}

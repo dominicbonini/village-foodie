@@ -1,0 +1,447 @@
+{
+  "country": "QA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Foodics Qatar pricing bundles QAR per month (site:foodics.com)",
+    "Qatar restaurant own online ordering website pickup plan price QAR month commission-free Doha"
+  ],
+  "vendors": [
+    {
+      "name": "Ordable",
+      "website": "https://www.itsordable.com",
+      "stored_id_prefix": "69a3cfce",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Kuwait-based restaurant ordering-website platform with pick-up from any branch and on-demand and scheduled orders; country pricing page with local-currency yearly prices, 0% commission",
+      "eligibility": {
+        "order_quote": "Enable pick-up from any of your branches, or deliver to any location with integrated delivery companies.",
+        "order_url": "https://www.itsordable.com/en/ksa/product/online-ordering",
+        "country_quote": "3000 QAR / year",
+        "country_url": "https://www.itsordable.com/en/qatar/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering Basic",
+          "currency": "QAR",
+          "price_major": 3000,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "3000 QAR / year",
+          "url": "https://www.itsordable.com/en/qatar/pricing",
+          "note": "Yearly price. VAT not stated. Feature quotes from Ordable's KSA online-ordering page (same product)."
+        },
+        {
+          "plan_name": "Online Ordering Advanced",
+          "currency": "QAR",
+          "price_major": 4500,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "4500 QAR / year",
+          "url": "https://www.itsordable.com/en/qatar/pricing",
+          "note": "'Most Popular'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "On Demand and Scheduled Orders",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "On Demand and Scheduled Orders",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "SMS or Whatsapp Notifications",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Deep integrations with Facebook, Instagram, TikTok, Google, and SnapChat for pixel perfect targeting.",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Branch Management",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Own Domain",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "We do not take commissions on any packages.",
+          "url": "https://www.itsordable.com/en/qatar/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.itsordable.com/en/qatar/pricing",
+        "https://www.itsordable.com/en/ksa/product/online-ordering"
+      ]
+    },
+    {
+      "name": "Zyda",
+      "website": "https://www.zyda.com",
+      "stored_id_prefix": "797df612",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Gulf/Egypt restaurant ordering-website platform: pickup & curbside in every plan ('Order ahead, collect fast'), orders for a date; pricing page lists the country but shows prices in KWD only (QA: no QAR price, so not counted)",
+      "eligibility": {
+        "order_quote": "Order ahead, collect fast",
+        "order_url": "https://www.zyda.com/pricing",
+        "country_quote": "Qatar",
+        "country_url": "https://www.zyda.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "KWD",
+          "price_major": 20,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "20 KWD a month",
+          "url": "https://www.zyda.com/pricing",
+          "note": "'Prices for Kuwait. Prices for new merchants.' Shown on the quarterly toggle (billed quarterly); yearly '240 KWD billed yearly'. Up to two branches. KWD only — no price in this country's currency on the page (zyda.com/sa/pricing also shows Kuwait prices)."
+        },
+        {
+          "plan_name": "Growth",
+          "currency": "KWD",
+          "price_major": 36,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "36 KWD a month",
+          "url": "https://www.zyda.com/pricing",
+          "note": "Quarterly toggle; yearly '430 KWD billed yearly'. Up to five branches. KWD only."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Order ahead, collect fast",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Orders for a date, daily items and occasion peaks.",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "20 KWD a month",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.zyda.com/pricing",
+        "https://www.zyda.com/sa/pricing"
+      ]
+    },
+    {
+      "name": "Blink (blinkco.io)",
+      "website": "https://www.blinkco.io",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Pakistan-based restaurant POS and branded ordering website/app with delivery or pickup; Locations menu lists PK, SA, BH, QA, UAE, KW and ZA; prices in '$' per branch per month (QA: USD only, so not counted)",
+      "eligibility": {
+        "order_quote": "Give your customers the option between delivery and pickup",
+        "order_url": "https://www.blinkco.io/?p=20107",
+        "country_quote": "Let your customers in Qatar find you online with Blink’s complete website ordering platform",
+        "country_url": "https://www.blinkco.io/?p=20107"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering F&B — Website Only",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "Only '$' shown (no currency code; read as USD), not tied to any country. No commission mentioned."
+        },
+        {
+          "plan_name": "Online Ordering F&B — Website + App",
+          "currency": "USD",
+          "price_major": 100,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$100/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "'$' only (read as USD)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Give your customers the option between delivery and pickup",
+          "url": "https://www.blinkco.io/?p=20107",
+          "note": "no chosen-time ordering stated"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "priced per branch"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "welcome your customers to a fully branded website showcasing your restaurant.",
+          "url": "https://www.blinkco.io/?p=20107"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.blinkco.io/pricing",
+        "https://www.blinkco.io/?p=20107"
+      ]
+    },
+    {
+      "name": "Sapaad",
+      "website": "https://www.sapaad.com",
+      "stored_id_prefix": "304ad1a7",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Dubai-based restaurant POS; Sapaad.Online is a commission-free branded ordering website and its Delivery Management handles scheduled pickups; pricing is quote-only (no price on its own site). Not tied to a specific Gulf country on the pricing page",
+      "eligibility": {
+        "order_quote": "Oversee all orders — drivers, third-party apps, and scheduled pickups — with live tracking and delivery-time analytics.",
+        "order_url": "https://www.sapaad.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Sapaad.Online (quote)",
+          "currency": "QAR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": null,
+          "url": "https://www.sapaad.com/pricing",
+          "note": "'Get your custom quote' — no prices or country selector on the pricing page; country presence not confirmed on the page read."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Oversee all orders — drivers, third-party apps, and scheduled pickups — with live tracking and delivery-time analytics.",
+          "url": "https://www.sapaad.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Launch your own branded online ordering website — commission-free and fully integrated.",
+          "url": "https://www.sapaad.com/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Launch your own branded online ordering website — commission-free and fully integrated.",
+          "url": "https://www.sapaad.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.sapaad.com/pricing"
+      ]
+    }
+  ],
+  "notes": "QA count: 1 eligible priced in QAR (food-truck: 0) — Ordable (Qatar pricing page: Online Ordering Basic 3000 QAR / year, Advanced 4500 QAR / year, 0% commission). Eligible but not counted: Zyda (lists Qatar; KWD prices only), Blink (NEW: Qatar ordering-website page with delivery or pickup; prices '$50/branch /month' in $ only), Sapaad (Dubai-based; quote only; Qatar presence not confirmed on the page read). Foodics: its pricing menu links to Qatar but no QAR page was found (search), not counted. No Qatari food-truck ordering tool found. Never counted: Talabat, Snoonu, Rafeeq (marketplaces). Zegashop (stored candidate; Qatar blog pages without prices) not fetched."
+}

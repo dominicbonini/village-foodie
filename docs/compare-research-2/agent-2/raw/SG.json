@@ -1,0 +1,479 @@
+{
+  "country": "SG",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "site:oddle.me \"self-pickup\" OR \"pickup\" OR \"takeaway\" Oddle Shop docs help center",
+    "Singapore F&B online ordering pickup system pricing S$ per month own webstore \"self-collection\" restaurants hawkers",
+    "Singapore food truck OR pop-up OR bazaar vendor pre-order pickup ordering app for merchants pricing"
+  ],
+  "vendors": [
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Commission-free own webshop (Omni add-on) with pickup and time slots; Singapore pricing page in S$",
+      "eligibility": {
+        "order_quote": "Yes, you can enable pickup, delivery, and even dine-in QR ordering from the same webshop.",
+        "order_url": "https://klikit.io/en/products/webshop",
+        "country_quote": "Core (POS, menus, stock tracking, kitchen display and reports) is S$19.",
+        "country_url": "https://klikit.io/en/pricing/singapore"
+      },
+      "plans": [
+        {
+          "plan_name": "Core + Omni (webshop)",
+          "currency": "SGD",
+          "price_major": 68,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Omni, which connects your delivery apps and adds your own webshop and QR ordering, is +S$49, so Core + Omni is S$68.",
+          "url": "https://klikit.io/en/pricing/singapore",
+          "note": "Re-read today. Per outlet per month, 'Per outlet, per month, excluding tax.' The webshop needs the Omni add-on."
+        },
+        {
+          "plan_name": "Core",
+          "currency": "SGD",
+          "price_major": 19,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Core (POS, menus, stock tracking, kitchen display and reports) is S$19.",
+          "url": "https://klikit.io/en/pricing/singapore",
+          "note": "Core alone has no webshop; listed for reference."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Set your own delivery zones, minimum order values, and time slots.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Set your own delivery zones, minimum order values, and time slots.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Core (POS, menus, stock tracking, kitchen display and reports) is S$19.",
+          "url": "https://klikit.io/en/pricing/singapore"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Core (POS, menus, stock tracking, kitchen display and reports) is S$19.",
+          "url": "https://klikit.io/en/pricing/singapore"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Per outlet, per month, excluding tax.",
+          "url": "https://klikit.io/en/pricing/singapore"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "You only pay a small monthly subscription fee.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commission fees ever.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://klikit.io/en/pricing",
+        "https://klikit.io/en/pricing/singapore",
+        "https://klikit.io/en/products/webshop"
+      ]
+    },
+    {
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (SG: no SGD price, so not counted)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "SingaporeSGD",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "name": "Oddle",
+      "website": "https://oddle.me/sg",
+      "stored_id_prefix": "110abdac",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Restaurant's own online shop (Oddle Shop) with pickup slots, capacity, lead times and orders for other dates; Singapore pricing page in S$",
+      "eligibility": {
+        "order_quote": "you configure pickup hours with the same slot, capacity, lead time, and block off / special hours model.",
+        "order_url": "https://www.oddle.me/docs/new-guests/shop/setting-up-for-online-ordering/store-settings",
+        "country_quote": "From S$300/mo",
+        "country_url": "https://oddle.me/sg/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "All Access for One Price",
+          "currency": "SGD",
+          "price_major": 300,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "From S$300/mo",
+          "url": "https://oddle.me/sg/pricing",
+          "note": "Read today (oddle.me/sg/pricing answered, unlike the 403 in compare-research-1). 'Billed monthly', '1-year commitment'; annual option '33% OFF'. 'From' price. The stored UOB BizSmart 0 SGD plan is from a bank page and should be replaced by this."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "you configure pickup hours with the same slot, capacity, lead time, and block off / special hours model.",
+          "url": "https://www.oddle.me/docs/new-guests/shop/setting-up-for-online-ordering/store-settings"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "so guests can still order for other dates",
+          "url": "https://www.oddle.me/docs/new-guests/shop/setting-up-for-online-ordering/store-settings"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "How many orders you can handle per interval within a slot",
+          "url": "https://www.oddle.me/docs/new-guests/shop/setting-up-for-online-ordering/store-settings"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Oddle Shop 讓您的餐廳擁有專屬、高轉換率的外送與外帶網店——完整品牌化、優化以提升客單價，而且每一筆訂單都會建立您的顧客資料庫。",
+          "url": "https://www.oddle.me/docs/docs-zh/xin-bin-ke/shop"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Billed monthly",
+          "url": "https://oddle.me/sg/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://oddle.me/sg/pricing",
+        "https://www.oddle.me/docs/new-guests/shop/setting-up-for-online-ordering/store-settings",
+        "https://www.oddle.me/docs/docs-zh/xin-bin-ke/shop"
+      ]
+    },
+    {
+      "name": "Qashier (QashierEats)",
+      "website": "https://qashier.com/sg",
+      "stored_id_prefix": "2e6f0051",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Singapore F&B POS whose own online-ordering storefront takes pickup or delivery orders and pre-orders for a later time or date; one flat daily SGD price including online ordering",
+      "eligibility": {
+        "order_quote": "Customers can place pre-orders for a later time or date, so you can prepare ahead and manage your kitchen load.",
+        "order_url": "https://qashier.com/sg/qashiereats-online-ordering-system",
+        "country_quote": "Let customers collect in store or get it delivered by Lalamove. You control hours and fees.",
+        "country_url": "https://qashier.com/sg/qashiereats-online-ordering-system"
+      },
+      "plans": [
+        {
+          "plan_name": "Software only",
+          "currency": "SGD",
+          "price_major": 5,
+          "period": "day",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$5 a day",
+          "url": "https://qashier.com/sg/pricing",
+          "note": "Shown as '$' on the /sg/ page (Singapore; read as SGD). 'Prices exclude GST.' Pricing page says '0% commission online ordering and QR ordering'. Also 'Pay 2 years upfront' $3,650 once (incl. a QashierX2 terminal) — not recorded as a plan (no 2-year period)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers choose pickup or delivery at checkout, and orders can be dispatched through leading delivery partners.",
+          "url": "https://qashier.com/sg/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Customers can place pre-orders for a later time or date, so you can prepare ahead and manage your kitchen load.",
+          "url": "https://qashier.com/sg/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Put your link in bio and on socials",
+          "url": "https://qashier.com/sg/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Every outlet and channel, live.",
+          "url": "https://qashier.com/sg/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Point orders to your own web address, order.yourshop.com, for a storefront that's fully yours.",
+          "url": "https://qashier.com/sg/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No. Qashier Online Ordering charges 0% commission, so every order is yours in full.",
+          "url": "https://qashier.com/sg/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://qashier.com/sg/pricing",
+        "https://qashier.com/sg/qashiereats-online-ordering-system"
+      ]
+    }
+  ],
+  "notes": "SG count: 3 eligible priced in SGD (food-truck: 0) — Klikit (Core + Omni S$68/outlet/month excl. tax; webshop needs Omni), Oddle (NEW price from its own site: 'From S$300/mo', billed monthly, 1-year commitment; oddle.me/sg/pricing answered today; pickup slots/capacity/lead time/other-dates from Oddle's own docs; the stored UOB BizSmart S$0 plan is a bank page and should be dropped), Qashier SG (NEW for SG: $5 a day software only, excl. GST, online ordering with pickup and pre-orders for a later time/date on its /sg/ QashierEats page). Take App: Singapore company, lists SGD, but prices USD only — not counted. No Singapore food-truck / hawker ordering tool with its own SG site found (searches return directories, marketplaces and government grant listings). Not checked today: StoreHub SG (compare-research-1: /sg/pricing 404), Eats365 SG, iCHEF SG (has an SG online takeaway page; not needed)."
+}

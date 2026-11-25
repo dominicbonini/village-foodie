@@ -1,0 +1,440 @@
+{
+  "country": "LT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "užsakymai internetu kavinei restoranui atsiėmimas iš anksto sistema kaina €/mėn be komisinių"
+  ],
+  "vendors": [
+    {
+      "name": "ared",
+      "website": "https://ared.lt",
+      "stored_id_prefix": "c413ad17",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Lithuanian café POS (.lt, Lithuanian) that takes online orders for pickup at the café, ordered ahead and collected at an agreed time; 20 € per till a month + PVM, no set-up fee. No food-truck wording",
+      "eligibility": {
+        "order_quote": "Užsakymas iš anksto ir atsiėmimas sutartu laiku.",
+        "order_url": "https://ared.lt/sprendimai/pos-sistema-kavinei",
+        "country_quote": "20 € už kasą per mėnesį + 21 % PVM.",
+        "country_url": "https://ared.lt/kainos"
+      },
+      "plans": [
+        {
+          "plan_name": "ared (one plan)",
+          "currency": "EUR",
+          "price_major": 20,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "20 € už kasą per mėnesį + 21 % PVM.",
+          "url": "https://ared.lt/kainos",
+          "note": "Per till per month, excl. PVM; 'Viena kaina. Viskas įskaičiuota'; 'Ne, diegimo mokesčio nėra.' Online-order pickup is described on the café POS page; the pricing page lists 'išankstiniai užsakymai'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Užsakymas iš anksto ir atsiėmimas sutartu laiku.",
+          "url": "https://ared.lt/sprendimai/pos-sistema-kavinei"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Virtuvės ekranas (KDS), savitarnos kioskas ir išankstiniai užsakymai",
+          "url": "https://ared.lt/kainos"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Užsakymai iš kasos ir pristatymo platformų vienoje KDS lentoje, prie baro ar virtuvėje.",
+          "url": "https://ared.lt/sprendimai/pos-sistema-kavinei"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "ared priima užsakymus internetu su atsiėmimu kavinėje, taip pat iš Bolt Food (Wolt netrukus)",
+          "url": "https://ared.lt/sprendimai/pos-sistema-kavinei"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "20 € už kasą per mėnesį + 21 % PVM.",
+          "url": "https://ared.lt/kainos"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ared.lt/sprendimai/pos-sistema-kavinei",
+        "https://ared.lt/kainos"
+      ]
+    },
+    {
+      "name": "Refektorius",
+      "website": "https://refektorius.lt",
+      "stored_id_prefix": "ef6eec53",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Lithuanian online ordering for cafés/restaurants on their own branded ordering page: customer chooses delivery or pickup and pays online; 0 € set-up, 2–5% commission + 7 € a week. No pickup-time choice or food-truck wording",
+      "eligibility": {
+        "order_quote": "Klientas renkasi pristatymą ar atsiėmimą ir patogiai apmoka internetu.",
+        "order_url": "https://refektorius.lt/",
+        "country_quote": "Klientas renkasi pristatymą ar atsiėmimą ir patogiai apmoka internetu.",
+        "country_url": "https://refektorius.lt/"
+      },
+      "plans": [
+        {
+          "plan_name": "Užsakymai internetu",
+          "currency": "EUR",
+          "price_major": 7,
+          "period": "week",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "+ 7 €/sav. aptarnavimo mokestis",
+          "url": "https://refektorius.lt/",
+          "note": "Weekly service fee as stated (not converted). Commission '2–5% komisinis' (a range, so per_order_pct null). Set-up '0 €' ('Sukūrimas ir paleidimas'). VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Planšetė virtuvėje priima užsakymus realiu laiku, o virtuvinis kvitas atspausdinamas per jūsų jau turimą spausdintuvą.",
+          "url": "https://refektorius.lt/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Modernus užsakymų puslapis su jūsų dizainu ir spalvomis.",
+          "url": "https://refektorius.lt/"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "2–5% komisinis",
+          "url": "https://refektorius.lt/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://refektorius.lt/"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/lt-lt/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "Lithuanian lt-lt SumUp site sells a free online store with in-store pickup; 0 € monthly, 1,69 % — generic fallback",
+      "eligibility": {
+        "order_quote": "Suteikite klientams galimybę prekes gauti norimu adresu ar atsiimti parduotuvėje.",
+        "order_url": "https://www.sumup.com/lt-lt/internetine-parduotuve/",
+        "country_quote": "Suteikite klientams galimybę prekes gauti norimu adresu ar atsiimti parduotuvėje.",
+        "country_url": "https://www.sumup.com/lt-lt/internetine-parduotuve/"
+      },
+      "plans": [
+        {
+          "plan_name": "Internetinė parduotuvė",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 1.69,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0 €",
+          "url": "https://www.sumup.com/lt-lt/internetine-parduotuve/",
+          "note": "'Jokių mėnesinių išlaidų' 0 €; 'Nemokama internetinė parduotuvė' 0 EUR; 'Konkurencingas operacijos mokestis' 1,69 % (payment fee per online sale). VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Jokių mėnesinių išlaidų",
+          "url": "https://www.sumup.com/lt-lt/internetine-parduotuve/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "1,69 %",
+          "url": "https://www.sumup.com/lt-lt/internetine-parduotuve/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/lt-lt/internetine-parduotuve/"
+      ]
+    },
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": "98c064da",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK restaurant/takeaway ordering platform with scheduled pickup pre-orders; its own supported-regions doc lists Lithuania (English, EUR payments). Prices shown only in GBP (no currency selector), so not counted for the local currency.",
+      "eligibility": {
+        "order_quote": "Scheduled pre-orders (pickup & delivery slots)",
+        "order_url": "https://storekit.com/pricing",
+        "country_quote": "Lithuania | ✓ English | ✓ EUR",
+        "country_url": "https://storekit.com/docs/getting-started/supported-regions"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Free",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only. 'All prices are per location and exclude VAT.' 'Every plan adds a flat per-order rate, never a commission' (amount not shown)."
+        },
+        {
+          "plan_name": "Connect",
+          "currency": "GBP",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£49",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; plus a flat per-order rate (amount not shown). Set-up self-serve."
+        },
+        {
+          "plan_name": "Grow",
+          "currency": "GBP",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "£99",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only; per location per month, excl. VAT; set-up '£199 per location'; plus a flat per-order rate."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Capacity controls (slot limits)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "£49",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Every plan adds a flat per-order rate, never a commission, plus unlimited items and your own customer data.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://storekit.com/pricing",
+        "https://storekit.com/docs/getting-started/supported-regions"
+      ]
+    },
+    {
+      "name": "Choice",
+      "website": "https://choiceqr.com",
+      "stored_id_prefix": "70b34967",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "choiceqr.com/lt/pricing answered 403 in compare-research-1 and choiceqr.com/pt/pricing 403 again today; not retried for LT.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "No Lithuanian food-truck ordering tool found (compare-research-1's .lt-restricted searches + 1 today). Two real local food tools with € prices, both re-read today: ared (20 € per till/month + PVM, pre-order and pickup at an agreed time) and Refektorius (7 €/week + 2–5 % commission, 0 € set-up; weekly period kept). SumUp lt-lt online store (0 € + 1,69 %) is the generic fallback. Storekit lists Lithuania (EUR payments) but prices only in GBP. Today's search also surfaced Restimo (Polish; pricing in a help centre, Lithuania not shown), resmio, Restaumatic and Flipdish pages without Lithuanian presence (not opened). Anolla not recorded."
+}

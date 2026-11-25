@@ -1,0 +1,73 @@
+{
+  "country": "CR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Costa Rica plataforma pedidos en línea restaurantes recoger en local sin comisión precio colones mes food truck",
+    "Costa Rica software restaurante tienda en línea pedidos \"para recoger\" planes \"₡\" mensual menú digital pedidos WhatsApp"
+  ],
+  "vendors": [
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap, same as compare-research-1 BR): own online menu / WhatsApp ordering with delivery management, but neither the Spanish home page nor the Spanish pricing page says pickup / para llevar / retiro / scheduled orders; a web search found no own-site pickup page; plan prices USD only (no local currency)",
+      "eligibility": {
+        "order_quote": "Centraliza los pedidos de WhatsApp en una sola fila, sin copiar y pegar, sin errores manuales.",
+        "order_url": "https://www.olaclick.com/es/",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, no local-currency price; 'Los precios son para suscripciones anuales pagadas al momento de la compra' (billed yearly). Others: Premium US$ 25.00/mes, Elite US$ 59.00/mes, Impulso US$ 160.00/mes. Home page: '0% de comisión.'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es"
+      ]
+    },
+    {
+      "name": "Biko.cr",
+      "website": "https://biko.cr",
+      "stored_id_prefix": null,
+      "focus": null,
+      "verdict": "unreadable",
+      "reason": "Costa Rican delivery marketplace app (press: members pay a monthly fee, in USD); biko.cr did not resolve (DNS ENOTFOUND). Would be not_relevant as a marketplace anyway",
+      "check_urls": [
+        "https://biko.cr/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Eatsy",
+      "website": "https://eatsy.cr",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Costa Rican platform for restaurants' own orders with Uber logistics (press only); eatsy.cr did not resolve (DNS ENOTFOUND) and no other own site was found",
+      "check_urls": [
+        "https://eatsy.cr/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    }
+  ],
+  "notes": "Nothing eligible exists with a CRC price. Searches returned delivery marketplaces (PedidosYa, Uber Eats, DiDi Food, Rappi — never counted), Capterra listings (ChatFood, Weevi, GloriaFood [agent 1], Orders2Me, Restroworks — not sources), and Costa Rican press about Biko.cr (marketplace, USD fee) and Eatsy (own-order platform) whose sites do not resolve. Justo (Chilean) entered Costa Rica per press, but its own site shows no Costa Rica page, no CRC price and no pickup wording (see CL). EDNA Foods (Facebook chatbot ordering, 2020 press) not found as a site. OlaClick USD-only, no pickup wording. Pedix shows USD prices for countries outside AR/CL/MX/BR/UY."
+}

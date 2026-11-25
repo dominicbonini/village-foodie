@@ -1,0 +1,45 @@
+{
+  "country": "OWNED",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "country": "NO",
+      "name": "Lightspeed",
+      "website": "https://www.lightspeedhq.com/no/",
+      "stored_id_prefix": "1774b420",
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE: Lightspeed has a Norwegian site and NOK restaurant pricing, but neither the Norwegian home page nor the Norwegian restaurant pricing page mentions online ordering, takeaway or pickup (henting); only an add-on named 'Bestillingsløsninger' with no description. No own-site evidence of online ordering for pickup in Norway",
+      "eligibility": {
+        "country_quote": "Fra 699,– NOK per måned for Butikk-modus og 999,– NOK per måned for Restaurant-modus.",
+        "country_url": "https://www.lightspeedhq.com/no/kassasystem/restaurant/priser/"
+      },
+      "plans": [
+        {
+          "plan_name": "Restaurant-modus",
+          "currency": "NOK",
+          "price_major": 999,
+          "period": "month",
+          "quote": "Fra 699,– NOK per måned for Butikk-modus og 999,– NOK per måned for Restaurant-modus.",
+          "url": "https://www.lightspeedhq.com/no/kassasystem/restaurant/priser/",
+          "note": "'Fra' (from) price; VAT not stated; online ordering not shown as included",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.lightspeedhq.com/",
+        "https://www.lightspeedhq.com/no/",
+        "https://www.lightspeedhq.com/no/kassasystem/restaurant/priser/"
+      ]
+    }
+  ],
+  "notes": "",
+  "countries": [
+    "NO"
+  ]
+}

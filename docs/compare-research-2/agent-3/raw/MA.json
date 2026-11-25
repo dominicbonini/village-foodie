@@ -1,0 +1,130 @@
+{
+  "country": "MA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Maroc logiciel commande en ligne restaurant click and collect à emporter site propre sans commission prix DH par mois",
+    "Maroc application commande à l'avance restaurant snack food truck Casablanca plateforme marocaine site de commande DH/mois"
+  ],
+  "vendors": [
+    {
+      "name": "inyad",
+      "website": "https://inyad.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Moroccan POS / business suite (Casablanca) with an online-ordering page for food businesses: in-store pickup at a chosen time slot, next-day pre-orders, orders sent to the kitchen; MAD (dh) prices on the Moroccan pricing page. No food-truck wording. Which plan carries online ordering is not stated (eCommerce / POS both 'From 149dh / month')",
+      "eligibility": {
+        "order_quote": "In-store pickup, at the chosen time",
+        "order_url": "https://inyad.com/en/online-ordering-system",
+        "country_quote": "From 149dh / month",
+        "country_url": "https://inyad.com/en-ma/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "inyad eCommerce",
+          "currency": "MAD",
+          "price_major": 149,
+          "period": "month",
+          "vat": "excl",
+          "quote": "From 149dh / month",
+          "url": "https://inyad.com/en-ma/pricing",
+          "note": "'From' price; the pricing page says prices exclude VAT; it does not say whether the food online-ordering page is in eCommerce or POS (both 'From 149dh / month'). Moroccan en-ma page",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null
+        },
+        {
+          "plan_name": "inyad POS",
+          "currency": "MAD",
+          "price_major": 149,
+          "period": "month",
+          "vat": "excl",
+          "quote": "From 149dh / month",
+          "url": "https://inyad.com/en-ma/pricing",
+          "note": "or 'Classic license, 2 999 dh once'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Your customers choose when to come by, from the time slots you open.",
+          "url": "https://inyad.com/en/online-ordering-system"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Breakfast ordered the night before, ready on time.",
+          "url": "https://inyad.com/en/online-ordering-system"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "in your bio and on WhatsApp.",
+          "url": "https://inyad.com/en/online-ordering-system"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "in your bio and on WhatsApp.",
+          "url": "https://inyad.com/en/online-ordering-system"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Sent to the kitchen",
+          "url": "https://inyad.com/en/online-ordering-system"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "An ordering page in your name.",
+          "url": "https://inyad.com/en/online-ordering-system"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "From 149dh / month",
+          "url": "https://inyad.com/en-ma/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://inyad.com/",
+        "https://inyad.com/en-ma/pricing",
+        "https://inyad.com/en/online-ordering-system"
+      ]
+    }
+  ],
+  "notes": "One eligible tool with a MAD price: inyad (Moroccan POS suite; online-ordering page with 'In-store pickup, at the chosen time' and next-day pre-orders; 'From 149dh / month' excl. VAT; which plan carries online ordering is not stated). No Moroccan food-truck ordering tool found. inyad's /en/prix/pos-food and /fr/prix/pos-food URLs (from search results) answered 404; prices read from /en-ma/pricing. Consumer delivery / order apps seen in search and never counted: Kaalix, Blitz, Kooul, Saveat, Vite.ma, Glovo. PAUL Maroc is a single bakery chain's app. Tabesto and Innovorder (French, agent 1), MENU TIGER (agent 2) and Lightspeed's Canadian pre-order page appeared in results only. Kolonell (Casablanca web agency blog) is not a vendor tool. YouCan (Moroccan generic store builder) not fetched."
+}

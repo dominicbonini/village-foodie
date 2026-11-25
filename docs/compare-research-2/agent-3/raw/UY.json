@@ -1,0 +1,184 @@
+{
+  "country": "UY",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Uruguay software pedidos online restaurantes take away retiro en local plan mensual $ uruguayos food truck",
+    "Montevideo plataforma para restaurantes \"tienda online\" pedidos \"retiro\" WhatsApp sin comisiones planes UYU uruguaya startup"
+  ],
+  "vendors": [
+    {
+      "name": "Pedix",
+      "website": "https://pedix.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Argentine online catalogue / WhatsApp ordering shop with 'Retiro en persona'; the help centre lists Uruguayan (UYU) prices; Latin-American multi-country tool (owned by agent 3)",
+      "eligibility": {
+        "order_quote": "¿Cómo configurar la opción \"Retiro en persona\"?",
+        "order_url": "https://ayuda.pedix.app/es/article/precios-pedix",
+        "country_quote": "por +3.000 tiendas activas en 6 países",
+        "country_url": "https://info.pedix.app/"
+      },
+      "plans": [
+        {
+          "plan_name": "Principiante",
+          "currency": "UYU",
+          "price_major": 400,
+          "period": "month",
+          "quote": "Mensual: $400",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "listed under Uruguay on the help-centre price page; yearly $4.000 'con 2 meses bonificados'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        },
+        {
+          "plan_name": "Especialista",
+          "currency": "UYU",
+          "price_major": 660,
+          "period": "month",
+          "quote": "Mensual: $660",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "Uruguay section",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        },
+        {
+          "plan_name": "PRO",
+          "currency": "UYU",
+          "price_major": 950,
+          "period": "month",
+          "quote": "Mensual: $950",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "Uruguay section",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "recibir pedidos organizados por WhatsApp",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Dominio web propio (mitienda.com)",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Mensual: $400",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "no cobra comisiones por venta ni por pedido",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://info.pedix.app/",
+        "https://ayuda.pedix.app/es/article/precios-pedix"
+      ]
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap, same as compare-research-1 BR): own online menu / WhatsApp ordering with delivery management, but neither the Spanish home page nor the Spanish pricing page says pickup / para llevar / retiro / scheduled orders; a web search found no own-site pickup page; plan prices USD only (no local currency)",
+      "eligibility": {
+        "order_quote": "Centraliza los pedidos de WhatsApp en una sola fila, sin copiar y pegar, sin errores manuales.",
+        "order_url": "https://www.olaclick.com/es/",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, no local-currency price; 'Los precios son para suscripciones anuales pagadas al momento de la compra' (billed yearly). Others: Premium US$ 25.00/mes, Elite US$ 59.00/mes, Impulso US$ 160.00/mes. Home page: '0% de comisión.'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es"
+      ]
+    },
+    {
+      "name": "Fudo (Tu Delivery)",
+      "website": "https://fu.do",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "no Uruguayan Tu Delivery page: https://fu.do/es-uy/delivery/ answered 404; no own-site UYU price or Uruguay online-ordering page read",
+      "check_urls": [
+        "https://fu.do/es-uy/delivery/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    }
+  ],
+  "notes": "Only one eligible tool with a UYU price: Pedix (help-centre price list: $400 / $660 / $950 mensual under Uruguay; WhatsApp online shop with 'Retiro en persona'). No Uruguayan food-truck ordering tool found. Fudo has no Uruguay delivery page (404). Reorder (Uruguayan own-ordering-site startup) has no own website found in searches (press only). Dixtra (Uruguayan WhatsApp order-taking, per a press snippet) not found as a food tool; not fetched. OlaClick USD-only, no pickup wording. Maspedidos (read once) is Mexican (MX switched off). Ojapo (Argentine) appears in Uruguayan search results but only shows ARS prices. MENU TIGER (agent 2) and Lightspeed's Spanish Order Anywhere page seen in search; Lightspeed's coverage is handled in OWNED.json / summary."
+}

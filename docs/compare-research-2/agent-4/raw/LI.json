@@ -1,0 +1,153 @@
+{
+  "country": "LI",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Online-Bestellsystem Restaurant Takeaway Abholung \"Schweiz und Liechtenstein\" CHF pro Monat",
+    "Liechtenstein (restricted to zelloo.ch, lieferio.ch, bestell.org, dishbutler.ch, ordermood.app, gastroboom.ch, sparissimofood.com, baldeggersortec.ch, gastro.mpol.ch, foxifood.com, liefersoft.de, gastro25.de, gastrodok.de)",
+    "Liechtenstein Vaduz Schaan Restaurant online bestellen abholen Bestellsystem Anbieter Gastronomie Software Liechtenstein Firma",
+    "\"in der Schweiz und in Liechtenstein\" OR \"Schweiz & Liechtenstein\" Gastronomie Online-Bestellungen Abholung Kassensystem Preise"
+  ],
+  "vendors": [
+    {
+      "name": "Sparissimo Food",
+      "website": "https://www.sparissimofood.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Swiss (Pfäffikon SZ) restaurant online-ordering platform: pickup and delivery orders from the restaurant's own Sparissimo page/website; a Liechtenstein restaurant (Nendeln) takes pickup orders on a sparissimofood.com subdomain; CHF prices + commission; no pickup-time choice stated, no food-truck wording",
+      "eligibility": {
+        "order_quote": "Enthält Abholung, Lieferung, Reservationen und E-Mail-Support.",
+        "order_url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland",
+        "country_quote": "in Nendeln, Liechtenstein",
+        "country_url": "https://anatolia.sparissimofood.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "CHF",
+          "price_major": 49,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 8,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Starter-Plan (CHF 49/Monat + 8% Provision): Für den Einstieg in die digitale Bestellung.",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland",
+          "note": "from the vendor's own blog (blog.sparissimofood.com, 'Aktualisiert am: 1. Oktober 2026'); includes pickup ('Enthält Abholung, Lieferung, Reservationen und E-Mail-Support.'). The homepage instead shows a '0 CHF' Einstieg (Freemium) with '5–8 %' pro Bestellung — the two pages disagree; the plans page (manage.sparissimofood.com/plans) is a sign-up app, not opened."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "CHF",
+          "price_major": 79,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 5,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Business-Plan (CHF 79/Monat + 5% Provision): Ergänzt durch eigene Domain, White-Label-Branding,",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland",
+          "note": "adds own domain, white-label branding"
+        },
+        {
+          "plan_name": "Professional",
+          "currency": "CHF",
+          "price_major": 148,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 5,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Professional-Plan (CHF 148/Monat + 5% Provision): Enthält ein kostenloses POS-Terminal,",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland",
+          "note": "adds own branded app, account manager, ads management"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Google- und Social-Media-Anzeigenmanagement.",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Business-Plan (CHF 79/Monat + 5% Provision): Ergänzt durch eigene Domain, White-Label-Branding,",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Starter-Plan (CHF 49/Monat + 8% Provision): Für den Einstieg in die digitale Bestellung.",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Starter-Plan (CHF 49/Monat + 8% Provision): Für den Einstieg in die digitale Bestellung.",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://anatolia.sparissimofood.com/",
+        "https://www.sparissimofood.com/",
+        "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland"
+      ]
+    },
+    {
+      "name": "Baldegger+Sortec (gastronovi Bestellsystem)",
+      "website": "https://baldeggersortec.ch",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Swiss till dealer reselling the gastronovi ordering module (guests order online and pay ahead, takeaway/pre-orders for pickup, 'CHF 69.-' 'Nettopreis pro Monat, exkl. Hardware'); a reseller, not the developer's own site, so it cannot be the source under the rules. Its AGBs say it delivers only within Switzerland and Liechtenstein and it lists Liechtenstein customers, but the module page itself does not mention Liechtenstein. gastronovi (German) itself was not opened",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://baldeggersortec.ch/gastronomie-kassensystem/gastronovi-module/gastronovi-bestellsystem/"
+      ]
+    }
+  ],
+  "notes": "LI: 1 eligible with a CHF price: Sparissimo Food (new, Swiss, Pfäffikon SZ; nearest_local). Its Liechtenstein evidence is a Liechtenstein restaurant's ordering page on the vendor's own subdomain (anatolia.sparissimofood.com: 'in Nendeln, Liechtenstein', 'Zur Abholung oder Lieferung', 'Bereitgestellt von: ClickandFood'); the vendor's own pages never name Liechtenstein. Prices: blog.sparissimofood.com (updated 1 Oct 2026) gives Starter CHF 49/Monat + 8% Provision, Business 79 + 5%, Professional 148 + 5%, while the homepage shows a 0 CHF freemium entry with 5–8 % per order — pages disagree. Sparissimo also has a UK hotline and a Stockport entity, so it may count as a European multi-country tool (agent 1's catch-all) — I read it because the coordinator asked me to check Swiss tools for LI. No food-truck tool found for LI; no Liechtenstein-based ordering company found. Baldegger+Sortec (Swiss dealer whose AGBs deliver to CH and LI) resells the gastronovi ordering module at CHF 69 a month — recorded not_relevant as a reseller (gastronovi itself, German, not opened). Swiss tools seen in search with CHF prices but no Liechtenstein mention found by a site search: Zelloo, Lieferio, Bestell.org, DishButler, ordermood, GastroBoom (not opened). Round 1 already found no LI mention on Pikit, Yoveletta, Ordero, Rent-a-Shop, SwissPOS. FoxiFood's country-terms page does NOT list Liechtenstein (Switzerland only). Owned elsewhere, not fetched: Lightspeed (agent 3; ch-de pages in search), SumUp (agent 1; round 1 saw LI in a script-rendered help page)."
+}

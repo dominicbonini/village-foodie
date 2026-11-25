@@ -1,0 +1,126 @@
+{
+  "country": "JO",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Ordable",
+      "website": "https://www.itsordable.com",
+      "stored_id_prefix": "69a3cfce",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Kuwait-based restaurant ordering-website platform with pick-up from any branch and on-demand and scheduled orders; country pricing page with local-currency yearly prices, 0% commission (JO: JOD only, not counted — stored currency USD)",
+      "eligibility": {
+        "order_quote": "Enable pick-up from any of your branches, or deliver to any location with integrated delivery companies.",
+        "order_url": "https://www.itsordable.com/en/ksa/product/online-ordering",
+        "country_quote": "575 JD / year",
+        "country_url": "https://www.itsordable.com/en/jordan/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering Basic",
+          "currency": "JOD",
+          "price_major": 575,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "575 JD / year",
+          "url": "https://www.itsordable.com/en/jordan/pricing",
+          "note": "JD only; 'For growing businesses with up to two locations.' JO is stored as USD, so not counted."
+        },
+        {
+          "plan_name": "Online Ordering Advanced",
+          "currency": "JOD",
+          "price_major": 1050,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "1050 JD / year",
+          "url": "https://www.itsordable.com/en/jordan/pricing",
+          "note": ""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "On Demand and Scheduled Orders",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "On Demand and Scheduled Orders",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "SMS or Whatsapp Notifications",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Deep integrations with Facebook, Instagram, TikTok, Google, and SnapChat for pixel perfect targeting.",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Branch Management",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Own Domain",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "We do not take commissions on any packages.",
+          "url": "https://www.itsordable.com/en/jordan/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.itsordable.com/en/jordan/pricing",
+        "https://www.itsordable.com/en/ksa/product/online-ordering"
+      ]
+    }
+  ],
+  "notes": "JO count: 0 eligible priced in USD, the stored JO currency (food-truck: 0). Ordable (575 / 1050 JD a year) is eligible but priced in JOD. Foodics lists a Jordan phone number (no Jordan price read). Zyda and Blink don't list Jordan. Researched briefly (step 4); the food-truck scene was not searched."
+}

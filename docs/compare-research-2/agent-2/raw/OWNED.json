@@ -1,0 +1,2197 @@
+{
+  "countries": [
+    "AR",
+    "CL",
+    "CO",
+    "CR",
+    "DO",
+    "EG",
+    "GT",
+    "NG",
+    "PA",
+    "PE",
+    "PR",
+    "PT",
+    "ZA"
+  ],
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "country": "PT",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (PT: USD only, no local-currency price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "PortugalEUR",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "ZA",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (ZA: USD only, no local-currency price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "South AfricaZAR",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "NG",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (NG: USD only, no local-currency price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "NigeriaNGN",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "CR",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (CR: USD only, no local-currency price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "Costa RicaCRC",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "PA",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (PA: stored PAB; Take App's own list shows 'PanamaUSD' — USD price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "PanamaUSD",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "GT",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (GT: USD only, no local-currency price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "GuatemalaGTQ",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "DO",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (DO: USD only, no local-currency price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "Dominican RepublicDOP",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "PR",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (PR: stored currency USD, so this USD price counts)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "Puerto RicoUSD",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "PE",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (PE: USD only, no local-currency price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "PeruPEN",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "AR",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (AR: USD only, no local-currency price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "ArgentinaARS",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "CO",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (CO: USD only, no local-currency price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "ColombiaCOP",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "CL",
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (CL: USD only, no local-currency price)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "ChileCLP",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "country": "EG",
+      "name": "Zyda",
+      "website": "https://www.zyda.com",
+      "stored_id_prefix": "797df612",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Gulf/Egypt restaurant ordering-website platform: pickup & curbside in every plan ('Order ahead, collect fast'), orders for a date; pricing page lists the country but shows prices in KWD only (EG: KWD prices only, not counted; Egypt named in the countries list and the Ring add-on)",
+      "eligibility": {
+        "order_quote": "Order ahead, collect fast",
+        "order_url": "https://www.zyda.com/pricing",
+        "country_quote": "In Egypt, Ring adds a 3% commission on every order, website orders included.",
+        "country_url": "https://www.zyda.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "KWD",
+          "price_major": 20,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "20 KWD a month",
+          "url": "https://www.zyda.com/pricing",
+          "note": "'Prices for Kuwait. Prices for new merchants.' Shown on the quarterly toggle (billed quarterly); yearly '240 KWD billed yearly'. Up to two branches. KWD only — no price in this country's currency on the page (zyda.com/sa/pricing also shows Kuwait prices)."
+        },
+        {
+          "plan_name": "Growth",
+          "currency": "KWD",
+          "price_major": 36,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "36 KWD a month",
+          "url": "https://www.zyda.com/pricing",
+          "note": "Quarterly toggle; yearly '430 KWD billed yearly'. Up to five branches. KWD only."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Order ahead, collect fast",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Orders for a date, daily items and occasion peaks.",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "20 KWD a month",
+          "url": "https://www.zyda.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.zyda.com/pricing",
+        "https://www.zyda.com/sa/pricing"
+      ]
+    },
+    {
+      "country": "EG",
+      "name": "Ordable",
+      "website": "https://www.itsordable.com",
+      "stored_id_prefix": "69a3cfce",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Kuwait-based restaurant ordering-website platform with pick-up from any branch and on-demand and scheduled orders; country pricing page with local-currency yearly prices, 0% commission (EG: Egypt pricing page in EGP)",
+      "eligibility": {
+        "order_quote": "Enable pick-up from any of your branches, or deliver to any location with integrated delivery companies.",
+        "order_url": "https://www.itsordable.com/en/ksa/product/online-ordering",
+        "country_quote": "28000 EGP / year",
+        "country_url": "https://www.itsordable.com/en/egypt/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Launch (Online Ordering)",
+          "currency": "EGP",
+          "price_major": 28000,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "28000 EGP / year",
+          "url": "https://www.itsordable.com/en/egypt/pricing",
+          "note": "Annual view; 'For growing businesses with up to two locations.' A Flexi toggle exists but its prices were not captured."
+        },
+        {
+          "plan_name": "Scale (Online Ordering)",
+          "currency": "EGP",
+          "price_major": 45000,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "45000 EGP / year",
+          "url": "https://www.itsordable.com/en/egypt/pricing",
+          "note": "Most popular."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "On Demand and Scheduled Orders",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "On Demand and Scheduled Orders",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "SMS or Whatsapp Notifications",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Deep integrations with Facebook, Instagram, TikTok, Google, and SnapChat for pixel perfect targeting.",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Branch Management",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Own Domain",
+          "url": "https://www.itsordable.com/en/ksa/product/online-ordering"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "We do not take commissions on any packages.",
+          "url": "https://www.itsordable.com/en/egypt/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.itsordable.com/en/egypt/pricing",
+        "https://www.itsordable.com/en/ksa/product/online-ordering"
+      ]
+    },
+    {
+      "country": "EG",
+      "name": "Foodics (Foodics Online)",
+      "website": "https://www.foodics.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Saudi restaurant POS; Foodics Online gives the restaurant its own ordering website/app with pick-up, curbside and orders scheduled ahead, commission-free (EG: the pricing page's menu links to an Egypt page and the header lists an Egypt phone number per the page reader; no Egypt price read; no exact country quote captured)",
+      "eligibility": {
+        "order_quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+        "order_url": "https://www.foodics.com/online/",
+        "country_url": "https://www.foodics.com/pricing/"
+      },
+      "plans": [
+        {
+          "plan_name": "Foodics Online (Egypt)",
+          "currency": "EGP",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": null,
+          "url": "https://www.foodics.com/pricing/",
+          "note": "Egypt pricing page not read; KSA page shows bundles without a currency. Country presence from the pricing page's menu (summary only, no verbatim quote)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Maximize your margins by accepting curbside, pick-up and delivery orders",
+          "url": "https://www.foodics.com/online/"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Customers can quickly reorder their favorite menu items or can schedule orders ahead of time",
+          "url": "https://www.foodics.com/online/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage your branches, menus and employees from one place",
+          "url": "https://www.foodics.com/online/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Choose your own custom website domain",
+          "url": "https://www.foodics.com/online/"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Say goodbye to paying third-party commission fees",
+          "url": "https://www.foodics.com/online/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.foodics.com/online/",
+        "https://www.foodics.com/pricing/"
+      ]
+    },
+    {
+      "country": "ZA",
+      "name": "Blink (blinkco.io)",
+      "website": "https://www.blinkco.io",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Pakistan-based restaurant POS and branded ordering website/app with delivery or pickup; Locations menu lists PK, SA, BH, QA, UAE, KW and ZA; prices in '$' per branch per month (ZA: weak presence — a 'Blink – South Africa' page with no South-Africa-specific text; USD prices only, not counted)",
+      "eligibility": {
+        "order_quote": "Give your customers the option between delivery and pickup",
+        "order_url": "https://www.blinkco.io/?p=20107",
+        "country_quote": "Blink – South Africa",
+        "country_url": "https://www.blinkco.io/south-africa/"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering F&B — Website Only",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "Only '$' shown (no currency code; read as USD), not tied to any country. No commission mentioned."
+        },
+        {
+          "plan_name": "Online Ordering F&B — Website + App",
+          "currency": "USD",
+          "price_major": 100,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$100/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "'$' only (read as USD)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Give your customers the option between delivery and pickup",
+          "url": "https://www.blinkco.io/?p=20107",
+          "note": "no chosen-time ordering stated"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "priced per branch"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "welcome your customers to a fully branded website showcasing your restaurant.",
+          "url": "https://www.blinkco.io/?p=20107"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.blinkco.io/pricing",
+        "https://www.blinkco.io/?p=20107",
+        "https://www.blinkco.io/south-africa/"
+      ]
+    }
+  ],
+  "notes": "Agent-2-owned vendors selling with online ordering in other regions' research countries. Take App: from its own countries page (www.take.app/countries), prices USD only everywhere (counts only where the stored currency is USD: PR; PA shown as 'PanamaUSD' but stored PAB). Ordable EG: EGP prices on its Egypt pricing page (counts for EG). Zyda EG: KWD prices only. Foodics EG: no Egypt price read. Blink ZA: weak presence, USD. Klikit sells in PH/JP (not research countries); none of my other owned vendors (Oddle, Qashier, StoreHub, Eats365, MENU TIGER) were checked outside my region."
+}

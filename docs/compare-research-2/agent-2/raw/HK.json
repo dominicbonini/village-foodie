@@ -1,0 +1,421 @@
+{
+  "country": "HK",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "site:oddle.me hk pickup OR 自取 OR \"pre-order\" online ordering",
+    "香港 餐廳 網上點餐 自取 預約時間 系統 月費 HK$ 方案",
+    "Gingersoft OR iChef OR KPay Hong Kong online ordering self pickup restaurant pricing HK$ per month",
+    "OmniWe F&B online ordering self-pickup pre-order restaurant plan HK$ omniwe.com",
+    "site:ichefpos.com zh-hk 網上點餐 OR 外賣自取 OR 線上點餐"
+  ],
+  "vendors": [
+    {
+      "name": "Eats365",
+      "website": "https://www.eats365pos.com/hk",
+      "stored_id_prefix": "647628e6",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Hong Kong-based restaurant POS whose Branded Online Store lets guests order online for pickup; HK$ 'from' price only in its own HK blog (pricing page shows no amounts)",
+      "eligibility": {
+        "order_quote": "Let guests order online and pick up later",
+        "order_url": "https://www.eats365pos.com/hk/en/expansion-module/branded-online-store",
+        "country_quote": "From HK$1200/month, unlimited order volume",
+        "country_url": "https://www.eats365pos.com/hk/en/blog/post/top-hk-qr-code-ordering-systems"
+      },
+      "plans": [
+        {
+          "plan_name": "QR code ordering scheme (from)",
+          "currency": "HKD",
+          "price_major": 1200,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "From HK$1200/month, unlimited order volume",
+          "url": "https://www.eats365pos.com/hk/en/blog/post/top-hk-qr-code-ordering-systems",
+          "note": "Re-read today. 'From' price in Eats365's own HK blog comparison table (post dated 15 May 2025); the /hk/en/pricing page shows no amounts today (modules only, 14-day free trial). Not confirmed that this price includes the Branded Online Store module. Treat as a floor."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Let guests order online and pick up later",
+          "url": "https://www.eats365pos.com/hk/en/expansion-module/branded-online-store"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Online orders can be sent straight to the Kitchen Display System",
+          "url": "https://www.eats365pos.com/hk/en/expansion-module/branded-online-store"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Show one restaurant—or every brand under your group—so guests can browse and order from one convenient place.",
+          "url": "https://www.eats365pos.com/hk/en/expansion-module/branded-online-store"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "launch your own branded online ordering website in just a few clicks",
+          "url": "https://www.eats365pos.com/hk/en/expansion-module/branded-online-store"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "From HK$1200/month, unlimited order volume",
+          "url": "https://www.eats365pos.com/hk/en/blog/post/top-hk-qr-code-ordering-systems"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.eats365pos.com/hk/en/pricing",
+        "https://www.eats365pos.com/hk/en/blog/post/top-hk-qr-code-ordering-systems",
+        "https://www.eats365pos.com/hk/en/expansion-module/branded-online-store"
+      ]
+    },
+    {
+      "name": "Oddle",
+      "website": "https://oddle.me/hk",
+      "stored_id_prefix": "110abdac",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Restaurant's own online shop (Oddle Shop) with pickup slots, capacity, lead times and orders for other dates (Oddle's own docs, not HK-specific); Hong Kong pricing page in HK$",
+      "eligibility": {
+        "order_quote": "you configure pickup hours with the same slot, capacity, lead time, and block off / special hours model.",
+        "order_url": "https://www.oddle.me/docs/new-guests/shop/setting-up-for-online-ordering/store-settings",
+        "country_quote": "From HK$1,250/mo",
+        "country_url": "https://oddle.me/hk/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "All Access for One Price",
+          "currency": "HKD",
+          "price_major": 1250,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "From HK$1,250/mo",
+          "url": "https://oddle.me/hk/pricing",
+          "note": "Re-read today. 'Billed monthly', '1-year commitment'; 'Up to HK$18.5K in online orders per month'. Annual payment shown as '2 MONTHS FREE'. 'From' price."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "you configure pickup hours with the same slot, capacity, lead time, and block off / special hours model.",
+          "url": "https://www.oddle.me/docs/new-guests/shop/setting-up-for-online-ordering/store-settings"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "so guests can still order for other dates",
+          "url": "https://www.oddle.me/docs/new-guests/shop/setting-up-for-online-ordering/store-settings"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "How many orders you can handle per interval within a slot",
+          "url": "https://www.oddle.me/docs/new-guests/shop/setting-up-for-online-ordering/store-settings"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Oddle Shop 讓您的餐廳擁有專屬、高轉換率的外送與外帶網店——完整品牌化、優化以提升客單價，而且每一筆訂單都會建立您的顧客資料庫。",
+          "url": "https://www.oddle.me/docs/docs-zh/xin-bin-ke/shop"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Billed monthly",
+          "url": "https://oddle.me/hk/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://oddle.me/hk/pricing",
+        "https://www.oddle.me/docs/docs-zh/xin-bin-ke/shop",
+        "https://www.oddle.me/docs/new-guests/shop/setting-up-for-online-ordering/store-settings"
+      ]
+    },
+    {
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (HK: no HKD price, so not counted)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "Hong KongHKD",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "name": "KPay",
+      "website": "https://go.kpay-group.com/hk/en/point-of-sale",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Hong Kong F&B POS/payments; its own POS page mentions takeaway and 'ordering online' payments but no customer online ordering ahead / self-pickup, and no HK$ prices on that page",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://go.kpay-group.com/hk/en/point-of-sale"
+      ]
+    },
+    {
+      "name": "Boutir",
+      "website": "https://www.boutir.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "pricing page answered HTTP 403 again today (second attempt across both researches); not retried",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.boutir.com/pricing"
+      ]
+    },
+    {
+      "name": "iCHEF",
+      "website": "https://www.ichefpos.com/zh-hk",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Taiwanese restaurant POS with a Hong Kong site and HKD 888/month price, but the HK pages only say it gathers takeaway/delivery orders from an ordering website reached via Facebook and from Foodpanda into the POS; they don't show iCHEF's own customer ordering page or ordering ahead. Borderline; would become eligible if its HK site describes its own online takeaway shop (its SG pages do)",
+      "eligibility": {
+        "country_quote": "每月 HKD 888 元",
+        "country_url": "https://ichefpos.com/zh-hk/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "iCHEF POS",
+          "currency": "HKD",
+          "price_major": 888,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "每月 HKD 888 元",
+          "url": "https://ichefpos.com/zh-hk/pricing",
+          "note": "For reference only (not_relevant). Each extra iPad '+ HKD 198/月'."
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://ichefpos.com/zh-hk/pricing",
+        "https://www.ichefpos.com/zh-hk"
+      ]
+    }
+  ],
+  "notes": "HK count: 2 eligible priced in HKD (food-truck: 0) — Eats365 (HK$1,200/month 'from', only in its own 15 May 2025 HK blog table; pricing page shows no amounts today) and Oddle (HK$1,250/month 'from', 1-year commitment; NEW as eligible: Oddle's own shop docs (oddle.me/docs, global, not HK-specific) describe pickup slots with capacity, lead time and orders for other dates; Chinese docs say 外送與外帶網店). Take App lists Hong Kong (HKD) but prices are USD only. VGather (stored 01fa170d) not re-read: compare-research-1 found no price on www.vgather.hk. MENU TIGER: compare-research-1 found no HK presence (USD only); not re-read. No Hong Kong food-truck / market ordering tool found; HK searches are dominated by Cyberport DTSPP government catalogue listings (not vendor sites, never used). KPay (POS, no order-ahead), iCHEF HK (HKD 888/month, ordering-site evidence too weak), Boutir (403), OmniWe/Gingersoft (only Cyberport listings found, not fetched). Square/SumUp/Lightspeed etc. not checked (other agents)."
+}

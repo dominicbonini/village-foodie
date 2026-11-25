@@ -1,0 +1,171 @@
+{
+  "country": "LV",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "pasūtījumu sistēma restorānam savā mājaslapā līdzņemšanai bez komisijas cena mēnesī eur kafejnīca",
+    "tiešsaistes pasūtījumi kafejnīcai līdzņemšanai saņemšanas laiks sistēma SIA Rīga cenas mēnesī (restricted to .lv)",
+    "Latvian startup online ordering platform restaurants cafes takeaway pre-order own website Riga software pricing",
+    "ēdienu busiņš food truck pasūtīt iepriekš tiešsaistē lietotne tirgotājiem pasākumi Latvija"
+  ],
+  "vendors": [
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com/lv/",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "ordering platform (operator Elite Digital Services, LLC, USA) with a full Latvian-language site (/lv/), EUR prices, a food-truck page and pre-orders for a chosen date and time; its country-terms page lists Latvia; no monthly fee, 2% + 0,45 EUR per order",
+      "eligibility": {
+        "food_quote": "Novietojiet savu QR kodu redzamā vietā uz furgona.",
+        "food_url": "https://www.foxifood.com/lv/lietosanas-gadijumi/edienu-busins/",
+        "order_quote": "Lieciet klientiem veikt pasūtījumus iepriekš konkrētam datumam un laikam.",
+        "order_url": "https://www.foxifood.com/lv/funkcijas/",
+        "country_quote": "Latvia",
+        "country_url": "https://www.foxifood.com/legal/country-terms/"
+      },
+      "plans": [
+        {
+          "plan_name": "FoxiFood (no monthly fee, per order)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2,
+          "per_order_fixed_major": 0.45,
+          "setup_major": null,
+          "quote": "Tikai 2% + 0,45 EUR par pasūtījumu, bez ikmēneša maksām.",
+          "url": "https://www.foxifood.com/lv/funkcijas/",
+          "note": "Latvian pricing page /lv/cenas/ not opened; the features page states 2% + 0,45 EUR per order and no monthly fee. The BG pricing table splits this as 0,45 € per order (paid by the customer) + Stripe 1,5/2% + 0,25 €, so the 2% is probably the card part."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Lieciet klientiem veikt pasūtījumus iepriekš konkrētam datumam un laikam.",
+          "url": "https://www.foxifood.com/lv/funkcijas/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Lieciet klientiem veikt pasūtījumus iepriekš konkrētam datumam un laikam.",
+          "url": "https://www.foxifood.com/lv/funkcijas/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Pārvietojiet savu furgonu jebkur un turpiniet pieņemt pasūtījumus.",
+          "url": "https://www.foxifood.com/lv/lietosanas-gadijumi/edienu-busins/"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "sociālo tīklu kampaņas",
+          "url": "https://www.foxifood.com/lv/funkcijas/"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Redziet visus pasūtījumus reālā laikā",
+          "url": "https://www.foxifood.com/lv/funkcijas/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Integrējiet FoxiFood ar savu POS sistēmu vai izmantojiet kā galveno pasūtīšanas un maksājumu platformu.",
+          "url": "https://www.foxifood.com/lv/funkcijas/"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Pārvaldiet vairākas restorāna atrašanās vietas no viena paneļa.",
+          "url": "https://www.foxifood.com/lv/funkcijas/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Darbiniet sava restorāna pasūtīšanas vietni ar savu domēnu.",
+          "url": "https://www.foxifood.com/lv/funkcijas/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Tikai 2% + 0,45 EUR par pasūtījumu, bez ikmēneša maksām.",
+          "url": "https://www.foxifood.com/lv/funkcijas/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Tikai 2% + 0,45 EUR par pasūtījumu, bez ikmēneša maksām.",
+          "url": "https://www.foxifood.com/lv/funkcijas/"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Tikai 2% + 0,45 EUR par pasūtījumu, bez ikmēneša maksām.",
+          "url": "https://www.foxifood.com/lv/funkcijas/"
+        }
+      ],
+      "check_urls": [
+        "https://www.foxifood.com/lv/funkcijas/",
+        "https://www.foxifood.com/lv/lietosanas-gadijumi/edienu-busins/",
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    },
+    {
+      "name": "r_keeper (UCS)",
+      "website": "https://www.ucs.lv",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Riga till dealer (SIA \"UCS\"); its r_keeper Delivery takeaway article describes a cashier taking pre-orders for a set time ('kasieris, kurš pieņem pasūtījumus līdzņemšanai'), no customer online ordering, no prices",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.ucs.lv/services/ka-organizet-edienu-lidznemsanas-procesu-ar-r_keeper/"
+      ]
+    },
+    {
+      "name": "IQ Rest",
+      "website": "https://iq-rest.com/lv",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "multi-country QR menu (says '15+ valstīs', base not stated); the Latvian page describes only table ordering ('Pasūtījumi tieši no galdiņa') and a KDS, no takeaway/pickup ordering, no prices in page text",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://iq-rest.com/lv"
+      ]
+    },
+    {
+      "name": "ShopWidget",
+      "website": "https://www.shopwidget.app/lv/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "generic embeddable web shop (DDBusiness d.o.o., Subotica, Serbia), €25/month; the Latvian page says nothing about restaurants, pickup or ordering ahead (only a blog post targets restaurants)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.shopwidget.app/lv/"
+      ]
+    }
+  ],
+  "notes": "LV: only 1 eligible with an EUR price: FoxiFood (stored d03a6e1f, food_truck; Latvian-language site, food-truck page, pre-orders for a chosen date and time, no monthly fee + 2% + 0,45 EUR per order; operator Elite Digital Services, LLC, USA, country-terms page lists Latvia). No Latvian-made customer online-ordering tool with a public price was found: SIA UCS (r_keeper dealer, Riga) shows only cashier-taken takeaway pre-orders; Trinity (trinity.lv) builds custom ordering systems, no price (not opened); TIAMO FOOD is a restaurant chain's own app; Dativa Wendoapp is supplier ordering. Multi-country tools with Latvian pages, checked and not relevant: IQ Rest (table ordering only), ShopWidget (Serbian generic web shop). Multi-country European tools with Latvian pages that I did NOT open because they are not on my readable list (they look like agent 1's 'any European multi-country tool'): MenuForma (stored b70bbf5e, menuforma.com/lv — free plan said to include online ordering + takeaway, paid 8,99 €/month per search snippet), GASTRODIGITAL (stored 9ed5a6b1, gastrodigital.global/lv/cenas — 32–49 € per till excl. PVN per snippet). Food Truck Pub (stored 18f621da) appeared only as App Store listings; not opened. Round-1 dead ends not repeated: MEALS, CompuCash, NRdata, PapaPos. Owned elsewhere, not fetched: SumUp (agent 1; lv-lv online store found in round 1), Choice, Poster (agent 1). Stop rule applied: 8 vendor sites looked at across both rounds."
+}

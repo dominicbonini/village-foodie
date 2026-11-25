@@ -1,0 +1,484 @@
+{
+  "country": "TW",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "iCHEF 線上點餐 外帶自取 預約取餐 價格 月費 ichefpos.com zh-tw",
+    "餐車 市集 攤商 線上點餐 預約取餐 系統 月費 方案 台灣",
+    "你訂 nidin 店家 線上點餐 預約自取 方案 費用"
+  ],
+  "vendors": [
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Commission-free own webshop (Omni add-on) with pickup and time slots; Taiwan pricing page in NT$",
+      "eligibility": {
+        "order_quote": "Yes, you can enable pickup, delivery, and even dine-in QR ordering from the same webshop.",
+        "order_url": "https://klikit.io/en/products/webshop",
+        "country_quote": "Core (POS, menus, stock tracking, kitchen display and reports) is NT$490.",
+        "country_url": "https://klikit.io/en/pricing/taiwan"
+      },
+      "plans": [
+        {
+          "plan_name": "Core + Omni (webshop)",
+          "currency": "TWD",
+          "price_major": 1680,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Omni, which connects your delivery apps and adds your own webshop and QR ordering, is +NT$1,190, so Core + Omni is NT$1,680.",
+          "url": "https://klikit.io/en/pricing/taiwan",
+          "note": "Read today. 'Per outlet, per month, excluding tax.' Webshop needs the Omni add-on. Taiwan page is in English; webshop pickup/time-slot quotes are from Klikit's global English webshop page."
+        },
+        {
+          "plan_name": "Core",
+          "currency": "TWD",
+          "price_major": 490,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Core (POS, menus, stock tracking, kitchen display and reports) is NT$490.",
+          "url": "https://klikit.io/en/pricing/taiwan",
+          "note": "Core alone has no webshop; listed for reference."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Set your own delivery zones, minimum order values, and time slots.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Set your own delivery zones, minimum order values, and time slots.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Core (POS, menus, stock tracking, kitchen display and reports) is NT$490.",
+          "url": "https://klikit.io/en/pricing/taiwan"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Core (POS, menus, stock tracking, kitchen display and reports) is NT$490.",
+          "url": "https://klikit.io/en/pricing/taiwan"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Per outlet, per month, excluding tax.",
+          "url": "https://klikit.io/en/pricing/taiwan"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "You only pay a small monthly subscription fee.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commission fees ever.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://klikit.io/en/pricing/taiwan",
+        "https://klikit.io/en/products/webshop"
+      ]
+    },
+    {
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (TW: no TWD price, so not counted)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "TaiwanTWD",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "name": "iCHEF",
+      "website": "https://www.ichefpos.com/zh-tw",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Taiwanese restaurant POS; its Taiwan pricing page lists online ordering with scheduled self-pickup takeaway ('預定自取外帶') and QR takeaway as add-ons; NT$ prices",
+      "eligibility": {
+        "order_quote": "預定自取外帶",
+        "order_url": "https://www.ichefpos.com/zh-tw/pricing",
+        "country_quote": "iCHEF POS 方案月費 NT$1,950 元、一次性開通費 NT$990 元。",
+        "country_url": "https://www.ichefpos.com/zh-tw/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "iCHEF POS 方案",
+          "currency": "TWD",
+          "price_major": 1950,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 990,
+          "quote": "iCHEF POS 方案月費 NT$1,950 元、一次性開通費 NT$990 元。",
+          "url": "https://www.ichefpos.com/zh-tw/pricing",
+          "note": "Base POS plan; online takeaway is an add-on: '掃碼點餐、LINE 點餐、線上外帶等進階功能為加購方案，依需求選配。' The online-takeaway add-on price is not shown; scan-to-order is per order volume ('500 單方案每月 NT$600 元起'). So NT$1,950 is a floor, not the full price with online ordering."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "預定自取外帶",
+          "url": "https://www.ichefpos.com/zh-tw/pricing",
+          "note": "feature-list item only"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "預定自取外帶",
+          "url": "https://www.ichefpos.com/zh-tw/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "掃碼點餐、LINE 點餐、線上外帶等進階功能為加購方案，依需求選配。",
+          "url": "https://www.ichefpos.com/zh-tw/pricing",
+          "note": "LINE ordering"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "月費 NT$1,950 元起包含 POS 點餐結帳、營業報表、會員管理、電子發票等核心功能。",
+          "url": "https://www.ichefpos.com/zh-tw/pricing"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "iCHEF POS 方案月費 NT$1,950 元、一次性開通費 NT$990 元。",
+          "url": "https://www.ichefpos.com/zh-tw/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "掃碼點餐採按單量計費，500 單方案每月 NT$600 元起，只在有實際訂單時才產生費用。",
+          "url": "https://www.ichefpos.com/zh-tw/pricing",
+          "note": "order-volume pricing for scan-to-order"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.ichefpos.com/zh-tw/pricing"
+      ]
+    },
+    {
+      "name": "Oddle",
+      "website": "https://oddle.me/tw",
+      "stored_id_prefix": "110abdac",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "oddle.me/tw/pricing answered HTTP 403 (Retry-After: 30) twice (retried once); no TWD price confirmed. Oddle's Chinese docs describe a delivery and takeaway online shop (see HK/SG files)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://oddle.me/tw/pricing"
+      ]
+    },
+    {
+      "name": "Eats365",
+      "website": "https://www.eats365pos.com/tw",
+      "stored_id_prefix": "647628e6",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Restaurant POS with a Branded Online Store module (online ordering, pickup — see HK file); Taiwan site exists but its pricing page shows no NT$ price",
+      "eligibility": {
+        "order_quote": "Let guests order online and pick up later",
+        "order_url": "https://www.eats365pos.com/hk/en/expansion-module/branded-online-store",
+        "country_quote": "As a lighter option, Eats365 Biz can only be paired with the Branded Online Store and Eats365 Marketplace Expansion Modules.",
+        "country_url": "https://www.eats365pos.com/tw/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Branded Online Store (price on request)",
+          "currency": "TWD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": null,
+          "url": "https://www.eats365pos.com/tw/pricing",
+          "note": "No NT$ price on the TW pricing page (modules and a 14-day free trial only). Order-ahead quote is from its HK English module page; the TW page itself has no pickup sentence."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Online orders can be sent straight to the Kitchen Display System",
+          "url": "https://www.eats365pos.com/hk/en/expansion-module/branded-online-store"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.eats365pos.com/tw/pricing"
+      ]
+    }
+  ],
+  "notes": "TW count: 2 eligible priced in TWD (food-truck: 0) — Klikit (NEW for TW: Taiwan pricing page, Core + Omni NT$1,680/outlet/month excl. tax; webshop pickup/time slots from its global page) and iCHEF (NEW: Taiwanese POS; pricing page lists '預定自取外帶' and online takeaway as add-ons; base POS NT$1,950/month + NT$990 set-up is a floor — the online-takeaway add-on price is not shown). Oddle TW: 403 twice. Eats365 TW: no price. Take App lists Taiwan (TWD) but USD only. MENU TIGER has a zh-TW page (USD; not re-fetched, see KR/TH). Nidin 你訂: a consumer ordering platform where customers browse brands (marketplace-like), no own-site price found — not recorded. No Taiwanese food-truck / night-market ordering tool with its own price found (news mentions iCHEF for night-market stalls, not used as a source)."
+}

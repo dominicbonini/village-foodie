@@ -1,0 +1,252 @@
+{
+  "country": "LU",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Luxembourg logiciel commande en ligne click and collect restaurant food truck \"Luxembourg\" tarif mois solution luxembourgeoise",
+    "\"Belgique et Luxembourg\" OR \"France, Belgique, Luxembourg\" commande en ligne à emporter restaurants logiciel sans commission abonnement",
+    "Luxembourg (restricted to digitaste.be, restomax.be, fritzy.be, digicommerce.be, gastro25.de, liefersoft.de, gastrodok.de, yoveletta.ch, ordero.ch, rent-a-shop.ch, swisspos.ch, pikit.ch)",
+    "Luxembourg restaurant click and collect (restricted to obypay.com, collectly.fr, click-and-collect.fr, tabl.studio, noshow.io, menu-touch.fr, laddition.com, livepepper.fr, beaucamion.fr, placeaemporter.fr, bonappli.fr, feadys.com, vroomeat.fr, heustach.fr)",
+    "L'Addition caisse \"Luxembourg\" disponible (restricted to laddition.com)"
+  ],
+  "vendors": [
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com/fr/",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "ordering platform (operator Elite Digital Services, LLC, USA) whose country-terms page lists Luxembourg; French-language site, EUR prices, a food-truck page and pre-orders for a chosen date and time; 0 € a month, 0,45 € per order. No Luxembourg-specific page",
+      "eligibility": {
+        "food_quote": "Déplacez votre camion où bon vous semble et continuez à prendre des commandes.",
+        "food_url": "https://www.foxifood.com/fr/cas-dutilisation/food-truck/",
+        "order_quote": "Permettez aux clients de commander à l'avance pour une date et heure précises.",
+        "order_url": "https://www.foxifood.com/fr/fonctionnalites/",
+        "country_quote": "Luxembourg",
+        "country_url": "https://www.foxifood.com/legal/country-terms/"
+      },
+      "plans": [
+        {
+          "plan_name": "FoxiFood (no monthly fee, per order)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.45,
+          "setup_major": null,
+          "quote": "Abonnement mensuel 0 €",
+          "url": "https://www.foxifood.com/fr/",
+          "note": "'Frais de traitement (Foxi) 0,45 €' per order ('Le seul frais pour Foxi.'); the features page says 'Seulement 2 % + 0,45 EUR par commande carte (retrait/sur place).' French pricing page /fr/tarifs/ not opened; figures from the /fr/ homepage pricing table."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Permettez aux clients de commander à l'avance pour une date et heure précises.",
+          "url": "https://www.foxifood.com/fr/fonctionnalites/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Permettez aux clients de commander à l'avance pour une date et heure précises.",
+          "url": "https://www.foxifood.com/fr/fonctionnalites/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Déplacez votre camion où bon vous semble et continuez à prendre des commandes.",
+          "url": "https://www.foxifood.com/fr/cas-dutilisation/food-truck/"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "gestion Google Ads, campagnes réseaux sociaux, photographie de menu, optimisation SEO et stratégie marketing locale.",
+          "url": "https://www.foxifood.com/fr/fonctionnalites/"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Visualisez toutes les commandes en temps réel — QR, en ligne, téléphone et sur place.",
+          "url": "https://www.foxifood.com/fr/fonctionnalites/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Visualisez toutes les commandes en temps réel — QR, en ligne, téléphone et sur place.",
+          "url": "https://www.foxifood.com/fr/fonctionnalites/"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Gérez plusieurs restaurants depuis un seul tableau de bord.",
+          "url": "https://www.foxifood.com/fr/fonctionnalites/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Votre site de commande sur votre propre domaine.",
+          "url": "https://www.foxifood.com/fr/fonctionnalites/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "FoxiFood n'a pas de frais mensuels et ne prend aucune commission sur votre chiffre d'affaires.",
+          "url": "https://www.foxifood.com/fr/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Frais de traitement (Foxi) 0,45 €",
+          "url": "https://www.foxifood.com/fr/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Seulement 2 % + 0,45 EUR par commande carte (retrait/sur place).",
+          "url": "https://www.foxifood.com/fr/fonctionnalites/"
+        }
+      ],
+      "check_urls": [
+        "https://www.foxifood.com/fr/",
+        "https://www.foxifood.com/fr/fonctionnalites/",
+        "https://www.foxifood.com/fr/cas-dutilisation/food-truck/",
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    },
+    {
+      "name": "Restomax",
+      "website": "https://www.restomax.be",
+      "stored_id_prefix": "7734b770",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "for LU only: a site search suggested a Strassen (L-8069) address, but its dealers page today lists only Belgium and France ('Discover our network of authorised dealers throughout Belgium.'), no Luxembourg entry on /en or /fr; no LU presence shown (BE row unaffected)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.restomax.be/en/nos-revendeurs",
+        "https://www.restomax.be/fr/nos-revendeurs"
+      ]
+    },
+    {
+      "name": "L'Addition",
+      "website": "https://www.laddition.com/fr",
+      "stored_id_prefix": "fca70222",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French (Bordeaux) restaurant till with a Click & Collect module (customers order online, orders land in the till) and a food-truck page offering customer ordering + click & collect; its own site says it is also available in Luxembourg; from 49 €/month on the food-truck page, full prices only by quote",
+      "eligibility": {
+        "food_quote": "Plus besoin d'investir dans un réseau wifi pour votre food truck.",
+        "food_url": "https://www.laddition.com/fr/etablissement/caisse-enregistreuse-tactile-food-truck",
+        "order_quote": "Avec notre module de Click & Collect, vos clients pourront savourer leurs plats préférés sur place comme chez eux.",
+        "order_url": "https://www.laddition.com/fr/laddition-click-and-collect",
+        "country_quote": "La caisse tactile L'Addition est également disponible en Suisse, au Luxembourg et en Espagne.",
+        "country_url": "https://www.laddition.com/fr/laddition-suite"
+      },
+      "plans": [
+        {
+          "plan_name": "Formule flexible (from)",
+          "currency": "EUR",
+          "price_major": 49,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Chez l'Addition nous proposons une formule flexible à partir de 49€/mois (hors coût du matériel).",
+          "url": "https://www.laddition.com/fr/etablissement/caisse-enregistreuse-tactile-food-truck",
+          "note": "'from' price on the French food-truck page, excluding hardware; the page does not say whether Click & Collect is inside the 49 € or an extra. The pricing page (/fr/prix-logiciel-caisse) is a quote form with no prices. No Luxembourg-specific page or price; the LU evidence is one sentence repeated on several pages. A search snippet (not quoted) mentioned ~59 € HT/mois + 1 % + 0,10 € per transaction; not confirmed on the vendor's site."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Intégré à votre site web ou vos réseaux sociaux, ce lien vers la commande à distance",
+          "url": "https://www.laddition.com/fr/laddition-click-and-collect"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "vous devez vous assurer que votre caisse peut fonctionner même lorsque vous n'avez pas de connexion.",
+          "url": "https://www.laddition.com/fr/etablissement/caisse-enregistreuse-tactile-food-truck"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "vos commandes en salle et celles en ligne sont toutes accessibles depuis votre caisse enregistreuse",
+          "url": "https://www.laddition.com/fr/laddition-click-and-collect"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Intégré à votre site web ou vos réseaux sociaux, ce lien vers la commande à distance",
+          "url": "https://www.laddition.com/fr/laddition-click-and-collect"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Chez l'Addition nous proposons une formule flexible à partir de 49€/mois (hors coût du matériel).",
+          "url": "https://www.laddition.com/fr/etablissement/caisse-enregistreuse-tactile-food-truck"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.laddition.com/fr/laddition-click-and-collect",
+        "https://www.laddition.com/fr",
+        "https://www.laddition.com/fr/prix-logiciel-caisse",
+        "https://www.laddition.com/fr/laddition-suite",
+        "https://www.laddition.com/fr/etablissement/caisse-enregistreuse-tactile-food-truck"
+      ]
+    }
+  ],
+  "notes": "LU: 2 eligible with EUR prices, both food_truck, neither Luxembourg-made. FoxiFood (stored d03a6e1f; country-terms page lists Luxembourg; French site; 0 € a month + 0,45 € per order; pre-orders for a date and time; operator a US LLC). L'Addition (stored fca70222; French till; 'également disponible en Suisse, au Luxembourg et en Espagne'; Click & Collect module; food-truck page 'à partir de 49€/mois (hors coût du matériel)' — not clear whether Click & Collect is inside that price; full prices by quote only). Restomax (BE): a site search hinted at a Strassen address, but its dealers page today lists Belgium and France only, so no LU row (not_relevant for LU). DigiCommerce's 'Luxembourg' pages are the Belgian province (Arlon), not the Grand Duchy. No Luxembourg-made ordering tool found. French click-and-collect tools seen in search (Collectly, Obypay, Click&Collect, Tabl., NoShow, MenuTouch, Heustach) did not state Luxembourg in results; not opened. Round-1 dead ends not repeated: Snack Track (locator), Rapidle (connection refused). Owned elsewhere, not fetched: SumUp (agent 1; fr-lu e-shop found in round 1), Payli (agent 1), Lightspeed (agent 3)."
+}

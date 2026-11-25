@@ -1,0 +1,198 @@
+{
+  "country": "ZA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "South Africa food truck online ordering pre-order collect app pricing ZAR per month",
+    "South African commission-free online ordering platform restaurants click and collect \"per month\" rand Yoco OR iKhokha OR Orderin",
+    "\"online ordering\" restaurants South Africa \"collection\" \"R\" \"per month\" own website orders WhatsApp South African company pricing",
+    "skip the queue order ahead app South Africa markets food vendors festivals pre-order collect South African startup",
+    "GAAP OR Pilot POS South Africa \"online ordering\" collection restaurant module price rand"
+  ],
+  "vendors": [
+    {
+      "name": "Yoco",
+      "website": "https://www.yoco.com/za/",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "South African card machines / till (food trucks named: 'Sell anywhere, no Wi-Fi needed.'); its home page links online payments but no customer online ordering or order-ahead page; prices are hardware (e.g. R649 once-off)",
+      "check_urls": [
+        "https://www.yoco.com/za/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "YUMBI",
+      "website": "https://www.yumbi.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "South African restaurant/QSR ordering technology (African multi-country, owned by agent 3): white-label web and app ordering (StoreFront) for delivery, pickup and order-ahead; markets listed include South Africa. No price on the site (sales contact) -> hidden plan, does not count as priced",
+      "eligibility": {
+        "order_quote": "White-label web and app ordering that builds owned customer relationships.",
+        "order_url": "https://www.yumbi.com/",
+        "country_quote": "South Africa",
+        "country_url": "https://www.yumbi.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "StoreFront (price on request)",
+          "currency": "ZAR",
+          "price_major": null,
+          "period": "month",
+          "quote": "",
+          "url": "https://www.yumbi.com/",
+          "note": "no price on the site; 'Get Started' goes to a sales contact form. Currency assumed ZAR only for the hidden plan row. country_quote is the market name from the page's list of seven markets (South Africa, Botswana, Namibia, Kenya, Nigeria, Zambia, Côte d'Ivoire), as reported by the page reader",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "delivery, pickup, and order-ahead",
+          "url": "https://www.yumbi.com/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "White-label web and app ordering that builds owned customer relationships.",
+          "url": "https://www.yumbi.com/"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.yumbi.com/"
+      ]
+    },
+    {
+      "name": "SERVA",
+      "website": "https://serva.co.za",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "South African live-event / venue food and drink ordering platform (press, 2026); serva.co.za rendered only the word 'SERVA' to the page reader (script-rendered), so neither ordering nor pricing could be read, and it is not confirmed this domain is the same SERVA",
+      "check_urls": [
+        "https://serva.co.za/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Coffee Monster",
+      "website": "https://www.coffeemonster.co.za",
+      "stored_id_prefix": null,
+      "focus": null,
+      "verdict": "not_relevant",
+      "reason": "South African multi-merchant order-ahead consumer app that has closed ('Coffee Monster previously let customers order and pay ahead at participating cafes, restaurants and other merchants.'); now only offers licensing / white-label talks, no merchant price",
+      "check_urls": [
+        "https://www.coffeemonster.co.za/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Orderin",
+      "website": "https://www.orderin.co.za",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "South African online food ordering platform; www.orderin.co.za answered HTTP 403 Forbidden to the page reader (not retried); could be a marketplace — not determined",
+      "check_urls": [
+        "https://www.orderin.co.za/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Ser.vi",
+      "website": "https://www.ser.vi",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "US restaurant POS + 0% commission online ordering with pickup ('© 2016-2026 Ser.vi Worldwide LLC', US testimonials); surfaced via a Capterra South Africa listing, but its own page shows no South African presence or ZAR price",
+      "check_urls": [
+        "https://get.ser.vi/?src=table"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Catlog",
+      "website": "https://www.catlog.shop",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap), as in NG.json: Nigerian online store + WhatsApp food-ordering bot; its home page says it operates in South Africa too, but no pickup / order-ahead wording and only NGN prices on the pages read (no ZAR price)",
+      "eligibility": {
+        "food_quote": "If you sell fast food, run a resturant or cloud kitchen?",
+        "food_url": "https://www.catlog.shop/pricing",
+        "order_quote": "Hungry customers order, pay and book delivery on WhatsApp, without you typing a word.",
+        "order_url": "https://www.catlog.shop/"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.catlog.shop/",
+        "https://www.catlog.shop/pricing"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible with a ZAR price was found after 7 vendor sites and 5 searches. Only eligible tool: YUMBI (South African, 7 African markets; web/app ordering for 'delivery, pickup, and order-ahead') but no price on the site (hidden plan, does not count). Food-truck / event candidates: SERVA (event ordering, press 2026; its site is script-rendered and unreadable) and Coffee Monster (closed consumer app). Yoco names food trucks but sells card machines / payments, no online ordering page. Orderin answered 403. Ser.vi and Foodiv are US / India tools with no ZA presence. Search results were dominated by Capterra ZA listings priced in USD/GBP/EUR (Clickymenu, Restolabs [stored], Outbites [stored], Eatch [stored], Order Local [stored], Supaorder, Tekeats, Smakspace [stored], RapidOrderz [stored]) — not sources and not South African. Deonde (Indian multi-country delivery software with a South Africa landing page, no price shown in the snippet) belongs to its home-market agent (agent 2); named only. Pilot POS (South African till) — no online-ordering price found. UpMenu, GloriaFood (agent 1) seen in results only."
+}

@@ -1,0 +1,26 @@
+{
+  "country": "EG",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "مصر نظام طلبات أونلاين للمطاعم استلام من الفرع موقع خاص بدون عمولة الأسعار جنيه شهريا",
+    "Egypt restaurant online ordering platform own website pickup \"EGP\" per month Wuilt OR \"Easy Orders\" OR Zyda alternative Egyptian",
+    "Egyptian restaurant ordering system \"pickup\" OR \"استلام من الفرع\" own app website subscription EGP Cairo startup restaurants SaaS"
+  ],
+  "vendors": [
+    {
+      "name": "Wuilt",
+      "website": "https://wuilt.com",
+      "stored_id_prefix": null,
+      "focus": null,
+      "verdict": "not_relevant",
+      "reason": "Egyptian no-code website / online-store builder (EGP plans billed annually, e.g. Personal 'EGP 1,250'); generic e-commerce, no restaurant, pickup or order-ahead wording on the pricing page",
+      "check_urls": [
+        "https://wuilt.com/en/pricing"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    }
+  ],
+  "notes": "No eligible tool of agent 3's own found for Egypt. The Egyptian own-ordering tools that surfaced belong to agent 2 and were NOT fetched: Zyda (Egyptian-founded, search snippet 'EGP 999 per month'), Foodics (Egypt pricing page), Geidea (Saudi payments group, online ordering 'EGY 740 /month' per snippet), DineNorder (Qatar), Grubtech (UAE), Zegashop (stored candidate, India). Wuilt (Egyptian store builder, EGP) is generic e-commerce, not_relevant. Consumer / marketplace apps seen and not counted: Talabat, elmenus, EZeats, Breadfast. Khamsat freelancer listings (one-off custom builds) are not vendors. OneOrder (Cairo) is a restaurant supply startup per press, not ordering."
+}

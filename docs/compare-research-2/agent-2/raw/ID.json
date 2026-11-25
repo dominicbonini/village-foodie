@@ -1,0 +1,501 @@
+{
+  "country": "ID",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "sistem pemesanan online restoran pesan ambil sendiri (pickup) pre-order harga per bulan Rp ESB Order OR Moka OR majoo OR Olsera",
+    "ESB Order harga paket per bulan takeaway pickup pre-order esb.co.id",
+    "food truck OR bazar OR pop-up pre-order online UMKM kuliner aplikasi pesan ambil di tempat harga langganan Indonesia"
+  ],
+  "vendors": [
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Commission-free own webshop (Omni add-on) with pickup and time slots; Indonesia pricing page in Rp",
+      "eligibility": {
+        "order_quote": "Yes, you can enable pickup, delivery, and even dine-in QR ordering from the same webshop.",
+        "order_url": "https://klikit.io/en/products/webshop",
+        "country_quote": "Core (POS, menus, stock tracking, kitchen display and reports) is Rp269.000.",
+        "country_url": "https://klikit.io/en/pricing/indonesia"
+      },
+      "plans": [
+        {
+          "plan_name": "Core + Omni (webshop)",
+          "currency": "IDR",
+          "price_major": 958000,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "is +Rp689.000, so Core + Omni is Rp958.000.",
+          "url": "https://klikit.io/en/pricing/indonesia",
+          "note": "Read today. 'Per outlet, per month, excluding tax.' Webshop needs the Omni add-on (+Rp689.000). Page is in English; pickup/time-slot quotes from Klikit's global webshop page."
+        },
+        {
+          "plan_name": "Core",
+          "currency": "IDR",
+          "price_major": 269000,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Core (POS, menus, stock tracking, kitchen display and reports) is Rp269.000.",
+          "url": "https://klikit.io/en/pricing/indonesia",
+          "note": "Core alone has no webshop; listed for reference."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Set your own delivery zones, minimum order values, and time slots.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Set your own delivery zones, minimum order values, and time slots.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Core (POS, menus, stock tracking, kitchen display and reports) is Rp269.000.",
+          "url": "https://klikit.io/en/pricing/indonesia"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Core (POS, menus, stock tracking, kitchen display and reports) is Rp269.000.",
+          "url": "https://klikit.io/en/pricing/indonesia"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Per outlet, per month, excluding tax.",
+          "url": "https://klikit.io/en/pricing/indonesia"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "You only pay a small monthly subscription fee.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commission fees ever.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://klikit.io/en/pricing/indonesia",
+        "https://klikit.io/en/products/webshop"
+      ]
+    },
+    {
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (ID: no IDR price, so not counted)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "IndonesiaIDR",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "name": "majoo",
+      "website": "https://majoo.id",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Indonesian POS (F&B and retail) whose plans include an online store (Toko Online) with a pickup option, and web ordering / QR e-menu on Advance; Rp prices per outlet per month",
+      "eligibility": {
+        "order_quote": "Pilihan Pengiriman (Pickup atau Kurir Sendiri)",
+        "order_url": "https://majoo.id/harga",
+        "country_quote": "Harga belum termasuk PPN",
+        "country_url": "https://majoo.id/harga"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "IDR",
+          "price_major": 249000,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Rp 249.000",
+          "url": "https://majoo.id/harga",
+          "note": "'per outlet/bulan'; 'Harga belum termasuk PPN'. Online store with pickup option is listed for all plans. Bundles with a device and 1–2 year terms also shown."
+        },
+        {
+          "plan_name": "Advance",
+          "currency": "IDR",
+          "price_major": 499000,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Rp 499.000",
+          "url": "https://majoo.id/harga",
+          "note": "'per outlet/bulan'; adds 'Order Online + Weborder, QR Emenu' and multi-outlet."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Pilihan Pengiriman (Pickup atau Kurir Sendiri)",
+          "url": "https://majoo.id/harga",
+          "note": "pickup option in the online store; no chosen-time ordering stated"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Order Online + Weborder, QR Emenu",
+          "url": "https://majoo.id/harga",
+          "note": "online orders in the same POS"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "per outlet/bulan",
+          "url": "https://majoo.id/harga",
+          "note": "priced per outlet; Advance adds multi-outlet"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "per outlet/bulan",
+          "url": "https://majoo.id/harga"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://majoo.id/harga"
+      ]
+    },
+    {
+      "name": "ESB (ESB Order)",
+      "website": "https://www.esb.id",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Indonesian F&B system whose ESB Order gives restaurants commission-free online ordering with pick-up, takeaway and reservation modes via links on social media/WhatsApp/Google; Rp subscription prices, but the pricing page doesn't say which package includes ESB Order",
+      "eligibility": {
+        "order_quote": "Supports multiple ordering modes: Dine-In, Delivery, Pick-up, Takeaway & Reservation",
+        "order_url": "https://www.esb.id/en/solusi/produk/order",
+        "country_quote": "Start from: Rp499.000 /Bulan",
+        "country_url": "https://www.esb.id/en/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "IDR",
+          "price_major": 499000,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Start from: Rp499.000 /Bulan",
+          "url": "https://www.esb.id/en/pricing",
+          "note": "'Recommended Plan'. 'Start from' price; the pricing page does not list ESB Order separately or say it is included — treat as a floor."
+        },
+        {
+          "plan_name": "Basic",
+          "currency": "IDR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Start from: Rp0* /Bulan",
+          "url": "https://www.esb.id/en/pricing",
+          "note": "'*Terms and conditions apply.' Not shown to include ESB Order."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Supports multiple ordering modes: Dine-In, Delivery, Pick-up, Takeaway & Reservation",
+          "url": "https://www.esb.id/en/solusi/produk/order"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "Maximize sales across multiple channels: social media, WhatsApp & Google Reviews",
+          "url": "https://www.esb.id/en/solusi/produk/order"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Equipped with Delivery, Pick-Up, and Reservation modes with links on social media & Google Reviews",
+          "url": "https://www.esb.id/en/solusi/produk/order"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Start from: Rp499.000 /Bulan",
+          "url": "https://www.esb.id/en/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Zero commission fees. More savings than any other platform.",
+          "url": "https://www.esb.id/en/solusi/produk/order"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.esb.id/en/solusi/produk/order",
+        "https://www.esb.id/en/pricing"
+      ]
+    }
+  ],
+  "notes": "ID count: 3 eligible priced in IDR (food-truck: 0) — Klikit (NEW for ID: Indonesia pricing page, Core + Omni Rp958.000/outlet/month excl. tax), majoo (NEW: Starter Rp 249.000 / Advance Rp 499.000 per outlet/bulan excl. PPN; online store with 'Pickup atau Kurir Sendiri' option; no chosen-time ordering stated), ESB (NEW: ESB Order with Pick-up/Takeaway/Reservation modes, zero commission; pricing page 'Start from: Rp499.000 /Bulan' Advanced, but it doesn't say ESB Order is included — a floor). Take App lists Indonesia (IDR) but USD only. No Indonesian food-truck / bazaar ordering tool with an own-site price found (search returned news, journals and pre-order apps without vendor pricing). Never counted: GoFood, GrabFood, ShopeeFood (marketplaces). Moka, Olsera, Pawoon not fetched (three priced IDR tools already found)."
+}

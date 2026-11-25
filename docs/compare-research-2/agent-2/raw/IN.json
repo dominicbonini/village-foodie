@@ -1,0 +1,370 @@
+{
+  "country": "IN",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "food truck online ordering system India pre-order pickup own website commission free pricing ₹ per month",
+    "Thrive OR DotPe OR Petpooja restaurant own online ordering takeaway pickup pricing plan ₹ per month commission-free",
+    "restaurant online ordering website India \"takeaway\" OR \"self pickup\" \"₹\" \"per month\" plan zero commission own brand ordering",
+    "site:uengage.io takeaway OR pickup OR \"self pickup\" ordering",
+    "GoFrugal restaurant online ordering own website takeaway pickup price ₹ OR Rista OR Torqus online ordering pickup pricing"
+  ],
+  "vendors": [
+    {
+      "name": "uEngage",
+      "website": "https://www.uengage.io",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Indian (Chandigarh) direct-ordering platform: brand's own web ordering (WebXpress) where customers choose order types including takeaway; ₹ yearly prices with set-up fees. Borderline: no ordering for a chosen time stated",
+      "eligibility": {
+        "order_quote": "Allow your audience to choose from multiple order types like home delivery, dine-in, takeaway and in-car ordering.",
+        "order_url": "https://www.uengage.io/contactless-ordering",
+        "country_quote": "₹21,999 / year",
+        "country_url": "https://www.uengage.io/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "WebXpress",
+          "currency": "INR",
+          "price_major": 21999,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 20000,
+          "quote": "₹21,999 / year",
+          "url": "https://www.uengage.io/pricing",
+          "note": "One-time setup ₹20,000. GST not stated for plan prices. A 2% 'Transaction charge' is listed for the Edge web ordering module (not clear whether it applies to WebXpress)."
+        },
+        {
+          "plan_name": "WebXpress + LoyaltyPro",
+          "currency": "INR",
+          "price_major": 39999,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 25000,
+          "quote": "₹39,999 / year",
+          "url": "https://www.uengage.io/pricing",
+          "note": "One-time setup ₹25,000."
+        },
+        {
+          "plan_name": "AppXpress",
+          "currency": "INR",
+          "price_major": 124999,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 50000,
+          "quote": "₹1,24,999 / year",
+          "url": "https://www.uengage.io/pricing",
+          "note": "Branded app; one-time setup ₹50,000."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Allow your audience to choose from multiple order types like home delivery, dine-in, takeaway and in-car ordering.",
+          "url": "https://www.uengage.io/contactless-ordering"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Let customers browse the menu and place direct orders through WhatsApp.",
+          "url": "https://www.uengage.io/pricing",
+          "note": "WhatsApp Ordering is an add-on (₹20,000 per the page reader)"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "taking direct orders through your own branded channels",
+          "url": "https://www.uengage.io/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "Transaction charge",
+          "url": "https://www.uengage.io/pricing",
+          "note": "2% for the Edge web ordering module"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.uengage.io/pricing",
+        "https://www.uengage.io/contactless-ordering"
+      ]
+    },
+    {
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page; prices shown in USD only (IN: no INR price, so not counted)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "IndiaINR",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no local-currency price). Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no local-currency price); unlimited orders. Quote as joined by the page reader."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only. Quote as joined by the page reader."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "name": "Thrive",
+      "website": "https://thrivenow.in",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "thrivenow.in and /pricing render no text for the page reader (JavaScript-only); nothing confirmable from its own site",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://thrivenow.in/pricing",
+        "https://thrivenow.in/"
+      ]
+    },
+    {
+      "name": "Petpooja",
+      "website": "https://petpooja.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "unreadable",
+      "reason": "Pricing page shows plan names (Core, Growth, Scale) and features incl. 'Restaurant website' and 'OOW (Website)' but no amounts render ('Local pricing may vary... Contact us'); no takeaway/pickup sentence",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://petpooja.com/pricing"
+      ]
+    },
+    {
+      "name": "DotPe",
+      "website": "https://www.dotpe.in",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Home page shows in-venue QR / kiosk / table ordering only, no pickup or order-ahead; 'The pricing of our products depends on your needs' (no prices)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.dotpe.in"
+      ]
+    },
+    {
+      "name": "DineOpen",
+      "website": "https://www.dineopen.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Branded online ordering website with ₹ prices ('From ₹899/mo in India'), but no takeaway / pickup / order-ahead sentence on its online-ordering or pricing pages (main pricing in USD $20/$50/$99)",
+      "eligibility": {},
+      "plans": [
+        {
+          "plan_name": "Online ordering (India)",
+          "currency": "INR",
+          "price_major": 899,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "From ₹899/mo in India",
+          "url": "https://www.dineopen.com/products/orders/online",
+          "note": "For reference only (not_relevant)."
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.dineopen.com/pricing",
+        "https://www.dineopen.com/products/orders/online"
+      ]
+    },
+    {
+      "name": "LimeTray",
+      "website": "https://www.limetray.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "/pricing is a 404 page; it describes branded online ordering pages but no takeaway/pickup or prices",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.limetray.com/pricing"
+      ]
+    }
+  ],
+  "notes": "IN count: 1 eligible priced in INR (food-truck: 0) — uEngage (NEW: WebXpress own web ordering ₹21,999/year + ₹20,000 set-up; customers choose order types incl. takeaway; no chosen-time ordering stated). Take App lists India (INR) but USD only. Thrive (JS-only, unreadable), Petpooja (prices don't render; 'Contact us for accurate, localized rates'), DotPe (in-venue QR/kiosk only, no prices), DineOpen (₹ price but no takeaway/pickup wording), LimeTray (pricing 404), GoFrugal (no own-site price found in search). Restroworks (enterprise, quote-only) not fetched. No Indian food-truck ordering tool with an own-site ₹ price found. Never counted: Zomato, Swiggy, Waayu (marketplace apps)."
+}

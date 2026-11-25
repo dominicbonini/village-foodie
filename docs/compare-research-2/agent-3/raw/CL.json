@@ -1,0 +1,332 @@
+{
+  "country": "CL",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Chile food truck sistema pedidos online retiro app foodtruck precio mensual",
+    "\"Toteat\" pickup pedidos online retiro clientes tienda online toteat.com",
+    "getjusto.com Justo tienda online restaurante \"retiro\" pedidos programados"
+  ],
+  "vendors": [
+    {
+      "name": "Toteat",
+      "website": "https://www.toteat.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap): Chilean restaurant POS; the pricing page lists 'Toteat Pickup' and 'Toteat Delivery' as bare bullets in the top plan with no description, and no own page found showing customers order online ahead (/productos/toteat-pickup is 404; a web search found no Toteat page). Mentions 'Foodtucks' as a target business. CLP prices",
+      "eligibility": {
+        "food_quote": "Ideal para pequeños comercios gastronómicos, Cafeterías, Foodtucks y otros.",
+        "food_url": "https://www.toteat.com/precios",
+        "country_quote": "Desde $39.900 /mes",
+        "country_url": "https://www.toteat.com/precios"
+      },
+      "plans": [
+        {
+          "plan_name": "Plan corporativo",
+          "currency": "CLP",
+          "price_major": 179900,
+          "period": "month",
+          "quote": "Desde $179.900 /mes",
+          "url": "https://www.toteat.com/precios",
+          "note": "only plan listing 'Toteat Pickup'; plus '0,35% venta neta mensual + IVA' (a % of monthly net sales, not per order). Plan Básico 'Desde $39.900 /mes' + 0,7%; Plan avanzado 'Desde $69.900 /mes' + 0,5% ('Delivery propio y para llevar'). Country selector: Chile, Argentina, Colombia, Perú, México; only Chile prices shown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.toteat.com/precios"
+      ]
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap, same as compare-research-1 BR): own online menu / WhatsApp ordering with delivery management, but neither the Spanish home page nor the Spanish pricing page says pickup / para llevar / retiro / scheduled orders; a web search found no own-site pickup page; plan prices USD only (no local currency)",
+      "eligibility": {
+        "order_quote": "Centraliza los pedidos de WhatsApp en una sola fila, sin copiar y pegar, sin errores manuales.",
+        "order_url": "https://www.olaclick.com/es/",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, no local-currency price; 'Los precios son para suscripciones anuales pagadas al momento de la compra' (billed yearly). Others: Premium US$ 25.00/mes, Elite US$ 59.00/mes, Impulso US$ 160.00/mes. Home page: '0% de comisión.'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es"
+      ]
+    },
+    {
+      "name": "Justo",
+      "website": "https://getjusto.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap): Chilean restaurant online-ordering / own web channel ('Canal web propio personalizado'), 0% platform commission, but neither the home page nor /planes says pickup / retiro / scheduled orders (a web search found pickup only in a merchant's own terms, not Justo's site); prices in UF (Unidad de Fomento), not CLP",
+      "eligibility": {
+        "order_quote": "Toma pedidos desde whatsapp u otros canales y centralízalos en un solo lugar.",
+        "order_url": "https://www.getjusto.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "Ecom",
+          "currency": "CLF",
+          "price_major": 2,
+          "period": "month",
+          "vat": "excl",
+          "setup_major": 2.5,
+          "quote": "UF 2",
+          "url": "https://getjusto.com/planes",
+          "note": "price in Unidades de Fomento (UF, ISO CLF), not CLP; 'Precios de lista + IVA', per location; setup UF 2.5. Other plans: Inicia UF 0.5, Apps UF 1, PDV UF 3, 360 UF 4, Élite UF 7. Quote is the reader's table cell, exact wording not re-checked",
+          "per_order_pct": null,
+          "per_order_fixed_major": null
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.getjusto.com/",
+        "https://getjusto.com/planes"
+      ]
+    },
+    {
+      "name": "Fudo (Tu Delivery)",
+      "website": "https://fu.do",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Fudo's Chilean Tu Delivery page: own online shop with delivery or pickup ('Para retirar'), food trucks and ferias named as a business type; fee per sale. BORDERLINE food_truck (business-type label only) and the fee is a % without a stated currency amount; no monthly fee wording found on the CL page",
+      "eligibility": {
+        "food_quote": "Movilidad para food trucks y ferias",
+        "food_url": "https://fu.do/es-cl/delivery/",
+        "order_quote": "Para retirar",
+        "order_url": "https://fu.do/es-cl/delivery/",
+        "country_quote": "Luego pagas una tasa de servicio del 1,9% + IVA por cada venta",
+        "country_url": "https://fu.do/es-cl/delivery/"
+      },
+      "plans": [
+        {
+          "plan_name": "Tu Delivery",
+          "currency": "CLP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 1.9,
+          "quote": "Luego pagas una tasa de servicio del 1,9% + IVA por cada venta",
+          "url": "https://fu.do/es-cl/delivery/",
+          "note": "es-cl page of Fudo (Chile in the country selector); no monthly fee stated on this page (the AR page says 'No tiene abono mensual'); price_major 0 = no monthly fee shown, currency CLP assumed from the es-cl site (only '$' shown). Quote is the start of a longer sentence",
+          "per_order_fixed_major": null,
+          "setup_major": null
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Para retirar",
+          "url": "https://fu.do/es-cl/delivery/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Luego pagas una tasa de servicio del 1,9% + IVA por cada venta",
+          "url": "https://fu.do/es-cl/delivery/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://fu.do/es-cl/delivery/"
+      ]
+    },
+    {
+      "name": "Pedix",
+      "website": "https://pedix.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Argentine online catalogue / WhatsApp ordering shop with 'Retiro en persona'; the help centre lists Chilean (CLP) prices; Latin-American multi-country tool (owned by agent 3)",
+      "eligibility": {
+        "order_quote": "¿Cómo configurar la opción \"Retiro en persona\"?",
+        "order_url": "https://ayuda.pedix.app/es/article/precios-pedix",
+        "country_quote": "por +3.000 tiendas activas en 6 países",
+        "country_url": "https://info.pedix.app/"
+      },
+      "plans": [
+        {
+          "plan_name": "Principiante",
+          "currency": "CLP",
+          "price_major": 8500,
+          "period": "month",
+          "quote": "Mensual: $8.500",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "listed under Chile on the help-centre price page; yearly $85.000 'con 2 meses bonificados'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        },
+        {
+          "plan_name": "Especialista",
+          "currency": "CLP",
+          "price_major": 15000,
+          "period": "month",
+          "quote": "Mensual: $15.000",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "Chile section",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        },
+        {
+          "plan_name": "PRO",
+          "currency": "CLP",
+          "price_major": 21500,
+          "period": "month",
+          "quote": "Mensual: $21.500",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "Chile section",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "recibir pedidos organizados por WhatsApp",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Dominio web propio (mitienda.com)",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Mensual: $8.500",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "no cobra comisiones por venta ni por pedido",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://info.pedix.app/",
+        "https://ayuda.pedix.app/es/article/precios-pedix"
+      ]
+    }
+  ],
+  "notes": "No Chilean food-truck pre-order tool found; the search showed only marketplaces, US apps (Food Truck Pub) and directory listings. Eligible with CLP prices: Pedix (help-centre CLP price list, WhatsApp shop with 'Retiro en persona') and Fudo Tu Delivery (0 monthly + 1,9% + IVA per sale, pickup; recorded as food_truck because its page names 'food trucks y ferias' — BORDERLINE). Toteat (Chilean POS, CLP prices, names 'Foodtucks') and Justo (Chilean online ordering, UF prices) are BORDERLINE not_relevant: neither site shows customer pickup / order-ahead wording that could be quoted. OlaClick: USD only, no pickup wording. Toteat, Justo, Fudo, Pedix, OlaClick are Latin-American multi-country tools owned by agent 3. Third-party listings (ChatFood, Orders2Me, Weevi, Yelo, Flipdish on Capterra) seen in search only, not used."
+}

@@ -1,0 +1,188 @@
+{
+  "country": "CO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "software pedidos online restaurantes Colombia recoger en tienda sin comisión precio mensual COP food truck",
+    "\"para recoger\" pedidos en línea restaurante plataforma Colombia planes \"COP\" mes menú digital pedidos WhatsApp",
+    "Reorder restaurantes tienda online pedidos Uruguay Colombia sitio oficial reorder precios",
+    "Cluvi menú digital pedidos Colombia precios planes",
+    "tienda virtual restaurantes Colombia \"recoger en el local\" o \"recoger en tienda\" pedidos sin comisiones planes precios software",
+    "Colombia software restaurante \"pedidos en línea\" \"para llevar\" planes mensual pesos colombianos Loggro OR Bold OR Treinta OR \"Tu Orden\""
+  ],
+  "vendors": [
+    {
+      "name": "Fudo (Tu Delivery)",
+      "website": "https://fu.do",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Fudo's Colombian Tu Delivery page: own online shop with delivery or pickup ('Para retirar'), add-on priced in COP, no commission per sale; food trucks and ferias named as a business type. BORDERLINE food_truck (business-type label only); the add-on needs a base Fudo plan (base price not read)",
+      "eligibility": {
+        "food_quote": "Movilidad para food trucks y ferias",
+        "food_url": "https://fu.do/es-co/delivery/",
+        "order_quote": "Entrega a domicilio Para retirar",
+        "order_url": "https://fu.do/es-co/delivery/",
+        "country_quote": "Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.",
+        "country_url": "https://fu.do/es-co/delivery/"
+      },
+      "plans": [
+        {
+          "plan_name": "Tu Delivery (add-on module)",
+          "currency": "COP",
+          "price_major": 110900,
+          "period": "month",
+          "vat": "excl",
+          "quote": "Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.",
+          "url": "https://fu.do/es-co/delivery/",
+          "note": "add-on to a Fudo base plan (base plan price not read today); 'No pagas comisiones por venta'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Entrega a domicilio Para retirar",
+          "url": "https://fu.do/es-co/delivery/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Es un módulo que se suma a tu plan de Fudo por $110.900 al mes, en pesos colombianos y sin IVA.",
+          "url": "https://fu.do/es-co/delivery/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No pagas comisiones por venta: el precio es el mismo vendas lo que vendas.",
+          "url": "https://fu.do/es-co/delivery/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://fu.do/es-co/delivery/"
+      ]
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap, same as compare-research-1 BR): own online menu / WhatsApp ordering with delivery management, but neither the Spanish home page nor the Spanish pricing page says pickup / para llevar / retiro / scheduled orders; a web search found no own-site pickup page; plan prices USD only (no local currency)",
+      "eligibility": {
+        "order_quote": "Centraliza los pedidos de WhatsApp en una sola fila, sin copiar y pegar, sin errores manuales.",
+        "order_url": "https://www.olaclick.com/es/",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, no local-currency price; 'Los precios son para suscripciones anuales pagadas al momento de la compra' (billed yearly). Others: Premium US$ 25.00/mes, Elite US$ 59.00/mes, Impulso US$ 160.00/mes. Home page: '0% de comisión.'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es"
+      ]
+    },
+    {
+      "name": "Cluvi",
+      "website": "https://www.cluvi.co",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Colombian restaurant digital-menu / channels platform; www.cluvi.co and cluvi.com did not resolve (DNS ENOTFOUND) for the page reader; nothing read from its own site",
+      "check_urls": [
+        "https://www.cluvi.co/",
+        "https://cluvi.com/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Reorder",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Uruguayan restaurant own-ordering-site startup active in Colombia (seen in press search results only); its own website was not found by search, so nothing could be read; delivery-led per the press. Latin-American multi-country tool (agent 3)",
+      "check_urls": [],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Kucharon",
+      "website": "https://kucharon.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Colombian restaurant ordering platform (press: takeaway orders, fixed monthly fee); kucharon.com did not resolve (DNS ENOTFOUND); nothing read from its own site; may be a consumer app (marketplace-like)",
+      "check_urls": [
+        "https://kucharon.com/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    }
+  ],
+  "notes": "Colombia is thin. No Colombian food-truck ordering tool found in six searches. Only eligible with a COP price: Fudo Tu Delivery (add-on $110.900/mes sin IVA on top of a Fudo base plan; pickup 'Para retirar'; recorded food_truck only because the page names 'food trucks y ferias' — BORDERLINE, may be nearest_local). Cluvi and Kucharon (Colombian) had sites that did not resolve; Reorder (Uruguayan, active in CO) has no own site found. OlaClick: USD-only, no pickup wording. Justo and Toteat also sell in Colombia (Justo per press; Toteat's country selector) but their own pages showed no quotable pickup wording (see CL). Siigo POS Gastrobar (a till), Rappi PickUp (marketplace), MENU TIGER (agent 2), GloriaFood (agent 1), Capterra listings seen in search only."
+}

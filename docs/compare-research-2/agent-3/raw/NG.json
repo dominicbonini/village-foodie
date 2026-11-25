@@ -1,0 +1,141 @@
+{
+  "country": "NG",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Nigeria restaurant online ordering website platform pickup order ahead commission-free pricing naira per month",
+    "Nigerian restaurant software online store pickup orders Paystack \"₦\" per month plan Orda Africa OR Bumpa OR Vendease OR \"food vendors\"",
+    "Mira restaurant POS Nigeria online ordering storefront site official pricing",
+    "Lagos food vendors pre-order pickup platform \"order ahead\" restaurant own ordering link Nigeria startup naira subscription"
+  ],
+  "vendors": [
+    {
+      "name": "YUMBI",
+      "website": "https://www.yumbi.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "South African restaurant/QSR ordering technology (African multi-country, owned by agent 3): white-label web and app ordering (StoreFront) for delivery, pickup and order-ahead; markets listed include South Africa. No price on the site (sales contact) -> hidden plan, does not count as priced",
+      "eligibility": {
+        "order_quote": "White-label web and app ordering that builds owned customer relationships.",
+        "order_url": "https://www.yumbi.com/",
+        "country_quote": "Nigeria",
+        "country_url": "https://www.yumbi.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "StoreFront (price on request)",
+          "currency": "NGN",
+          "price_major": null,
+          "period": "month",
+          "quote": "",
+          "url": "https://www.yumbi.com/",
+          "note": "no price on the site; 'Get Started' goes to a sales contact form. Currency assumed ZAR only for the hidden plan row. country_quote is the market name from the page's list of seven markets (South Africa, Botswana, Namibia, Kenya, Nigeria, Zambia, Côte d'Ivoire), as reported by the page reader",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "delivery, pickup, and order-ahead",
+          "url": "https://www.yumbi.com/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "White-label web and app ordering that builds owned customer relationships.",
+          "url": "https://www.yumbi.com/"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.yumbi.com/"
+      ]
+    },
+    {
+      "name": "Catlog",
+      "website": "https://www.catlog.shop",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap): Nigerian online store + WhatsApp ordering bot (Chowbot) aimed partly at food sellers — 'order, pay and book delivery on WhatsApp' — but neither the home nor pricing page says pickup, collection, order-ahead or scheduled orders; NGN plans. Generic shop builder, not a food tool. African multi-country (NG, GH, ZA, KE) — owned by agent 3",
+      "eligibility": {
+        "food_quote": "If you sell fast food, run a resturant or cloud kitchen?",
+        "food_url": "https://www.catlog.shop/pricing",
+        "order_quote": "Hungry customers order, pay and book delivery on WhatsApp, without you typing a word.",
+        "order_url": "https://www.catlog.shop/"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "NGN",
+          "price_major": 6500,
+          "period": "month",
+          "quote": "",
+          "url": "https://www.catlog.shop/",
+          "note": "home page shows Basic ₦6,500 per month and Business+ ₦12,500 per month (page reader gave the amounts, not the exact wording, so no quote); the /pricing page lists only add-ons, e.g. WhatsApp Assistant 'NGN 5,000Per month'",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "vat": "unknown"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.catlog.shop/",
+        "https://www.catlog.shop/pricing"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible with an NGN price exists that I could find (4 searches, sites read: YUMBI, Catlog, orda.co). YUMBI (South African, lists Nigeria among its markets) is eligible but has no price (hidden plan). Catlog (Nigerian, NGN 6,500/month store + WhatsApp food-ordering bot) shows delivery only, no pickup/order-ahead wording -> BORDERLINE not_relevant. orda.co is now a Philippine-peso restaurant POS (not the Nigerian Orda, which Moniepoint acquired in 2026 per press) — not recorded as a Nigerian vendor. Mira (Nigerian restaurant POS with Instagram/WhatsApp order links, per press) was bought by Chowdeck (a marketplace); no own site found. Deonde (Indian white-label ordering with a Nigeria landing page; home market India -> agent 2) named only. Marketplaces seen and never counted: Chowdeck, Heyfood, Foodstantly, Food Online, Yabatech Food."
+}

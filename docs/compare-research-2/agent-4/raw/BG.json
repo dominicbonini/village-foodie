@@ -1,0 +1,367 @@
+{
+  "country": "BG",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "онлайн поръчки за ресторанти собствен уебсайт софтуер \"вземане от място\" абонамент евро на месец",
+    "фуд трак предварителна поръчка онлайн система събития фестивали поръчай и вземи приложение за търговци България"
+  ],
+  "vendors": [
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com/bg/",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "ordering platform (operator Elite Digital Services, LLC, USA) with a full Bulgarian-language site (/bg/), EUR prices, a food-truck page and pre-orders for a chosen date and time; its country-terms page lists Bulgaria; 0 € a month, 0,45 € per order",
+      "eligibility": {
+        "food_quote": "Управлявайте фууд тръка по-интелигентно.",
+        "food_url": "https://www.foxifood.com/bg/prilozheniya/fud-trak/",
+        "order_quote": "Позволете на клиентите да поръчват предварително за конкретна дата и час.",
+        "order_url": "https://www.foxifood.com/bg/funktsii/",
+        "country_quote": "Bulgaria",
+        "country_url": "https://www.foxifood.com/legal/country-terms/"
+      },
+      "plans": [
+        {
+          "plan_name": "FoxiFood (no monthly fee, per order)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.45,
+          "setup_major": 0,
+          "quote": "Месечна такса 0 €",
+          "url": "https://www.foxifood.com/bg/tseni/",
+          "note": "Pricing table: 0,45 € на поръчка for pickup/on-site orders (paid by the customer: 'Само малка такса на поръчка, платена от клиента.'), plus Stripe card fee 1,5/2% + 0,25 €; 'Такса за активиране 0 €'. The features page instead says 'Само 2% + 0,45 EUR на поръчка' — the two pages disagree on the card part. Country evidence: Bulgarian-language site with EUR prices, and Bulgaria in the EU list of its country-terms page."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Позволете на клиентите да поръчват предварително за конкретна дата и час.",
+          "url": "https://www.foxifood.com/bg/funktsii/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Позволете на клиентите да поръчват предварително за конкретна дата и час.",
+          "url": "https://www.foxifood.com/bg/funktsii/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "кампании в социалните мрежи",
+          "url": "https://www.foxifood.com/bg/funktsii/"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Вижте всички поръчки в реално време",
+          "url": "https://www.foxifood.com/bg/funktsii/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Интегрирайте FoxiFood с вашата POS система",
+          "url": "https://www.foxifood.com/bg/funktsii/"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Управлявайте няколко ресторантски локации от едно табло.",
+          "url": "https://www.foxifood.com/bg/funktsii/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Управлявайте уебсайт за поръчки на собствен домейн.",
+          "url": "https://www.foxifood.com/bg/funktsii/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Без месечни такси.",
+          "url": "https://www.foxifood.com/bg/tseni/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Само малка такса на поръчка, платена от клиента.",
+          "url": "https://www.foxifood.com/bg/tseni/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Картовата такса се начислява директно от доставчика на плащания (Stripe)",
+          "url": "https://www.foxifood.com/bg/tseni/"
+        }
+      ],
+      "check_urls": [
+        "https://www.foxifood.com/bg/",
+        "https://www.foxifood.com/bg/funktsii/",
+        "https://www.foxifood.com/bg/tseni/",
+        "https://www.foxifood.com/bg/prilozheniya/fud-trak/",
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    },
+    {
+      "name": "Menuto",
+      "website": "https://menuto.app/bg/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Bulgarian (White White Web Ltd., Burgas) digital menu + own website; Pro plan adds online orders for pickup; EUR prices incl. VAT; no food-truck wording, no pickup-time choice stated",
+      "eligibility": {
+        "order_quote": "Онлайн поръчки за вземане от място",
+        "order_url": "https://menuto.app/bg/",
+        "country_quote": "White White Web Ltd., Бургас, България",
+        "country_url": "https://menuto.app/bg/"
+      },
+      "plans": [
+        {
+          "plan_name": "Pro",
+          "currency": "EUR",
+          "price_major": 29,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "29 € / месец",
+          "url": "https://menuto.app/bg/",
+          "note": "Pro is the cheapest plan with 'Онлайн поръчки за вземане от място'; or 290 € годишно. 'Всички цени са с включен ДДС'. Only Stripe fees on online payment."
+        },
+        {
+          "plan_name": "Complete",
+          "currency": "EUR",
+          "price_major": 59,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "59 € / месец",
+          "url": "https://menuto.app/bg/",
+          "note": "adds zone delivery, kiosk, Viber/WhatsApp status, 3 venues; or 590 € годишно."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "Статус във Viber и WhatsApp",
+          "url": "https://menuto.app/bg/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Кухненски екран и номера за вземане",
+          "url": "https://menuto.app/bg/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "3 обекта, неограничен екип",
+          "url": "https://menuto.app/bg/"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Собствен уебсайт, обедно меню",
+          "url": "https://menuto.app/bg/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "29 € / месец",
+          "url": "https://menuto.app/bg/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "При онлайн плащане се дължат само таксите на Stripe.",
+          "url": "https://menuto.app/bg/"
+        }
+      ],
+      "check_urls": [
+        "https://menuto.app/bg/"
+      ]
+    },
+    {
+      "name": "QR-MENU.BG",
+      "website": "https://www.qr-menu.bg",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Bulgarian (.bg) digital menu whose ORDERS plan takes takeaway and delivery orders from the guest's phone, with advance orders a set number of days ahead; EUR prices; commission-free; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Advance orders with a configurable number of days ahead.",
+        "order_url": "https://www.qr-menu.bg/home/en"
+      },
+      "plans": [
+        {
+          "plan_name": "ORDERS",
+          "currency": "EUR",
+          "price_major": 15,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "15,00 €per month",
+          "url": "https://www.qr-menu.bg/home/en",
+          "note": "page markup joins '15,00 €' and 'per month'; or 150,00 € per year (2 months free). START (10,00 €) is browse-only, no orders. Read the site's English version (/home/en); company address not found in page text."
+        },
+        {
+          "plan_name": "PREMIUM",
+          "currency": "EUR",
+          "price_major": 20,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "20,00 €",
+          "url": "https://www.qr-menu.bg/home/en",
+          "note": "per month (or 200,00 € per year); adds team apps, reservations, lunch menu, HACCP logs. Quote is the amount as summarised by the page reader, period word not captured verbatim."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Advance orders with a configurable number of days ahead.",
+          "url": "https://www.qr-menu.bg/home/en"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Manage staff and kitchen with Waiter POS and Kitchen Display.",
+          "url": "https://www.qr-menu.bg/home/en"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Manage staff and kitchen with Waiter POS and Kitchen Display.",
+          "url": "https://www.qr-menu.bg/home/en"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "15,00 €per month",
+          "url": "https://www.qr-menu.bg/home/en"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Commission-free online orders from €15.",
+          "url": "https://www.qr-menu.bg/home/en"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.qr-menu.bg/home/en"
+      ]
+    },
+    {
+      "name": "OrderPad",
+      "website": "https://orderpad.eu",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Bulgarian-language QR menu (search snippet: pickup, 10 €/20 € a month); orderpad.eu returned only its title 'OrderPad • Дигитално QR Меню' to the page reader (script-rendered), so nothing could be checked",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://orderpad.eu/"
+      ]
+    }
+  ],
+  "notes": "BG: 3 eligible with EUR prices on own sites. FoxiFood (stored d03a6e1f, German platform, full Bulgarian-language /bg/ site with EUR prices) is the only food-truck tool: food-truck page + pre-orders for a chosen date and time, 0 € a month + 0,45 € per order paid by the customer + Stripe card fee (its features page and pricing page state the card part differently). Two Bulgarian restaurant tools: Menuto (Burgas; Pro 29 €/месец incl. ДДС adds online pickup orders) and QR-MENU.BG (ORDERS 15,00 € per month: takeaway/delivery orders from the guest's phone, advance orders days ahead; read via its English page). OrderPad (orderpad.eu) is script-rendered, unreadable. Not opened (leads from the search only): Kliento (kliento.bg, site/orders/reservations, price 'like a POS', not listed), 1MENU.eu (digital menu, 45 €/месец), ReZZo (reservations only). A Bulgarian food-truck search found no local food-truck ordering tool (only Ticket Fairy blog posts and Jotform). Not re-read from compare-research-1: Jotform, order.bg, myPOS, Ecwid (dead ends). Owned elsewhere, not fetched: SumUp (agent 1; bg-bg online store found in round 1), Choice, UpMenu (agent 1), MENU TIGER (agent 2)."
+}

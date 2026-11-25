@@ -1,0 +1,43 @@
+{
+  "country": "PR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Puerto Rico food truck ordenar en línea recoger app plataforma pedidos restaurantes Puerto Rico precio mensual",
+    "squareup.com help Puerto Rico sellers Square available Puerto Rico US territories",
+    "plataforma puertorriqueña pedidos en línea para restaurantes y food trucks recogido \"pick-up\" sin comisión Puerto Rico empresa local"
+  ],
+  "vendors": [
+    {
+      "name": "Square",
+      "website": "https://squareup.com",
+      "stored_id_prefix": "9acae7b6",
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Square's own availability page lists card acceptance only in the US, Canada, Australia, Japan, the UK, Ireland, France and Spain and says 'We currently don't support payment card processing outside of these countries.'; Puerto Rico is not named (Square community moderators say PR is not supported — forum, not quoted)",
+      "eligibility": {
+        "country_quote": "We currently don't support payment card processing outside of these countries.",
+        "country_url": "https://squareup.com/help/us/en/article/4956-international-availability-of-square"
+      },
+      "check_urls": [
+        "https://squareup.com/help/us/en/article/4956-international-availability-of-square"
+      ],
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "Toast",
+      "website": "https://pos.toasttab.com",
+      "stored_id_prefix": "757fad52",
+      "focus": "pos",
+      "verdict": "unreadable",
+      "reason": "a Puerto Rico restaurant's Toast online-ordering page (toasttab.com/local/order/borinquen-cravings, found by search) answered HTTP 403 to the page reader; Toast's own pages seen in search name only the US, Canada, Ireland, UK and Australia; no own-site statement that Toast sells in Puerto Rico was read",
+      "check_urls": [
+        "https://www.toasttab.com/local/order/borinquen-cravings"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    }
+  ],
+  "notes": "Nothing eligible confirmed for Puerto Rico. No Puerto Rican food-truck or own-ordering tool found; search results were marketplaces (Uber Eats, DoorDash, Postmates — never counted), single-restaurant apps (Meso Pick-Up, built on Flipdish [agent 1]; FoodNetPR; Taco Bell PR) and a Zegashop guide (stored candidate; Indian, agent 2). Square: its own availability page excludes PR. Toast: a PR merchant ordering page on toasttab.com exists but answered 403, and Toast's site does not state PR coverage — a reviewer could check Toast's US pricing page if PR (USD) is to be counted. DoorDash's Storefront/online ordering is a marketplace's product and not counted. US tools stored in compare-research-1 (Hotplate, Goodfynd, etc.) were not re-checked for PR coverage."
+}
