@@ -364,30 +364,56 @@ async function notesProofs(file) {
   ok('the demo trucks\' counts are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
 }
 
-/* ── till-pack-1 (24 November 2026, docs/till-pack-1-report.md): THE TAMPER-EVIDENT CHAIN, OBSERVE MODE ─────────────────────────────────
+/* ── till-pack-1 / till-pack-1b (24–25 November 2026, docs/till-pack-1b-report.md): THE TAMPER-EVIDENT CHAIN, OBSERVE MODE ────────────────
  *   --preflight-till-1 <migration>  ONE transaction, ROLLED BACK: 20261129_till_pack_1's statements, then every proof below in ONE
  *                                   server-side DO block (one round trip, so the migration's DDL locks on orders / order_payments /
- *                                   action_audit_log last about a second), including the DDL-only proofs: the forced failure (till_chain
- *                                   renamed inside a savepoint), the TRUNCATE refusals and a tamper caught by till_verify.
+ *                                   action_audit_log / trucks last about a second), including the DDL-only proofs: the forced failure
+ *                                   (till_chain renamed inside a savepoint), the TRUNCATE refusals, a tamper caught by till_verify, and a
+ *                                   probe trigger that records any write to orders / order_payments made from INSIDE another trigger.
  *   --till-1-check                  After it is applied: the same block WITHOUT the DDL-only proofs, then the two-connection proofs and
  *                                   the per-insert timings — every transaction ROLLED BACK.
  * The demo trucks are outside the till (Q7): the till is switched on for them only INSIDE these transactions (SET LOCAL
- * till.include_demo = 'on'). Each run writes the chain it built and the rows it sealed (demo data, no customer) to
- * docs/till-pack-1/, so scripts/till-pack-1.cjs can check the JavaScript mirror against what the database produced, byte for byte. */
+ * till.include_demo = 'on'). Each run writes the chain it built and the rows it sealed (demo data, no customer) to docs/till-pack-1/, so
+ * scripts/till-pack-1.cjs can check the JavaScript mirror against what the database produced, byte for byte.
+ * 🔴 NO TILL TRIGGER WRITES AN ORDER OR A PAYMENT (till-pack-1b): every till trigger does its work inside an exception block — a
+ * subtransaction — so a row it wrote would carry a sub-transaction's xmin. After every step, every orders / order_payments row of both
+ * trucks must carry the proof transaction's own xid (rbp_clean); the baseline and the identity change leave every row's ctid / xmin /
+ * updated_at exactly as they were; and (pre-flight) the probe trigger sees no nested INSERT or UPDATE at all. */
 const TILL_OUT = path.join(REPO, 'docs/till-pack-1')
 const lit = s => `'${String(s).replace(/'/g, "''")}'`
 /** The temporary helpers (pg_temp: gone with the session; created inside the rolled-back transaction anyway). */
 function tillHelpers() {
   return `create temp table _till_proof (n serial primary key, label text not null, ok boolean, detail text);
+create temp table _till_clean (n serial primary key, label text not null, bad text);
 create function pg_temp.rbp_ok(p_label text, p_ok boolean, p_detail text) returns void language sql as $f$
   insert into _till_proof (label, ok, detail) values (p_label, coalesce(p_ok, false), left(p_detail, 900)) $f$;
+create function pg_temp.rbp_food(p_items jsonb) returns integer language sql as $f$
+  select coalesce(sum(round((e ->> 'unit_price')::numeric * (e ->> 'quantity')::numeric * 100)), 0)::integer from jsonb_array_elements(p_items) e $f$;
+create function pg_temp.rbp_bd(p_food integer) returns jsonb language sql as $f$
+  select jsonb_build_array(jsonb_build_object('rate_milli', 10000, 'food_minor', p_food, 'gross_minor', p_food,
+    'net_minor', p_food - round(p_food * 10000 / 110000.0)::integer, 'tax_minor', round(p_food * 10000 / 110000.0)::integer)) $f$;
 create function pg_temp.rbp_walkup(p_truck text, p_day date, p_items jsonb, p_status text, p_name text, p_email text, p_phone text, p_notes text, p_line_notes jsonb)
 returns uuid language sql as $f$
   insert into public.orders (id, truck_id, customer_name, customer_phone, customer_email, slot, order_type, event_date, event_id, items, deals,
-    discount_code, subtotal, discount_amt, total, total_minor, food_minor, tax_minor, tax_inclusive, tax_label, card_fee_payer, status,
-    payment_status, source, notes, line_notes)
-  values ('rbp-' || substr(md5(random()::text), 1, 8), p_truck, p_name, p_phone, p_email, null, 'collection', p_day, null, p_items, null, null,
-    5.00, 0, 5.00, 500, 500, 45, true, 'TVA', 'truck', p_status, 'unpaid', 'manual', p_notes, p_line_notes)
+    discount_code, subtotal, discount_amt, total, total_minor, food_minor, tax_minor, tax_rate_milli, tax_inclusive, tax_label, tax_breakdown, card_fee_payer,
+    status, payment_status, source, notes, line_notes)
+  select 'rbp-' || substr(md5(random()::text), 1, 8), p_truck, p_name, p_phone, p_email, null, 'collection', p_day, null, p_items, null, null,
+    round(z.f / 100.0, 2), 0, round(z.f / 100.0, 2), z.f, z.f, 0, 10000, true, 'TVA', pg_temp.rbp_bd(z.f), 'truck', p_status, 'unpaid', 'manual', p_notes, p_line_notes
+  from (select pg_temp.rbp_food(p_items) as f) z
+  returning order_key $f$;
+create function pg_temp.rbp_set_items(p_key uuid, p_items jsonb) returns void language sql as $f$
+  update public.orders o set items = p_items, subtotal = round(z.f / 100.0, 2), total = round(z.f / 100.0, 2), total_minor = z.f, food_minor = z.f,
+    tax_breakdown = case when o.tax_breakdown is null then null else pg_temp.rbp_bd(z.f) end
+  from (select pg_temp.rbp_food(p_items) as f) z where o.order_key = p_key $f$;
+create function pg_temp.rbp_full(p_truck text, p_status text, p_source text, p_van uuid, p_currency text, p_items jsonb, p_deals jsonb,
+  p_subtotal numeric, p_discount numeric, p_total numeric, p_total_minor integer, p_food integer, p_tax integer, p_rate integer, p_incl boolean,
+  p_bd jsonb, p_tip integer, p_fee integer) returns uuid language sql as $f$
+  insert into public.orders (id, truck_id, customer_name, order_type, event_date, items, deals, subtotal, discount_amt, total, total_minor, food_minor,
+    tax_minor, tax_rate_milli, tax_inclusive, tax_label, tax_breakdown, tip_minor, service_fee_minor, service_fee_recipient, card_fee_payer, status,
+    payment_status, source, van_id, currency)
+  values ('rbp-' || substr(md5(random()::text), 1, 8), p_truck, 'rollback proof', 'collection', current_date, p_items, p_deals, p_subtotal, p_discount,
+    p_total, p_total_minor, p_food, p_tax, p_rate, p_incl, case when p_incl then 'TVA' else 'Sales tax' end, p_bd, p_tip, p_fee,
+    case when p_fee > 0 then 'truck' end, 'truck', p_status, 'unpaid', p_source, p_van, p_currency)
   returning order_key $f$;
 create function pg_temp.rbp_replay(p_truck text, p_key uuid) returns integer language sql as $f$
   with ins as (insert into public.orders (order_key, id, truck_id, customer_name, order_type, event_date, items, subtotal, discount_amt, total,
@@ -417,85 +443,138 @@ create function pg_temp.rbp_reasons(p_truck text, p_ref text) returns text langu
   select coalesce(string_agg(c.version || ':' || (c.payload::jsonb ->> 'reason') || ':' || coalesce(c.payload::jsonb -> 'data' ->> 'fiscal_state', ''), ',' order by c.seq), '')
   from public.till_chain c where c.truck_id = p_truck and c.kind = 'order' and c.ref = p_ref $f$;
 create function pg_temp.rbp_events(p_truck text, p_ref text) returns text language sql as $f$
-  select coalesce(string_agg(g.event, ',' order by g.id), '') from public.till_guard_events g where g.truck_id = p_truck and g.ref = p_ref $f$;`
+  select coalesce(string_agg(g.event, ',' order by g.id), '') from public.till_guard_events g where g.truck_id = p_truck and g.ref = p_ref $f$;
+create function pg_temp.rbp_data(p_truck text, p_ref text) returns jsonb language sql as $f$
+  select c.payload::jsonb from public.till_chain c where c.truck_id = p_truck and c.kind = 'order' and c.ref = p_ref order by c.seq desc limit 1 $f$;
+create function pg_temp.rbp_snap(p_trucks text[]) returns text language sql as $f$
+  select coalesce(string_agg(x, ';' order by x), '') from (
+    select 'o:' || o.order_key || '@' || o.ctid::text || '/' || o.xmin::text || '/' || coalesce(o.updated_at::text, '') as x from public.orders o where o.truck_id = any (p_trucks)
+    union all select 'p:' || p.id || '@' || p.ctid::text || '/' || p.xmin::text from public.order_payments p where p.truck_id = any (p_trucks)) z $f$;
+create function pg_temp.rbp_clean(p_label text, p_trucks text[]) returns void language sql as $f$
+  insert into _till_clean (label, bad)
+  select p_label, string_agg(z.k, ',') from (
+    select 'order ' || o.order_key as k from public.orders o where o.truck_id = any (p_trucks) and o.xmin::text <> (pg_current_xact_id()::xid)::text
+    union all select 'payment ' || p.id from public.order_payments p where p.truck_id = any (p_trucks) and p.xmin::text <> (pg_current_xact_id()::xid)::text) z $f$;`
+}
+/** pre-flight only: a probe on orders / order_payments that records any INSERT / UPDATE / DELETE issued from inside another trigger
+ *  (pg_trigger_depth() > 1). An FK cascade's DELETE of a payment is the only nested write allowed. */
+function tillProbe() {
+  return `create temp table _till_nested (n serial primary key, tbl text, op text, depth integer);
+create function public.rbp_till_probe_nested() returns trigger language plpgsql as $f$
+begin
+  if pg_trigger_depth() > 1 then insert into pg_temp._till_nested (tbl, op, depth) values (tg_table_name, tg_op, pg_trigger_depth()); end if;
+  return case when tg_op = 'DELETE' then old else new end;
+end $f$;
+create trigger zz_rbp_probe_nested before insert or update or delete on public.orders for each row execute function public.rbp_till_probe_nested();
+create trigger zz_rbp_probe_nested before insert or update or delete on public.order_payments for each row execute function public.rbp_till_probe_nested();`
 }
 const OLD_STYLE_LIT = JSON.stringify({ ...OLD_STYLE_ORDER, items: [{ name: 'Crêpe', quantity: 1, unit_price: 5 }], subtotal: 5, total: 5, total_minor: 500, food_minor: 500 })
-/** The proofs, as one DO block. `ddl` adds the DDL-only ones (pre-flight only: the tables there are this transaction's own). */
-function tillProofBlock(ddl) {
-  const A = lit(TRUCKS.A), B = lit(TRUCKS.B)
+const MIX_ITEMS = '[{"name":"Galette","quantity":2,"unit_price":7.50,"tax_rate_milli":10000},{"name":"Cidre","quantity":1,"unit_price":4.00,"tax_rate_milli":20000},{"name":"Pain","quantity":3,"unit_price":1.10,"tax_rate_milli":5500}]'
+const MIX_DEALS = '[{"name":"Formule","price":12,"slots":{"main":"Crêpe","drink":"Cidre"},"slotModifiers":{"main":[{"name":"Oeuf","price":1.00}]},"tax_parts":[{"tax_rate_milli":10000,"minor":850},{"tax_rate_milli":20000,"minor":450}]}]'
+const MIX_BD = '[{"rate_milli":5500,"food_minor":297,"gross_minor":297,"net_minor":282,"tax_minor":15},{"rate_milli":10000,"food_minor":2115,"gross_minor":2115,"net_minor":1923,"tax_minor":192},{"rate_milli":20000,"food_minor":765,"gross_minor":765,"net_minor":637,"tax_minor":128}]'
+
+/** The proofs, first half (1–9). `ddl` adds the DDL-only ones (pre-flight only: the tables there are this transaction's own). */
+function tillProofPart1(ddl) {
+  const A = lit(TRUCKS.A), B = lit(TRUCKS.B), AB = `array[${A}, ${B}]`
+  const clean = l => `perform pg_temp.rbp_clean(${lit(l)}, ${AB});`
   return `do $proof$
 declare
-  k_fn uuid; k_walk uuid; k_rep uuid; k_pro uuid; k_late uuid; k_old uuid; k_old2 uuid; k_new uuid; k_b uuid; k_bl1 uuid; k_bl2 uuid;
-  p1 uuid; p2 uuid; p3 uuid; p4 uuid; p5 uuid; pf uuid; pb uuid; pbl uuid; p_old uuid; p_new uuid; p_old2 uuid;
-  c1 integer; c2 integer; n_ord integer; n_pay integer; e0 integer; e1 integer; aud uuid;
-  st text; st2 text; st3 text; st4 text; st5 text; st6 text; v jsonb; v2 jsonb; vb jsonb; vb2 jsonb; s1 text; s2 text;
+  k_fn uuid; k_walk uuid; k_rep uuid; k_pro uuid; k_pp uuid; k_late uuid; k_old uuid; k_old2 uuid; k_new uuid; k_b uuid; k_off uuid;
+  k_bl1 uuid; k_bl2 uuid; k_bl3 uuid; k_ff uuid; k_mix uuid; k_us uuid; k_leg uuid; k_or uuid; k_jp uuid; k_rc uuid; k_van uuid; k_web uuid; k_src uuid;
+  p1 uuid; p2 uuid; p3 uuid; p4 uuid; p5 uuid; pf uuid; pb uuid; pbl uuid; p_old uuid; p_new uuid; p_old2 uuid; p_pp uuid; v_van uuid;
+  c1 integer; c2 integer; c3 integer; n_ord integer; n_pay integer; e0 integer; n_id integer; aud uuid;
+  st text; st2 text; st3 text; st4 text; st5 text; st6 text; s1 text; s2 text; ff text;
+  v jsonb; v2 jsonb; vb jsonb; vb2 jsonb; d jsonb; x jsonb; y jsonb;
 begin
   perform set_config('till.include_demo', 'on', true);
 
-  -- ── 1 · the deployed insert paths: nothing sealed or chained, the new columns NULL ──
+  -- ── 1 · the deployed insert paths: all succeed; an ACCEPTED insert is sealed at once (change 1), a PENDING one is not ──
   k_fn := ((public.place_order_atomic_v2(${lit(OLD_STYLE_LIT)}::jsonb, null, 'confirmed', null, ${A}, current_date, null)) ->> 'order_key')::uuid;
   k_walk := pg_temp.rbp_walkup(${A}, current_date, '[{"name":"Crêpe","quantity":1,"unit_price":5}]', 'confirmed', 'rollback proof', null, null, null, null);
   k_rep := gen_random_uuid();
   c1 := pg_temp.rbp_replay(${A}, k_rep); c2 := pg_temp.rbp_replay(${A}, k_rep);
   k_pro := pg_temp.rbp_promote(${A});
-  perform pg_temp.rbp_ok('1 · the deployed place_order_atomic_v2 call, the walk-up insert, the offline replay upsert (twice: inserted, then skipped) and the card promotion insert all succeed — sealed_at / sealed_version NULL, nothing chained',
-    (select count(*) from public.orders where order_key in (k_fn, k_walk, k_rep, k_pro) and sealed_at is null and sealed_version is null) = 4 and c1 = 1 and c2 = 0
-      and not exists (select 1 from public.till_chain where truck_id = ${A}),
-    json_build_object('rows', (select count(*) from public.orders where order_key in (k_fn, k_walk, k_rep, k_pro)), 'replay', array[c1, c2], 'chain', (select count(*) from public.till_chain where truck_id = ${A}))::text);
+  perform pg_temp.rbp_ok('1 · the deployed place_order_atomic_v2 call, the walk-up insert, the offline replay upsert (inserted, then skipped) and the card promotion insert all succeed; the three ACCEPTED inserts are sealed at once (v1 accepted), the PENDING promotion is not',
+    (select count(*) from public.orders where order_key in (k_fn, k_walk, k_rep, k_pro)) = 4 and c1 = 1 and c2 = 0
+      and pg_temp.rbp_reasons(${A}, k_fn::text) = '1:accepted:accepted' and pg_temp.rbp_reasons(${A}, k_walk::text) = '1:accepted:accepted'
+      and pg_temp.rbp_reasons(${A}, k_rep::text) = '1:accepted:accepted' and pg_temp.rbp_reasons(${A}, k_pro::text) = ''
+      and (select count(*) from public.till_order_seals where order_key in (k_fn, k_walk, k_rep)) = 3 and not exists (select 1 from public.till_order_seals where order_key = k_pro),
+    json_build_object('replay', array[c1, c2], 'fn', pg_temp.rbp_reasons(${A}, k_fn::text), 'walk', pg_temp.rbp_reasons(${A}, k_walk::text), 'rep', pg_temp.rbp_reasons(${A}, k_rep::text), 'pro', pg_temp.rbp_reasons(${A}, k_pro::text))::text);
+  perform pg_temp.rbp_ok('18a · the truck''s chain begins with the till_start event (seq 1), then its identity entry (seq 2), before its first order',
+    (select kind || ':' || ref from public.till_chain where truck_id = ${A} and seq = 1) = 'event:till_start'
+      and (select kind || ':' || version from public.till_chain where truck_id = ${A} and seq = 2) = 'identity:1'
+      and (select min(seq) from public.till_chain where truck_id = ${A} and kind = 'order') = 3,
+    (select string_agg(seq || ':' || kind || ':' || ref, ', ' order by seq) from public.till_chain where truck_id = ${A} and seq <= 4));
+  ${clean('1')}
 
-  -- ── 2 · each payment chains exactly one entry; the first one seals its order ──
+  -- ── 2 · payments: each chains exactly one entry; collect = one payment entry plus the order version ──
   p1 := pg_temp.rbp_pay(k_fn, 'charge', 'in_person_other', 'card', 500, null);                       -- mark paid
-  perform pg_temp.rbp_ok('2a · mark paid: one payment entry, and the order sealed as version 1 (first_payment, accepted)',
-    pg_temp.rbp_entries(${A}, 'payment', p1::text) = 1 and pg_temp.rbp_reasons(${A}, k_fn::text) = '1:first_payment:accepted'
-      and (select sealed_version from public.orders where order_key = k_fn) = 1 and (select sealed_at from public.orders where order_key = k_fn) is not null,
-    pg_temp.rbp_reasons(${A}, k_fn::text));
+  perform pg_temp.rbp_ok('2a · mark paid on an accepted (already sealed) order: one payment entry, no new order version', pg_temp.rbp_entries(${A}, 'payment', p1::text) = 1 and pg_temp.rbp_reasons(${A}, k_fn::text) = '1:accepted:accepted', pg_temp.rbp_reasons(${A}, k_fn::text));
   update public.orders set payment_status = 'paid', amount_paid = 5 where order_key = k_fn;           -- the ledger's cache write-back
-  perform pg_temp.rbp_ok('2b · the payment cache write-back (payment_status, amount_paid) makes no version', pg_temp.rbp_reasons(${A}, k_fn::text) = '1:first_payment:accepted', pg_temp.rbp_reasons(${A}, k_fn::text));
+  perform pg_temp.rbp_ok('2b · the payment cache write-back (payment_status, amount_paid) makes no version', pg_temp.rbp_reasons(${A}, k_fn::text) = '1:accepted:accepted', pg_temp.rbp_reasons(${A}, k_fn::text));
   p2 := pg_temp.rbp_pay(k_walk, 'charge', 'in_person_other', 'cash', 500, null);                    -- collect: the route books the payment first …
   update public.orders set status = 'collected', paid_at = now(), collected_at = now(), status_before_collected = 'confirmed' where order_key = k_walk;   -- … then the status
-  perform pg_temp.rbp_ok('2c · collect: one payment entry; the order sealed v1 at the payment, then v2 at the collected update (state_change, collected) — the route writes the payment before the status',
-    pg_temp.rbp_entries(${A}, 'payment', p2::text) = 1 and pg_temp.rbp_reasons(${A}, k_walk::text) = '1:first_payment:accepted,2:state_change:collected'
-      and (select sealed_version from public.orders where order_key = k_walk) = 2,
-    pg_temp.rbp_reasons(${A}, k_walk::text));
-  p3 := pg_temp.rbp_pay(k_pro, 'charge', 'online', 'card', 500, 'pi_rbp_till_1');                   -- the Stripe webhook's charge row
-  perform pg_temp.rbp_ok('2d · online charge: one payment entry, and the order sealed v1 (first_payment)', pg_temp.rbp_entries(${A}, 'payment', p3::text) = 1 and pg_temp.rbp_reasons(${A}, k_pro::text) = '1:first_payment:pending', pg_temp.rbp_reasons(${A}, k_pro::text));
-  p4 := pg_temp.rbp_pay(k_pro, 'refund', 'online', 'card', 500, 're_rbp_till_1');                   -- the refund row
-  perform pg_temp.rbp_ok('2e · online refund: one payment entry, no new order version', pg_temp.rbp_entries(${A}, 'payment', p4::text) = 1 and pg_temp.rbp_reasons(${A}, k_pro::text) = '1:first_payment:pending', pg_temp.rbp_reasons(${A}, k_pro::text));
+  perform pg_temp.rbp_ok('2c · collect: exactly one payment entry plus one order version (v2 state_change, collected)',
+    pg_temp.rbp_entries(${A}, 'payment', p2::text) = 1 and pg_temp.rbp_reasons(${A}, k_walk::text) = '1:accepted:accepted,2:state_change:collected', pg_temp.rbp_reasons(${A}, k_walk::text));
+  update public.orders set slot = '19:00', notes = 'pending note' where order_key = k_pro;            -- changes while pending
+  c3 := (select count(*) from public.till_chain where truck_id = ${A} and ref = k_pro::text);
+  update public.orders set status = 'confirmed' where order_key = k_pro;                            -- the truck accepts it
+  p3 := pg_temp.rbp_pay(k_pro, 'charge', 'online', 'card', 500, 'pi_rbp_till_1');                   -- … and the capture follows (every capture site confirms first)
+  perform pg_temp.rbp_ok('2d · a pending order stays UNSEALED through changes; accepting it seals v1 (accepted); the online charge then chains one payment entry and no version',
+    c3 = 0 and pg_temp.rbp_reasons(${A}, k_pro::text) = '1:accepted:accepted' and pg_temp.rbp_entries(${A}, 'payment', p3::text) = 1, json_build_object('while_pending', c3, 'versions', pg_temp.rbp_reasons(${A}, k_pro::text))::text);
+  p4 := pg_temp.rbp_pay(k_pro, 'refund', 'online', 'card', 500, 're_rbp_till_1');
+  perform pg_temp.rbp_ok('2e · online refund: one payment entry, no new order version', pg_temp.rbp_entries(${A}, 'payment', p4::text) = 1 and pg_temp.rbp_reasons(${A}, k_pro::text) = '1:accepted:accepted', pg_temp.rbp_reasons(${A}, k_pro::text));
   update public.order_payments set application_fee_minor = 12 where id = p3 and application_fee_minor is null;
   perform pg_temp.rbp_ok('2f · the platform fee fill on a chained payment (not sealed) makes no entry and no guard event', pg_temp.rbp_entries(${A}, 'payment', p3::text) = 1 and pg_temp.rbp_events(${A}, p3::text) = '', pg_temp.rbp_events(${A}, p3::text));
+  k_pp := pg_temp.rbp_promote(${A});
+  p_pp := pg_temp.rbp_pay(k_pp, 'charge', 'in_person_other', 'cash', 500, null);
+  perform pg_temp.rbp_ok('2g · a payment on a still-PENDING order (no code path does this today) seals it at that first payment (Q1), as pending',
+    pg_temp.rbp_reasons(${A}, k_pp::text) = '1:first_payment:pending', pg_temp.rbp_reasons(${A}, k_pp::text));
+  ${clean('2')}
 ${ddl ? `
-  -- ── 3 · a forced failure (the chain table renamed, inside a savepoint): the payment still goes in, and the failure is logged ──
+  -- ── 3 · a forced failure (the chain table renamed, inside a savepoint): the payment and the accepted order still go in, the failures logged ──
   begin
     alter table public.till_chain rename to till_chain_forced_failure;
     pf := pg_temp.rbp_pay(k_rep, 'charge', 'in_person_other', 'cash', 500, null);
-    c1 := (select count(*) from public.order_payments where id = pf);
+    k_ff := pg_temp.rbp_walkup(${A}, current_date, '[{"name":"Crêpe","quantity":1,"unit_price":5}]', 'confirmed', 'rollback proof', null, null, null, null);
+    c1 := (select count(*) from public.order_payments where id = pf) + (select count(*) from public.orders where order_key = k_ff);
     st := (select sqlstate from public.till_failures where ref = pf::text order by id desc limit 1);
+    ff := (select op || ':' || sqlstate from public.till_failures where ref = k_ff::text order by id desc limit 1);
     raise exception using errcode = 'RBP01', message = 'undo the forced failure';
   exception when sqlstate 'RBP01' then null;
   end;
-  perform pg_temp.rbp_ok('3 · forced failure (till_chain renamed in a savepoint): the payment row is still INSERTED, and till_failures says why (42P01)', c1 = 1 and st = '42P01' and to_regclass('public.till_chain') is not null, json_build_object('payment_rows', c1, 'sqlstate', st)::text);
+  perform pg_temp.rbp_ok('3 · forced failure (till_chain renamed in a savepoint): the payment row AND the accepted walk-up are still INSERTED, and till_failures says why (42P01)', c1 = 2 and st = '42P01' and ff = 'order_insert_seal:42P01' and to_regclass('public.till_chain') is not null, json_build_object('rows', c1, 'payment', st, 'order', ff)::text);
 ` : ''}
   -- ── 4 · the deployed undo: DELETE the charge, then the status back — allowed, logged, and chained ──
   delete from public.order_payments where id = p2;
   update public.orders set status = 'confirmed', paid_at = null, collected_at = null where order_key = k_walk;
   perform pg_temp.rbp_ok('4 · the deployed undo (DELETE of the charge) still deletes; it is logged as a would-be refusal and chained as a deletion; the status back makes v3',
     not exists (select 1 from public.order_payments where id = p2) and pg_temp.rbp_events(${A}, p2::text) = 'would_refuse_delete' and pg_temp.rbp_entries(${A}, 'deletion', p2::text) = 1
-      and pg_temp.rbp_reasons(${A}, k_walk::text) = '1:first_payment:accepted,2:state_change:collected,3:state_change:accepted',
+      and pg_temp.rbp_reasons(${A}, k_walk::text) = '1:accepted:accepted,2:state_change:collected,3:state_change:accepted',
     json_build_object('events', pg_temp.rbp_events(${A}, p2::text), 'versions', pg_temp.rbp_reasons(${A}, k_walk::text))::text);
+  ${clean('4')}
 
-  -- ── 5 · edits: before the close → a new version; after the close → a version AND a would-be refusal (observe never blocks) ──
+  -- ── 5 · edits: before the close → a version with its delta; after the close → a version AND a would-be refusal (observe never blocks) ──
   update public.orders set items = '[{"name":"Crêpe","quantity":2,"unit_price":5}]', subtotal = 10, total = 10, total_minor = 1000, food_minor = 1000 where order_key = k_fn;
-  perform pg_temp.rbp_ok('5a · an edit before the day''s close makes version 2 (edit), with no guard event', pg_temp.rbp_reasons(${A}, k_fn::text) = '1:first_payment:accepted,2:edit:accepted' and pg_temp.rbp_events(${A}, k_fn::text) = '' and (select sealed_version from public.orders where order_key = k_fn) = 2, pg_temp.rbp_reasons(${A}, k_fn::text));
+  d := pg_temp.rbp_data(${A}, k_fn::text) -> 'delta';
+  perform pg_temp.rbp_ok('5a · an edit before the day''s close makes version 2 (edit), with no guard event', pg_temp.rbp_reasons(${A}, k_fn::text) = '1:accepted:accepted,2:edit:accepted' and pg_temp.rbp_events(${A}, k_fn::text) = '', pg_temp.rbp_reasons(${A}, k_fn::text));
+  perform pg_temp.rbp_ok('17a · its delta (change 5): minus the old line, plus the new one (each with its VAT figures); total_minor +500; per rate excl. VAT +454 and VAT +46; the six changed field names',
+    (d ->> 'from_version')::int = 1 and jsonb_array_length(d -> 'minus' -> 'items') = 1 and jsonb_array_length(d -> 'plus' -> 'items') = 1
+      and d -> 'minus' -> 'items' -> 0 ->> 'line_total_excl_vat_minor' = '455' and d -> 'plus' -> 'items' -> 0 ->> 'line_total_excl_vat_minor' = '909'
+      and d -> 'amounts' -> 'total_minor' ->> 'change' = '500' and d -> 'vat' = '[{"vat_rate_milli": 10000, "excl_vat_minor": 454, "vat_minor": 46}]'::jsonb
+      and d -> 'fields' = '["food_minor", "items", "subtotal", "total", "total_minor", "vat_summary"]'::jsonb and d -> 'minus' -> 'deals' = '[]'::jsonb,
+    d::text);
   k_late := pg_temp.rbp_walkup(${A}, current_date - 3, '[{"name":"Crêpe","quantity":1,"unit_price":5}]', 'confirmed', 'rollback proof', null, null, null, null);
   p5 := pg_temp.rbp_pay(k_late, 'charge', 'in_person_other', 'card', 500, null);
-  update public.orders set total = 6, total_minor = 600 where order_key = k_late;
+  perform pg_temp.rbp_set_items(k_late, '[{"name":"Crêpe","quantity":1,"unit_price":6}]');
   update public.orders set placed_at = clock_timestamp() where order_key = k_late and placed_at is null;   -- (now() would equal created_at in this one transaction)
   perform pg_temp.rbp_ok('5b · three days ago: the late payment is dated today (its order''s day is closed); an edit makes v2 edit_after_close AND logs would_refuse_after_close (allowed); the placed_at fill makes v3 with no guard event',
-    pg_temp.rbp_reasons(${A}, k_late::text) = '1:first_payment:accepted,2:edit_after_close:accepted,3:state_change_after_close:accepted'
+    pg_temp.rbp_reasons(${A}, k_late::text) = '1:accepted:accepted,2:edit_after_close:accepted,3:state_change_after_close:accepted'
       and pg_temp.rbp_events(${A}, k_late::text) = 'would_refuse_after_close'
-      and (select (c.payload::jsonb ->> 'trading_day')::date from public.till_chain c where c.truck_id = ${A} and c.kind = 'payment' and c.ref = p5::text) = (now() at time zone public.till_truck_tz(${A}))::date
+      and (select (c.payload::jsonb ->> 'trading_day')::date from public.till_chain c where c.truck_id = ${A} and c.kind = 'payment' and c.ref = p5::text) = public.till_today(${A})
       and (select total from public.orders where order_key = k_late) = 6,
-    json_build_object('versions', pg_temp.rbp_reasons(${A}, k_late::text), 'events', pg_temp.rbp_events(${A}, k_late::text), 'fields', (select detail from public.till_guard_events where ref = k_late::text limit 1))::text);
+    json_build_object('versions', pg_temp.rbp_reasons(${A}, k_late::text), 'events', pg_temp.rbp_events(${A}, k_late::text))::text);
+  ${clean('5')}
 
   -- ── 6 · retention, the line-notes move and account deletion write only unsealed fields: no version; till_verify stays true ──
   k_old := pg_temp.rbp_walkup(${A}, current_date, '[{"name":"Galette","quantity":1,"unit_price":6,"specialInstructions":"No onions — coeliac"}]', 'confirmed',
@@ -513,16 +592,18 @@ ${ddl ? `
   update public.orders set customer_name = '[deleted]', customer_email = null, customer_phone = null, notes = null where order_key in (k_fn, k_old2);
   v := public.till_verify(${A});
   perform pg_temp.rbp_ok('6 · the retention patch (old-style: name, email, phone, note, dish note blanked inside items; new-style: line_notes blanked), the line-notes move and account deletion''s anonymisation + notes patch make NO version — and till_verify stays true',
-    pg_temp.rbp_reasons(${A}, k_old::text) = '1:first_payment:accepted' and pg_temp.rbp_reasons(${A}, k_new::text) = '1:first_payment:accepted'
-      and pg_temp.rbp_reasons(${A}, k_old2::text) = '1:first_payment:accepted' and pg_temp.rbp_reasons(${A}, k_fn::text) = '1:first_payment:accepted,2:edit:accepted'
+    pg_temp.rbp_reasons(${A}, k_old::text) = '1:accepted:accepted' and pg_temp.rbp_reasons(${A}, k_new::text) = '1:accepted:accepted'
+      and pg_temp.rbp_reasons(${A}, k_old2::text) = '1:accepted:accepted' and pg_temp.rbp_reasons(${A}, k_fn::text) = '1:accepted:accepted,2:edit:accepted'
       and (v ->> 'ok')::boolean,
     v::text);
+  ${clean('6')}
 
   -- ── 7 · kitchen moves: cooking, ready, back to confirmed, a slot, a buzzer — no version ──
   update public.orders set status = 'cooking' where order_key = k_fn;
   update public.orders set status = 'ready' where order_key = k_fn;
   update public.orders set status = 'confirmed', slot = '18:30', buzzer_number = 7 where order_key = k_fn;
-  perform pg_temp.rbp_ok('7 · kitchen status moves (cooking, ready, back), a slot change and a buzzer make no version', pg_temp.rbp_reasons(${A}, k_fn::text) = '1:first_payment:accepted,2:edit:accepted', pg_temp.rbp_reasons(${A}, k_fn::text));
+  perform pg_temp.rbp_ok('7 · kitchen status moves (cooking, ready, back), a slot change and a buzzer make no version', pg_temp.rbp_reasons(${A}, k_fn::text) = '1:accepted:accepted,2:edit:accepted', pg_temp.rbp_reasons(${A}, k_fn::text));
+  ${clean('7')}
 
   -- ── 8 · demo trucks outside the till (the default): nothing chained or logged; their deletes and cascades go through as today ──
   perform set_config('till.include_demo', '', true);
@@ -531,19 +612,22 @@ ${ddl ? `
   pb := pg_temp.rbp_pay(k_b, 'charge', 'in_person_other', 'cash', 500, null);
   update public.orders set status = 'collected', collected_at = now() where order_key = k_b;
   delete from public.orders where order_key = k_b;                                                    -- deleteTruckCascade deletes orders first; payments cascade
-  update public.orders set status = 'collected', collected_at = now() where order_key = k_rep;        -- truck A, now outside the till again
-  perform pg_temp.rbp_ok('8 · demo trucks are skipped by default: a payment, a collect and an order delete (its payment cascading) on demo trucks chain nothing, log nothing, and succeed',
+  k_off := pg_temp.rbp_walkup(${A}, current_date, '[{"name":"Crêpe","quantity":1,"unit_price":5}]', 'confirmed', 'rollback proof', null, null, null, null);
+  update public.orders set status = 'collected', collected_at = now() where order_key = k_off;        -- truck A, now outside the till again
+  perform pg_temp.rbp_ok('8 · demo trucks are skipped by default: an insert, a payment, a collect and an order delete (its payment cascading) on demo trucks chain nothing, log nothing, and succeed',
     not exists (select 1 from public.till_chain where truck_id = ${B}) and not exists (select 1 from public.orders where order_key = k_b)
       and not exists (select 1 from public.order_payments where id = pb) and (select count(*) from public.till_guard_events) = e0
-      and pg_temp.rbp_reasons(${A}, k_rep::text) = '' and (select sealed_version from public.orders where order_key = k_rep) is null,
+      and pg_temp.rbp_reasons(${A}, k_off::text) = '' and not exists (select 1 from public.till_order_seals where order_key = k_off),
     json_build_object('b_chain', (select count(*) from public.till_chain where truck_id = ${B}), 'events', (select count(*) from public.till_guard_events) - e0)::text);
   perform set_config('till.include_demo', 'on', true);
   delete from public.orders where order_key = k_old;                                                  -- a sealed order and its payment (cascade), till on
   v := public.till_verify(${A});
-  perform pg_temp.rbp_ok('8b · with the till on, deleting a sealed order (its payment cascading) is ALLOWED in observe mode, logged for both rows, chained as two deletions — and till_verify stays true',
+  perform pg_temp.rbp_ok('8b · with the till on, deleting a sealed order (its payment cascading) is ALLOWED in observe mode, logged for both rows, chained as two deletions, its seal state marked deleted — and till_verify stays true',
     not exists (select 1 from public.orders where order_key = k_old) and pg_temp.rbp_events(${A}, k_old::text) = 'would_refuse_delete' and pg_temp.rbp_events(${A}, p_old::text) = 'would_refuse_delete'
-      and pg_temp.rbp_entries(${A}, 'deletion', k_old::text) = 1 and pg_temp.rbp_entries(${A}, 'deletion', p_old::text) = 1 and (v ->> 'ok')::boolean,
+      and pg_temp.rbp_entries(${A}, 'deletion', k_old::text) = 1 and pg_temp.rbp_entries(${A}, 'deletion', p_old::text) = 1
+      and (select deleted_at is not null from public.till_order_seals where order_key = k_old) and (v ->> 'ok')::boolean,
     v::text);
+  ${clean('8')}
 
   -- ── 9 · append-only: till_chain and action_audit_log refuse UPDATE and DELETE${ddl ? ' (and TRUNCATE)' : ''}; an audit INSERT still works ──
   begin update public.till_chain set ref = ref where truck_id = ${A}; st := 'allowed'; exception when others then st := sqlstate; end;
@@ -556,23 +640,49 @@ ${ddl ? `  begin truncate public.till_chain; st5 := 'allowed'; exception when ot
   perform pg_temp.rbp_ok('9 · UPDATE / DELETE${ddl ? ' / TRUNCATE' : ''} on till_chain and action_audit_log are refused (HGT01); an INSERT into action_audit_log works',
     st = 'HGT01' and st2 = 'HGT01' and st3 = 'HGT01' and st4 = 'HGT01' and st5 = 'HGT01' and st6 = 'HGT01' and exists (select 1 from public.action_audit_log where id = aud),
     json_build_object('chain_update', st, 'chain_delete', st2, 'audit_update', st3, 'audit_delete', st4, 'chain_truncate', st5, 'audit_truncate', st6)::text);
+`
+}
 
-  -- ── 10 · the baseline (built, not run on live data): seals what was there before, once ──
+/** A sealed order's VAT, as one comparable value: basis, item triples [rate, price, excl], deal parts, summary [rate, food, excl, vat]. */
+function tillHelpersVat() {
+  return `create function pg_temp.rbp_vatsig(x jsonb) returns jsonb language sql as $f$
+  select jsonb_build_object('b', x -> 'vat_basis',
+    'i', coalesce((select jsonb_agg(jsonb_build_array(t.e -> 'vat_rate_milli', t.e -> 'line_price_minor', t.e -> 'line_total_excl_vat_minor') order by t.n)
+                     from jsonb_array_elements(case when jsonb_typeof(x -> 'items') = 'array' then x -> 'items' else '[]'::jsonb end) with ordinality t(e, n)), '[]'::jsonb),
+    'd', coalesce((select jsonb_agg((select coalesce(jsonb_agg(jsonb_build_array(u.e -> 'vat_rate_milli', u.e -> 'line_price_minor', u.e -> 'line_total_excl_vat_minor') order by u.n), '[]'::jsonb)
+                                       from jsonb_array_elements(t.e -> 'vat_parts') with ordinality u(e, n)) order by t.n)
+                     from jsonb_array_elements(case when jsonb_typeof(x -> 'deals') = 'array' then x -> 'deals' else '[]'::jsonb end) with ordinality t(e, n)), '[]'::jsonb),
+    's', coalesce((select jsonb_agg(jsonb_build_array(t.e -> 'vat_rate_milli', t.e -> 'food_minor', t.e -> 'excl_vat_minor', t.e -> 'vat_minor') order by t.n)
+                     from jsonb_array_elements(x -> 'vat_summary') with ordinality t(e, n)), '[]'::jsonb)) $f$;`
+}
+/** The proofs, second half (10–19, then 13 at the very end). */
+function tillProofPart2(ddl) {
+  const A = lit(TRUCKS.A), B = lit(TRUCKS.B), AB = `array[${A}, ${B}]`
+  const clean = l => `perform pg_temp.rbp_clean(${lit(l)}, ${AB});`
+  const crepe = `'[{"name":"Crêpe","quantity":1,"unit_price":5}]'`
+  return `
+  -- ── 10 · the baseline (built, not run on live data): seals what was there before, once — writing TILL TABLES ONLY ──
   perform set_config('till.include_demo', '', true);
-  k_bl1 := pg_temp.rbp_walkup(${A}, current_date - 1, '[{"name":"Crêpe","quantity":1,"unit_price":5}]', 'ready', 'rollback proof', null, null, null, null);
-  k_bl2 := pg_temp.rbp_walkup(${A}, current_date - 1, '[{"name":"Crêpe","quantity":1,"unit_price":5}]', 'collected', 'rollback proof', null, null, null, null);
+  k_bl1 := pg_temp.rbp_walkup(${A}, current_date - 1, ${crepe}, 'ready', 'rollback proof', null, null, null, null);
+  k_bl2 := pg_temp.rbp_walkup(${A}, current_date - 1, ${crepe}, 'collected', 'rollback proof', null, null, null, null);
   pbl := pg_temp.rbp_pay(k_bl2, 'charge', 'in_person_other', 'cash', 500, null);
+  k_bl3 := pg_temp.rbp_promote(${A});
   perform set_config('till.include_demo', 'on', true);
-  n_ord := (select count(*) from public.orders where truck_id = ${A} and sealed_version is null and public.till_fiscal_state(status) <> 'pending');
+  n_ord := (select count(*) from public.orders o where o.truck_id = ${A} and public.till_fiscal_state(o.status) <> 'pending' and not exists (select 1 from public.till_order_seals s where s.order_key = o.order_key));
   n_pay := (select count(*) from public.order_payments p where p.truck_id = ${A} and not exists (select 1 from public.till_chain c where c.truck_id = ${A} and c.kind = 'payment' and c.ref = p.id::text));
+  s1 := pg_temp.rbp_snap(${AB});
   vb := public.till_baseline(${A});
+  s2 := pg_temp.rbp_snap(${AB});
   vb2 := public.till_baseline(${A});
   v := public.till_verify(${A});
-  perform pg_temp.rbp_ok('10 · till_baseline(truck) seals every unsealed accepted / final order and chains every unchained payment once (reason baseline); a second run does nothing; till_verify is true with nothing left unsealed',
+  perform pg_temp.rbp_ok('10 · till_baseline(truck) seals every unsealed non-pending order and chains every unchained payment once (reason baseline); a pending order stays unsealed; a second run does nothing; till_verify is true with nothing left unsealed',
     (vb ->> 'orders_sealed')::int = n_ord and (vb ->> 'payments_chained')::int = n_pay and n_ord >= 3 and n_pay >= 1
       and (vb2 ->> 'orders_sealed')::int = 0 and (vb2 ->> 'payments_chained')::int = 0 and pg_temp.rbp_reasons(${A}, k_bl2::text) = '1:baseline:collected'
-      and (v ->> 'ok')::boolean and (v ->> 'unsealed_orders')::int = 0 and (v ->> 'unchained_payments')::int = 0,
+      and pg_temp.rbp_reasons(${A}, k_bl3::text) = '' and (v ->> 'ok')::boolean and (v ->> 'unsealed_orders')::int = 0 and (v ->> 'unchained_payments')::int = 0,
     json_build_object('expected', array[n_ord, n_pay], 'first', vb, 'second', vb2, 'verify', v)::text);
+  perform pg_temp.rbp_ok('19a · the baseline wrote NO order or payment row: every row of both trucks has the same ctid, xmin and updated_at before and after it (so no realtime event either)',
+    s1 = s2 and length(s1) > 100, json_build_object('before', left(s1, 300), 'after', left(s2, 300))::text);
+  ${clean('10')}
 ${ddl ? `
   -- ── 11 · tamper: a sealed field changed with the guard switched off (inside a savepoint) — till_verify catches it ──
   begin
@@ -584,49 +694,149 @@ ${ddl ? `
   exception when sqlstate 'RBP02' then null;
   end;
   perform pg_temp.rbp_ok('11 · a sealed field changed behind the guard''s back is caught: till_verify false, "row differs from its sealed form"',
-    not (v2 ->> 'ok')::boolean and v2 -> 'mismatches' -> 0 ->> 'problem' = 'row differs from its sealed form' and (public.till_verify(${A}) ->> 'ok')::boolean,
+    not (v2 ->> 'ok')::boolean and exists (select 1 from jsonb_array_elements(v2 -> 'mismatches') m where m ->> 'problem' = 'row differs from its sealed form' and m ->> 'ref' = k_fn::text)
+      and (public.till_verify(${A}) ->> 'ok')::boolean,
     v2::text);
 ` : ''}
+  -- ── 14 · change 2: every line carries its VAT rate and its total excluding VAT, reconciling to the order to the minor unit ──
+  k_mix := pg_temp.rbp_full(${A}, 'confirmed', 'web', null, 'EUR', ${lit(MIX_ITEMS)}, ${lit(MIX_DEALS)}, 35.30, 3.53, 31.77, 3177, 3177, 0, 10000, true, ${lit(MIX_BD)}, 0, 0);
+  x := pg_temp.rbp_data(${A}, k_mix::text) -> 'data';
+  perform pg_temp.rbp_ok('14a · a mixed-rate French order (5.5 %, 10 %, 20 %; a deal split 10 % / 20 % by the VAT engine; a 10 % discount): basis breakdown; Galette 1227, Cidre 300, Pain 282, the deal''s parts 696 + 337 excl. VAT; per rate 282 / 1923 / 637 + VAT 15 / 192 / 128 = the food 3177',
+    pg_temp.rbp_vatsig(x) = '{"b": "breakdown", "i": [[10000, 1500, 1227], [20000, 400, 300], [5500, 330, 282]], "d": [[[10000, 850, 696], [20000, 450, 337]]], "s": [[5500, 297, 282, 15], [10000, 2115, 1923, 192], [20000, 765, 637, 128]]}'::jsonb
+      and public.till_vat_reconciles(x), pg_temp.rbp_vatsig(x)::text);
+  k_us := pg_temp.rbp_full(${A}, 'confirmed', 'web', null, 'USD', '[{"name":"Burger","quantity":2,"unit_price":8.00,"tax_rate_milli":6625}]', null, 16.00, 0, 20.06, 2006, 1600, 106, 6625, false,
+    '[{"rate_milli":6625,"food_minor":1600,"gross_minor":1706,"net_minor":1600,"tax_minor":106}]', 200, 100);
+  k_leg := pg_temp.rbp_full(${A}, 'confirmed', 'manual', null, 'GBP', '[{"name":"Fish","quantity":1,"unit_price":9.00}]',
+    '[{"name":"Combo","price":6.50,"slots":{"main":"Fish"},"slotModifiers":{"main":[{"name":"Peas","price":0.50}]}}]', 16.00, 0, 16.00, 1600, null, 0, null, null, null, 0, 0);
+  k_or := pg_temp.rbp_full(${A}, 'confirmed', 'web', null, 'GBP', '[{"name":"Pie","quantity":1,"unit_price":12.00}]', null, 12.00, 0, 12.00, 1200, 1200, 0, 20000, true, null, 0, 0);
+  k_jp := pg_temp.rbp_full(${A}, 'confirmed', 'web', null, 'JPY', '[{"name":"Ramen","quantity":1,"unit_price":1500}]', null, 1500, 0, 1500, 1500, 1500, 0, 10000, true, null, 0, 0);
+  k_rc := pg_temp.rbp_full(${A}, 'confirmed', 'web', null, 'EUR', '[{"name":"Crêpe","quantity":1,"unit_price":5,"tax_rate_milli":10000}]', null, 5, 0, 5, 500, 500, 0, 10000, true,
+    '[{"rate_milli":5500,"food_minor":500,"gross_minor":500,"net_minor":474,"tax_minor":26}]', 0, 0);
+  perform pg_temp.rbp_ok('14b · VAT added (US, 6.625 %, a tip and a service fee): excl = food 1600, VAT 106 = tax_minor, total 2006; a pre-charge-columns order (legacy, no rate) with an old deal (no split): Fish 900 + Combo 700 = (subtotal − discount); one older rate on the order (20 % included): 1000 + 200; JPY (no decimals): 1364 + 136; a breakdown that does not match the lines: recomputed, 455 + 45 — every one reconciling',
+    pg_temp.rbp_vatsig(pg_temp.rbp_data(${A}, k_us::text) -> 'data') = '{"b": "breakdown", "i": [[6625, 1600, 1600]], "d": [], "s": [[6625, 1600, 1600, 106]]}'::jsonb
+      and pg_temp.rbp_vatsig(pg_temp.rbp_data(${A}, k_leg::text) -> 'data') = '{"b": "legacy", "i": [[null, 900, 900]], "d": [[[null, 700, 700]]], "s": [[null, 1600, 1600, 0]]}'::jsonb
+      and pg_temp.rbp_vatsig(pg_temp.rbp_data(${A}, k_or::text) -> 'data') = '{"b": "order_rate", "i": [[20000, 1200, 1000]], "d": [], "s": [[20000, 1200, 1000, 200]]}'::jsonb
+      and pg_temp.rbp_vatsig(pg_temp.rbp_data(${A}, k_jp::text) -> 'data') = '{"b": "order_rate", "i": [[10000, 1500, 1364]], "d": [], "s": [[10000, 1500, 1364, 136]]}'::jsonb
+      and pg_temp.rbp_vatsig(pg_temp.rbp_data(${A}, k_rc::text) -> 'data') = '{"b": "recomputed", "i": [[10000, 500, 455]], "d": [], "s": [[10000, 500, 455, 45]]}'::jsonb
+      and (select bool_and(public.till_vat_reconciles(pg_temp.rbp_data(${A}, k::text) -> 'data')) from unnest(array[k_us, k_leg, k_or, k_jp, k_rc]) k),
+    (select string_agg(pg_temp.rbp_vatsig(pg_temp.rbp_data(${A}, k::text) -> 'data')::text, ' | ') from unnest(array[k_us, k_leg, k_or, k_jp, k_rc]) k));
+  perform pg_temp.rbp_ok('14c · the check is real: one line''s excl. VAT +1, or the order''s total +1, no longer reconciles',
+    not public.till_vat_reconciles(jsonb_set(x, '{items,0,line_total_excl_vat_minor}', '1228'::jsonb)) and not public.till_vat_reconciles(jsonb_set(x, '{total_minor}', '3178'::jsonb))
+      and not public.till_vat_reconciles(jsonb_set(x, '{deals,0,vat_parts,1,vat_rate_milli}', '5500'::jsonb)), null);
+  ${clean('14')}
+
+  -- ── 15 · change 3: a till number on every version — the van, else 'web' for an online order, else the recorded source ──
+  v_van := (select v.id from public.truck_vans v where v.truck_id = ${A} order by v.created_at nulls last, v.id limit 1);
+  k_van := pg_temp.rbp_full(${A}, 'confirmed', 'web', v_van, 'EUR', ${crepe}, null, 5, 0, 5, 500, 500, 0, 10000, true, null, 0, 0);
+  k_web := pg_temp.rbp_full(${A}, 'confirmed', 'web', null, 'EUR', ${crepe}, null, 5, 0, 5, 500, 500, 0, 10000, true, null, 0, 0);
+  k_src := pg_temp.rbp_full(${A}, 'confirmed', null, null, 'EUR', ${crepe}, null, 5, 0, 5, 500, 500, 0, 10000, true, null, 0, 0);
+  perform pg_temp.rbp_ok('15 · till_id: the van''s id for an order with a van; ''web'' for an online order without one; ''manual'' for a walk-up; ''unrecorded'' when even the source is empty — and no order version anywhere without one',
+    v_van is not null and pg_temp.rbp_data(${A}, k_van::text) -> 'data' ->> 'till_id' = v_van::text and pg_temp.rbp_data(${A}, k_web::text) -> 'data' ->> 'till_id' = 'web'
+      and pg_temp.rbp_data(${A}, k_walk::text) -> 'data' ->> 'till_id' = 'manual' and pg_temp.rbp_data(${A}, k_src::text) -> 'data' ->> 'till_id' = 'unrecorded'
+      and not exists (select 1 from public.till_chain c where c.truck_id = ${A} and c.kind = 'order' and coalesce(c.payload::jsonb -> 'data' ->> 'till_id', '') = ''),
+    json_build_object('van', v_van, 'got', array[pg_temp.rbp_data(${A}, k_van::text) -> 'data' ->> 'till_id', pg_temp.rbp_data(${A}, k_web::text) -> 'data' ->> 'till_id',
+      pg_temp.rbp_data(${A}, k_walk::text) -> 'data' ->> 'till_id', pg_temp.rbp_data(${A}, k_src::text) -> 'data' ->> 'till_id'])::text);
+  ${clean('15')}
+
+  -- ── 16 · change 4: identity entries — at the first sealed entry, and AT ONCE when the receipt details change; versions name the one in force ──
+  n_id := (select count(*) from public.till_chain where truck_id = ${A} and kind = 'identity');
+  s1 := pg_temp.rbp_snap(${AB});
+  update public.trucks set legal_name = 'Rollback Proof SARL', registered_address = '{"address":"1 rue du Test","town":"Paris","postcode":"75001","floor":"2"}'::jsonb,
+    registration_number = '73282932000074', vat_number = 'FR44732829320', vat_regime = 'reel_simplifie' where id = ${A};
+  s2 := pg_temp.rbp_snap(${AB});
+  y := (select c.payload::jsonb from public.till_chain c where c.truck_id = ${A} and c.kind = 'identity' order by c.seq desc limit 1);
+  update public.trucks set legal_name = legal_name, timezone = timezone where id = ${A};               -- nothing really changed
+  c1 := (select count(*) from public.till_chain where truck_id = ${A} and kind = 'identity');
+  perform pg_temp.rbp_set_items(k_walk, '[{"name":"Crêpe","quantity":3,"unit_price":5}]');
+  x := pg_temp.rbp_data(${A}, k_walk::text);
+  perform pg_temp.rbp_ok('16 · the identity: one entry before the first order; a change of the receipt details writes identity v2 at once (whitelisted: legal name, address — its unknown key named only — SIRET, VAT number, regime); a non-change writes nothing; the next order version names identity v2 {seq, hash}; no order or payment row touched',
+    n_id = 1 and c1 = 2 and s1 = s2 and (y ->> 'version')::int = 2 and y ->> 'reason' = 'changed'
+      and y -> 'data' = '{"legal_name": "Rollback Proof SARL", "registered_address": {"address": "1 rue du Test", "town": "Paris", "postcode": "75001", "_other_keys": ["floor"]}, "registration_number": "73282932000074", "vat_number": "FR44732829320", "vat_regime": "reel_simplifie"}'::jsonb
+      and x -> 'identity' = (select jsonb_build_object('seq', c.seq, 'hash', c.hash) from public.till_chain c where c.truck_id = ${A} and c.kind = 'identity' and c.version = 2)
+      and pg_temp.rbp_reasons(${A}, k_walk::text) like '%,4:edit:accepted',
+    json_build_object('before', n_id, 'after', c1, 'identity', y -> 'data', 'ref', x -> 'identity')::text);
+  ${clean('16')}
+
+  -- ── 17 · change 5: every version after the first carries its delta, the first none (and till_verify recomputes each one) ──
+  perform pg_temp.rbp_ok('17b · every order version 2+ carries a plus/minus delta, every version 1 none',
+    (select count(*) from public.till_chain c where c.truck_id = ${A} and c.kind = 'order' and ((c.version = 1) = ((c.payload::jsonb -> 'delta') <> 'null'::jsonb))) = 0
+      and (select count(*) from public.till_chain c where c.truck_id = ${A} and c.kind = 'order' and c.version > 1) >= 6,
+    (select count(*) from public.till_chain c where c.truck_id = ${A} and c.kind = 'order' and c.version > 1)::text);
+
+  -- ── 18 · change 6: the 'event' kind — only its known types; till_start once, at seq 1 ──
+  begin
+    perform public.till_write(${A}, 'event', 'bogus', null, 'proof', current_date, '{}'::jsonb, null, null);
+    st := 'allowed';
+  exception when others then st := sqlstate;
+  end;
+  perform pg_temp.rbp_ok('18b · an event of an unknown type is refused by the chain''s check (23514); till_start is written once per truck, at seq 1',
+    st = '23514' and (select count(*) from public.till_chain where truck_id = ${A} and kind = 'event' and ref = 'till_start') = 1
+      and (select seq from public.till_chain where truck_id = ${A} and kind = 'event' and ref = 'till_start') = 1, st);
+
   -- ── 12 · no personal data, note or free text in any payload; canonical text independent of key order ──
-  perform pg_temp.rbp_ok('12a · no payload holds a name, email, phone, order note, dish note, line note, staff note or staff id — values or keys',
-    not exists (select 1 from public.till_chain c where c.truck_id = ${A} and (c.payload ~* '(Rollback Proof Customer|rbp-customer@|\\+3360000000|No onions|coeliac|gluten|staff note|rbp-staff-user|rbp:)'
+  perform pg_temp.rbp_ok('12a · no payload holds a customer name, email, phone, order note, dish note, line note, staff note or staff id — values or keys',
+    not exists (select 1 from public.till_chain c where c.truck_id = ${A} and (c.payload ~* '(Rollback Proof Customer|rbp-customer@|\\+3360000000|No onions|coeliac|gluten|pending note|staff note|rbp-staff-user|rbp:)'
       or c.payload ~ '"(customer_name|customer_email|customer_phone|notes|line_notes|table_ref|cancellation_reason|rejection_reason|note|created_by|idempotency_key|specialInstructions|slotNotes)"')),
     (select string_agg(left(c.payload, 120), ' | ') from public.till_chain c where c.truck_id = ${A} and c.payload ~* '(Rollback Proof Customer|No onions|gluten|staff note)'));
   s1 := public.till_sealed_lines('[{"quantity":1,"name":"x","unit_price":2.50,"colour":"red","specialInstructions":"no"}]', 'item')::text;
   s2 := public.till_sealed_lines('[{"specialInstructions":"no","colour":"red","unit_price":2.50,"name":"x","quantity":1}]', 'item')::text;
   perform pg_temp.rbp_ok('12b · the canonical text does not depend on the order keys were written in; an unknown key is named (not its value); the note key leaves no trace; 2.50 stays 2.50',
     s1 = s2 and s1 = '[{"name": "x", "quantity": 1, "unit_price": 2.50, "_other_keys": ["colour"]}]', s1 || ' / ' || s2);
+  ${clean('12')}
 
-  -- ── 13 · the chain at the end: verified, gap-free ──
+  -- ── 19 · change 1: no till trigger wrote an order or payment row, at any step ──
+  perform pg_temp.rbp_ok('19b · after every step, every order and payment row of both trucks carries this transaction''s own xid — none was written inside a till trigger''s subtransaction',
+    (select count(*) from _till_clean) >= 12 and not exists (select 1 from _till_clean where bad is not null),
+    (select string_agg(label || ': ' || coalesce(bad, '-'), ' | ') from _till_clean));
+${ddl ? `  perform pg_temp.rbp_ok('19c · the probe trigger saw no INSERT or UPDATE of orders / order_payments issued from inside another trigger (only the FK cascade''s payment DELETEs)',
+    not exists (select 1 from _till_nested where op <> 'DELETE' or tbl <> 'order_payments') and exists (select 1 from _till_nested),
+    (select string_agg(tbl || ':' || op || ':' || depth, ', ') from _till_nested));
+` : ''}
+  -- ── 13 · the chain at the end: verified in every respect ──
   v := public.till_verify(${A});
-  perform pg_temp.rbp_ok('13 · till_verify(truck A) at the end: ok, gap-free, every link and hash right, the head matches',
-    (v ->> 'ok')::boolean and (v ->> 'gaps')::int = 0 and (v ->> 'bad_links')::int = 0 and (v ->> 'bad_hashes')::int = 0 and (v ->> 'bad_payload_hashes')::int = 0 and (v ->> 'head_ok')::boolean, v::text);
+  perform pg_temp.rbp_ok('13 · till_verify(truck A) at the end: ok — gap-free, every link and hash right, the head matches, seq 1 till_start, every identity reference, version, delta, till_id and VAT reconciliation right (one recomputed basis, the proof''s own)',
+    (v ->> 'ok')::boolean and (v ->> 'gaps')::int = 0 and (v ->> 'bad_links')::int = 0 and (v ->> 'bad_hashes')::int = 0 and (v ->> 'bad_payload_hashes')::int = 0
+      and (v ->> 'head_ok')::boolean and (v ->> 'structure')::int = 0 and (v ->> 'bad_identity_refs')::int = 0 and (v ->> 'bad_versions')::int = 0
+      and (v ->> 'bad_deltas')::int = 0 and (v ->> 'no_till_id')::int = 0 and (v ->> 'unreconciled')::int = 0 and (v ->> 'vat_recomputed')::int = 1, v::text);
 end
 $proof$`
 }
-/** Grants, RLS and the untouched function — read in the same transaction. */
+const tillProofBlock = ddl => tillProofPart1(ddl) + tillProofPart2(ddl)
+const SIX = "'till_settings','till_chain','till_chain_heads','till_order_seals','till_failures','till_guard_events'"
+/** Grants, RLS, the triggers' timing and the untouched function — read in the same transaction. */
 const TILL_STATIC = `select
-  (select bool_and(relrowsecurity) from pg_class where relnamespace = 'public'::regnamespace and relname in ('till_settings','till_chain','till_chain_heads','till_failures','till_guard_events')) as rls_on,
-  (select count(*) from pg_class where relnamespace = 'public'::regnamespace and relname in ('till_settings','till_chain','till_chain_heads','till_failures','till_guard_events'))::int as tables,
-  has_table_privilege('anon', 'public.till_chain', 'SELECT') or has_table_privilege('authenticated', 'public.till_chain', 'SELECT') as api_reads_chain,
-  has_table_privilege('service_role', 'public.till_chain', 'UPDATE') or has_table_privilege('service_role', 'public.till_chain', 'DELETE') or has_table_privilege('service_role', 'public.till_chain', 'INSERT') as service_writes_chain,
+  (select bool_and(relrowsecurity) from pg_class where relnamespace = 'public'::regnamespace and relname in (${SIX})) as rls_on,
+  (select count(*) from pg_class where relnamespace = 'public'::regnamespace and relname in (${SIX}))::int as tables,
+  has_table_privilege('anon', 'public.till_chain', 'SELECT') or has_table_privilege('authenticated', 'public.till_chain', 'SELECT')
+    or has_table_privilege('anon', 'public.till_order_seals', 'SELECT') or has_table_privilege('authenticated', 'public.till_order_seals', 'SELECT') as api_reads,
+  (select bool_or(has_table_privilege('service_role', t, p)) from unnest(array['public.till_chain', 'public.till_chain_heads', 'public.till_order_seals']) t, unnest(array['INSERT', 'UPDATE', 'DELETE']) p) as service_writes,
   has_table_privilege('service_role', 'public.action_audit_log', 'UPDATE') or has_table_privilege('service_role', 'public.action_audit_log', 'DELETE') as service_changes_audit,
   has_table_privilege('service_role', 'public.action_audit_log', 'INSERT') as service_inserts_audit,
-  has_function_privilege('anon', 'public.till_append(text,text,text,integer,text,date,jsonb)', 'EXECUTE') or has_function_privilege('service_role', 'public.till_append(text,text,text,integer,text,date,jsonb)', 'EXECUTE') as api_appends,
+  has_function_privilege('anon', 'public.till_append(text,text,text,integer,text,date,jsonb,jsonb)', 'EXECUTE') or has_function_privilege('service_role', 'public.till_append(text,text,text,integer,text,date,jsonb,jsonb)', 'EXECUTE')
+    or has_function_privilege('service_role', 'public.till_write(text,text,text,integer,text,date,jsonb,jsonb,jsonb)', 'EXECUTE') or has_function_privilege('service_role', 'public.till_seal(uuid,text)', 'EXECUTE') as api_appends,
   has_function_privilege('service_role', 'public.till_baseline(text)', 'EXECUTE') as service_baseline,
   has_function_privilege('service_role', 'public.till_verify(text)', 'EXECUTE') and not has_function_privilege('anon', 'public.till_verify(text)', 'EXECUTE') as verify_service_only,
   (select guard_mode from public.till_settings) as guard_mode, (select software_version from public.till_settings) as software_version,
   md5(pg_get_functiondef('public.place_order_atomic_v2(jsonb,text,text,uuid,text,date,jsonb)'::regprocedure)) as v2_md5,
-  (select string_agg(column_name || ':' || is_nullable || ':' || coalesce(column_default, 'none'), ',' order by column_name) from information_schema.columns where table_schema = 'public' and table_name = 'orders' and column_name in ('sealed_at', 'sealed_version')) as seal_columns`
+  (select count(*) from information_schema.columns where table_schema = 'public' and table_name in ('orders', 'order_payments') and column_name like 'seal%')::int as seal_columns,
+  (select string_agg(c.relname || '.' || t.tgname || ':' || case when (t.tgtype & 2) = 2 then 'before' else 'after' end, ',' order by c.relname, t.tgname)
+     from pg_trigger t join pg_class c on c.oid = t.tgrelid where not t.tgisinternal and t.tgname like '%till%' and c.relname in ('orders', 'order_payments', 'trucks')) as till_triggers`
+const AFTER_TRIGGERS = 'order_payments.order_payments_till_chain:after,order_payments.order_payments_till_guard:after,order_payments.order_payments_till_guard_delete:after,orders.orders_till_guard:after,orders.orders_till_guard_delete:after,orders.orders_till_seal:after,trucks.trucks_till_identity:after'
 function checkStatic(s) {
-  ok('S1 · the five till tables exist with RLS on', s.tables === 5 && s.rls_on === true, s)
-  ok('S2 · anon / authenticated cannot read till_chain; the service role cannot INSERT, UPDATE or DELETE it', s.api_reads_chain === false && s.service_writes_chain === false, s)
+  ok('S1 · the six till tables exist with RLS on (till_order_seals among them)', s.tables === 6 && s.rls_on === true, s)
+  ok('S2 · anon / authenticated cannot read till_chain or till_order_seals; the service role cannot INSERT, UPDATE or DELETE the chain, the heads or the seals', s.api_reads === false && s.service_writes === false, s)
   ok('S3 · the service role can no longer UPDATE or DELETE action_audit_log, and can still INSERT', s.service_changes_audit === false && s.service_inserts_audit === true, s)
-  ok('S4 · nobody on the API can call till_append or till_baseline; till_verify is the service role\'s only', s.api_appends === false && s.service_baseline === false && s.verify_service_only === true, s)
+  ok('S4 · nobody on the API can call till_append, till_write, till_seal or till_baseline; till_verify is the service role\'s only', s.api_appends === false && s.service_baseline === false && s.verify_service_only === true, s)
   ok('S5 · guard_mode observe, software_version 0.x', s.guard_mode === 'observe' && /^0\.\d+\.\d+$/.test(s.software_version), s)
   ok('S6 · place_order_atomic_v2 untouched: md5 e4b273abcf8e7609c6ca54033ed59332', s.v2_md5 === 'e4b273abcf8e7609c6ca54033ed59332', s.v2_md5)
-  ok('S7 · orders.sealed_at / sealed_version: nullable, no default', s.seal_columns === 'sealed_at:YES:none,sealed_version:YES:none', s.seal_columns)
+  ok('S7 · no seal column on orders or order_payments (the seal state lives in till_order_seals)', s.seal_columns === 0, s.seal_columns)
+  ok('S8 · every till trigger on orders, order_payments and trucks is an AFTER trigger (it cannot change the row) — the seven of them', s.till_triggers === AFTER_TRIGGERS, s.till_triggers)
 }
+/** Right after the migration body (pre-flight): rows of these tables written by this transaction so far — the migration's own writes. */
+const TILL_WROTE = `select (select count(*) from public.orders where xmin::text = (pg_current_xact_id()::xid)::text)::int as orders,
+  (select count(*) from public.order_payments where xmin::text = (pg_current_xact_id()::xid)::text)::int as order_payments,
+  (select count(*) from public.action_audit_log where xmin::text = (pg_current_xact_id()::xid)::text)::int as action_audit_log,
+  (select count(*) from public.trucks where xmin::text = (pg_current_xact_id()::xid)::text)::int as trucks`
 async function tillExport(c, tag, mode) {
   await q(c, tag, "set local timezone = 'UTC'")
   const chain = (await q(c, tag, 'select truck_id, seq, kind, ref, version, payload, payload_hash, prev_hash, hash, software_version from public.till_chain where truck_id = $1 order by seq', [TRUCKS.A])).rows
@@ -645,9 +855,9 @@ async function tillCounts(label) {
     if (!has) return { till: 'not applied' }
     return (await q(c, `till-counts-${label}`, `select (select count(*) from public.till_chain where truck_id = any($1))::int as till_chain,
         (select count(*) from public.till_chain_heads where truck_id = any($1))::int as till_heads,
+        (select count(*) from public.till_order_seals where truck_id = any($1))::int as till_seals,
         (select count(*) from public.till_failures where truck_id = any($1))::int as till_failures,
-        (select count(*) from public.till_guard_events where truck_id = any($1))::int as till_guard_events,
-        (select count(*) from public.orders where truck_id = any($1) and sealed_version is not null)::int as sealed_orders`, [IDS])).rows[0]
+        (select count(*) from public.till_guard_events where truck_id = any($1))::int as till_guard_events`, [IDS])).rows[0]
   })
   const row = { ...base, ...extra }
   say(`  till counts ${label}: ${JSON.stringify(extra)}`)
@@ -668,14 +878,19 @@ async function tillProofs(file) {
   await inRollback(tag, async c => {
     await guard(c)
     const t0 = Date.now()
-    if (body) await q(c, tag, body)
-    await q(c, tag, tillHelpers())
+    let wrote = null
+    if (body) {
+      await q(c, tag, body)
+      wrote = (await q(c, tag, TILL_WROTE)).rows[0]
+    }
+    await q(c, tag, tillHelpers() + '\n' + tillHelpersVat() + (body ? '\n' + tillProbe() : ''))
     await q(c, tag, tillProofBlock(!!file))
     const held = Date.now() - t0
     for (const r of (await q(c, tag, 'select label, ok, detail from _till_proof order by n')).rows) ok(r.label, r.ok, r.ok ? undefined : r.detail)
+    if (wrote) ok('S9 · the migration itself wrote NO row of orders, order_payments, action_audit_log or trucks (no row carries this transaction\'s xid after it)', Object.values(wrote).every(n => n === 0), wrote)
     checkStatic((await q(c, tag, TILL_STATIC)).rows[0])
     await tillExport(c, tag, mode)
-    say(`  the migration${body ? ' and' : ''} the proofs ran in ${held} ms${body ? ' (the DDL locks on orders, order_payments and action_audit_log are held until the rollback below)' : ''}`)
+    say(`  the migration${body ? ' and' : ''} the proofs ran in ${held} ms${body ? ' (the DDL locks on orders, order_payments, action_audit_log and trucks are held until the rollback below)' : ''}`)
   })
   if (!file) {
     await tillConcurrency()
@@ -684,86 +899,90 @@ async function tillProofs(file) {
   const after = await tillCounts('after')
   ok('the demo trucks\' counts (orders, payments, audit rows, counters, the till tables) are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
 }
-/** Two (three) connections, all rolled back: truck A's chain head is a per-truck lock; truck B is not blocked; a waiter past the
- *  trigger's 2 s lock_timeout still inserts its payment (and logs the failure). */
+/** Several connections, all rolled back: truck A's chain head is a per-truck lock; truck B is not blocked; a waiter past the trigger's
+ *  2 s lock_timeout still inserts its payment (and logs the failure). Pending orders are inserted first: they take no till lock. */
 async function tillConcurrency() {
   say('\n── two connections ──')
   const A = TRUCKS.A, B = TRUCKS.B
   const items = '[{"name":"Crêpe","quantity":1,"unit_price":5}]'
-  const walk = (truck) => `select pg_temp.rbp_walkup('${truck}', current_date, '${items}', 'confirmed', 'rollback proof', null, null, null, null) as k`
+  const walk = truck => `select pg_temp.rbp_walkup('${truck}', current_date, '${items}', 'confirmed', 'rollback proof', null, null, null, null) as k`
+  const pending = truck => `select pg_temp.rbp_promote('${truck}') as k`
   const pay = key => `select pg_temp.rbp_pay('${key}', 'charge', 'in_person_other', 'cash', 500, null) as id`
   const open = async tag => { const c = await connect(tag); await q(c, tag, 'begin'); await q(c, tag, "set local till.include_demo = 'on'"); await q(c, tag, tillHelpers()); return c }
-  const c1 = await open('c1'), c2 = await open('c2'), c3 = await open('c3')
+  const c1 = await open('c1'), c2 = await open('c2'), c3 = await open('c3'), c4 = await open('c4')
   try {
-    const k1 = (await q(c1, 'c1', walk(A))).rows[0].k
-    await q(c1, 'c1', pay(k1))                                     // c1 now holds truck A's chain head
-    const k2 = (await q(c2, 'c2', walk(A))).rows[0].k
-    const kb = (await q(c3, 'c3', walk(B))).rows[0].k
+    const k2 = (await q(c2, 'c2', pending(A))).rows[0].k                 // pending: no till lock
+    const k4 = (await q(c4, 'c4', pending(A))).rows[0].k
+    await q(c1, 'c1', walk(A))                                           // accepted → sealed: c1 now holds truck A's chain head
     const t0 = Date.now()
     const waiting = q(c2, 'c2', pay(k2)).then(r => ({ id: r.rows[0].id, ms: Date.now() - t0 }))
     await new Promise(r => setTimeout(r, 400))
     const tb = Date.now()
+    const kb = (await q(c3, 'c3', walk(B))).rows[0].k
     await q(c3, 'c3', pay(kb))
     const bMs = Date.now() - tb
     const bChain = Number((await q(c3, 'c3', 'select count(*) as n from public.till_chain where truck_id = $1', [B])).rows[0].n)
-    ok(`truck B's payment is NOT blocked while truck A's chain head is held (${bMs} ms), and chains normally`, bMs < 1000 && bChain >= 2, { bMs, bChain })
+    ok(`truck B's sale (an accepted insert and its payment) is NOT blocked while truck A's chain head is held (${bMs} ms), and chains normally`, bMs < 1000 && bChain >= 4, { bMs, bChain })
     await q(c1, 'c1', 'rollback')
     const w = await waiting
     const wChain = (await q(c2, 'c2', "select count(*)::int as n from public.till_chain where truck_id = $1 and kind = 'payment' and ref = $2", [A, w.id])).rows[0].n
     ok(`truck A's waiter goes in as soon as the holder rolls back (${w.ms} ms), with its chain entry`, w.ms >= 350 && w.ms < 2000 && wChain === 1, { w, wChain })
-    // A holder past the trigger's 2 s lock_timeout: c2 now holds A's head; a new connection's payment waits ~2 s, then goes IN unchained.
-    const c4 = await open('c4')
-    try {
-      const k4 = (await q(c4, 'c4', walk(A))).rows[0].k
-      const t4 = Date.now()
-      const id4 = (await q(c4, 'c4', pay(k4))).rows[0].id
-      const ms4 = Date.now() - t4
-      const f4 = (await q(c4, 'c4', 'select sqlstate from public.till_failures where ref = $1', [id4])).rows[0]
-      const in4 = (await q(c4, 'c4', 'select count(*)::int as n from public.order_payments where id = $1', [id4])).rows[0].n
-      ok(`a holder past the trigger's 2 s lock_timeout: truck A's waiter goes IN after ~2 s (${ms4} ms) — the payment inserted, the failure logged (55P03), never an error`, in4 === 1 && f4 && f4.sqlstate === '55P03' && ms4 >= 1900 && ms4 < 3000, { ms4, f4, in4 })
-    } finally { try { await q(c4, 'c4', 'rollback') } catch { /* closed */ } await c4.end() }
+    // c2 now holds A's head; c4's payment waits the trigger's 2 s, then goes IN unchained.
+    const t4 = Date.now()
+    const id4 = (await q(c4, 'c4', pay(k4))).rows[0].id
+    const ms4 = Date.now() - t4
+    const f4 = (await q(c4, 'c4', 'select sqlstate from public.till_failures where ref = $1', [id4])).rows[0]
+    const in4 = (await q(c4, 'c4', 'select count(*)::int as n from public.order_payments where id = $1', [id4])).rows[0].n
+    ok(`a holder past the trigger's 2 s lock_timeout: truck A's waiter goes IN after ~2 s (${ms4} ms) — the payment inserted, the failure logged (55P03), never an error`, in4 === 1 && f4 && f4.sqlstate === '55P03' && ms4 >= 1900 && ms4 < 3000, { ms4, f4, in4 })
   } finally {
-    for (const [c, t] of [[c1, 'c1'], [c2, 'c2'], [c3, 'c3']]) { try { await q(c, t, 'rollback') } catch { /* already */ } try { await c.end() } catch { /* closed */ } }
+    for (const [c, t] of [[c1, 'c1'], [c2, 'c2'], [c3, 'c3'], [c4, 'c4']]) { try { await q(c, t, 'rollback') } catch { /* already */ } try { await c.end() } catch { /* closed */ } }
   }
 }
 /** The extra time per write, measured inside the database (clock_timestamp), till off vs on, on truck A, rolled back. */
+const TIMED = ['insert_accepted', 'insert_pending', 'accept', 'payment', 'kitchen_move', 'edit_sealed']
 async function tillTimings() {
   say('\n── the extra time per write ──')
   const N = 40
   await inRollback('timing', async c => {
     await guard(c)
     await q(c, 'timing', tillHelpers())
+    const A = lit(TRUCKS.A), crepe = `'[{"name":"Crêpe","quantity":1,"unit_price":5}]'`
+    const walk = `pg_temp.rbp_walkup(${A}, current_date, ${crepe}, 'confirmed', 'rollback proof', null, null, null, null)`
+    const prep = { accept: `ks := ks || pg_temp.rbp_promote(${A});`, payment: `ks := ks || ${walk};`, kitchen_move: `ks := ks || ${walk};`, edit_sealed: `ks := ks || ${walk};` }
+    const op = {
+      insert_accepted: `k := ${walk};`,
+      insert_pending: `k := pg_temp.rbp_promote(${A});`,
+      accept: `update public.orders set status = 'confirmed' where order_key = ks[i];`,
+      payment: `perform pg_temp.rbp_pay(ks[i], 'charge', 'in_person_other', 'cash', 500, null);`,
+      kitchen_move: `update public.orders set status = 'cooking' where order_key = ks[i];`,
+      edit_sealed: `perform pg_temp.rbp_set_items(ks[i], '[{"name":"Crêpe","quantity":2,"unit_price":5}]');`,
+    }
     const block = (on, what) => `do $t$
 declare t0 timestamptz; k uuid; ks uuid[] := '{}'; i int;
 begin
   perform set_config('till.include_demo', ${on ? "'on'" : "''"}, true);
-  for i in 1..${N} loop ks := ks || pg_temp.rbp_walkup(${lit(TRUCKS.A)}, current_date, '[{"name":"Crêpe","quantity":1,"unit_price":5}]', 'confirmed', 'rollback proof', null, null, null, null); end loop;
-  ${what === 'sealed_payment' || what === 'status_sealed' || what === 'edit_sealed' ? `for i in 1..${N} loop perform pg_temp.rbp_pay(ks[i], 'charge', 'in_person_other', 'cash', 500, null); end loop;` : ''}
+  ${prep[what] ? `for i in 1..${N} loop ${prep[what]} end loop;` : ''}
   t0 := clock_timestamp();
-  for i in 1..${N} loop
-    ${{ insert: `k := pg_temp.rbp_walkup(${lit(TRUCKS.A)}, current_date, '[{"name":"Crêpe","quantity":1,"unit_price":5}]', 'confirmed', 'rollback proof', null, null, null, null);`,
-        first_payment: `perform pg_temp.rbp_pay(ks[i], 'charge', 'in_person_other', 'cash', 500, null);`,
-        sealed_payment: `perform pg_temp.rbp_pay(ks[i], 'charge', 'in_person_other', 'cash', 100, null);`,
-        status_sealed: `update public.orders set status = 'cooking' where order_key = ks[i];`,
-        edit_sealed: `update public.orders set total = 7, total_minor = 700 where order_key = ks[i];` }[what]}
-  end loop;
+  for i in 1..${N} loop ${op[what]} end loop;
   insert into _till_proof (label, ok, detail) values (${lit(`timing ${what} ${on ? 'on' : 'off'}`)}, true, (extract(epoch from clock_timestamp() - t0) * 1000 / ${N})::numeric(10,3)::text);
 end $t$`
     const out = {}
-    for (const what of ['insert', 'first_payment', 'sealed_payment', 'status_sealed', 'edit_sealed']) {
+    for (const what of TIMED) {
       for (const on of [false, true]) {
-        await q(c, 'timing', 'savepoint t'); await q(c, 'timing', block(on, what));
-        out[`${what}_${on ? 'on' : 'off'}`] = Number((await q(c, 'timing', `select detail from _till_proof where label = $1`, [`timing ${what} ${on ? 'on' : 'off'}`])).rows[0].detail)
+        await q(c, 'timing', 'savepoint t')
+        await q(c, 'timing', block(on, what))
+        out[`${what}_${on ? 'on' : 'off'}`] = Number((await q(c, 'timing', 'select detail from _till_proof where label = $1', [`timing ${what} ${on ? 'on' : 'off'}`])).rows[0].detail)
+        await q(c, 'timing', 'rollback to savepoint t')
       }
     }
-    for (const what of ['insert', 'first_payment', 'sealed_payment', 'status_sealed', 'edit_sealed']) {
-      say(`  ${what.padEnd(15)} till off ${out[`${what}_off`].toFixed(3)} ms · till on ${out[`${what}_on`].toFixed(3)} ms · extra ${(out[`${what}_on`] - out[`${what}_off`]).toFixed(3)} ms per write (mean of ${N}, inside the database)`)
-    }
+    for (const what of TIMED) say(`  ${what.padEnd(16)} till off ${out[`${what}_off`].toFixed(3)} ms · till on ${out[`${what}_on`].toFixed(3)} ms · extra ${(out[`${what}_on`] - out[`${what}_off`]).toFixed(3)} ms per write (mean of ${N}, inside the database)`)
     fs.mkdirSync(TILL_OUT, { recursive: true })
     fs.writeFileSync(path.join(TILL_OUT, 'timings.json'), JSON.stringify({ n: N, measured: new Date().toISOString(), ms_per_write: out }, null, 1) + '\n')
-    ok('timings measured (docs/till-pack-1/timings.json): the extra time for a payment with the till on stays under 20 ms per insert', out.first_payment_on - out.first_payment_off < 20 && out.sealed_payment_on - out.sealed_payment_off < 20, out)
+    ok('timings measured (docs/till-pack-1/timings.json): with the till on, a sale\'s insert (accepted, sealed at once) and a payment each cost under 20 ms extra',
+      out.insert_accepted_on - out.insert_accepted_off < 20 && out.payment_on - out.payment_off < 20, out)
   })
 }
+
 
 async function main() {
   const args = process.argv.slice(2)
