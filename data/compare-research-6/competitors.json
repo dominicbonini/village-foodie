@@ -4,86 +4,6 @@
  "checked_on": "2026-11-25",
  "competitors": [
   {
-   "id": "92dbc215-d1be-5539-b656-3314b48907d9",
-   "name": "ClickParaPedir",
-   "website": "https://clickparapedir.com",
-   "focus": "food_truck",
-   "lifecycle": "active",
-   "payment_providers": null,
-   "features_checked_on": "2026-11-25",
-   "features_verified_at": null,
-   "notes": "compare-research-6 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: PY.",
-   "check_urls": [
-    "https://clickparapedir.com"
-   ],
-   "request_check": true,
-   "answers": [
-    {
-     "key": "ahead",
-     "value": "yes",
-     "quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.",
-     "source_url": "https://clickparapedir.com"
-    },
-    {
-     "key": "preorder",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "capacity",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "schedule",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "whatsapp",
-     "value": "yes",
-     "quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.",
-     "source_url": "https://clickparapedir.com"
-    },
-    {
-     "key": "social",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "kds",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "offline",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "walkup",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "vans",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "domain",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "monthly",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "perorder",
-     "value": "no",
-     "quote": "Sin comisión por pedido",
-     "source_url": "https://clickparapedir.com"
-    },
-    {
-     "key": "cardfee",
-     "value": "not_mentioned"
-    }
-   ],
-   "set_focus": true
-  },
-  {
    "id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
    "name": "Ocuioso",
    "website": "https://www.ocuioso.com",
@@ -319,102 +239,6 @@
  ],
  "plans": [
   {
-   "id": "e07b44e4-287f-58ee-9dbd-fc86d0e628fe",
-   "competitor_id": "92dbc215-d1be-5539-b656-3314b48907d9",
-   "country_code": "PY",
-   "plan_name": "ClickParaPedir",
-   "currency": "PYG",
-   "price_hidden": true,
-   "monthly_minor": null,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "unknown",
-   "status": "hidden",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://clickparapedir.com",
-   "checked_on": "2026-11-25",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-6, read 25 Nov 2026: \"Sin comisión por pedido\" — no plan price on the site (hidden plan); Gs. figures on the page are only dashboard mock-ups"
-  },
-  {
-   "id": "830418bd-b348-525d-9fe3-0867374c5600",
-   "competitor_id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
-   "country_code": "AO",
-   "plan_name": "(plan cards, script-loaded)",
-   "currency": "AOA",
-   "price_hidden": true,
-   "monthly_minor": null,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "unknown",
-   "status": "hidden",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://www.ocuioso.com/precos",
-   "checked_on": "2026-11-25",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-6, read 25 Nov 2026: \"O cartão de cada plano apresenta o preço e o respetivo período. Confirma os detalhes no processo de adesão antes de efetuar o pagamento.\" — hidden. Also on /precos: 'Menu e pedidos são a base.' (all plans include menu + orders; cupões, clientes, relatórios e gestão de entregas only on some plans); trial: '14 dias gratuitos para conhecer o Ocuioso.' … 'sem cobrança automática' … 'tens 3 dias de graça para escolher e pagar um plano.'"
-  },
-  {
-   "id": "f9c4909f-73ed-5efd-9358-6481a21eb7d2",
-   "competitor_id": "dad148a7-5d9c-5a09-91e0-83610279a420",
-   "country_code": "NA",
-   "plan_name": "StoreFront (price on request)",
-   "currency": "NAD",
-   "price_hidden": true,
-   "monthly_minor": null,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "unknown",
-   "status": "hidden",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://www.yumbi.com/",
-   "checked_on": "2026-11-25",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-6, read 25 Nov 2026: \"\" — hidden; /pricing 404 (25 Nov). Same for BW and ZM"
-  },
-  {
    "id": "4967b515-0570-54aa-8213-e7d8e6880910",
    "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
    "country_code": "AR",
@@ -483,16 +307,6 @@
  ],
  "entries": [
   {
-   "id": "6878e1f8-3f21-5afe-9e9c-137392867a8b",
-   "country_code": "PY",
-   "competitor_id": "92dbc215-d1be-5539-b656-3314b48907d9",
-   "primary_plan_id": null,
-   "choose_when": null,
-   "sort_order": 50,
-   "verified_at": null,
-   "verified_by": null
-  },
-  {
    "id": "68f9f20b-c0b5-59b1-87da-2918ea063e5c",
    "country_code": "AO",
    "competitor_id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
@@ -534,17 +348,6 @@
   }
  ],
  "evidence": [
-  {
-   "name": "ClickParaPedir",
-   "evidence": [
-    {
-     "country": "PY",
-     "order_quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.",
-     "order_url": "https://clickparapedir.com",
-     "reason": "re-checked for a price today: still eligible (Paraguayan; take-away orders by WhatsApp ready before pickup; food-truck solution page) but still no price on its site (only 'Sin comisión por pedido' / '0% por pedido'; sales via WhatsApp / demo form) -> unpriced, not counted"
-    }
-   ]
-  },
   {
    "name": "Ocuioso",
    "evidence": [
@@ -754,6 +557,13 @@
    "reason": "Third attempt: https://he.wix.com/upgrade/website redirects to https://www.wix.com/upgrade/website, which rendered only its title ('Wix Pricing Information | Upgrade to a Premium Plan | Wix.com'); no ILS price obtainable. Also a generic website builder."
   },
   {
+   "country": "KZ",
+   "name": "Poster",
+   "website": "https://joinposter.kz",
+   "stored": "0802a7c8",
+   "reason": "left out on review: no order-ahead or food-truck quote recorded; its KZ price sits under an unlabelled yearly toggle"
+  },
+  {
    "country": "MC",
    "name": "Obypay",
    "website": "https://obypay.com",
@@ -780,6 +590,13 @@
    "website": "https://www.inforest.com.pe",
    "stored": null,
    "reason": "Peruvian restaurant POS (press: PagoEfectivo payments for delivery and pickup orders made through bank apps, 2021); guessed domain www.inforest.com.pe did not resolve (DNS ENOTFOUND) and no own site appeared in search"
+  },
+  {
+   "country": "PY",
+   "name": "ClickParaPedir",
+   "website": "https://clickparapedir.com",
+   "stored": "92dbc215",
+   "reason": "left out on review: marked eligible without the food-truck and order-ahead quotes the rule needs, and still no price (compare-research-6 agent 2)"
   }
  ],
  "not_needed": []
