@@ -6,7 +6,8 @@
     "sistema para food truck Chile pedidos por adelantado app carros de comida ferias pedir y retirar plan mensual",
     "\"tienda online\" para restaurantes Chile \"retiro\" \"pedidos programados\" planes \"+ IVA\" mensual software gastronómico chileno",
     "Resto software restaurantes bares cafés Chile Latinoamérica pedidos online retiro sitio oficial precios",
-    "carta digital con pedidos para retiro y delivery Chile emprendimiento gastronómico plan \"$\" \"al mes\" WhatsApp sin comisiones chilena"
+    "carta digital con pedidos para retiro y delivery Chile emprendimiento gastronómico plan \"$\" \"al mes\" WhatsApp sin comisiones chilena",
+    "food truck Chile app pedido anticipado retiro \"foodtruck\" asociación food trucks Chile plataforma pedidos online"
   ],
   "vendors": [
     {
@@ -53,5 +54,5 @@
       ]
     }
   ],
-  "notes": "Count now: 2 (Fudo, Pedix) — no third. New vendor sites: Influye and Orion Eat (unreadable), AyHungry (not relevant) — rows above. Not read: DigitalizaMenú (Chilean digital menu 'desde 1UF por mes' per press — a UF price is unclear and does not count, as with Justo), Resto by Axoft (POS — Capterra only, no own site found), Flama Hub (delivery service, press only), Mallplaza 'Pide y Lleva' (a mall operator's service), CabMove Eats (marketplace), GrilledChili (US food-truck app), Plick (Mexican, stored), Shopify / Qamarero / DoorDash / Cegid (foreign, no CLP price), 2x3.cl (freelance services), Capterra listings. Earlier rejects (Toteat, Justo, OlaClick, Tiendanube, Weevi) not re-read. Stopped after ~5 new candidates."
+  "notes": "Count now: 2 (Fudo, Pedix) — no third. New vendor sites: Influye and Orion Eat (unreadable), AyHungry (not relevant) — rows above. Not read: DigitalizaMenú (Chilean digital menu 'desde 1UF por mes' per press — a UF price is unclear and does not count, as with Justo), Resto by Axoft (POS — Capterra only, no own site found), Flama Hub (delivery service, press only), Mallplaza 'Pide y Lleva' (a mall operator's service), CabMove Eats (marketplace), GrilledChili (US food-truck app), Plick (Mexican, stored), Shopify / Qamarero / DoorDash / Cegid (foreign, no CLP price), 2x3.cl (freelance services), Capterra listings. Earlier rejects (Toteat, Justo, OlaClick, Tiendanube, Weevi) not re-read. Stopped after ~5 new candidates. SECOND PASS (food-truck only): no Chilean food-truck association or food-truck pre-order tool found: results were PedidosYa / Uber Eats / CabMove Eats (marketplaces), AyHungry (reservations app, rejected above), and US / unrelated App Store apps (GrilledChili — US food-truck ordering, no Chile presence; CheffHub — truck-finder map, no ordering; Tori Tori). No vendor site to read. Count stays 2."
 }
