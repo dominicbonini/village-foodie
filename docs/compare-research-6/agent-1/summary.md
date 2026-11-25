@@ -146,3 +146,8 @@ count now: 0
 
 FoxiFood: not listed. Liv'eats: delivery app. No tool names the territory or prices in XPF. nothing eligible exists.
 count now: 0
+
+## JE
+
+FoxiFood, Storekit: not listed. Food.je, Cuisine.JE, Fetch.je: marketplaces. nothing eligible exists.
+count now: 0
