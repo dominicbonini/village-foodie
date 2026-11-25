@@ -1,0 +1,38 @@
+{
+  "country": "GP",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Guadeloupe Martinique logiciel caisse restaurant click and collect commande en ligne Antilles éditeur tarif mois",
+    "\"Guadeloupe\" OR \"971\" application commande en ligne à emporter pour restaurants et food trucks guadeloupéenne restaurateurs abonnement",
+    "EasyTaVie Easy Delivery Martinique Guadeloupe restaurateurs partenaires click & collect précommande commission abonnement"
+  ],
+  "vendors": [
+    {
+      "name": "EasyTaVie (Easy Delivery app, SODIGMA, Martinique)",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Antilles multi-merchant ordering/delivery platform (own couriers via EasyBiker app, partner-merchant app EasyManager); App Store says available in Martinique and Guadeloupe with pre-order and click & collect, but it is a marketplace, no own site or merchant price found. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible exists that I could find (round 4, first research; searches shared by GP and MQ). No vendor own site names Guadeloupe / Martinique / Antilles with pickup ordering and an EUR price. French tools in results (Fiducial Pointex, GloriaFood, Do Your Order, Ontabee) show no Antilles presence; Lightspeed is agent 2's; Flipdish no Antilles presence in results; none opened. Other results: consumer apps, Codeur.com freelance briefs, easy-delivery.com (parcel forwarding, unrelated). Count: 0."
+}

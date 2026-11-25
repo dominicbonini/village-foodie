@@ -116,3 +116,8 @@ count now: 0
 
 FoxiFood: not listed (country terms). Stick'Eat: consumer app only. No tool names La Réunion. nothing eligible exists.
 count now: 0
+
+## GP
+
+FoxiFood: not listed. EasyTaVie: Antilles marketplace (not relevant). No tool names the territory. nothing eligible exists.
+count now: 0
