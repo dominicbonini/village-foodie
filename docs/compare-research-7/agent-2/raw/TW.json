@@ -7,7 +7,8 @@
   "微碧 線上點餐 輕量型 LINE 官方帳號 自取 方案 費用 月費",
   "餐車 行動餐車 市集攤商 線上預購 預約取餐 點餐系統 台灣 攤商 方案 費用",
   "小吃攤 攤商 LINE 點餐 預約取餐 免抽成 月費 方案 系統 小店 外帶自取",
-  "快一點 QuickClick LINE 點餐 官網 方案 價格 月費"
+  "快一點 QuickClick LINE 點餐 官網 方案 價格 月費",
+  "點點食 LINE 點餐 官網 免月租 方案 價格"
  ],
  "vendors": [
   {
@@ -209,7 +210,19 @@
     "https://www.quickclick.cc/pricing/",
     "https://www.quickclick.cc/wecanhelp/"
    ]
+  },
+  {
+   "name": "點點食",
+   "website": null,
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "no own site found: the only pages are LINE OA showcase pages of a POS reseller (凌成 / VTEAM POS, lc-v168.com) and news; '免月租' claim is the reseller's, not quotable from a vendor site",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": []
   }
  ],
- "notes": "TW count now: 2 (Klikit, Oddle) — unchanged. iCHEF re-read for a price (it was eligible but unpriced): the online-takeaway add-on is still unpriced. Eats365 TW pricing page shows no amounts (earlier rounds). Searches for 肚肚 Dudoo / 你訂 nidin / 快一點 / 微碧 found only comparison articles, news (2020–21 promotions) and App Store pages — no own-site price found to open. MENU TIGER USD (rejected). Stopped. Extra round: 微碧 Weiby (no price, no pickup wording) not relevant. PASS 2 (food-truck only): the Chinese food-truck / market-stall searches returned only regulation and start-up articles (foodnext, NewsLens, UDN, CTEE) and a stall-cart rental — no food-truck ordering tool. The stall/小吃攤 search surfaced restaurant LINE-ordering tools 快一點 QuickClick (LINE pre-order with pickup time, news only) and 點點食 ('免月租費', news only) — restaurant tools, not opened in this food-truck-only pass; worth a restaurant pass later. Count stays 2. ROUND 3: 快一點 QuickClick (own site quickclick.cc) — eligible (takeaway booked ahead) with '$1,688/月'; counts as TW's 3rd only if a bare '$' on a Taiwan-only site is accepted as TWD (Blink's '$' was ruled unclear)."
+ "notes": "TW count now: 2 (Klikit, Oddle) — unchanged. iCHEF re-read for a price (it was eligible but unpriced): the online-takeaway add-on is still unpriced. Eats365 TW pricing page shows no amounts (earlier rounds). Searches for 肚肚 Dudoo / 你訂 nidin / 快一點 / 微碧 found only comparison articles, news (2020–21 promotions) and App Store pages — no own-site price found to open. MENU TIGER USD (rejected). Stopped. Extra round: 微碧 Weiby (no price, no pickup wording) not relevant. PASS 2 (food-truck only): the Chinese food-truck / market-stall searches returned only regulation and start-up articles (foodnext, NewsLens, UDN, CTEE) and a stall-cart rental — no food-truck ordering tool. The stall/小吃攤 search surfaced restaurant LINE-ordering tools 快一點 QuickClick (LINE pre-order with pickup time, news only) and 點點食 ('免月租費', news only) — restaurant tools, not opened in this food-truck-only pass; worth a restaurant pass later. Count stays 2. ROUND 3: 快一點 QuickClick (own site quickclick.cc) — eligible (takeaway booked ahead) with '$1,688/月'; counts as TW's 3rd only if a bare '$' on a Taiwan-only site is accepted as TWD (Blink's '$' was ruled unclear). 點點食: no own site (reseller LINE pages only) — not relevant."
 }
