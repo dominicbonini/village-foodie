@@ -6,7 +6,8 @@
   "포스 스마트오더 픽업 주문 연동 월 이용료 원 요금표 VAT 별도 소상공인 자체 모바일 주문",
   "링크 하나로 주문 받기 음식점 픽업 포장 주문 페이지 요금제 원/월 수수료 0% 사장님 가입",
   "\"픽업 주문\" 솔루션 \"요금 안내\" 월 원 매장 자체 주문 앱 웹 개인 카페",
-  "소상공인 매장 픽업 선주문 서비스 출시 앱 설치 없이 링크 주문 월 구독료 원 2025"
+  "소상공인 매장 픽업 선주문 서비스 출시 앱 설치 없이 링크 주문 월 구독료 원 2025",
+  "자체 주문앱 구축 솔루션 카페 픽업 주문 요금제 월 원 \"스마트오더\" 개인 매장 브랜드앱"
  ],
  "vendors": [
   {
@@ -100,5 +101,5 @@
    ]
   }
  ],
- "notes": "KR count now: 0 (unchanged). Block 1: Eats365 has a /kr/ region but its /kr/pricing shows no amounts (Online Ordering = unpriced Expansion Module) — see raw/V-eats365.json; MENU TIGER USD only (V-menu-tiger.json); Klikit not in KR. Block 2: five new Korean searches (픽업 예약주문 링크, 포스 스마트오더 연동, 링크 주문 요금제, '픽업 주문' 솔루션 '요금 안내', 선주문 서비스 출시) returned only Toss Order (no fee on its own site — product page re-read), Naver 주문 manuals (platform ordering, excluded), Shopify pickup apps (USD, generic web-shop add-ons), imweb / godo / Cafe24 (generic web-shop builders, excluded), Wix help pages, SK shieldus / KT-type table-order products (table only), kmong freelancer gigs (not vendors), Seoul public delivery apps (delivery marketplaces). No new vendor site with an own-site KRW pickup price was found to open; Korea's pickup ordering is platform-run (Naver / Kakao / Baemin / Toss). Stopped."
+ "notes": "KR count now: 0 (unchanged). Block 1: Eats365 has a /kr/ region but its /kr/pricing shows no amounts (Online Ordering = unpriced Expansion Module) — see raw/V-eats365.json; MENU TIGER USD only (V-menu-tiger.json); Klikit not in KR. Block 2: five new Korean searches (픽업 예약주문 링크, 포스 스마트오더 연동, 링크 주문 요금제, '픽업 주문' 솔루션 '요금 안내', 선주문 서비스 출시) returned only Toss Order (no fee on its own site — product page re-read), Naver 주문 manuals (platform ordering, excluded), Shopify pickup apps (USD, generic web-shop add-ons), imweb / godo / Cafe24 (generic web-shop builders, excluded), Wix help pages, SK shieldus / KT-type table-order products (table only), kmong freelancer gigs (not vendors), Seoul public delivery apps (delivery marketplaces). No new vendor site with an own-site KRW pickup price was found to open; Korea's pickup ordering is platform-run (Naver / Kakao / Baemin / Toss). Stopped. A sixth search (자체 주문앱 / 스마트오더 브랜드앱) found only kmong gigs, wishket articles, godo and a single café's own app."
 }

@@ -5,7 +5,8 @@
   "موقع طلبات خاص بمطعمك أو الكافيه في الأردن استلام من الفرع الباقات دينار شهري بدون عمولة",
   "Jordan restaurant POS \"online ordering\" pickup plans \"JOD\" per month",
   "منصة أردنية للمطاعم والكافيهات طلب مسبق واستلام Pick up للتجار اشتراك سعر الباقة",
-  "تصميم تطبيق وموقع طلبات للمطاعم عمان الأردن باقات الأسعار دينار سنوي استلام من المطعم"
+  "تصميم تطبيق وموقع طلبات للمطاعم عمان الأردن باقات الأسعار دينار سنوي استلام من المطعم",
+  "نظام كاشير للمطاعم في الأردن مع طلبات أونلاين وموقع طلبات أسعار الاشتراك الشهري دينار"
  ],
  "vendors": [
   {
@@ -23,5 +24,5 @@
    ]
   }
  ],
- "notes": "JO count now: 1 (Ordable, JOD) — unchanged. Block 1: Foodics no Jordan price page (V-foodics.json); Zyda doesn't list Jordan (V-zyda.json); Take App doesn't list Jordan; MENU TIGER and Restora POS (USD) don't name Jordan. Block 2: four new searches (Arabic and English: own ordering site with branch pickup in JOD, Jordan POS online-ordering plans, Jordanian pre-order/pickup platform, restaurant ordering-site agencies in Amman) returned Talabat (marketplace), Qoyod (accounting/e-invoicing POS, no ordering), Geidea (UAE pages only), Capterra/GoodFirms (directories, not sources), Shopify/WooCommerce/GoodBarber/Odoo (generic builders), Pickup.qa (a Qatari consumer app), khamsat / mostaql / Upwork gigs (freelancers, USD). Foodics' offers.foodics.com Jordan page (no price per the search summary) not opened — Foodics rejected for JO. Only one new vendor site was worth opening (Orange Jordan POS: till only). Nothing eligible exists beyond Ordable; stopped."
+ "notes": "JO count now: 1 (Ordable, JOD) — unchanged. Block 1: Foodics no Jordan price page (V-foodics.json); Zyda doesn't list Jordan (V-zyda.json); Take App doesn't list Jordan; MENU TIGER and Restora POS (USD) don't name Jordan. Block 2: four new searches (Arabic and English: own ordering site with branch pickup in JOD, Jordan POS online-ordering plans, Jordanian pre-order/pickup platform, restaurant ordering-site agencies in Amman) returned Talabat (marketplace), Qoyod (accounting/e-invoicing POS, no ordering), Geidea (UAE pages only), Capterra/GoodFirms (directories, not sources), Shopify/WooCommerce/GoodBarber/Odoo (generic builders), Pickup.qa (a Qatari consumer app), khamsat / mostaql / Upwork gigs (freelancers, USD). Foodics' offers.foodics.com Jordan page (no price per the search summary) not opened — Foodics rejected for JO. Only one new vendor site was worth opening (Orange Jordan POS: till only). Nothing eligible exists beyond Ordable; stopped. A fifth search (كاشير مطاعم + طلبات أونلاين) found only Qoyod guides, khamsat gigs and OpenSooq classifieds (one-off POS offers)."
 }
