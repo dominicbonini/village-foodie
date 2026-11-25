@@ -166,3 +166,8 @@ count now: 0 priced (1 eligible unpriced)
 
 FoxiFood, Storekit: not listed. Food.gg: marketplace. nothing eligible exists.
 count now: 0
+
+## AD
+
+FoxiFood, Storekit: not listed. CityXerpa: delivery app; Andornet: generic web agency. nothing eligible exists.
+count now: 0

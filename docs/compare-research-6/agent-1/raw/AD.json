@@ -1,0 +1,63 @@
+{
+  "country": "AD",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Andorra restaurants comandes en línia per recollir \"Andorra\" software TPV restaurant click and collect pedidos online \"España y Andorra\" precio mes",
+    "\"Andorra\" plataforma de comandes online per a restaurants i food trucks recollida a l'establiment empresa andorrana tarifa mensual"
+  ],
+  "vendors": [
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://storekit.com/docs/getting-started/supported-regions"
+      ]
+    },
+    {
+      "name": "CityXerpa",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Andorran food-delivery app ('més de 160 establiments', App Store); delivery marketplace. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Andornet",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Andorran web agency building PrestaShop / OpenCart shops; generic e-commerce, not a food ordering tool. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible exists that I could find (round 4, first research). Catalan/Spanish searches show no tool whose own site names Andorra with pickup ordering and an EUR price. Square and Lightspeed (Spanish pages, EUR) are agent 2's — not fetched; Flash Order is a Square marketplace app. Qamarero, Restroworks, PcComponentes/OFI, Odoo show no Andorra presence in results; not opened. Count: 0."
+}
