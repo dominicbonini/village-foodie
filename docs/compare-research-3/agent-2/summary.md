@@ -84,3 +84,13 @@ count now: 2 (Ordable + Foodics)
 | Wix | nearest_local | unreadable (he.wix.com/plans 404) | — | https://he.wix.com/plans |
 
 None exist that I could find with an own-site shekel price (Zapiet Eats USD app listing, MENU TIGER USD, UpMenu no IL price, Tabit no prices). count now: 0
+
+## IN (India, INR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Petpooja | nearest_local | unreadable (no prices render) | — | https://www.petpooja.com/pricing |
+| Thrive | nearest_local | unreadable (JS-only) | — | https://thrivenow.in/pricing |
+| DineOpen | nearest_local | not_relevant (no pickup wording) | from ₹899/month | https://www.dineopen.com |
+
+count now: 1 (uEngage)

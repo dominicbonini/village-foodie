@@ -1,0 +1,47 @@
+{
+ "country": "IN",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Petpooja",
+   "website": "https://www.petpooja.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "pricing page renders plan names (Core, Growth, Scale) and 'OOW (Website)' in Growth/Scale but no prices; no takeaway/pickup/order-ahead wording",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.petpooja.com/pricing"
+   ]
+  },
+  {
+   "name": "Thrive",
+   "website": "https://thrivenow.in",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "/pricing renders only the domain name (JavaScript-only)",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://thrivenow.in/pricing"
+   ]
+  },
+  {
+   "name": "DineOpen",
+   "website": "https://www.dineopen.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "₹ price ('from ₹899/month in India') but home page describes online/WhatsApp ordering for delivery and table service only; no takeaway/pickup/pre-order wording",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.dineopen.com"
+   ]
+  }
+ ],
+ "notes": "IN: no second INR tool. Petpooja (no prices render) and Thrive (JS-only) unreadable again; DineOpen re-checked, still no pickup wording. count now: 1 (uEngage)."
+}
