@@ -1,0 +1,82 @@
+{
+ "country": "MV",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Maldives restaurant online ordering app pickup takeaway subscription MVR per month POS"
+ ],
+ "vendors": [
+  {
+   "name": "Ewity POS",
+   "website": "https://ewity.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Maldivian POS whose online ordering site (included for every business) offers timed pickup windows with capacity limits, orders sent to the kitchen; MVR prices",
+   "eligibility": {
+    "order_quote": "Offer timed delivery and pickup windows with capacity limits, so orders arrive at a pace your team can handle.",
+    "order_url": "https://ewity.com/features/online-ordering",
+    "country_quote": "Built in the Maldives. Used worldwide.",
+    "country_url": "https://ewity.com/features/online-ordering"
+   },
+   "plans": [
+    {
+     "plan_name": "Free",
+     "currency": "MVR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "MVR 0/month",
+     "url": "https://ewity.com/pricing",
+     "note": "'Free forever'. Home page: 'Every Ewity business gets a beautiful online store and ordering site at no extra cost.' (read as included in every plan)"
+    },
+    {
+     "plan_name": "Starter",
+     "currency": "MVR",
+     "price_major": 450,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "MVR 450/month",
+     "url": "https://ewity.com/pricing",
+     "note": "'Billed MVR 5,400 yearly'"
+    },
+    {
+     "plan_name": "Pro",
+     "currency": "MVR",
+     "price_major": 750,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "MVR 750/month",
+     "url": "https://ewity.com/pricing",
+     "note": "'Billed MVR 9,000 yearly'"
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Offer timed delivery and pickup windows with capacity limits, so orders arrive at a pace your team can handle.",
+     "url": "https://ewity.com/features/online-ordering"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://ewity.com/pricing",
+    "https://ewity.com",
+    "https://ewity.com/features/online-ordering"
+   ]
+  }
+ ],
+ "notes": "MV: Ewity POS (NEW, not stored) found via its consumer app GoPrime (EWITYPOS PVT LTD). Food fit: KOTs to the kitchen and 'Free for restaurants' (QR menu) on its home page; it is a general retail+F&B POS. Pickup-window wording is about the business offering windows, not explicitly customers choosing a time. With Qvian count now: 2."
+}

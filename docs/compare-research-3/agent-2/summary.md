@@ -98,3 +98,11 @@ count now: 1 (uEngage)
 ## LK (Sri Lanka, LKR)
 
 No vendor site read; one search found no second LKR tool (Deonde: no amount; iasoft one-off builds; marketplaces; directories). count now: 1 (POS Masters)
+
+## MV (Maldives, MVR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Ewity POS (new) | nearest_local | eligible (timed pickup windows; ordering site included in every plan) | Free MVR 0; Starter MVR 450/month, Pro MVR 750/month (billed yearly) | https://ewity.com/pricing |
+
+count now: 2 (Qvian + Ewity)
