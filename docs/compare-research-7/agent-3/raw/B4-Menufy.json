@@ -1,0 +1,210 @@
+{
+  "vendor": "Menufy",
+  "stored_id_prefix": "832a682c",
+  "countries": [
+    "GU",
+    "VI"
+  ],
+  "researched_on": "2026-11-25",
+  "vendors": [
+    {
+      "country": "GU",
+      "name": "Menufy",
+      "website": "https://restaurant.menufy.com",
+      "stored_id_prefix": "832a682c",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "US restaurant online-ordering tool (carryout, curbside pickup, advance orders); its own diner site has a Guam page listing Tamuning restaurants (same evidence type as PR); USD price from its pricing page",
+      "eligibility": {
+        "order_quote": "gives them the opportunity to schedule their order ahead of time.",
+        "order_url": "https://restaurant.menufy.com/article/online-ordering-features",
+        "country_quote": "Guam, Order Food Online!",
+        "country_url": "https://www.menufy.com/GU"
+      },
+      "plans": [
+        {
+          "plan_name": "Month-to-month",
+          "currency": "USD",
+          "price_major": 179,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Menufy is $179 a month month-to-month, or $149 a month on a 12-month agreement",
+          "url": "https://restaurant.menufy.com/pricing",
+          "note": "read today (static HTML). Monthly-billing price; the 12-month agreement is $149 / month ('Annual Best value $149 / month 12-month agreement, billed monthly. $1,788 a year.', equipment included)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "gives them the opportunity to schedule their order ahead of time.",
+          "url": "https://restaurant.menufy.com/article/online-ordering-features"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "You can offer customers more ways to order online by enabling Advance Orders.",
+          "url": "https://restaurant.menufy.com/article/online-ordering-features"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Month-to-month Flexible $179 / month Billed monthly. No agreement.",
+          "url": "https://restaurant.menufy.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.menufy.com/GU",
+        "https://restaurant.menufy.com/pricing",
+        "https://restaurant.menufy.com/article/online-ordering-features"
+      ]
+    },
+    {
+      "country": "VI",
+      "name": "Menufy",
+      "website": "https://restaurant.menufy.com",
+      "stored_id_prefix": "832a682c",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "US restaurant online-ordering tool (carryout, curbside pickup, advance orders); its own diner site has a U.S. Virgin Islands page listing St Croix and St John restaurants (same evidence type as PR); USD price from its pricing page",
+      "eligibility": {
+        "order_quote": "gives them the opportunity to schedule their order ahead of time.",
+        "order_url": "https://restaurant.menufy.com/article/online-ordering-features",
+        "country_quote": "Virgin Islands, Order Food Online!",
+        "country_url": "https://www.menufy.com/VI"
+      },
+      "plans": [
+        {
+          "plan_name": "Month-to-month",
+          "currency": "USD",
+          "price_major": 179,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Menufy is $179 a month month-to-month, or $149 a month on a 12-month agreement",
+          "url": "https://restaurant.menufy.com/pricing",
+          "note": "read today (static HTML). Monthly-billing price; the 12-month agreement is $149 / month ('Annual Best value $149 / month 12-month agreement, billed monthly. $1,788 a year.', equipment included)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "gives them the opportunity to schedule their order ahead of time.",
+          "url": "https://restaurant.menufy.com/article/online-ordering-features"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "You can offer customers more ways to order online by enabling Advance Orders.",
+          "url": "https://restaurant.menufy.com/article/online-ordering-features"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Month-to-month Flexible $179 / month Billed monthly. No agreement.",
+          "url": "https://restaurant.menufy.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.menufy.com/VI",
+        "https://restaurant.menufy.com/pricing",
+        "https://restaurant.menufy.com/article/online-ordering-features"
+      ]
+    }
+  ],
+  "notes": "Diner pages read today (static HTML): https://www.menufy.com/GU (title 'GU - Delivery & Takeout - Order Online - Menufy'; 'Guam, Order Food Online! Delivery & Carryout'; 'Select a city to order online Tamuning'; filters include 'Curbside Pickup') and https://www.menufy.com/VI ('Virgin Islands, Order Food Online! Delivery & Carryout'; cities 'St Croix St John'). https://www.menufy.com/MP and https://www.menufy.com/AS answer '302' to the home page (no page) -> does not count in MP or AS. Price re-read today from https://restaurant.menufy.com/pricing (static HTML). The order-ahead quote is from the online-ordering-features article read in compare-research-3 (not re-read today). The PR row (compare-research-3) still shows the old 'customer pays the fee' price; the coordinator's topups.json (compare-research-4) already replaced it with $179."
+}
