@@ -1,0 +1,55 @@
+{
+  "country": "PE",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "sistema de pedidos online para restaurantes Perú \"recojo en tienda\" planes soles mensual pedidos anticipados",
+    "carta digital con pedidos para recoger Perú \"S/\" \"al mes\" restaurantes food truck plataforma peruana",
+    "software restaurante Perú módulo pedidos online \"para recoger\" precio \"+ IGV\" mensual Inforest OR Mesakloud OR \"Restaurant.pe\"",
+    "Lima software restaurantes \"pedidos online\" \"para llevar\" planes precios \"S/\" mes tienda web propia sin comisiones",
+    "Inforest Perú pedidos web carta online restaurantes recojo precio",
+    "\"food truck\" Perú app pedidos anticipados \"recojo\" sistema para food trucks Lima precio",
+    "\"What The Truck\" app food truck owners pre-order subscription website"
+  ],
+  "vendors": [
+    {
+      "name": "Mesakloud",
+      "website": "https://mesakloud.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Peruvian restaurant POS in soles (Básico S/240/mes, Regular S/320/mes, Pro S/420/mes), but its online channel is delivery only ('Delivery completo — gestión de pedidos, app de repartidor y portal web (creamos tu sitio web)') plus QR table ordering; no pickup / recojo / para llevar or order-ahead wording on its site",
+      "eligibility": {
+        "country_quote": "Software de Gestión Integral para Restaurantes en Perú",
+        "country_url": "https://mesakloud.com"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://mesakloud.com"]
+    },
+    {
+      "name": "Inforest",
+      "website": "https://www.inforest.com.pe",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "unreadable",
+      "reason": "Peruvian restaurant POS (press: PagoEfectivo payments for delivery and pickup orders made through bank apps, 2021); guessed domain www.inforest.com.pe did not resolve (DNS ENOTFOUND) and no own site appeared in search",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://www.inforest.com.pe"]
+    },
+    {
+      "name": "What The Truck!",
+      "website": "https://whatthetruck.app",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "US food-truck finder app (What The Truck LLC); the App Store listing shows a vendor subscription (S/ 39.90 monthly in the Peru store) but describes finding trucks only, no pre-order or order ahead; Peru App Store prices are store localisation, not a Peruvian presence. Own site not read (App Store Peru page answered 404).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://apps.apple.com/pe/app/what-the-truck/id6474005821"]
+    }
+  ],
+  "notes": "Count now: 0. Round 2 (compare-research-6): nothing eligible with a PEN price. New candidates: Mesakloud (Peruvian POS, S/ prices, delivery-only web portal, no pickup wording -> not_relevant), Inforest (no own site found; DNS fail), What The Truck! (US finder app, no ordering ahead). Seen in search, not read: KOM (kom.pe, web agency, one-off S/ 1,950 + IGV builds; earlier rounds), Qamarero (Spanish, agent 1's region; no Peru prices), Lightspeed (stored; agent 3), Restroworks / Orders2Me / MENU TIGER (international, no PEN), Mallplaza 'Pide y Lleva' (mall app), Pacha Eats (consumer food app), Niubiz go (table self-service). Earlier rejects not re-read: Foodiv, OlaClick, Restaurant.pe (unreadable twice), Ganvent, Mesa 24/7, Fudo (agent 3, USD only). Fudo / Pedix / Toteat / Justo belong to agent 3. Stopped after ~5 new candidates with nothing eligible."
+}
