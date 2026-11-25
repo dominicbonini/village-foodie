@@ -58,3 +58,13 @@ NI, BS, TT: taken by agent 3 (coordinator, 25 Nov).
 
 Nothing eligible with a PKR price after 5 new vendor sites. Blink: agent 1.
 count now: 0
+
+## NP (NPR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Crossover | pos | not_relevant (staff-side takeaway, no price) | – | https://crossovernepal.com |
+| RestoOS (Dinesh Ghimire) | pos | unreadable (404; freelancer build) | – | https://dinesh-ghimire.com.np/systems.html |
+
+Nothing eligible exists with an NPR price (Nepali tools are POS / QR-table only; Foodmandu, Bhojmandu = marketplaces).
+count now: 0

@@ -1,0 +1,36 @@
+{
+  "country": "NP",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Nepal restaurant online ordering website takeaway pickup software \"Rs\" per month Kathmandu cafe own ordering site commission free",
+    "रेस्टुरेन्ट अनलाइन अर्डर सफ्टवेयर नेपाल पिकअप टेकअवे मूल्य मासिक",
+    "Nepal restaurant POS \"online ordering\" \"pickup\" website Khalti eSewa integrated pricing NPR plan"
+  ],
+  "vendors": [
+    {
+      "name": "Crossover Restaurant Management Software",
+      "website": "https://crossovernepal.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Nepali restaurant POS; takeaway only staff-side ('Manage table orders, takeaway, delivery, dine-in, token billing, and customer records.'), no customer online ordering, no prices (demo / contact only)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://crossovernepal.com"]
+    },
+    {
+      "name": "RestoOS (Dinesh Ghimire)",
+      "website": "https://dinesh-ghimire.com.np/systems.html",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "unreadable",
+      "reason": "a Nepali developer's 'ready systems' page (restaurant system with online food orders per search snippet); page answered 404; looks like a freelancer's build, not a product with stated customers",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://dinesh-ghimire.com.np/systems.html"]
+    }
+  ],
+  "notes": "Count now: 0. Round 3 (compare-research-6): nothing eligible with an NPR price. New: Crossover (POS, staff-side takeaway only, no price -> not_relevant), RestoOS by Dinesh Ghimire (404, freelancer). Seen in search, not read: Ahpu Order (iPad waiter app, App Store only), Weaver / Marg ERP9+ / YCS / SlickPOS / TallyPrime / Ciferon (POS/ERP listings, USD or no ordering), Upwork freelancer KOT + order website, Foodmandu / Bhojmandu / FoodieNepal (marketplaces). Earlier rejects not re-read: MeroMenu (table QR, prepaid per bill), NRestro (QR table only, Rs. 15,000/yr), Klikit (no Nepal market). Take App's countries page does not list Nepal (earlier round). Stopped: ~5 new candidates across 3 searches, Nepali tools are POS / QR-table only."
+}
