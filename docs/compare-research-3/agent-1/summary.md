@@ -29,3 +29,7 @@ count now: 1
 ## SE decision check: Yabie Express (5f613b54)
 
 includes_online_ordering: **false** (not shown). The Express plan's list of what it includes (cloud system, all payment methods, automatic reporting, 24/7 support, back office) has no online ordering. The same page describes Yabie Online ("Låt dina kunder beställa online…", "Inget krångel eller extra kostnad…") without tying it to the 899 kr plan. https://yabie.com/kassasystem/yabie-express/
+
+## UA decision check: Poster Business (0802a7c8)
+
+Shown '1 530 ₴1 700 ₴/міс.' with only the toggle 'Оплата за рік'. billed: **unclear** (most likely yearly: 1 530 = 1 700 × 0.9). The page states no monthly-billing price and no yearly total, so true_monthly_major is null. The crossed-out 1 700 ₴ is the likely monthly-billed figure. https://joinposter.com/ua/pricing

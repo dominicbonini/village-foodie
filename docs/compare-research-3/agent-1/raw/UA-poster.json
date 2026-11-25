@@ -1,0 +1,16 @@
+{
+  "vendor": "Poster",
+  "stored_id_prefix": "0802a7c8",
+  "plan": "Business",
+  "shown_monthly": 1530,
+  "billed": "unclear",
+  "true_monthly_major": null,
+  "currency": "UAH",
+  "quotes": [
+    "1 530 ₴1 700 ₴/міс.",
+    "Оплата за рік",
+    "540 ₴600 ₴/міс."
+  ],
+  "url": "https://joinposter.com/ua/pricing",
+  "note": "Read once today. Business shows '1 530 ₴' next to '1 700 ₴' (the page text drops formatting, so 1 700 is almost certainly the crossed-out price) per month, and the only billing label on the page is the toggle 'Оплата за рік' (pay for the year). No 'Оплата за місяць' label, no yearly total, no discount %, and no sentence saying how the price is billed. 1 530 = 1 700 × 0.9, so 1 530 is most likely the per-month price with yearly payment and 1 700 the monthly-billed price. The page doesn't label 1 700 as the monthly-billing price, so true_monthly_major is left null. Candidate if Dominic accepts the inference: 1700. Starter shows the same pattern (540 / 600)."
+}
