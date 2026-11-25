@@ -1,0 +1,144 @@
+{
+  "country": "PL",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "GoPOS / GoOrder",
+      "website": "https://gopos.pl",
+      "stored_id_prefix": "b10476b9",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Polish POS vendor's GoOrder online ordering (takeaway/delivery, ordering for a specific date); PLN net monthly packages re-read today. Restaurant tool. Module doubt: the price page calls GoOrder a module that extends the system but does not say a paid GoPOS licence is required.",
+      "eligibility": {
+        "food_quote": "System numerków wyświetlanych na ekranie ułatwi odbieranie zamówień przez klientów.",
+        "food_url": "https://gopos.pl/goorder",
+        "order_quote": "Daj klientom możliwość zamawiania na konkretną datę - na specjalne okazje, lub gdy posiadasz menu tymczasowe.",
+        "order_url": "https://gopos.pl/goorder",
+        "country_quote": "Podane ceny są cenami netto.",
+        "country_url": "https://gopos.pl/cennik"
+      },
+      "plans": [
+        {
+          "plan_name": "GoOrder - Pakiet Online Basic",
+          "currency": "PLN",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "49 zł/msc",
+          "url": "https://gopos.pl/cennik",
+          "note": "50 orders included; extra orders 'od 0,4 zł/szt.' (Basic, Pro). 'Podane ceny są cenami netto.' 'Obsługa zamówień online bez dodatkowych prowizji w ramach opłaconego pakietu subskrypcyjnego.' Re-read today. If GoOrder needs a GoPOS licence (page calls it a module, does not say it is required), base 'Basic' '79 zł/msc' + module = 128 zł/msc for Basic. 'Licencja roczna' 'Zyskujesz do -19%' applies to licences; GoOrder shows per-month prices only."
+        },
+        {
+          "plan_name": "GoOrder - Pakiet Online Pro",
+          "currency": "PLN",
+          "price_major": 129,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "129 zł/msc",
+          "url": "https://gopos.pl/cennik",
+          "note": "200 orders included; extra orders 'od 0,4 zł/szt.' (Basic, Pro). 'Podane ceny są cenami netto.' 'Obsługa zamówień online bez dodatkowych prowizji w ramach opłaconego pakietu subskrypcyjnego.' Re-read today. If GoOrder needs a GoPOS licence (page calls it a module, does not say it is required), base 'Basic' '79 zł/msc' + module = 128 zł/msc for Basic. 'Licencja roczna' 'Zyskujesz do -19%' applies to licences; GoOrder shows per-month prices only."
+        },
+        {
+          "plan_name": "GoOrder - Pakiet Online Unlimited",
+          "currency": "PLN",
+          "price_major": 349,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "349 zł/msc",
+          "url": "https://gopos.pl/cennik",
+          "note": "'Brak limitów' orders included; extra orders 'od 0,4 zł/szt.' (Basic, Pro). 'Podane ceny są cenami netto.' 'Obsługa zamówień online bez dodatkowych prowizji w ramach opłaconego pakietu subskrypcyjnego.' Re-read today. If GoOrder needs a GoPOS licence (page calls it a module, does not say it is required), base 'Basic' '79 zł/msc' + module = 128 zł/msc for Basic. 'Licencja roczna' 'Zyskujesz do -19%' applies to licences; GoOrder shows per-month prices only."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Przyjmuj zamówienia na wynos, z dostawą, a nawet bezpośrednio do stolika.",
+          "url": "https://gopos.pl/goorder"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Daj klientom możliwość zamawiania na konkretną datę - na specjalne okazje, lub gdy posiadasz menu tymczasowe.",
+          "url": "https://gopos.pl/goorder"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "GoOrder jest prosty do implementacji w takich miejscach jak Facebook, Instagram, wizytówka Google",
+          "url": "https://gopos.pl/goorder"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "System komunikacji pomiędzy salą a kuchnią, który umożliwia elektroniczne przesyłanie zamówień, ułatwiając pracę kucharzom i obsłudze.",
+          "url": "https://gopos.pl/cennik"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "Możliwość prowadzenia sprzedaży bez dostępu do Internetu",
+          "url": "https://gopos.pl/cennik"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "W pełni zintegrowany system pozwoli na dostęp do wszystkich lokali z jednego miejsca.",
+          "url": "https://gopos.pl/cennik"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "49 zł/msc",
+          "url": "https://gopos.pl/cennik"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "od 0,4 zł/szt.",
+          "url": "https://gopos.pl/cennik"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://gopos.pl/cennik",
+        "https://gopos.pl/goorder"
+      ],
+      "country": "PL"
+    }
+  ],
+  "notes": "PL counts Frivo and UpMenu. Third: GoPOS / GoOrder (stored b10476b9) - cennik re-read today: 'Basic' '49 zł/msc', 'Pro' '129 zł/msc', 'Unlimited' '349 zł/msc', 'Podane ceny są cenami netto.' Order-for-a-date quote from compare-research-1 (24 Nov, gopos.pl/goorder), not re-read. Reviewer: base+module rule may apply (GoPOS Basic licence 79 zł/msc). Other eligible PL tools in evidence without a price: Restaumatic, restauracja.online, Foodeliver. Stopped at 3."
+}
