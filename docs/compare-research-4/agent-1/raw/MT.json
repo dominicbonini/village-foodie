@@ -1,0 +1,67 @@
+{
+  "country": "MT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Malta restaurant POS \"online ordering\" takeaway pickup module price € per month Maltese company",
+    "flipdish Malta restaurants online ordering",
+    "\"Malta\" hospitality POS software company \"online ordering\" \"click & collect\" restaurants Birkirkara OR Mosta OR Qormi",
+    "upmenu Malta online ordering restaurant",
+    "site:upmenu.com Malta",
+    "choiceqr.com Malta OR \"Gozo\" online ordering takeaway",
+    "Malta startup app order ahead skip the queue coffee food pickup businesses sign up \"Malta\"",
+    "sistema ta' ordnijiet online għar-ristoranti Malta take away iġbor ordna minn qabel"
+  ],
+  "vendors": [
+    {
+      "name": "UpMenu",
+      "website": "https://www.upmenu.com",
+      "stored_id_prefix": "ef9dcbd8",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Strict MT rule: its own pricing page shows no Malta (currency toggle USD/CAD/EUR/CHF/GBP only, no country list); the only Malta link is an App Store listing (Kups Malta app by UpMenu), which is not the vendor's own site.",
+      "eligibility": {
+        "order_quote": "Preorder? | Yes", "order_url": "https://www.upmenu.com/pricing/"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://www.upmenu.com/pricing/"]
+    },
+    {
+      "name": "MENU.mt (MENU GPS, OmnSoft)",
+      "website": "https://menu.mt",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Maltese menu-finder app (App Store: 'All of Malta & Gozo: hundreds of restaurants, cafes, bars and street-food spots'; version notes 'Order right from the menu!'). Its own site is a script-only app: the fetched HTML has no text about pickup, ordering ahead, business plans or prices, so nothing can be quoted. Looks like a consumer menu directory, not a business ordering tool.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://menu.mt", "https://apps.apple.com/app/id6778575919"]
+    },
+    {
+      "name": "Choice",
+      "website": "https://choiceqr.com",
+      "stored_id_prefix": "70b34967",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Search of its site found no Malta/Gozo page or Malta presence (strict MT rule); not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Flipdish",
+      "website": "https://www.flipdish.com",
+      "stored_id_prefix": "5b50f4e3",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Search found only Irish/UK/US/global Flipdish pages, no Malta page (strict MT rule); not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "Count stays 1 (FoxiFood d03a6e1f, stored and counted). New angles tried: Maltese-language search, Malta POS/hospitality vendors, order-ahead app search, UpMenu/Choice/Flipdish Malta presence. Nothing new is eligible under the strict rule. Leads not used: Born Digital (born-website.pages.dev, a Maltese web agency writing about custom ordering systems: an agency, not a priced tool) and Incredible-Web (agency case study for Pizza4U); Sixteen Ltd resells Storekit in Malta (reseller, not the vendor's own site; Storekit itself has GBP prices only, see round 3). Eat App's Malta pricing page is booking-led and USD ($99), and Eat App is not my vendor. Round-2/3 dead ends not repeated (Storekit, Order Tiger, Zaype, SumUp, Maltix, H360 ORDER, Time To Eat, Deliwee, KantinApp, ATS Malta). Ywait (App Store) is Australian, not relevant."
+}
