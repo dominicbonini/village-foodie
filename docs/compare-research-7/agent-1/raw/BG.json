@@ -1,0 +1,120 @@
+{
+  "country": "BG",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "QR-MENU.BG",
+      "website": "https://www.qr-menu.bg",
+      "stored_id_prefix": "bc4c32f7",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Bulgarian (.bg) digital menu whose ORDERS plan takes takeaway and delivery orders from the guest's phone, with advance orders a set number of days ahead; EUR prices; commission-free; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Advance orders with a configurable number of days ahead.",
+        "order_url": "https://www.qr-menu.bg/home/en"
+      },
+      "plans": [
+        {
+          "plan_name": "ORDERS",
+          "currency": "EUR",
+          "price_major": 15,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "15,00 €per month",
+          "url": "https://www.qr-menu.bg/home/en",
+          "note": "page markup joins '15,00 €' and 'per month'; or 150,00 € per year (2 months free). START (10,00 €) is browse-only, no orders. Read the site's English version (/home/en); company address not found in page text."
+        },
+        {
+          "plan_name": "PREMIUM",
+          "currency": "EUR",
+          "price_major": 20,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "20,00 €",
+          "url": "https://www.qr-menu.bg/home/en",
+          "note": "per month (or 200,00 € per year); adds team apps, reservations, lunch menu, HACCP logs. Quote is the amount as summarised by the page reader, period word not captured verbatim."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Advance orders with a configurable number of days ahead.",
+          "url": "https://www.qr-menu.bg/home/en"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Manage staff and kitchen with Waiter POS and Kitchen Display.",
+          "url": "https://www.qr-menu.bg/home/en"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Manage staff and kitchen with Waiter POS and Kitchen Display.",
+          "url": "https://www.qr-menu.bg/home/en"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "15,00 €per month",
+          "url": "https://www.qr-menu.bg/home/en"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Commission-free online orders from €15.",
+          "url": "https://www.qr-menu.bg/home/en"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.qr-menu.bg/home/en"
+      ],
+      "country": "BG"
+    }
+  ],
+  "notes": "BG counts FoxiFood and Menuto. Third candidate: QR-MENU.BG (stored bc4c32f7, restaurant tool) copied from compare-research-2 agent-4 (read today, 25 Nov; not re-read): its ORDERS plan (15 EUR/month) takes takeaway and delivery orders from the guest's phone with advance orders a set number of days ahead. Doubt: it sells itself as a digital menu first; the ORDERS plan is the online-ordering tier. Stopped at 3."
+}
