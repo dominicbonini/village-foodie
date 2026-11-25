@@ -1,7 +1,9 @@
 {
   "country": "SI",
   "researched_on": "2026-11-25",
-  "searches": [],
+  "searches": [
+    "food truck spletno naročanje vnaprej prevzem sistem za ulično hrano Slovenija cena mesečno aplikacija"
+  ],
   "vendors": [
     {
       "name": "FoxiFood",
@@ -123,5 +125,5 @@
       "note": "Country presence = named on the country-terms page ('the country addenda below set out the provisions specific to each country where restaurants can register'), the same evidence that counts it in MT. No local-language check this round."
     }
   ],
-  "notes": "FoxiFood (food truck, EUR) as the third: its country-terms page, read today, names Slovenia."
+  "notes": "FoxiFood (food truck, EUR) as the third: its country-terms page, read today, names Slovenia. Food-truck pass (coordinator): FoxiFood (above) is the food-truck tool; a Slovenian food-truck pre-order search found only consumer apps (Prehrana, ehrana), US tools (Food Truck Pub, OrderUp, Vev), UpMenu (USD, no Slovenia) and Subger. No other food-truck tool."
 }
