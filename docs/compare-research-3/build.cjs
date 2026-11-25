@@ -62,6 +62,7 @@ const UNCLEAR = [
   ['sparissimofood.com', 'LI', /./, 'its blog and its home page show different prices, and the Liechtenstein evidence is one restaurant on its subdomain'],
   ['vitrina.cafe', 'LT', /./, 'Lithuania is only named on its main page and the price is borrowed from its Slovak page'],
   ['vitrina.cafe', 'LV', /./, 'Latvia is only named on its main page and the price is borrowed from its Slovak page'],
+  ['rent-a-shop.ch', '*', /onlineshop/i, 'the Onlineshop is an add-on module to the till plan, not the whole monthly price'],
   ['zunapro.com', 'TR', /ba[sş]lang[ıi][cç]/i, 'not confirmed that the entry package includes "Paket sipariş & gel-al"'],
 ]
 // A vendor whose page prices only ONE country ("Prices for Kuwait"): its plans are written for that country only; elsewhere it keeps
