@@ -1,0 +1,12 @@
+{
+  "country": "GT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Guatemala software restaurantes pedidos en línea \"para recoger\" o \"pick up\" menú digital planes \"Q\" al mes sin comisión",
+    "Foodiv pedidos sin comisión restaurantes sitio web propio precios",
+    "punto de venta restaurantes Guatemala con tienda en línea pedidos clientes recogen en el local precio quetzales mensual",
+    "menú digital Guatemala pedidos WhatsApp \"pasar a recoger\" restaurantes planes quetzales emprendimiento guatemalteco"
+  ],
+  "vendors": [],
+  "notes": "Count now: 1 (Sabbor, GTQ, stored) — but see the FLAG in raw/V-Sabbor.json: its only site is a pages.dev default host ('restaurant-saas-monorepo') with sample orders, demo / free-trial CTAs and no real customer, so under the V16.38 rule it may not count (GT would be 0). No second GTQ-priced tool found in four new-angle searches (para recoger / pick up, POS with tienda en línea + recogen en el local, WhatsApp menú digital 'pasar a recoger'). Results: foreign tools with no Guatemala presence or GTQ price (MENU TIGER — agent 2, Restroworks, Meniu MXN, Mercado Pago MX, Square US, Lightspeed MX, Odoo), Klikit's Guatemala blog (agent 2's vendor, not read), BAC Credomatic's Central-American POS tariff PDF (bank reseller list in USD, e.g. 'Atki Restaurante $85.00 Mensual' — not a vendor site, no ordering stated), Softland (ERP), Mister Menu (restaurant guide app), CloudBite (QR menu app), Uber Eats (marketplace), university theses, Capterra / GetApp listings. Foodiv (no-commission ordering sites; Capterra PA/MX/ES listings say from USD 99 — no own site in results, no Guatemala presence) — not read, USD would not count in GT anyway. Earlier dead ends (Midelivery Food, Scrampi, ConectaT, Jefe, Quantika, Go4us, Neolo) not re-read. Pedix (USD), OlaClick (USD), Fudo (no GT site): see raw/V-*.json. Stopped."
+}
