@@ -100,3 +100,12 @@ count now: 0
 
 nothing eligible exists: Russian searches (предзаказ / навынос / самовывоз / сом в месяц) gave Glovo and single-chain apps.
 count now: 0
+
+## DZ (DZD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| BorneDZ | nearest_local | unreadable (410 Gone again) | — | https://bornedz.com/ |
+
+nothing eligible exists: French/Arabic searches (retrait sur place / à emporter / DA/mois / طلب مسبق / استلام) gave delivery marketplaces and classified ads.
+count now: 0

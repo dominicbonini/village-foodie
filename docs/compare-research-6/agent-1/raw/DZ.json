@@ -1,0 +1,16 @@
+{
+  "country": "DZ",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Algérie restaurant site de commande en ligne \"retrait sur place\" OR \"à emporter\" OR \"click and collect\" solution algérienne abonnement \"DA/mois\"",
+    "الجزائر منصة طلب مسبق للمطاعم طلب عبر الإنترنت استلام من المطعم اشتراك شهري دج موقع طلبات خاص بالمطعم"
+  ],
+  "vendors": [
+    {
+      "name": "BorneDZ", "website": "https://bornedz.com", "stored_id_prefix": null, "focus": "nearest_local", "verdict": "unreadable",
+      "reason": "Retried once (unreadable in compare-research-3): https://bornedz.com/ answers HTTP 410 Gone again. Snippet prices (Essentiel 3 900 DA / Complet 6 900 DA par mois) not verifiable on its own site.",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": []
+    }
+  ],
+  "notes": "Nothing eligible with a DZD price (round 3). French and Arabic searches return delivery apps (Qooxy, Fast, Noofy, RM Delivery, Efendim, Wajeez, Jumia Food: marketplaces), Ouedkniss classified ads for one-off restaurant software (third party), a Tlemcen university thesis (RestoApp, not a product) and news. Not re-read: NResto (table + delivery only), inyad, Restorium/Cirtasoft (till), DZDFOOD, Yassir, Take App, Foodics, Ordable, Zyda (compare-research-2/-3). Count: 0."
+}
