@@ -1,0 +1,62 @@
+{
+  "country": "PY",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Paraguay \"pedí y retirá\" OR \"retiro en local\" sistema de pedidos online restaurantes precio \"Gs.\" mes",
+    "GU app gastronómica Paraguay vender online sin comisión restaurantes suscripción mensual sitio oficial",
+    "menú digital pedidos \"para retirar\" Paraguay plan mensual \"Gs\" gastronomía tienda online WhatsApp lomitería hamburguesería sistema",
+    "software para restaurantes Paraguay facturación electrónica SIFEN módulo pedidos online precio \"Gs.\" mensual planes"
+  ],
+  "vendors": [
+    {
+      "name": "ClickParaPedir",
+      "website": "https://clickparapedir.com",
+      "stored_id_prefix": "92dbc215",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "re-checked for a price today: still eligible (Paraguayan; take-away orders by WhatsApp ready before pickup; food-truck solution page) but still no price on its site (only 'Sin comisión por pedido' / '0% por pedido'; sales via WhatsApp / demo form) -> unpriced, not counted",
+      "eligibility": {
+        "order_quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.",
+        "order_url": "https://clickparapedir.com"
+      },
+      "plans": [
+        {
+          "plan_name": "ClickParaPedir", "currency": "PYG", "price_major": null, "period": "month", "vat": "unknown",
+          "per_order_pct": 0, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "Sin comisión por pedido", "url": "https://clickparapedir.com",
+          "note": "no plan price on the site (hidden plan); Gs. figures on the page are only dashboard mock-ups"
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "yes", "quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.", "url": "https://clickparapedir.com" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "yes", "quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.", "url": "https://clickparapedir.com" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "not_mentioned" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "not_mentioned" },
+        { "key": "monthly", "value": "not_mentioned" },
+        { "key": "perorder", "value": "no", "quote": "Sin comisión por pedido", "url": "https://clickparapedir.com" },
+        { "key": "cardfee", "value": "not_mentioned" }
+      ],
+      "check_urls": ["https://clickparapedir.com"]
+    },
+    {
+      "name": "Fiweex",
+      "website": "https://fiweex.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Latin-American business-tools suite (WiFi portal, reservations, WhatsApp catalogue, loyalty) listing Paraguay among sales countries; no pickup / retirar / order-ahead wording ('Impulsa tus ventas en Whatsapp con un Catálogo conectado a tu número habitual.') and no prices on the home page",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://fiweex.com"]
+    }
+  ],
+  "notes": "Count now: 0 priced in PYG. Round 2 (compare-research-6): nothing new eligible with a PYG price. ClickParaPedir (stored 92dbc215) re-checked: still eligible but unpriced. PedíFácil (stored 5a8fd79e) eligible but unpriced in wave 2, not re-read. New: Fiweex (WhatsApp catalogue suite, no pickup, no price -> not_relevant). Seen in search, not read: GU (Paraguayan multi-restaurant delivery app, 0% + G. 5.000 per order per press -> marketplace), KaruFast (Paraguayan delivery app -> marketplace), Monchis / PedidosYa (marketplaces), YoFacturo (POS / SIFEN invoicing, no online ordering stated), Odoo via Interfaces S.A. (ERP integrator, quotes). Earlier rejects not re-read: KaruMenu, RestoPRO (unreadable twice), OlaClick (USD). Fudo / Pedix belong to agent 3 (USD only in earlier rounds). Stopped after ~5 new candidates."
+}

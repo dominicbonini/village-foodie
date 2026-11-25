@@ -20,3 +20,13 @@ count now: 0
 
 Nothing eligible exists with a CRC price after ~5 new candidates (7 searches). Justo (agent 3) entered CR per press — only named.
 count now: 0
+
+## PY (PYG)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| ClickParaPedir (92dbc215) | food_truck | eligible, still unpriced (re-checked) | – (0% per order) | https://clickparapedir.com |
+| Fiweex | nearest_local | not_relevant (WhatsApp catalogue, no pickup) | – | https://fiweex.com |
+
+Nothing new eligible with a PYG price after ~5 new candidates (GU, KaruFast = marketplaces; YoFacturo = POS). Fudo / Pedix: agent 3.
+count now: 0
