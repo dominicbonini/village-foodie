@@ -4,6 +4,83 @@
  "checked_on": "2026-11-25",
  "competitors": [
   {
+   "id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "name": "Poster",
+   "website": "https://joinposter.kz",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-6 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: KZ.",
+   "check_urls": [
+    "https://joinposter.kz/pricing",
+    "https://joinposter.kz/business/foodtruck"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Доставка и самовывоз",
+     "source_url": "https://joinposter.kz/pricing"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
    "id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
    "name": "Ocuioso",
    "website": "https://www.ocuioso.com",
@@ -239,6 +316,39 @@
  ],
  "plans": [
   {
+   "id": "22ff5e60-9f4f-5a41-9fe3-18950a90ae98",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "country_code": "KZ",
+   "plan_name": "Starter + Poster Site add-on",
+   "currency": "KZT",
+   "price_hidden": false,
+   "monthly_minor": 2100000,
+   "monthly_major": 21000,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://joinposter.kz/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-6, read 25 Nov 2026: \"8 640 ₸9 600 ₸/мес. · Стоимость — 11 400 ₸/мес.\" — Starter 9 600 ₸ + Poster Site 11 400 ₸ a month, billed monthly (Starter 8 640 ₸ a month if billed yearly)"
+  },
+  {
    "id": "4967b515-0570-54aa-8213-e7d8e6880910",
    "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
    "country_code": "AR",
@@ -307,6 +417,16 @@
  ],
  "entries": [
   {
+   "id": "5207da6e-9ff2-55d9-8a7f-576c52bf29e0",
+   "country_code": "KZ",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "primary_plan_id": "22ff5e60-9f4f-5a41-9fe3-18950a90ae98",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
    "id": "68f9f20b-c0b5-59b1-87da-2918ea063e5c",
    "country_code": "AO",
    "competitor_id": "8bcbd76a-6ea1-56ba-befa-9cb5d43652ee",
@@ -348,6 +468,21 @@
   }
  ],
  "evidence": [
+  {
+   "name": "Poster",
+   "evidence": [
+    {
+     "country": "KZ",
+     "food_quote": "Автоматизация фудтрака в Казахстане",
+     "food_url": "https://joinposter.kz/business/foodtruck",
+     "order_quote": "Сайт для заказов из вашего заведения — за 5 минут",
+     "order_url": "https://joinposter.kz/pricing",
+     "country_quote": "Автоматизация фудтрака в Казахстане",
+     "country_url": "https://joinposter.kz/business/foodtruck",
+     "reason": "Poster's own Kazakhstan site (joinposter.kz) with a Kazakhstan food-truck page and tenge prices; ordering website = paid Poster Site add-on ('Доставка и самовывоз'). Priced as base plan + module (V16.38): Starter 9 600 ₸ + Poster Site 11 400 ₸ = 21 000 ₸ a month on monthly billing. Recorded from compare-research-3 agent-4's evidence (read 25 Nov); joinposter.kz now counts as Poster's own check page (coordinator)."
+    }
+   ]
+  },
   {
    "name": "Ocuioso",
    "evidence": [
@@ -404,12 +539,48 @@
  ],
  "not_relevant": [
   {
+   "country": "GE",
+   "name": "Syrve (GastroDigital, Georgia partner)",
+   "website": "https://www.syrve.com",
+   "stored": null,
+   "reason": "Georgia partner page ('GastroDigital is a certified Syrve partner in Georgia') shows no prices and no pickup / order-ahead wording, only 'delivery integrations'.",
+   "url": "https://www.syrve.com/en-gb/partner-page-gastrodigital-georgia",
+   "plans": []
+  },
+  {
    "country": "IL",
    "name": "Foody POS",
    "website": "https://foody-pos.co.il",
    "stored": null,
    "reason": "Israeli POS + online ordering with ILS prices (pricing page per reader: 'Foody Online' 590 ₪ לחודש before VAT, incl. 'איסוף עצמי וטייק אוויי'; setup 1,090 ₪), but it shows no real customers (V16.38): no names, logos or testimonials; its about page says demos use synthetic data and 'הדוגמאות המספריות אינן תוצאות של לקוחות'. No address. Directory prices (299 ₪ Starter, $149) don't match its own page.",
    "url": "https://foody-pos.co.il/",
+   "plans": []
+  },
+  {
+   "country": "KG",
+   "name": "Smartomato",
+   "website": "https://smartomato.ru",
+   "stored": null,
+   "reason": "Russian restaurant site/app platform; home page names no countries (only 'в 9 странах и 6 часовых поясах'), no Kyrgyzstan, no pickup / pre-order wording and no prices on the home page.",
+   "url": "https://smartomato.ru/",
+   "plans": []
+  },
+  {
+   "country": "KZ",
+   "name": "СделайЗаказ (4mobile.me)",
+   "website": "https://new.4mobile.me",
+   "stored": null,
+   "reason": "Russian branded ordering app with pickup pre-orders ('Предзаказ на определенные день/время.'), but priced in RUB only ('4 990 ₽ / мес.') and no Kazakhstan on its site; clients in Rostov-on-Don / St Petersburg. Found via a Kazakhstan App Store listing.",
+   "url": "https://new.4mobile.me/",
+   "plans": []
+  },
+  {
+   "country": "KZ",
+   "name": "SmartPikasso (TOO «Смартпикассо»)",
+   "website": null,
+   "stored": null,
+   "reason": "Kazakh developer of single-restaurant ordering apps (App Store only, e.g. JÜZIM, Кафе АВТОДОМ); no own site or merchant price found. Not opened.",
+   "url": null,
    "plans": []
   },
   {
@@ -512,6 +683,15 @@
    "plans": []
   },
   {
+   "country": "NP",
+   "name": "Crossover Restaurant Management Software",
+   "website": "https://crossovernepal.com",
+   "stored": null,
+   "reason": "Nepali restaurant POS; takeaway only staff-side ('Manage table orders, takeaway, delivery, dine-in, token billing, and customer records.'), no customer online ordering, no prices (demo / contact only)",
+   "url": "https://crossovernepal.com",
+   "plans": []
+  },
+  {
    "country": "PE",
    "name": "Mesakloud",
    "website": "https://mesakloud.com",
@@ -530,12 +710,53 @@
    "plans": []
   },
   {
+   "country": "PK",
+   "name": "Nosh",
+   "website": "https://noshpk.com",
+   "stored": null,
+   "reason": "BORDERLINE: Pakistani cloud restaurant POS with an 'Online Ordering Website' in its Growth plan (Rs 4,999 /month/branch, onboarding Rs 10,000) and PKR prices, but none of its pages (home, pricing, online-ordering product page) shows pickup / takeaway-for-collection / order-ahead for website orders ('Let customers order directly from your branded website or app with zero commission.'); delivery-only can't be ruled out, so not counted",
+   "url": "https://noshpk.com",
+   "plans": [
+    {
+     "plan_name": "Growth",
+     "currency": "PKR",
+     "price_major": 4999,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": 10000,
+     "quote": "Rs 4,999 /month/branch",
+     "url": "https://noshpk.com/pricing/",
+     "note": "recorded for a reviewer only (vendor not counted: no pickup wording). Growth is the plan that lists 'Online Ordering Website'; also Rs 27,500 /6 months, Rs 50,000 /year; Starter Rs 1,999 has no online ordering website; prices exclude taxes"
+    }
+   ]
+  },
+  {
+   "country": "PK",
+   "name": "CORN POS",
+   "website": "https://www.cornpos.com",
+   "stored": null,
+   "reason": "Lahore restaurant POS with 'Launch a Food Ordering Website or App for Your Customers' ('Get instant orders from your website or app directly to your POS.') but no pickup / order-ahead wording and no prices on the page",
+   "url": "https://www.cornpos.com/point-of-sale-system",
+   "plans": []
+  },
+  {
    "country": "PY",
    "name": "Fiweex",
    "website": "https://fiweex.com",
    "stored": null,
    "reason": "Latin-American business-tools suite (WiFi portal, reservations, WhatsApp catalogue, loyalty) listing Paraguay among sales countries; no pickup / retirar / order-ahead wording ('Impulsa tus ventas en Whatsapp con un Catálogo conectado a tu número habitual.') and no prices on the home page",
    "url": "https://fiweex.com",
+   "plans": []
+  },
+  {
+   "country": "ET",
+   "name": "Gobirr Store (Yeleta IT Consulting)",
+   "website": null,
+   "stored": null,
+   "reason": "App Store listing only (restaurant / store owners in Addis Ababa 'start accepting online orders, manage them and deliver the same to the customer's location' — delivery wording only); no own site found by a name search, no price, no pickup / order-ahead wording. Not read",
+   "url": null,
    "plans": []
   },
   {
@@ -546,22 +767,38 @@
    "reason": "App Store listing only (per search snippet: vendors post a daily menu and manage pickup and delivery orders; Small/Medium/Large monthly subscriptions, 'pricing is shown in the app'; Caribbean support). The developer's site bscanned.com is a Calgary AI/web agency with no eVendor, no ordering wording, no Trinidad mention and no TTD price: no own-site evidence",
    "url": "https://bscanned.com/",
    "plans": []
+  },
+  {
+   "country": "UG",
+   "name": "Reserveport by Pesapal",
+   "website": "https://www.pesapal.com/ug/business/sector/restaurants",
+   "stored": null,
+   "reason": "East-African (Pesapal) branded restaurant ordering website with a Uganda page: 'Reserveport by Pesapal is an online food ordering platform for direct website orders' / 'Get more direct sales & payments on your brand website'. But the Uganda page has no pickup / order-ahead wording ('Take-away' only in the till context: 'Manage eat-in, take-away and room-service food orders from a single point of sale') and no price — the 'Sign Up' buttons go to a demo request form (hidden). A Pesapal blog (search snippet, not read) says customers are notified 'when their food is ready for pickup'. Hidden price -> does not count",
+   "url": "https://www.pesapal.com/ug/business/sector/restaurants",
+   "plans": []
   }
  ],
  "unreadable": [
+  {
+   "country": "DZ",
+   "name": "BorneDZ",
+   "website": "https://bornedz.com",
+   "stored": null,
+   "reason": "Retried once (unreadable in compare-research-3): https://bornedz.com/ answers HTTP 410 Gone again. Snippet prices (Essentiel 3 900 DA / Complet 6 900 DA par mois) not verifiable on its own site."
+  },
+  {
+   "country": "GE",
+   "name": "Shekveta",
+   "website": "https://shekveta.ge",
+   "stored": null,
+   "reason": "Named on a directory (madloba.info) as an online ordering service for restaurants and cafés; https://shekveta.ge/ fails with a TLS certificate mismatch (cert for *.hyperhost.ua)."
+  },
   {
    "country": "IL",
    "name": "Wix (Wix Restaurants Orders)",
    "website": "https://www.wix.com",
    "stored": null,
    "reason": "Third attempt: https://he.wix.com/upgrade/website redirects to https://www.wix.com/upgrade/website, which rendered only its title ('Wix Pricing Information | Upgrade to a Premium Plan | Wix.com'); no ILS price obtainable. Also a generic website builder."
-  },
-  {
-   "country": "KZ",
-   "name": "Poster",
-   "website": "https://joinposter.kz",
-   "stored": "0802a7c8",
-   "reason": "left out on review: no order-ahead or food-truck quote recorded; its KZ price sits under an unlabelled yearly toggle"
   },
   {
    "country": "MC",
@@ -585,11 +822,46 @@
    "reason": "Costa Rican take-away app seen in search (App Store id1492376570); App Store pages answered 404 (cd and us stores), no own site found; looks like a consumer app, not a tool a business buys"
   },
   {
+   "country": "MO",
+   "name": "Eats365",
+   "website": "https://www.eats365pos.com/mo",
+   "stored": "647628e6",
+   "reason": "left out on review: marked eligible without an order-ahead quote; its Macau pricing page shows no amounts (compare-research-6 agent 2)"
+  },
+  {
+   "country": "NP",
+   "name": "RestoOS (Dinesh Ghimire)",
+   "website": "https://dinesh-ghimire.com.np/systems.html",
+   "stored": null,
+   "reason": "a Nepali developer's 'ready systems' page (restaurant system with online food orders per search snippet); page answered 404; looks like a freelancer's build, not a product with stated customers"
+  },
+  {
    "country": "PE",
    "name": "Inforest",
    "website": "https://www.inforest.com.pe",
    "stored": null,
    "reason": "Peruvian restaurant POS (press: PagoEfectivo payments for delivery and pickup orders made through bank apps, 2021); guessed domain www.inforest.com.pe did not resolve (DNS ENOTFOUND) and no own site appeared in search"
+  },
+  {
+   "country": "PK",
+   "name": "tossdown",
+   "website": "https://tossdown.com",
+   "stored": "85c5360a",
+   "reason": "left out on review: marked eligible without an order-ahead quote; still no rupee price (compare-research-6 agent 2)"
+  },
+  {
+   "country": "PK",
+   "name": "Deonde (Pakistan page)",
+   "website": "https://deonde.co/pakistan/online-ordering-and-delivery-system.shtml",
+   "stored": null,
+   "reason": "Indian white-label ordering vendor with a Pakistan page (JazzCash / Easypaisa / COD per search snippet); page answered HTTP 403, not retried"
+  },
+  {
+   "country": "PK",
+   "name": "Pakodus",
+   "website": "https://pakodus.com",
+   "stored": null,
+   "reason": "restaurant ordering software seen on directories (SoftwareSuggest, TechImply); pakodus.com failed with a self-signed certificate error"
   },
   {
    "country": "PY",

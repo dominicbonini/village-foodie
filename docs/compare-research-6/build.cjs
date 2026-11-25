@@ -91,9 +91,11 @@ const PLAN_TOTAL = [
   ['joinposter.com', 'UA', 'Starter + Poster Site add-on', 1360, '540 ₴600 ₴/міс. · Вартість — 760 ₴/міс.', 'Starter 600 ₴ + Poster Site 760 ₴ a month, billed monthly (Starter 540 ₴ a month if billed yearly)'],
   ['joinposter.kz', 'KZ', 'Starter + Poster Site add-on', 21000, '8 640 ₸9 600 ₸/мес. · Стоимость — 11 400 ₸/мес.', 'Starter 9 600 ₸ + Poster Site 11 400 ₸ a month, billed monthly (Starter 8 640 ₸ a month if billed yearly)'],
 ]
-const INCOMPLETE = [['clickparapedir.com', 'PY', 'marked eligible without the food-truck and order-ahead quotes the rule needs, and still no price (compare-research-6 agent 2)'],
+const INCOMPLETE = [['eats365pos.com', 'MO', 'marked eligible without an order-ahead quote; its Macau pricing page shows no amounts (compare-research-6 agent 2)'],
+  ['tossdown.com', 'PK', 'marked eligible without an order-ahead quote; still no rupee price (compare-research-6 agent 2)'],
+  ['clickparapedir.com', 'PY', 'marked eligible without the food-truck and order-ahead quotes the rule needs, and still no price (compare-research-6 agent 2)'],
   ['tossplace.com', 'KR', 'its own site does not state the pickup-order fee in force today (compare-research-4 agent 2, raw/KR-toss.json); the stored KR plan is marked unclear by migration 20261133'],
-  ['joinposter.kz', 'KZ', 'no order-ahead or food-truck quote recorded; its KZ price sits under an unlabelled yearly toggle'],
+  /* compare-research-6: the compare-research-3 joinposter.kz KZ exclusion removed — Poster KZ is now complete (Round 3) */
   ['delivety.com', 'UA', 'no order-ahead quote recorded; its pricing page shows no prices']]
 // Display names for NEW competitors (the agents' product labels kept in the evidence, not in the name shown on the page).
 const DISPLAY_NAME = { 'fu.do': 'Fudo', 'blinkco.io': 'Blink', 'zunapro.com': 'Zunapro', 'tossplace.com': 'Toss Place', 'iletmen.com.tr': 'İletmen',
