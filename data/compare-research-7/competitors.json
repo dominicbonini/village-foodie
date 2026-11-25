@@ -1723,6 +1723,89 @@
    "set_focus": true
   },
   {
+   "id": "331d8c47-1ef1-592c-8bc3-495b09c0d985",
+   "name": "Dinlr (Dinlr Online Order)",
+   "website": "https://www.dinlr.com/my",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-7 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: MY, SG.",
+   "check_urls": [
+    "https://www.dinlr.com/my/pricing",
+    "https://www.dinlr.com/my/online-order",
+    "https://www.dinlr.com/sg/pricing",
+    "https://www.dinlr.com/sg/online-order"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Customer can place their order and schedule their pick-up date & time directly from the online website.",
+     "source_url": "https://www.dinlr.com/my/online-order"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Customer can place their order and schedule their pick-up date & time directly from the online website.",
+     "source_url": "https://www.dinlr.com/my/online-order"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "RM 150 / MO",
+     "source_url": "https://www.dinlr.com/my/pricing"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
    "id": "27ec5274-22f9-576a-92d4-1625bd4383eb",
    "name": "Wongnai POS (formerly FoodStory)",
    "website": "https://www.wongnai.com/pos/",
@@ -1944,6 +2027,86 @@
     {
      "key": "monthly",
      "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "4a3a8b99-76b9-5493-b0d7-2beadc32235c",
+   "name": "快一點 QuickClick",
+   "website": "https://www.quickclick.cc",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-7 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: TW.",
+   "check_urls": [
+    "https://www.quickclick.cc",
+    "https://www.quickclick.cc/pricing/",
+    "https://www.quickclick.cc/wecanhelp/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "外帶 – 顧客提前預約免等待，店家減少櫃台點餐人力安心備餐",
+     "source_url": "https://www.quickclick.cc/wecanhelp/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "$1,688/月",
+     "source_url": "https://www.quickclick.cc/pricing/"
     },
     {
      "key": "perorder",
@@ -2287,6 +2450,99 @@
     {
      "key": "cardfee",
      "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "2f242939-fcdc-5914-a43d-4b0699b6abbc",
+   "name": "GoSufra",
+   "website": "https://gosufra.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-7 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: EG.",
+   "check_urls": [
+    "https://gosufra.com/en/",
+    "https://gosufra.com/en/pricing/",
+    "https://gosufra.com/en/blog/commission-free-online-ordering/",
+    "https://gosufra.com/api/plans?lang=en&country=EG",
+    "https://gosufra.com/_astro/Pricing.astro_astro_type_script_index_0_lang.S_jHFGV_.js",
+    "https://gosufra.com/_astro/pricing-region.Da9p1x_X.js"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Customers can order and collect, or order from the table with a QR menu .",
+     "source_url": "https://gosufra.com/en/blog/commission-free-online-ordering/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "The order lands on the POS and on the kitchen display at once, with prep timers and Rush and VIP lanes.",
+     "source_url": "https://gosufra.com/en/"
+    },
+    {
+     "key": "offline",
+     "value": "yes",
+     "quote": "POS, kitchen display, online ordering, delivery, inventory, recipe costing, HR, payroll and full double-entry accounting — connected in real time, working offline",
+     "source_url": "https://gosufra.com/en/"
+    },
+    {
+     "key": "walkup",
+     "value": "yes",
+     "quote": "Dine-in, takeaway and delivery in one flow",
+     "source_url": "https://gosufra.com/en/"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Monthly or annual billing · EGP in Egypt, USD elsewhere",
+     "source_url": "https://gosufra.com/en/pricing/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "A guest orders from your restaurant's own app or website — no marketplace in the middle, no commission taken off the bill.",
+     "source_url": "https://gosufra.com/en/"
+    },
+    {
+     "key": "cardfee",
+     "value": "partial",
+     "quote": "Paymob and Fawry for Egyptian pounds — you pay the gateway’s normal fee, with no extra commission from GoSufra.",
+     "source_url": "https://gosufra.com/en/blog/commission-free-online-ordering/"
     }
    ],
    "set_focus": true
@@ -4174,6 +4430,72 @@
    "notes": "compare-research-7, read 25 Nov 2026: \"KWD 48.3 /mo\" — Toggle 'Quarterly / Yearly Save Big'. In the page HTML 48.3 sits in the 'monthly-content' block (the Quarterly option, billed quarterly) and 'KWD 45.7 /mo' in the 'yearly-content' block (billed yearly); the visible label under both reads 'Billed Annually'. Advanced lists 'Foodics Online Web Creation' as included. Basic Bundle (KWD 29 /mo, yearly 27.4) has 'Foodics Online Web' only as an unpriced optional add-on, so Advanced is the cheapest priced plan with the ordering website. Pickup wording is on /online/ (compare-research-2, not re-read today)."
   },
   {
+   "id": "2dbda8de-6e26-5e18-b45b-4c4960a342d8",
+   "competitor_id": "331d8c47-1ef1-592c-8bc3-495b09c0d985",
+   "country_code": "MY",
+   "plan_name": "Dinlr Waiter + Dinlr Online Order",
+   "currency": "MYR",
+   "price_hidden": false,
+   "monthly_minor": 40000,
+   "monthly_major": 400,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.dinlr.com/my/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"Dinlr Waiter 1 Location. First Device. RM 150 / MO … Dinlr Online Order Per Location. RM 150 / MO Billed in MYR annually\" — Module on a paid base plan → base + module. Monthly billing: Waiter 'RM200 per month billed monthly' (page FAQ) + Online Order monthly 200 (the page's own HTML: '<div class=\"pricing\" per_price=\"150\" monthly_per_price=\"200\">' for Online Order, shown when the Monthly/Annually toggle is set to Monthly) = RM 400 / month. Billed annually: RM 150 + RM 150 = RM 300 / month. FAQ: 'The smallest viable setup is a single Dinlr Waiter licence … Self-ordering, kitchen display, online ordering and loyalty can be added'. Found via Exabytes' MY listicle (finding only)."
+  },
+  {
+   "id": "52d4259a-4786-5013-8520-3a89ff1f7cc7",
+   "competitor_id": "331d8c47-1ef1-592c-8bc3-495b09c0d985",
+   "country_code": "SG",
+   "plan_name": "Dinlr Waiter + Dinlr Online Order",
+   "currency": "SGD",
+   "price_hidden": false,
+   "monthly_minor": 19800,
+   "monthly_major": 198,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.dinlr.com/sg/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"In Singapore, Dinlr Waiter - the core iPad POS - costs S$89 per month per device billed annually, or S$99 per month billed monthly.\" — Module on a paid base plan → base + module. Monthly billing: Waiter S$99 (FAQ quote) + Online Order monthly 99 (page HTML for Online Order: '<div class=\"pricing\" per_price=\"89\" monthly_per_price=\"99\">', 'S$', 'Billed in SGD annually' by default) = S$198/month. Billed annually: S$89 + S$89 = S$178/month. FAQ: 'Self-ordering, kitchen display, online ordering and loyalty can be added later without migrating or reconfiguring the POS.' Read from raw HTML (curl), one request per page."
+  },
+  {
    "id": "0974a96c-7de7-5ac0-ae2e-8e590a200f2e",
    "competitor_id": "27ec5274-22f9-576a-92d4-1625bd4383eb",
    "country_code": "TH",
@@ -4271,6 +4593,39 @@
    "verified_at": null,
    "verified_by": null,
    "notes": "compare-research-7, read 25 Nov 2026: \"999 ₺/ ay\" — Package lines: 'Web & Mobil Sipariş Sayfası', 'Paket servis / gel-al'. Monthly/yearly toggle (29% off yearly; yearly amounts not listed). VAT: the home page says '999₺ + KDV / ay’dan başlayan fiyatlarla' (excl. KDV); the price page itself shows no '+ KDV'. komisyonsuz.com 301-redirects to partner.komisyonsuz.com (its own host)."
+  },
+  {
+   "id": "f8961c2f-5512-5c34-8a14-45857834e146",
+   "competitor_id": "4a3a8b99-76b9-5493-b0d7-2beadc32235c",
+   "country_code": "TW",
+   "plan_name": "線上點餐方案",
+   "currency": "TWD",
+   "price_hidden": false,
+   "monthly_minor": 168800,
+   "monthly_major": 1688,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.quickclick.cc/pricing/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"$1,688/月\" — Price shown as '$1,688/月' with no currency code (raw HTML has no NT$ / 新台幣 / TWD / 元/月); recorded as TWD because the site is Taiwan-only Chinese — reviewer to decide under the '$ only' rule. Other plans: 智慧點餐方案 '$2,988/月', 智慧結帳方案 '$2,988/月', 智慧店長方案 '$3,988/月' (all include LINE點餐, 線上點餐). No fee % stated."
   },
   {
    "id": "70ac58fe-e066-5f4c-bba0-2b87836ade9b",
@@ -4601,6 +4956,105 @@
    "verified_at": null,
    "verified_by": null,
    "notes": "compare-research-7, read 25 Nov 2026: \"Everything included $89 $79 CAD USD per location, per month\" — read today (static HTML: '&#36;89 &#36;79 CAD USD per location, per month' with a CAD/USD toggle; $89 = CAD, $79 = USD). 'no setup fee and 0% commission'; 30-day free trial. Home page also says 'Made in Ottawa, on a full stomach.' and 'Cash or card at pickup works with no setup.'"
+  },
+  {
+   "id": "985efdde-8980-508f-ac8e-4039a1b8b986",
+   "competitor_id": "2f242939-fcdc-5914-a43d-4b0699b6abbc",
+   "country_code": "EG",
+   "plan_name": "Starter",
+   "currency": "EGP",
+   "price_hidden": false,
+   "monthly_minor": 30000,
+   "monthly_major": 300,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://gosufra.com/api/plans?lang=en&country=EG",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"\"name\": \"Starter\", \"price\": 300.0, \"currency\": \"EGP\", \"billingCycle\": \"Monthly\"\" — Starter: 1 branch, 'maxOrdersPerMonth': 150 in the endpoint; the blog says 'The ordering website is on Starter , the entry plan, for one branch and up to 500 orders a month.' (order cap differs: 150 vs 500). Endpoint features for Starter don't list the ordering website; 'Powered by GoSufra branding'."
+  },
+  {
+   "id": "5e26569d-a572-5f01-94b4-431cb84bc404",
+   "competitor_id": "2f242939-fcdc-5914-a43d-4b0699b6abbc",
+   "country_code": "EG",
+   "plan_name": "Basic",
+   "currency": "EGP",
+   "price_hidden": false,
+   "monthly_minor": 49900,
+   "monthly_major": 499,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://gosufra.com/api/plans?lang=en&country=EG",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"\"name\": \"Basic\", \"price\": 499.0, \"currency\": \"EGP\", \"billingCycle\": \"Monthly\"\" — adds KDS, unlimited orders, no GoSufra branding"
+  },
+  {
+   "id": "19137da2-3373-51b4-96e9-9ae021837693",
+   "competitor_id": "2f242939-fcdc-5914-a43d-4b0699b6abbc",
+   "country_code": "EG",
+   "plan_name": "Growth",
+   "currency": "EGP",
+   "price_hidden": false,
+   "monthly_minor": 99900,
+   "monthly_major": 999,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://gosufra.com/api/plans?lang=en&country=EG",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-7, read 25 Nov 2026: \"\"name\": \"Growth\", \"price\": 999.0, \"currency\": \"EGP\", \"billingCycle\": \"Monthly\"\" — endpoint features: 'All Apps (POS + KDS + Waiter + Driver + Customer)' — the first plan that names the Customer (ordering) app explicitly"
   }
  ],
  "entries": [
@@ -4985,6 +5439,26 @@
    "verified_by": null
   },
   {
+   "id": "1aa7f08b-d381-5ed2-9ad3-fec63b6334b6",
+   "country_code": "MY",
+   "competitor_id": "331d8c47-1ef1-592c-8bc3-495b09c0d985",
+   "primary_plan_id": "2dbda8de-6e26-5e18-b45b-4c4960a342d8",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "d5ad2174-ba07-57b4-96e9-1c581e6ad416",
+   "country_code": "SG",
+   "competitor_id": "331d8c47-1ef1-592c-8bc3-495b09c0d985",
+   "primary_plan_id": "52d4259a-4786-5013-8520-3a89ff1f7cc7",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
    "id": "2b0ea53b-371a-5e24-9db9-a63284c75be2",
    "country_code": "TH",
    "competitor_id": "27ec5274-22f9-576a-92d4-1625bd4383eb",
@@ -5009,6 +5483,16 @@
    "country_code": "TW",
    "competitor_id": "96772514-dc2a-5184-92ac-7a753921d1b2",
    "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "93a8e314-e122-521e-b6ab-74ac89f88157",
+   "country_code": "TW",
+   "competitor_id": "4a3a8b99-76b9-5493-b0d7-2beadc32235c",
+   "primary_plan_id": "f8961c2f-5512-5c34-8a14-45857834e146",
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -5069,6 +5553,16 @@
    "country_code": "CA",
    "competitor_id": "5143bd80-a465-5643-928a-3a70bf3c149f",
    "primary_plan_id": "d7b1a7c2-4fce-5111-a9cd-18e16cb1bf7e",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "a21d0cee-6e16-5818-b756-2bfe8a43bccb",
+   "country_code": "EG",
+   "competitor_id": "2f242939-fcdc-5914-a43d-4b0699b6abbc",
+   "primary_plan_id": null,
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -5520,6 +6014,27 @@
    ]
   },
   {
+   "name": "Dinlr (Dinlr Online Order)",
+   "evidence": [
+    {
+     "country": "MY",
+     "order_quote": "Customer can place their order and schedule their pick-up date & time directly from the online website.",
+     "order_url": "https://www.dinlr.com/my/online-order",
+     "country_quote": "Billed in MYR annually",
+     "country_url": "https://www.dinlr.com/my/pricing",
+     "reason": "Singapore-based restaurant POS with a Malaysia site in MYR; Dinlr Online Order lets customers order on the restaurant's website and schedule a pick-up date & time; Online Order is a module added to the Dinlr Waiter POS licence, both priced on /my/pricing"
+    },
+    {
+     "country": "SG",
+     "order_quote": "Customer can place their order and schedule their pick-up date & time directly from the online website.",
+     "order_url": "https://www.dinlr.com/sg/online-order",
+     "country_quote": "Billed in SGD annually",
+     "country_url": "https://www.dinlr.com/sg/pricing",
+     "reason": "Singapore restaurant POS; Dinlr Online Order lets customers order on the restaurant's website and schedule a pick-up date & time; module added to the Dinlr Waiter POS licence, both priced in S$ on /sg/pricing"
+    }
+   ]
+  },
+  {
    "name": "Wongnai POS (formerly FoodStory)",
    "evidence": [
     {
@@ -5553,6 +6068,19 @@
      "order_quote": "預定自取外帶",
      "order_url": "https://www.ichefpos.com/zh-tw/pricing",
      "reason": "lists '預定自取外帶' (scheduled self-pickup takeaway) but online takeaway is an unpriced add-on on top of the paid POS plan → base + module not both quoted → unpriced"
+    }
+   ]
+  },
+  {
+   "name": "快一點 QuickClick",
+   "evidence": [
+    {
+     "country": "TW",
+     "order_quote": "外帶 – 顧客提前預約免等待，店家減少櫃台點餐人力安心備餐",
+     "order_url": "https://www.quickclick.cc/wecanhelp/",
+     "country_quote": "$1,688/月",
+     "country_url": "https://www.quickclick.cc/pricing/",
+     "reason": "Taiwanese LINE / online ordering for takeaway booked ahead ('外帶 – 顧客提前預約免等待'); every plan on its pricing page includes LINE點餐 and 線上點餐; cheapest '線上點餐方案' '$1,688/月' — BUT the amount is in bare '$' (no NT$ / 元 / TWD anywhere on the page), the same 'currency unclear' issue as Blink"
     }
    ]
   },
@@ -5623,6 +6151,19 @@
      "country_quote": "Canadian locations pay in CAD. Locations in the US and everywhere else pay in USD.",
      "country_url": "https://ordereatrepeat.com/pricing",
      "reason": "Ottawa-made commission-free restaurant ordering page with pickup and scheduled orders; one CAD price per location on its own pricing page (re-read today). Stored and eligible since compare-research-1 but not among CA's two counted tools — it makes 3"
+    }
+   ]
+  },
+  {
+   "name": "GoSufra",
+   "evidence": [
+    {
+     "country": "EG",
+     "order_quote": "Customers can order and collect, or order from the table with a QR menu .",
+     "order_url": "https://gosufra.com/en/blog/commission-free-online-ordering/",
+     "country_quote": "Monthly or annual billing · EGP in Egypt, USD elsewhere",
+     "country_url": "https://gosufra.com/en/pricing/",
+     "reason": "Egyptian (Giza) restaurant OS with its own commission-free ordering website: customers 'order and collect' (pickup), delivery or table; EGP prices for Egypt from its pricing page's own plans endpoint. BORDERLINE on two points: (a) the pickup sentence has no chosen-time wording; (b) the EGP amounts are script-loaded — the pricing page shows them only to visitors in Egypt (it calls /api/plans with country=EG), so the quote is the endpoint's JSON, as in Block 3"
     }
    ]
   }
@@ -5746,6 +6287,42 @@
    "plans": []
   },
   {
+   "country": "EE",
+   "name": "Snakk (app.snakk.ee)",
+   "website": "https://app.snakk.ee",
+   "stored": null,
+   "reason": "TalTech student project: table-QR ordering only. Not opened.",
+   "url": "https://app.snakk.ee",
+   "plans": []
+  },
+  {
+   "country": "EE",
+   "name": "Erply",
+   "website": "https://erply.ee",
+   "stored": null,
+   "reason": "Estonian retail/restaurant POS; its pages in search mention only connecting a webshop by API ('start a sale online and complete it in the store'), no own ordering product or price. Not opened.",
+   "url": "https://erply.ee",
+   "plans": []
+  },
+  {
+   "country": "EE",
+   "name": "Fudy",
+   "website": "https://news.err.ee/1608732007/wolt-bolt-food-courier-apps-say-do-not-fear-new-competitor-fudy",
+   "stored": null,
+   "reason": "Estonian consumer delivery app (Wolt/Bolt competitor, ending restaurant delivery per ERR) - marketplace, never counts. Not opened.",
+   "url": "https://news.err.ee/1608732007/wolt-bolt-food-courier-apps-say-do-not-fear-new-competitor-fudy",
+   "plans": []
+  },
+  {
+   "country": "EE",
+   "name": "Ordly",
+   "website": "https://gust.com/companies/ordly",
+   "stored": null,
+   "reason": "Tallinn growth-management platform for restaurants and hotels (directory listing) - not an ordering tool shown. Not opened.",
+   "url": "https://gust.com/companies/ordly",
+   "plans": []
+  },
+  {
    "country": "GR",
    "name": "Wiiz Eat",
    "website": "https://wiizeat.com",
@@ -5809,6 +6386,15 @@
    "plans": []
   },
   {
+   "country": "NO",
+   "name": "Unnamed 'bestillingssystem' for gatekjøkken (FINN ad)",
+   "website": "https://www.finn.no/recommerce/forsale/item/373209137",
+   "stored": null,
+   "reason": "Classified ad on FINN for a takeaway ordering system for street-food kitchens (search snippets: 850 kr per month, no commission); the ad names no company or website - not a vendor's own site.",
+   "url": "https://www.finn.no/recommerce/forsale/item/373209137",
+   "plans": []
+  },
+  {
    "country": "PT",
    "name": "Kitch",
    "website": "https://observador.pt/2020/11/20/quer-ter-um-servico-de-entrega-de-refeicoes-so-do-seu-restaurante-com-o-kitch-tech-consegue/",
@@ -5860,6 +6446,24 @@
    "stored": null,
    "reason": "Cloud bookkeeping with an ESIR fiscal-invoice module; no customer online ordering. Not opened.",
    "url": "https://rs-minimax.knowledgeowl.com",
+   "plans": []
+  },
+  {
+   "country": "UA",
+   "name": "Gotovo",
+   "website": "https://apps.apple.com/hk/app/gotovo/id6447965164",
+   "stored": null,
+   "reason": "Ukrainian consumer app for ordering ahead with pickup ('самовинос') and table QR across venues (App Store listing; developer an individual, Oleksandr Bardashevskyi); no own site, no venue pricing found. Not opened.",
+   "url": "https://apps.apple.com/hk/app/gotovo/id6447965164",
+   "plans": []
+  },
+  {
+   "country": "UA",
+   "name": "Jitmeal",
+   "website": "https://jitmeal.com/uk/",
+   "stored": "2a0e471f",
+   "reason": "Estonian food-truck-friendly till + web shop (counted in EE) has a Ukrainian-language site, but its Ukrainian pricing page shows only € ('Старт': '29 € + ПДВ / місяць', for 'фудтраків і кафе з однією точкою') and names no Ukraine; no UAH price, so it does not count for UA.",
+   "url": "https://jitmeal.com/uk/pricing/",
    "plans": []
   },
   {
@@ -5989,6 +6593,24 @@
    "plans": []
   },
   {
+   "country": "SG",
+   "name": "Atlas (atlas.kitchen)",
+   "website": "https://atlas.kitchen",
+   "stored": null,
+   "reason": "Singapore F&B POS ('one system for Singapore F&B teams'); 'Plans from $79/month.' in bare '$', and 'Atlas Online and Aggregator Optional direct ordering and food-platform sync' is an optional add-on with no price; no pickup / pre-order sentence on the page (self-pickup only as an order-status screen, search snippet) → module unpriced, currency unmarked",
+   "url": "https://atlas.kitchen/restaurant-pos-singapore",
+   "plans": []
+  },
+  {
+   "country": "SG",
+   "name": "Ser.vi",
+   "website": "https://ser.vi",
+   "stored": null,
+   "reason": "/pricing shows no plans, prices or pickup wording; footer '© 2019 Ser.vi Worldwide LLC, Ser.vi BV.' — no Singapore presence",
+   "url": "https://ser.vi/pricing",
+   "plans": []
+  },
+  {
    "country": "TH",
    "name": "Wongnai POS Order & Pay",
    "website": "https://www.wongnai.com/pos-articles/wongnaipos-order-pay",
@@ -6013,6 +6635,24 @@
    "stored": null,
    "reason": "Taiwanese POS; home page mentions '從櫃檯打單到線上點餐，進單1秒直達各站' but no pickup / pick-up-time wording and no prices (only '大省方案72折起' in a contact form; buttons go to /contact)",
    "url": "https://www.weiby.tw",
+   "plans": []
+  },
+  {
+   "country": "TW",
+   "name": "點點食",
+   "website": null,
+   "stored": null,
+   "reason": "no own site found: the only pages are LINE OA showcase pages of a POS reseller (凌成 / VTEAM POS, lc-v168.com) and news; '免月租' claim is the reseller's, not quotable from a vendor site",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "ZA",
+   "name": "Feasty",
+   "website": "https://feasty.co",
+   "stored": null,
+   "reason": "food-truck / cart / stall platform with order-and-pick-up ('Customers scan, order from their phone, and pick up when it's ready.'), free ('No subscriptions. No setup fees.', 'Free forever. No card required.'; card fees 'as low as ~1.6%', catering '1% fee'), but its own site names no country at all — no South Africa / ZA / Rand / R — and no currency; it does not show it sells in ZA",
+   "url": "https://feasty.co",
    "plans": []
   },
   {
@@ -6061,6 +6701,38 @@
    "plans": []
   },
   {
+   "country": "IN",
+   "name": "Kravon",
+   "website": "https://www.kravon.in",
+   "stored": null,
+   "reason": "Indian restaurant OS with direct ordering ('Growth ₹4,999 /month Full direct ordering channel.' … 'Delivery + pickup fulfillment'), but it is pre-launch: every plan button is 'Get Early Access', 'No setup fees during early access', 'During early access, the founder sets everything up with you directly', and the only restaurant shown is 'A real demo restaurant running on Kravon right now.' — no real customers (V16.38) -> not counted. If the reviewer accepts it, Growth ₹4,999/month would make IN 3",
+   "url": "https://www.kravon.in/",
+   "plans": [
+    {
+     "plan_name": "Growth",
+     "currency": "INR",
+     "price_major": 4999,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "Growth ₹4,999 /month Full direct ordering channel.",
+     "url": "https://www.kravon.in/",
+     "note": "Starter ₹2,499/month is presence + WhatsApp ordering; Pro ₹8,999/month. Recorded for reference only (not_relevant: early access, no real customers)."
+    }
+   ]
+  },
+  {
+   "country": "IN",
+   "name": "chotu",
+   "website": "https://owner.chotu.com",
+   "stored": null,
+   "reason": "Indian WhatsApp ordering for neighbourhood shops ('Start taking orders on WhatsApp now', 'Trusted by thousands of shops across India'); generic shops, no pickup / order-ahead wording and no price on its owner page",
+   "url": "https://owner.chotu.com/",
+   "plans": []
+  },
+  {
    "country": "NG",
    "name": "eRestaurant.ng",
    "website": "https://erestaurant.ng",
@@ -6102,6 +6774,13 @@
    "reason": "Czech delivery-ordering system (named on Dotykačka's integrations page); https://www.speedlo.cz/cenik returned only the domain name - unreadable."
   },
   {
+   "country": "EE",
+   "name": "resOS (takeaway)",
+   "website": "https://resos.com",
+   "stored": null,
+   "reason": "Danish booking system with a takeaway module; https://resos.com/takeaway-pricing/ answered HTTP 410 Gone (unreadable in NO earlier too)."
+  },
+  {
    "country": "KZ",
    "name": "FoodSoul",
    "website": "https://foodsoul.pro",
@@ -6114,6 +6793,13 @@
    "website": "https://born-website.pages.dev",
    "stored": null,
    "reason": "Malta web agency writing about own ordering systems for Maltese restaurants (search result only); its page is on a throwaway host (pages.dev) that did not resolve (ENOTFOUND). Not relevant under the throwaway-host rule anyway."
+  },
+  {
+   "country": "UA",
+   "name": "Delivety",
+   "website": "https://delivety.com/uk/",
+   "stored": null,
+   "reason": "Takeaway ordering system with a Ukrainian site and scheduled pickup slots (compare-research-2: USD only, '$9 for up to 1,000 orders'). Its Ukrainian pricing page (https://delivety.com/uk/pricing) shows 'Тарифні плани' with no amounts; the page HTML loads the plans in an iframe (https://delivety.com/public/uk/plans) that is a script-only app shell (no amounts in HTML; no plans endpoint found in its main script). No ₴ price readable; 'UKR' only as a language flag."
   },
   {
    "country": "HK",
@@ -6156,6 +6842,13 @@
    "website": "https://www.eats365pos.com/sg",
    "stored": "647628e6",
    "reason": "left out on review: marked eligible without an order-ahead quote (compare-research-7 agent 2)"
+  },
+  {
+   "country": "SG",
+   "name": "Tablevibe",
+   "website": "https://www.tablevibe.co",
+   "stored": null,
+   "reason": "/pricing answered HTTP 401 (not retried); Singapore webshop for dine-in / pickup / delivery seen only in search"
   },
   {
    "country": "TH",
