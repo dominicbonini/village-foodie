@@ -1,0 +1,162 @@
+{
+ "country": "SA",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "نظام نقاط بيع للمطاعم مع متجر طلبات أونلاين استلام من الفرع الأسعار ريال شهرياً السعودية باقات",
+  "Saudi Arabia restaurant branded ordering website pickup scheduled orders pricing \"SAR\" per month plan"
+ ],
+ "vendors": [
+  {
+   "name": "Linkin1 (E-Menu, Linkin1 PRO)",
+   "website": "https://linkin1.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Saudi restaurant e-menu with online ordering: customers order from the menu and choose curbside pickup, delivery or dine-in; SAR prices, Saudi VAT",
+   "eligibility": {
+    "order_quote": "Your customer can order over WhatsApp, or order directly from the menu and choose curbside pickup, home delivery or dine-in.",
+    "order_url": "https://linkin1.com/en/e-menu",
+    "country_quote": "Try the E-Menu free with Linkin1 PRO, or subscribe directly from SAR 59 a month.",
+    "country_url": "https://linkin1.com/en/e-menu"
+   },
+   "plans": [
+    {
+     "plan_name": "Linkin1 PRO (E-Menu)",
+     "currency": "SAR",
+     "price_major": 59,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 1.5,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "Try the E-Menu free with Linkin1 PRO, or subscribe directly from SAR 59 a month.",
+     "url": "https://linkin1.com/en/e-menu",
+     "note": "Monthly-billing price. Yearly: SAR 479 a year (page reader paraphrase of the FAQ sentence, which also says prices exclude VAT, 'which applies to customers inside Saudi Arabia only'). 1.5% selling fee only on orders paid online; cash on delivery no fee. 'no setup fees' (reader excerpt). CAUTION for reviewer: ordering ahead is shown as online order + curbside pickup (click and collect from the car); no 'schedule'/'advance' wording. Company: Saudi indicators (SAR, Saudi VAT, +966, CR number), no explicit statement. Linkin1 is also a link-in-bio product; the E-Menu is its restaurant ordering module."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Your customer can order over WhatsApp, or order directly from the menu and choose curbside pickup, home delivery or dine-in.",
+     "url": "https://linkin1.com/en/e-menu"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "yes",
+     "quote": "Your customer can order over WhatsApp, or order directly from the menu and choose curbside pickup, home delivery or dine-in.",
+     "url": "https://linkin1.com/en/e-menu"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Try the E-Menu free with Linkin1 PRO, or subscribe directly from SAR 59 a month.",
+     "url": "https://linkin1.com/en/e-menu"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "Orders paid online carry a selling fee of just 1.5%, and cash on delivery has no fees at all.",
+     "url": "https://linkin1.com/en/e-menu"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://linkin1.com/en/e-menu"
+   ]
+  },
+  {
+   "name": "Qoyod Flavours (قيود فليفرز)",
+   "website": "https://www.qoyod.com/q-flavours/",
+   "stored_id_prefix": null,
+   "focus": "pos",
+   "verdict": "not_relevant",
+   "reason": "restaurant POS linked to delivery apps; no own online-ordering store or pickup shown (search result only, site not opened)",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": []
+  },
+  {
+   "name": "Deonde",
+   "website": "https://deonde.co",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "Saudi page https://deonde.co/saudi-arabia/online-ordering-and-delivery-system.shtml returned HTTP 403; not retried",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": []
+  },
+  {
+   "name": "Taker (Taker Channels)",
+   "website": "https://taker.io",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Saudi-based branded web/app ordering; no prices on its site (taker.io/pricing 404, homepage no price) — read for QA, same today",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://taker.io/pricing",
+    "https://taker.io"
+   ]
+  },
+  {
+   "name": "Take App",
+   "website": "https://www.take.app",
+   "stored_id_prefix": "2a58410a",
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "its countries page does not list Saudi Arabia (Middle East: Lebanon, Iraq only); USD prices",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.take.app/countries"
+   ]
+  }
+ ],
+ "notes": "SA count now: 2 if Linkin1 is accepted (Ordable SAR + Linkin1 SAR 59/month excl. VAT + 1.5% on online-paid orders). Linkin1 caveat: click and collect is shown as online order + curbside pickup; no scheduled/advance wording. Also seen in searches, not opened: Weevi (blog pages, no price), Salla/Zid (generic e-commerce, excluded), Shopify POS (USD, generic), Blink (not re-read: '$' only), Kudu/Shawarmer/The Chefz (single-restaurant apps or marketplaces). Foodics KSA still has no currency mark (not re-read)."
+}

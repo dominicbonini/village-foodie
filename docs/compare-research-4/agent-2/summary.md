@@ -18,3 +18,14 @@ count now: 0 (1 if the 2025 "0원" offer is accepted)
 | Grubtech | nearest_local | not_relevant (quote only) | — | https://grubtech.com |
 
 count now: 1 (Ordable) — nothing else in QAR found.
+
+## SA (SAR)
+| vendor | focus | verdict | price | URL |
+|---|---|---|---|---|
+| Linkin1 (E-Menu) | nearest_local | eligible (online order + curbside pickup; no "schedule" wording) | SAR 59/month excl. VAT + 1.5 % on online-paid orders (SAR 479/year) | https://linkin1.com/en/e-menu |
+| Qoyod Flavours | pos | not_relevant (no online store) | — | https://www.qoyod.com/q-flavours/ |
+| Deonde | nearest_local | unreadable (403) | — | https://deonde.co |
+| Taker | nearest_local | not_relevant (no price) | — | https://taker.io |
+| Take App | nearest_local | not_relevant (SA not listed) | — | https://www.take.app/countries |
+
+count now: 2 (Ordable + Linkin1, if Linkin1's curbside pickup is accepted as click and collect)
