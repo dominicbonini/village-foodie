@@ -4,7 +4,9 @@
  "searches": [
   "Singapore F&B online ordering website self-collection pre-order commission-free pricing \"S$\" \"/month\" POS integration hawker cafe",
   "Singapore home-based food business bakery pre-order ordering page pickup slots plan S$ per month local startup",
-  "FoodZaps OR Aptsys OR Raptor POS Singapore online ordering self-collection pricing S$ per month F&B"
+  "FoodZaps OR Aptsys OR Raptor POS Singapore online ordering self-collection pricing S$ per month F&B",
+  "food truck Singapore pre-order app vendors order ahead pickup pop-up market stall ordering platform",
+  "Feasty food truck management platform QR ordering pricing"
  ],
  "vendors": [
   {
@@ -79,5 +81,5 @@
    ]
   }
  ],
- "notes": "SG count now: 2 (Klikit, Oddle) — unchanged. Qashier (stored) has a per-day price only (unclear); Eats365 SG unpriced; KPay no pickup ordering; Cococart '$' only and a generic store builder. Searches otherwise: Eats365 / Klikit / KPay blogs (vendor comparison posts, not sources), DBS / IMDA / RAS / GoBusiness pages (programmes), getapp.sg 'Nexordr' listing (directory, own site not found), SFA / HDB home-business rules. Take App (Singapore company) is USD only. Stopped after ~5 vendor sites with nothing new eligible and priced. Extra round: FoodZaps (USD only, no pickup wording) not relevant; Aptsys seen only in GoBusiness PSG annex PDFs (government catalogue, 2022–23, not a source)."
+ "notes": "SG count now: 2 (Klikit, Oddle) — unchanged. Qashier (stored) has a per-day price only (unclear); Eats365 SG unpriced; KPay no pickup ordering; Cococart '$' only and a generic store builder. Searches otherwise: Eats365 / Klikit / KPay blogs (vendor comparison posts, not sources), DBS / IMDA / RAS / GoBusiness pages (programmes), getapp.sg 'Nexordr' listing (directory, own site not found), SFA / HDB home-business rules. Take App (Singapore company) is USD only. Stopped after ~5 vendor sites with nothing new eligible and priced. Extra round: FoodZaps (USD only, no pickup wording) not relevant; Aptsys seen only in GoBusiness PSG annex PDFs (government catalogue, 2022–23, not a source). PASS 2 (food-truck only): the food-truck search found Feasty (Capterra SG listing only; QuickBooks / TurboTax tax exports and US$ pricing → a US tool, agent 3's region; own site not opened), StreetStop and STREAT Food (App Store listings naming no country; no own site found), Livingmenu (pre-order delivery platform = marketplace), YQueue (multi-merchant QR pre-order app = marketplace), WhyQ / GrabFood pre-order / FairPrice Kopitiam self-collect (marketplaces). No Singapore food-truck ordering tool with an own site and S$ price exists in the results. Count stays 2."
 }
