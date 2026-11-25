@@ -1,0 +1,40 @@
+{
+  "country": "MT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Malta online ordering system for restaurants takeaway \"click and collect\" pricing per month Maltese company 2026",
+    "Malta restaurant POS software company online ordering website pickup module € price Gozo hospitality",
+    "\"Malta\" commission-free ordering platform restaurants own website app \"made in Malta\" OR \"Maltese startup\" takeaway pickup sign up restaurant",
+    "Malta POS dealer \"online ordering\" restaurants \"Malta\" EPOS Mosta OR Birkirkara OR Qormi OR Naxxar click collect web orders",
+    "Sixteen Malta Storekit order and pay restaurants price"
+  ],
+  "vendors": [
+    {
+      "name": "Born Digital Studio",
+      "website": "https://born-website.pages.dev",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Malta web agency writing about own ordering systems for Maltese restaurants (search result only); its page is on a throwaway host (pages.dev) that did not resolve (ENOTFOUND). Not relevant under the throwaway-host rule anyway.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://born-website.pages.dev/insights/ecommerce-malta-restaurants/"
+      ]
+    },
+    {
+      "name": "Sixteen Ltd",
+      "website": "https://storekit.com/strategic-partner/sixteen",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Maltese reseller of Lightspeed and Storekit (Storekit's own partner page); a reseller, not a vendor with its own ordering product. Storekit itself still has £ prices only (see V-Storekit.json). Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "MT counts FoxiFood only. Earlier rounds already rejected FoxiFood(counted), H360 ORDER, Time To Eat Malta, Storekit, Order Tiger, Zaype, SumUp, Maltix, UpMenu, MENU.mt, Choice, Flipdish, Wiiz Eat, Deliwee, KantinApp - not re-read. Five new searches (English; the Maltese-language search was done in compare-research-4) found only marketplaces (Wolt, Bolt Food), directories, global tools with no Malta page (Restomax, Eats365, Lightspeed, Square, QikServe, Foodhub, EasyOrder, Jamezz - none shows it sells in Malta; Lightspeed/Square/Eats365 owned by other agents), a Malta agency on a dead throwaway host, and Storekit's Maltese reseller Sixteen. Storekit re-checked today: £ only. Nothing eligible found; MT stays at 1 (strict rule)."
+}
