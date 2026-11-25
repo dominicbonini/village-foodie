@@ -202,3 +202,8 @@ count now: 0
 
 None exists: no ordering tool or app shows Tuvalu coverage.
 count now: 0
+
+## CK (NZD)
+
+None exists: Uber Kai's (Facebook delivery service), consumer apps with no Cook Islands coverage, travel listings.
+count now: 0
