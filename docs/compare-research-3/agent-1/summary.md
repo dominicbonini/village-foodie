@@ -33,3 +33,13 @@ includes_online_ordering: **false** (not shown). The Express plan's list of what
 ## UA decision check: Poster Business (0802a7c8)
 
 Shown '1 530 ₴1 700 ₴/міс.' with only the toggle 'Оплата за рік'. billed: **unclear** (most likely yearly: 1 530 = 1 700 × 0.9). The page states no monthly-billing price and no yearly total, so true_monthly_major is null. The crossed-out 1 700 ₴ is the likely monthly-billed figure. https://joinposter.com/ua/pricing
+
+## IS (Iceland, ISK)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Vitrina | nearest_local | already counted | ISK | — |
+| myPOS | pos | not_relevant: card terminals only, no ordering | — | https://www.mypos.com/is-is/industries/posi-fyrir-mat-og-drykkjufyrirtaeki |
+| Subger | — | not_relevant: comparison site | — | https://subger.com/is/food-delivery/restaurant-takeout |
+
+Found no other tool priced in ISK (Dineout and Stefna show no price; FoxiFood is EUR only). count now: 1
