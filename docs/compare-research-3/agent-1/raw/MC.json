@@ -1,0 +1,20 @@
+{
+  "country": "MC",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "logiciel commande en ligne click and collect restaurant \"France et Monaco\" OR \"disponible à Monaco\" prix par mois",
+    "\"Monaco\" restaurant online ordering pickup pre-order app Monte-Carlo commande à emporter logiciel abonnement €",
+    "SumUp Monaco commerçants disponible Monaco boutique en ligne"
+  ],
+  "vendors": [
+    { "name": "EatIn Monaco", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Monaco consumer delivery app (marketplace). Seen via search (App Store) only.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] },
+    { "name": "Mr Room Service", "website": "https://mrroomservice.fr", "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Consumer delivery marketplace ('#1 delivery service in Monaco' per its App Store listing). Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] },
+    { "name": "UpMenu", "website": "https://www.upmenu.com", "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Search shows USD prices only ($49/$89/$169) and no Monaco page or presence. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] },
+    { "name": "SumUp", "website": "https://www.sumup.com", "stored_id_prefix": "d0eb16fa", "focus": "pos", "verdict": "not_relevant",
+      "reason": "No Monaco country site in search results (only fr-fr, fr-be, fr-lu, fr-ch); generic web shop anyway. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] }
+  ],
+  "notes": "Nothing eligible exists that I could find. No tool's own site shows it sells in Monaco with online ordering ahead and an EUR price (strict rule; no neighbour rule for MC). French tools in the results (Lightspeed, LivePepper, Click Eat, Eatself, Innovorder, Fiducial Pointex, Tabesto) are priced in EUR but none showed a Monaco presence in the search results. Not opened, so not ruled out definitively: a 'France et Monaco' search phrase found none. Détec'table is booking only. Count: 0."
+}

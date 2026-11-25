@@ -63,3 +63,7 @@ Found no other tool priced in RSD. count now: 1
 | Asila (new) | nearest_local | eligible, borderline (online takeaway ordering, no time-slot wording) | 300 MAD / month (3 000 MAD / year) | https://asila.ma/ |
 
 count now: 2 (1 if Dominic rejects Asila's borderline order-ahead evidence)
+
+## MC (Monaco, EUR) — strict
+
+None found. EatIn Monaco and Mr Room Service are marketplaces, UpMenu shows USD only and no Monaco page, and SumUp has no Monaco site. French EUR tools showed no Monaco presence in search. count now: 0
