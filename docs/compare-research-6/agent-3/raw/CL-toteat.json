@@ -1,0 +1,10 @@
+{
+  "found": false,
+  "order_quote": "Ofrece una experiencia digital a tus clientes con el Menú QR, pedidos desde la mesa, delivery y pick up.",
+  "order_url": "https://toteat.com/",
+  "plan": "Plan corporativo (only plan listing 'Toteat Pickup', bare bullet; from compare-research-5)",
+  "price_major": null,
+  "price_quote": "",
+  "price_url": "https://www.toteat.com/precios",
+  "note": "Re-read 25 Nov (one site-restricted search + 2 Chilean pages). toteat.com/ is the Chile page ('Chile (ES)', 'País: Chile', Santiago address); its only match is the Toteat App line above: 'pick up' as a bare list item, no sentence saying customers order online AHEAD and collect — not enough under §91 (same as the bare 'Toteat Pickup' bullet on /precios). /es-cl/productos/toma-de-pedidos ('Venta en línea' in the nav) is staff order-taking ('Toma órdenes desde cualquier dispositivo: celular, tablet o POS.', 'Tus meseros pueden registrar y enviar comandas sin volver al mostrador.') plus a self-service kiosk; no retiro/pick up/tienda online, no plans or CLP prices. 'Toteat Shop' links to /es-cl/productos/menu-qr-integrado (QR menu, already read in compare-research-5). The search also showed a MEXICAN blog page (toteat.com/es-mx/blog/... e-commerce, 'retiro programado') — not a Chilean page, not read. Verdict stays not_relevant for CL; price_major null because no qualifying feature to price."
+}
