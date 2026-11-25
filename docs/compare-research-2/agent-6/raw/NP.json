@@ -1,0 +1,53 @@
+{
+  "country": "NP",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Nepal restaurant software online ordering website takeaway pre-order pricing NPR per month",
+    "Nepal online ordering website for restaurants commission-free pickup order ahead Kathmandu platform restaurant own ordering page"
+  ],
+  "vendors": [
+    {
+      "name": "MeroMenu",
+      "website": "https://www.meromenu.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Nepali cloud restaurant POS; customer ordering only by scanning a table QR code ('Customers scan a table QR code'); no online ordering ahead, pickup or pre-order. Prices NPR yearly (Basic 'Rs 12,000 a year', prepaid 'from Re 1 per bill'), excl. 13% VAT — for reference",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.meromenu.com/"
+      ]
+    },
+    {
+      "name": "NRestro",
+      "website": "https://www.nrestro.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Nepali restaurant POS with a QR digital menu only ('Let customers scan, browse and order from a modern digital menu.'); no website ordering, pickup or pre-order. Starter 'Rs.10,000/year' — for reference",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.nrestro.com/"
+      ]
+    },
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Pricing page lists local prices for 7 markets only (Singapore, Philippines, Indonesia, Malaysia, Thailand, Japan, Taiwan) — this country is not among them",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://klikit.io/en/pricing"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible found. Foodmandu, Bhojmandu and Foodpanda-type apps are marketplaces (not looked at). Search also showed Cyclone ERP (general ERP), Hamro San and CrossOver Nepal (no online ordering ahead stated in search; not read) — Nepali restaurant software is POS / QR-table only. Take App's countries page does not list Nepal. MENU TIGER: global USD-only, not eligible (see BD)."
+}

@@ -1,0 +1,465 @@
+{
+  "country": "GT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Guatemala sistema pedidos en línea restaurantes \"para llevar\" OR \"recoger\" plataforma precio \"Q\" mensual menú digital pedidos WhatsApp"
+  ],
+  "vendors": [
+    {
+      "name": "Sabbor (Digital GT)",
+      "website": "https://restaurant-saas-monorepo.pages.dev",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Guatemalan-targeted digital menu with ordering from the phone and orders to WhatsApp, 0% commission, GTQ prices; \"Recoger\" shown as an order type in the sample dashboard (BORDERLINE pickup evidence). Brand name \"Sabbor\" from the footer; site lives on a pages.dev address (odd but it is the vendor's own site, titled \"Digital GT\")",
+      "eligibility": {
+        "order_quote": "Tus clientes exploran tu menú y ordenan desde su celular",
+        "order_url": "https://restaurant-saas-monorepo.pages.dev/",
+        "country_quote": "¿Listo para digitalizar tu restaurante en Guatemala?",
+        "country_url": "https://restaurant-saas-monorepo.pages.dev/"
+      },
+      "plans": [
+        {
+          "plan_name": "Esencial",
+          "currency": "GTQ",
+          "price_major": 375,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 500,
+          "quote": "Q 375/ mes",
+          "url": "https://restaurant-saas-monorepo.pages.dev/",
+          "note": "plus \"Q 500 de configuración inicial\""
+        },
+        {
+          "plan_name": "Crece",
+          "currency": "GTQ",
+          "price_major": 500,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 500,
+          "quote": "Q 500/ mes",
+          "url": "https://restaurant-saas-monorepo.pages.dev/",
+          "note": "plus Q 500 setup; \"Permanencia mínima de 6 meses\"; includes \"Dominio personalizado\""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Recoger",
+          "url": "https://restaurant-saas-monorepo.pages.dev/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Tu menú digital y pedidos directos a WhatsApp, sin comisiones",
+          "url": "https://restaurant-saas-monorepo.pages.dev/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Dominio personalizado",
+          "url": "https://restaurant-saas-monorepo.pages.dev/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Q 375/ mes",
+          "url": "https://restaurant-saas-monorepo.pages.dev/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% comisiones por pedido",
+          "url": "https://restaurant-saas-monorepo.pages.dev/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://restaurant-saas-monorepo.pages.dev/"
+      ]
+    },
+    {
+      "name": "Midelivery Food",
+      "website": "https://www.mideliveryfood.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE: Guatemalan own digital menu taking orders (\"es enviado directamente a tu Menú Digital para ordenar.\"), \"Disponible en toda Guatemala\", but no pickup / para llevar / scheduled-order wording; reads as delivery-only. Prices \"Q199/mes\" (+ \"Q250 único por configuración\"), \"Q399/mes\", \"Q1,199/mes\"",
+      "eligibility": {
+        "order_quote": "es enviado directamente a tu Menú Digital para ordenar.",
+        "order_url": "https://www.mideliveryfood.com/",
+        "country_quote": "Disponible en toda Guatemala",
+        "country_url": "https://www.mideliveryfood.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "ESENCIAL",
+          "currency": "GTQ",
+          "price_major": 199,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 250,
+          "quote": "Q199/mes",
+          "url": "https://www.mideliveryfood.com/",
+          "note": "not counted (not eligible); + Q250 setup"
+        },
+        {
+          "plan_name": "PRO NEGOCIO",
+          "currency": "GTQ",
+          "price_major": 399,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 250,
+          "quote": "Q399/mes",
+          "url": "https://www.mideliveryfood.com/",
+          "note": "not counted"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.mideliveryfood.com/"
+      ]
+    },
+    {
+      "name": "Scrampi",
+      "website": "https://scrampi.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Guatemalan-priced POS (\"Disponible en Guatemala con precios en Quetzal (GTQ).\", Starter 99 GTQ/mes); pickup/delivery orders are entered by staff (\"desde la caja o el panel del mesero\"), no customer online ordering",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://scrampi.com/pos/guatemala/cafeterias/"
+      ]
+    },
+    {
+      "name": "Jefe",
+      "website": "https://www.chejefe.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Latin-American branded store + WhatsApp ordering (multi-country, owned by agent 7), but its home page shows no pickup wording, no Guatemala presence statement and no price (a search snippet mentioned a 5% commission; not quotable)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.chejefe.com/"
+      ]
+    },
+    {
+      "name": "ConectaT",
+      "website": "https://conectat.info",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Guatemalan WhatsApp order automation (implementation Q1,490 + \"Q249 /mes\" soporte); no pickup / para llevar / scheduling wording, only \"para entrega\" in a sample order",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://conectat.info/"
+      ]
+    },
+    {
+      "name": "Pedix",
+      "website": "https://pedix.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Argentine WhatsApp online-shop builder (Latin-American multi-country, owned by agent 7 in wave 2); customer builds the order online, \"Retiro en persona\" pickup option (help-centre article title); its price list names Guatemala in the USD section. No food-truck wording; no chosen pickup time stated",
+      "eligibility": {
+        "order_quote": "¿Cómo configurar la opción \"Retiro en persona\"?",
+        "order_url": "https://ayuda.pedix.app/es/article/precios-pedix",
+        "country_quote": "Guatemala",
+        "country_url": "https://ayuda.pedix.app/es/article/precios-pedix"
+      },
+      "plans": [
+        {
+          "plan_name": "Principiante",
+          "currency": "USD",
+          "price_major": 9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "Price list read today (wave 2); info.pedix.app quotes (WhatsApp, domain, no commission) from wave-1 agent 3 read today. Country named in the USD section heading: Estados Unidos, resto de países de Latinoamérica ... Centroamérica (...). USD price list for \"resto de países\"; USD is NOT this country's stored currency, so it does not count. Yearly \"Anual: $90 (con 2 meses bonificados)\". "
+        },
+        {
+          "plan_name": "Especialista",
+          "currency": "USD",
+          "price_major": 16,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $16",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": ""
+        },
+        {
+          "plan_name": "PRO",
+          "currency": "USD",
+          "price_major": 23,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $23",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": ""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "recibir pedidos organizados por WhatsApp",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Dominio web propio (mitienda.com)",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "no cobra comisiones por venta ni por pedido",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ayuda.pedix.app/es/article/precios-pedix",
+        "https://info.pedix.app/"
+      ]
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Latin-American restaurant digital menu / WhatsApp ordering / POS (owned by agent 7 in wave 2). NEW in wave 2: its help centre shows digital-menu counter orders \"para recoger\" and scheduled orders outside opening hours, so it is eligible (wave 1 had it not_relevant for lack of pickup wording). Spanish site, USD prices only",
+      "eligibility": {
+        "order_quote": "para recoger o consumir en el local",
+        "order_url": "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, NOT this country's currency, so it does not count. \"Los precios son para suscripciones anuales pagadas al momento de la compra\" (billed yearly; list price US$ 12.00). No Guatemala page; Spanish site \"Restaurantes en América Latina\"."
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "USD",
+          "price_major": 25,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 25.00/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly; list US$ 29.00"
+        },
+        {
+          "plan_name": "Elite",
+          "currency": "USD",
+          "price_major": 59,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 59.00/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly; list US$ 70.00"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Esta es la opción para los clientes que recogerán el pedido en persona en la tienda, para los desplazamientos.",
+          "url": "https://help.olaclick.com/es/help/cuales-son-los-tipos-de-servicio-de-olaclick"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Permitir pedidos agendados: Habilita que los clientes soliciten pedidos fuera del horario de atención.",
+          "url": "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Pedidos en OlaClick y WhatsApp",
+          "url": "https://pricing.olaclick.app/es"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% de comisión.",
+          "url": "https://www.olaclick.com/es/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es",
+        "https://help.olaclick.com/es/help/cuales-son-los-tipos-de-servicio-de-olaclick",
+        "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital"
+      ]
+    }
+  ],
+  "notes": "One eligible tool with a GTQ price: Sabbor / Digital GT (Q 375 and Q 500 per month + Q 500 setup; pickup only as the \"Recoger\" order type in its sample dashboard — BORDERLINE). Midelivery Food (Q199/Q399/Q1,199 per month) has its own ordering menu but no pickup wording (BORDERLINE not_relevant). No Guatemalan food-truck ordering tool found. Pedix and OlaClick eligible but USD-only (do not count). Seen in search, not read: Quantika POS (snippet: Premium Q520/mes with \"tienda en línea\"), Sabor Suite (POS, USD), Cloudshop.gt (POS), SDIG (ERP), Pixel&Pine (web agency). Uber Eats / PedidosYa are marketplaces (never counted)."
+}

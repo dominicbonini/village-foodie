@@ -1,0 +1,142 @@
+{
+ "country": "AZ",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Azərbaycan restoran onlayn sifariş sistemi götürmə əvvəlcədən sifariş qiymət AZN aylıq proqram Bakı",
+  "Баку система для ресторанов онлайн заказы сайт самовывоз тариф манат AZN POS Azerbaijan restaurant software online ordering"
+ ],
+ "vendors": [
+  {
+   "name": "Clopos",
+   "website": "https://www.clopos.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Baku cloud POS; prices in USD (Start 59 $ / Aylıq); its only customer ordering is the QR menu ('Təmassız sifariş prosesi üçün dizayn edilmiş və telefondan açılan rəqəmsal menyu') — table/QR ordering, no takeaway/pickup or pre-order",
+   "check_urls": [
+    "https://www.clopos.com/en/pricing",
+    "https://www.clopos.com/az/pricing"
+   ],
+   "answers": [],
+   "plans": [],
+   "eligibility": {}
+  },
+  {
+   "name": "Delever",
+   "website": "https://delever.uz",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Tashkent-based ordering/delivery platform for restaurants' own channels (branded site, app, Telegram bot) with pickup pre-orders for a time (its cafe/coffee-shop content); priced in сум (Start from 1 300 000 сум/month for up to 1 000 orders); a legal entity registered in Azerbaijan per its home page, but prices only in UZS (not counted)",
+   "eligibility": {
+    "order_quote": "Кофе плохо переносит дорогу, поэтому главный канал кофейни — предзаказ с самовывозом.",
+    "order_url": "https://delever.io/llms-full.txt",
+    "country_quote": "Головной офис в Ташкенте, юридические лица зарегистрированы в Узбекистане, Казахстане, ОАЭ и Азербайджане.",
+    "country_url": "https://delever.uz"
+   },
+   "plans": [
+    {
+     "plan_name": "Start (up to 1 000 orders)",
+     "currency": "UZS",
+     "price_major": 1300000,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": 1950,
+     "setup_major": null,
+     "quote": "Тариф Start начинается от 1 300 000 сум/месяц (до 1 000 заказов).",
+     "url": "https://delever.uz",
+     "note": "Includes 1 000 orders; overage 1 950 сум per order (per the home page reader). Aggregators, courier services, kiosk, QR menu and the branded mobile app (13 000 000 сум one-off) are extra. Pickup/pre-order evidence comes from Delever's own site-content file (llms-full.txt, its cafe and coffee-shop solution text); its pricing and home pages don't mention pickup. No Azerbaijan site or manat price found; plans shown only in сум, so not counted for AZN."
+    },
+    {
+     "plan_name": "Medium (up to 3 000 orders)",
+     "currency": "UZS",
+     "price_major": 3600000,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "3 600 000 сум",
+     "url": "https://delever.io/pricing",
+     "note": "Page reader gave 'Medium: 3 600 000 сум в месяц, включает 3 000 заказов' — exact layout of the price text not confirmed. No Azerbaijan site or manat price found; plans shown only in сум, so not counted for AZN."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Предзаказ ко времени.",
+     "url": "https://delever.io/llms-full.txt"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Предзаказы стоят в общей очереди со статусом «предзаказ», и кухня берёт их в работу к нужному времени.",
+     "url": "https://delever.io/llms-full.txt"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "partial",
+     "quote": "Бариста видит предзаказы в общей очереди: что и к какому времени готовить.",
+     "url": "https://delever.io/llms-full.txt"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "partial",
+     "quote": "Закрывает доставочный контур заведения: собственные каналы продаж — приложение под вашим брендом, сайт, Telegram-бот",
+     "url": "https://delever.uz"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Тариф Start начинается от 1 300 000 сум/месяц (до 1 000 заказов).",
+     "url": "https://delever.uz"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://delever.uz",
+    "https://delever.io/pricing",
+    "https://delever.io/llms-full.txt",
+    "https://yaponamama.delever.uz/"
+   ]
+  }
+ ],
+ "notes": "Nothing eligible with an AZN price. Delever (Tashkent-based ordering platform; its home page says a legal entity is registered in Azerbaijan) is eligible but priced only in UZS — see UZ for the evidence; not counted. The one Azerbaijani restaurant-software vendor found, Clopos (Baku; offices also in Turkey, Uzbekistan, Kazakhstan per search), prices in USD (Start 59 $ / Aylıq, Standard 99 $) and shows only QR-menu contactless ordering — no takeaway, delivery, pre-order or pickup wording on its English or Azerbaijani pricing pages; recorded not_relevant. Searches otherwise returned Wolt restaurant pages (marketplace, never), 189 Delivery (consumer app), Bir association's QR table ordering (news), Elektraweb (Turkish POS, no Azerbaijan presence shown; not opened) and Odoo partners. Poster: no Azerbaijan page found (search of joinposter.com; selector has no Azerbaijan). Paloma365's selector names Azerbaijan but shows no pickup ordering (see KZ). FoxiFood, Storekit, SumUp, Vitrina do not list Azerbaijan. Stop rule applied."
+}

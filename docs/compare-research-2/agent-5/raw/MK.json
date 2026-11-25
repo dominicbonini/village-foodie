@@ -1,0 +1,258 @@
+{
+ "country": "MK",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "онлајн нарачки за ресторани подигање во ресторан систем цена денари месечно Македонија софтвер"
+ ],
+ "vendors": [
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "White-label ordering website/app + POS (pickup, orders for a set time, own domain) with its own price page for North Macedonia in MKD; developer Complete Solution s.r.o. (Trnava, Slovakia) per its main page ('Vitrina is developed by Complete Solution, a company based in Slovakia.'), hryvnia is the main page's default currency",
+   "eligibility": {
+    "order_quote": "Order ahead on the website and pick up without queuing",
+    "order_url": "https://vitrina.cafe",
+    "country_quote": "Currency of this price list: Macedonian Denar (MKD).",
+    "country_url": "https://vitrina.cafe/en/prices/mk"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "MKD",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "MKD 0/mo",
+     "url": "https://vitrina.cafe/en/prices/mk",
+     "note": "No subscription; 3% of online payments (delivery and pickup), as on the main page. 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Start",
+     "currency": "MKD",
+     "price_major": 2390,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "MKD 2,390",
+     "url": "https://vitrina.cafe/en/prices/mk",
+     "note": "Price block shows three amounts (billed monthly first, then cheaper for longer billing periods); the first, monthly-billed amount is recorded. Start includes 'Ordering website on your own domain' and 'Delivery and pickup'. Up to 0.9% of online payments only (main page). 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "MKD",
+     "price_major": 4890,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "MKD 4,890",
+     "url": "https://vitrina.cafe/en/prices/mk",
+     "note": "Monthly-billed amount (first of three). Adds table QR ordering and booking."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Delivery, pickup and orders for a set time",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Orders for a set time and pickup",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "MKD 2,390",
+     "url": "https://vitrina.cafe/en/prices/mk"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe/en/prices/mk",
+    "https://vitrina.cafe"
+   ]
+  },
+  {
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com/mk/",
+   "stored_id_prefix": "d03a6e1f",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "ordering platform with a Macedonian-language site (/mk/), a food-truck page and pre-orders for a chosen date and time; its country-terms page lists North Macedonia; prices only in EUR (0 € a month, 0,45 € per order), so not counted for MKD",
+   "eligibility": {
+    "food_quote": "Онлајн нарачување за фуд-камиони",
+    "food_url": "https://www.foxifood.com/mk/primeri-na-upotreba/food-truck/",
+    "order_quote": "Дозволете им на клиентите да нарачаат однапред за одреден датум и час.",
+    "order_url": "https://www.foxifood.com/mk/karakteristiki/",
+    "country_quote": "North Macedonia",
+    "country_url": "https://www.foxifood.com/legal/country-terms/"
+   },
+   "plans": [
+    {
+     "plan_name": "FoxiFood (no monthly fee, per order)",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": 0.45,
+     "setup_major": 0,
+     "quote": "Месечен надоместок 0 €",
+     "url": "https://www.foxifood.com/mk/",
+     "note": "EUR only — no MKD price, so it does not count. 'Провизија за обработка (Foxi) 0,45 €', 'Надоместок за поставување 0 €'. Features page: 'Само 2% + 0.45 EUR по нарачка, без месечна претплата.'"
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Дозволете им на клиентите да нарачаат однапред за одреден датум и час.",
+     "url": "https://www.foxifood.com/mk/karakteristiki/"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Дозволете им на клиентите да нарачаат однапред за одреден датум и час.",
+     "url": "https://www.foxifood.com/mk/karakteristiki/"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "линкови за социјални мрежи",
+     "url": "https://www.foxifood.com/mk/karakteristiki/"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Гледајте ги сите нарачки во реално време — QR, онлајн, телефонски и walk-in.",
+     "url": "https://www.foxifood.com/mk/karakteristiki/"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "partial",
+     "quote": "Гледајте ги сите нарачки во реално време — QR, онлајн, телефонски и walk-in.",
+     "url": "https://www.foxifood.com/mk/karakteristiki/"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "Управувајте со повеќе локации од една контролна табла.",
+     "url": "https://www.foxifood.com/mk/karakteristiki/"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Водете го вашиот ресторан на сопствен домен.",
+     "url": "https://www.foxifood.com/mk/karakteristiki/"
+    },
+    {
+     "key": "monthly",
+     "value": "no",
+     "quote": "Само 2% + 0.45 EUR по нарачка, без месечна претплата.",
+     "url": "https://www.foxifood.com/mk/karakteristiki/"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "Провизија за обработка (Foxi) 0,45 €",
+     "url": "https://www.foxifood.com/mk/"
+    },
+    {
+     "key": "cardfee",
+     "value": "yes",
+     "quote": "Само 2% + 0.45 EUR по нарачка, без месечна претплата.",
+     "url": "https://www.foxifood.com/mk/karakteristiki/"
+    }
+   ],
+   "check_urls": [
+    "https://www.foxifood.com/mk/",
+    "https://www.foxifood.com/mk/karakteristiki/",
+    "https://www.foxifood.com/mk/primeri-na-upotreba/food-truck/",
+    "https://www.foxifood.com/legal/country-terms/"
+   ]
+  }
+ ],
+ "notes": "One eligible tool with an MKD price: Vitrina (white-label, developed by Complete Solution s.r.o. in Slovakia; Ukrainian-style hryvnia default; ordering site + POS with its own North Macedonia price page in MKD: Express MKD 0/mo + 3% of online payments, Start MKD 2,390/mo monthly-billed, Restaurant MKD 4,890/mo, excl. VAT; pickup and orders for a set time) — a restaurant tool, not a food-truck tool. FoxiFood (Macedonian /mk/ site, food-truck page 'Онлајн нарачување за фуд-камиони', pre-orders for a date and time; North Macedonia on its country-terms list) is eligible but priced only in EUR. No Macedonian-made ordering tool with an own-site price found: Naracaj.com (consumer food-ordering marketplace app, App Store only), SelfOrder (App Store only, self-ordering in venues, no site/price seen), Cube Systems (a 2007 PDF, no prices) — none opened beyond the search. MENU TIGER (agent 6) appeared with USD — not fetched. SumUp, Storekit have no North Macedonia presence. Stop rule applied."
+}

@@ -1,0 +1,518 @@
+{
+  "country": "PA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Panamá plataforma pedidos en línea restaurantes \"para llevar\" sistema precio mensual B/. OR \"$\" tienda online comida"
+  ],
+  "vendors": [
+    {
+      "name": "Actib",
+      "website": "https://actib.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Panamanian restaurant ordering page + WhatsApp ordering with a kitchen board; \"PICKUP\" and \"DELIVERY\" order types on the kitchen cards; no commission. Pickup evidence is only the order-type label (BORDERLINE); no chosen pickup time; no food-truck wording",
+      "eligibility": {
+        "order_quote": "They come in through your number and your website, with your menu, your prices and your name.",
+        "order_url": "https://actib.app/en",
+        "country_quote": "Actib operates in Panama today.",
+        "country_url": "https://actib.app/en"
+      },
+      "plans": [
+        {
+          "plan_name": "Actib Web",
+          "currency": "USD",
+          "price_major": 49,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "From $49/mo",
+          "url": "https://actib.app/en",
+          "note": "Price shown with \"$\" only (no B/. or USD label); in Panama \"$\" is the US dollar, which circulates at par with the balboa (PAB). Stored currency is PAB, so recorded as USD; a reviewer decides whether USD counts as PAB. \"Ordering page and digital menu\""
+        },
+        {
+          "plan_name": "Actib",
+          "currency": "USD",
+          "price_major": 199,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "From $199/mo",
+          "url": "https://actib.app/en",
+          "note": "Price shown with \"$\" only (no B/. or USD label); in Panama \"$\" is the US dollar, which circulates at par with the balboa (PAB). Stored currency is PAB, so recorded as USD; a reviewer decides whether USD counts as PAB. "
+        },
+        {
+          "plan_name": "Actib Scale",
+          "currency": "USD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://actib.app/en",
+          "note": "\"Quoted\" — price on request"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "PICKUP",
+          "url": "https://actib.app/en"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "They message your restaurant's WhatsApp and are saved to your list.",
+          "url": "https://actib.app/en"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Every order goes straight to your kitchen.",
+          "url": "https://actib.app/en"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Depending on the plan, your site can also live on your own domain.",
+          "url": "https://actib.app/en"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "From $49/mo",
+          "url": "https://actib.app/en"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Actib does not charge a commission on each order.",
+          "url": "https://actib.app/en"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://actib.app/en"
+      ]
+    },
+    {
+      "name": "Kioskito",
+      "website": "https://kioskito.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Panamanian digital menu with WhatsApp checkout; customer chooses delivery or \"retiro en el local\" at checkout; fixed monthly fee, no commission. No chosen pickup time; no food-truck wording",
+      "eligibility": {
+        "order_quote": "En el checkout el cliente puede indicar si quiere entrega a domicilio o retiro en el local",
+        "order_url": "https://kioskito.app/para/restaurantes",
+        "country_quote": "El menú digital de tu restaurante en Panamá",
+        "country_url": "https://kioskito.app/para/restaurantes"
+      },
+      "plans": [
+        {
+          "plan_name": "Desde (lowest plan)",
+          "currency": "USD",
+          "price_major": 5,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Desde $5/mes",
+          "url": "https://kioskito.app/para/restaurantes",
+          "note": "Price shown with \"$\" only (no B/. or USD label); in Panama \"$\" is the US dollar, which circulates at par with the balboa (PAB). Stored currency is PAB, so recorded as USD; a reviewer decides whether USD counts as PAB. Only a \"from\" price shown; a Premium plan (Yappy payments) exists, price not on this page"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "En el checkout el cliente puede indicar si quiere entrega a domicilio o retiro en el local",
+          "url": "https://kioskito.app/para/restaurantes"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "el pedido llega a tu WhatsApp con nombre, platos, cantidades y total",
+          "url": "https://kioskito.app/para/restaurantes"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Desde $5/mes",
+          "url": "https://kioskito.app/para/restaurantes"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No. Kioskito cobra solo una tarifa mensual fija según el plan que elijas.",
+          "url": "https://kioskito.app/para/restaurantes"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://kioskito.app/para/restaurantes"
+      ]
+    },
+    {
+      "name": "Pritty",
+      "website": "https://pritty.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "site did not resolve (DNS ENOTFOUND); search snippet said Panama online ordering and reservations at $35/month, not quotable",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://pritty.app/"
+      ]
+    },
+    {
+      "name": "Pedidos Panama",
+      "website": "https://pedidospanama.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "site did not resolve (DNS ENOTFOUND); search snippet said WhatsApp ordering from USD 25/month, not quotable",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://pedidospanama.com/"
+      ]
+    },
+    {
+      "name": "Pedix",
+      "website": "https://pedix.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Argentine WhatsApp online-shop builder (Latin-American multi-country, owned by agent 7 in wave 2); customer builds the order online, \"Retiro en persona\" pickup option (help-centre article title); its price list names Panamá in the USD section. No food-truck wording; no chosen pickup time stated",
+      "eligibility": {
+        "order_quote": "¿Cómo configurar la opción \"Retiro en persona\"?",
+        "order_url": "https://ayuda.pedix.app/es/article/precios-pedix",
+        "country_quote": "Panamá",
+        "country_url": "https://ayuda.pedix.app/es/article/precios-pedix"
+      },
+      "plans": [
+        {
+          "plan_name": "Principiante",
+          "currency": "USD",
+          "price_major": 9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "Price list read today (wave 2); info.pedix.app quotes (WhatsApp, domain, no commission) from wave-1 agent 3 read today. Country named in the USD section heading: Estados Unidos, resto de países de Latinoamérica ... Centroamérica (...). USD price list for \"resto de países\"; USD is NOT this country's stored currency, so it does not count. Yearly \"Anual: $90 (con 2 meses bonificados)\". In Panama the USD circulates at par with PAB; a reviewer may count it."
+        },
+        {
+          "plan_name": "Especialista",
+          "currency": "USD",
+          "price_major": 16,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $16",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": ""
+        },
+        {
+          "plan_name": "PRO",
+          "currency": "USD",
+          "price_major": 23,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $23",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": ""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "recibir pedidos organizados por WhatsApp",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Dominio web propio (mitienda.com)",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "no cobra comisiones por venta ni por pedido",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ayuda.pedix.app/es/article/precios-pedix",
+        "https://info.pedix.app/"
+      ]
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Latin-American restaurant digital menu / WhatsApp ordering / POS (owned by agent 7 in wave 2). NEW in wave 2: its help centre shows digital-menu counter orders \"para recoger\" and scheduled orders outside opening hours, so it is eligible (wave 1 had it not_relevant for lack of pickup wording). Spanish site, USD prices only",
+      "eligibility": {
+        "order_quote": "para recoger o consumir en el local",
+        "order_url": "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, NOT this country's currency, so it does not count. \"Los precios son para suscripciones anuales pagadas al momento de la compra\" (billed yearly; list price US$ 12.00). In Panama the USD circulates at par with PAB; a reviewer may count it. Country presence weak: no Panama page; Spanish site \"Restaurantes en América Latina\"."
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "USD",
+          "price_major": 25,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 25.00/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly; list US$ 29.00"
+        },
+        {
+          "plan_name": "Elite",
+          "currency": "USD",
+          "price_major": 59,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 59.00/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly; list US$ 70.00"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Esta es la opción para los clientes que recogerán el pedido en persona en la tienda, para los desplazamientos.",
+          "url": "https://help.olaclick.com/es/help/cuales-son-los-tipos-de-servicio-de-olaclick"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Permitir pedidos agendados: Habilita que los clientes soliciten pedidos fuera del horario de atención.",
+          "url": "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Pedidos en OlaClick y WhatsApp",
+          "url": "https://pricing.olaclick.app/es"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% de comisión.",
+          "url": "https://www.olaclick.com/es/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es",
+        "https://help.olaclick.com/es/help/cuales-son-los-tipos-de-servicio-de-olaclick",
+        "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital"
+      ]
+    }
+  ],
+  "notes": "No price in B/. (PAB) anywhere: every Panamanian vendor shows \"$\" (US dollar, at par with the balboa). Eligible with a $ price: Actib ($49 / $199 per month; pickup only as an order-type label, BORDERLINE) and Kioskito (from $5/mes, \"retiro en el local\"), plus Pedix and OlaClick (USD lists). If USD is accepted as PAB, PA has 4 priced eligible tools; strictly in PAB it has 0. No Panamanian food-truck ordering tool found (one search). Pritty and Pedidos Panama did not resolve (DNS). Seen in search, not read: Tu Menu Panama (digital menu from $5/mes), Sabor Suite (POS $21/$45), Pidepaya (no stated Panama presence), TuMenuWeb, PEDIDOSBCN (Spain), ASAP (app). Capterra and PedidosYa excluded."
+}

@@ -1,0 +1,128 @@
+{
+  "country": "MO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "澳門 餐廳 網上點餐系統 自取 預訂 收費 每月 MOP"
+  ],
+  "vendors": [
+    {
+      "name": "Eats365",
+      "website": "https://www.eats365pos.com/mo",
+      "stored_id_prefix": "647628e6",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Hong Kong restaurant POS with a Macau (/mo/) region site and a Branded Online Store module: customers order online and pick up later. No price readable: the Macau pricing page shows no amounts (modular pricing, '14 天免費試用'); content is HK-oriented (+852 contacts)",
+      "eligibility": {
+        "order_quote": "讓顧客線上點餐並稍後自取",
+        "order_url": "https://www.eats365pos.com/mo/expansion-module/branded-online-store",
+        "country_quote": "Macau (澳門)",
+        "country_url": "https://www.eats365pos.com/mo"
+      },
+      "plans": [
+        {
+          "plan_name": "Biz + Branded Online Store",
+          "currency": "MOP",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://www.eats365pos.com/mo/pricing",
+          "note": "Hidden plan: /mo/pricing exists but shows no amounts as read ('Pick and choose the Expansion Modules you need by adding them to your Core Module.'); currency not shown. HK site shows 'From HK$1200/month' (agent 2) — not a Macau price."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "讓顧客線上點餐並稍後自取",
+          "url": "https://www.eats365pos.com/mo/expansion-module/branded-online-store"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "線上訂單可直送廚房顯示系統",
+          "url": "https://www.eats365pos.com/mo/expansion-module/branded-online-store"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "不管是外送平台、官方網站、現場點餐等所有訂單，都能自動彙整入Eats365 POS系統中",
+          "url": "https://www.eats365pos.com/mo"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "屬於您餐廳品牌的線上點餐網站",
+          "url": "https://www.eats365pos.com/mo/expansion-module/branded-online-store",
+          "note": "brand's own ordering site; own domain not stated"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "無需支付高額第三方抽成",
+          "url": "https://www.eats365pos.com/mo/expansion-module/branded-online-store",
+          "note": "says no high third-party commission; own fee not stated"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.eats365pos.com/mo",
+        "https://www.eats365pos.com/mo/pricing",
+        "https://www.eats365pos.com/mo/expansion-module/branded-online-store"
+      ]
+    },
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Pricing page lists local prices for 7 markets only (Singapore, Philippines, Indonesia, Malaysia, Thailand, Japan, Taiwan) — this country is not among them",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://klikit.io/en/pricing"
+      ]
+    }
+  ],
+  "notes": "MO count: 0 priced in MOP (Eats365 eligible, price hidden). Search found only mFood (marketplace, not looked at), a 2022 government grant PDF and MENU TIGER zh-TW pages. Take App's countries page lists Hong Kong but not Macau. Klikit: no Macau market. MENU TIGER: global USD-only, not eligible (see BD)."
+}

@@ -1,0 +1,160 @@
+{
+ "country": "GE",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Georgia restaurant online ordering system pickup pricing GEL ₾ per month Tbilisi ონლაინ შეკვეთა რესტორანი",
+  "ონლაინ შეკვეთების სისტემა რესტორნისთვის ვებგვერდი წინასწარი შეკვეთა ფასი ლარი თვეში",
+  "Tbilisi startup ordering app for cafes pre-order pickup skip the queue restaurants Georgia SaaS ₾ subscription",
+  ".ge რესტორნის მართვის სისტემა POS ონლაინ შეკვეთები ვებსაიტი წაღებით ტარიფები",
+  "joinposter.com Грузия Тбилиси Poster представитель"
+ ],
+ "vendors": [
+  {
+   "name": "Kovzy",
+   "website": "https://kovzy.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Georgian (Tbilisi + Yerevan) restaurant website/QR menu/POS with ₾ prices (Website ₾99 monthly) and 'online orders without commission', but its own site (English and Georgian) shows only delivery (courier integration) — no pickup/takeaway, pre-order or order-for-a-time wording, so it fails the order-ahead rule. Borderline: a reviewer could count it if click-and-collect were confirmed",
+   "plans": [
+    {
+     "plan_name": "Website",
+     "currency": "GEL",
+     "price_major": 99,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "₾99",
+     "url": "https://kovzy.com/ka",
+     "note": "'₾99' 'ყოველთვიურად' (monthly). Features: 'Online payments', 'Courier services', 'QR menu', 'Unlimited branches'. 'ონლაინ შეკვეთები საკომისიოს გარეშე'. Recorded for reference only (verdict not_relevant). QR მენიუ ₾25, POS სისტემა ₾59."
+    }
+   ],
+   "check_urls": [
+    "https://kovzy.com",
+    "https://kovzy.com/ka"
+   ],
+   "answers": [],
+   "eligibility": {}
+  },
+  {
+   "name": "Poster",
+   "website": "https://joinposter.com",
+   "stored_id_prefix": "0802a7c8",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "Cloud POS with a Georgia page naming an official representative; its Poster Site add-on ('Delivery, takeout') takes website orders; a 'Food truck' business type. Weak: English-only, USD prices, no pickup-time or pre-order wording; not counted for GEL",
+   "eligibility": {
+    "food_quote": "Poster makes running a food truck simple",
+    "food_url": "https://joinposter.com/en/business/foodtruck",
+    "order_quote": "Delivery, takeout",
+    "order_url": "https://joinposter.com/en/pages/ge-main",
+    "country_quote": "Official Representative of Poster in Georgia",
+    "country_url": "https://joinposter.com/en/pages/ge-main"
+   },
+   "plans": [
+    {
+     "plan_name": "Mini (Georgia page)",
+     "currency": "USD",
+     "price_major": 29,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Prices from $24 per month",
+     "url": "https://joinposter.com/en/pages/ge-main",
+     "note": "USD only, does not count for GEL. Plan blocks read 'Mini $26$29/mo', 'Business $44$49/mo', 'Pro $62$69/mo' (lower figure likely billed yearly; not labelled). Poster Site/Shop add-on has no price on this page. food_quote carried from the English food-truck page (agent 1 / compare-research-1), not re-fetched today."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "supports all types of orders — dine-in, takeout, and delivery.",
+     "url": "https://joinposter.com/en/pages/ge-main"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display system (KDS)",
+     "url": "https://joinposter.com/en/pages/ge-main"
+    },
+    {
+     "key": "offline",
+     "value": "yes",
+     "quote": "Will continue to work even if the internet connection is lost",
+     "url": "https://joinposter.com/en/pages/ge-main"
+    },
+    {
+     "key": "walkup",
+     "value": "yes",
+     "quote": "supports all types of orders — dine-in, takeout, and delivery.",
+     "url": "https://joinposter.com/en/pages/ge-main"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Prices from $24 per month",
+     "url": "https://joinposter.com/en/pages/ge-main"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://joinposter.com/en/pages/ge-main",
+    "https://joinposter.com/en/pricing"
+   ]
+  },
+  {
+   "name": "XPOS",
+   "website": "https://xpos.ge",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Georgian restaurant POS (₾59/month; E-Commerce Module +₾99/month: 'Website', 'Courier services', 'Online payments' without detail); orders shown come from aggregators, QR menu and counter takeout — no customer online pickup/pre-order wording",
+   "check_urls": [
+    "https://xpos.ge"
+   ],
+   "answers": [],
+   "plans": [],
+   "eligibility": {}
+  }
+ ],
+ "notes": "Nothing eligible with a GEL price. Georgian tools found: Kovzy (kovzy.com, Tbilisi + Yerevan offices; Website ₾99 monthly with 'online orders without commission', courier integration) and XPOS (xpos.ge; same ₾59 POS / +₾99 e-commerce module price pattern, probably the same company) — both show delivery/aggregator/QR/takeout-at-the-counter only, no customer pickup ordering, pre-order or order-for-a-time wording, so recorded not_relevant (borderline: Kovzy's ₾99 website would count if click-and-collect were confirmed). Poster (mine) has a Georgia page naming an official representative, a Poster Site add-on for 'Delivery, takeout' and a food-truck type, but USD prices only — eligible, not counted. Five searches (Georgian, Russian, English) otherwise returned Wolt/Glovo/Bolt (marketplaces, never), OFOODO (a marketplace/directory, not opened), Jotform, Wix and MENU TIGER /ka (owned by agent 6; not fetched). FoxiFood, SumUp, Storekit and Vitrina do not list Georgia. Stop rule applied."
+}

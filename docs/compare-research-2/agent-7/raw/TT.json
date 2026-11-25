@@ -1,0 +1,57 @@
+{
+  "country": "TT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Trinidad and Tobago online ordering platform restaurants pickup \"TTD\" OR \"TT$\" per month food truck order ahead local",
+    "Trinidad online store restaurant ordering website WiPay pickup \"TT$\" month plan Trinbago software orders"
+  ],
+  "vendors": [
+    {
+      "name": "TT Menus",
+      "website": "https://ttmenus.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE: Trinidad & Tobago restaurant listing + digital menu service (\"Get your menu in front of diners searching Trinidad & Tobago.\") with phone / WhatsApp checkout (\"Ordering system: phone checkout and WhatsApp checkout\"), but mainly a directory and no pickup / ordering-ahead wording. Prices \"TT$6,000 annually\" (The Go-To), \"TT$12,000 annually\" (Fully Featured), \"TT$0 / 2 months\"; \"Prices are in TT dollars (TTD).\"",
+      "eligibility": {
+        "order_quote": "Ordering system: phone checkout and WhatsApp checkout",
+        "order_url": "https://ttmenus.com/",
+        "country_quote": "Plans built for Trinidad & Tobago operators",
+        "country_url": "https://ttmenus.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "The Go-To",
+          "currency": "TTD",
+          "price_major": 6000,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "TT$6,000 annually",
+          "url": "https://ttmenus.com/",
+          "note": "not counted (not eligible)"
+        },
+        {
+          "plan_name": "Fully Featured",
+          "currency": "TTD",
+          "price_major": 12000,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "TT$12,000 annually",
+          "url": "https://ttmenus.com/",
+          "note": "not counted"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://ttmenus.com/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible with a TTD price. TT Menus (TTD prices, WhatsApp/phone checkout) is a listing + menu service with no pickup wording -> BORDERLINE not_relevant. SweetHand (sweethand.app, T&T pickup ordering, 6% service fee with TT$5 min / TT$15 max per search snippet) is a consumer marketplace -> never counted, not read. foodDROP (Drop Caribbean), FoodsTT, DoorDash: marketplaces / directories. FoodChow (stored candidate 196dc923, Indian) has a T&T landing page — not my vendor, only named. No T&T food-truck ordering tool found. Pedix / OlaClick / Fudo do not cover English-speaking Caribbean; Square / Toast / Clover / Owner.com show no T&T presence."
+}

@@ -1,0 +1,26 @@
+{
+  "country": "DZ",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "logiciel commande en ligne restaurant Algérie click and collect site de commande prix DA mois",
+    "plateforme algérienne menu en ligne commande à emporter restaurant fast-food abonnement DA \"à emporter\" QR Algérie startup"
+  ],
+  "vendors": [
+    {
+      "name": "inyad",
+      "website": "https://inyad.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Moroccan POS suite; its home page offers only EN/FR/AR and a Morocco-scoped pricing page (/en-ma/pricing), Algeria not named; /en-dz/pricing answers 404 — no Algerian presence shown",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://inyad.com/",
+        "https://inyad.com/en-dz/pricing"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible found. Searches return Algerian delivery apps (Yassir, Qooxy, Fast Delivery, Noofy — marketplaces, not looked at), classified ads for one-off restaurant software (Ouedkniss), an Algerian POS comparison article (zoomalgerie, not a vendor), custom developers (Kolonell) and foreign QR/ordering tools listed on Capterra/Product Hunt (MenuForma is stored, not owned by agent 6 — only named). 'NResto' QR menu appears only in a news article. Take App's countries page does not list Algeria; Foodics, Ordable and Zyda show no Algerian presence (not re-read). No DZD price for any ordering tool seen."
+}

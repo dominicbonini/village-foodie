@@ -1,0 +1,425 @@
+{
+  "country": "DO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "sistema pedidos online restaurantes República Dominicana para llevar precio RD$ mensual",
+    "plataforma dominicana tienda online restaurante pedidos WhatsApp \"RD$\" plan mensual menú digital",
+    "software restaurante República Dominicana pedidos en línea \"para llevar\" punto de venta RD$ precios planes",
+    "\"food truck\" República Dominicana app ordenar en línea pedido anticipado recoger",
+    "OlaClick \"para llevar\" OR \"recoger en tienda\" OR \"retiro en local\" (site:olaclick.com)"
+  ],
+  "vendors": [
+    {
+      "name": "Gestióndo — RestaurantOS Pro Tienda Online",
+      "website": "https://gestiondo.com.do",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Dominican restaurant POS (RestaurantOS Pro) with an online shop add-on: customers order from a mobile shop, \"Pedidos pickup y delivery\", own domain, 0% commission; DOP prices. No chosen pickup time stated; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Tus clientes ordenan en segundos desde una tienda rápida y fácil, hecha para móvil.",
+        "order_url": "https://gestiondo.com.do/tienda-online/",
+        "country_quote": "Tienda Online para Restaurantes en RD",
+        "country_url": "https://gestiondo.com.do/tienda-online/"
+      },
+      "plans": [
+        {
+          "plan_name": "Tienda Online Básico",
+          "currency": "DOP",
+          "price_major": 15000,
+          "period": "one_off",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "RD$15,000",
+          "url": "https://gestiondo.com.do/tienda-online/",
+          "note": "labelled \"Pago único\" (one-off); the shop runs on RestaurantOS Pro, which costs RD$1,989/mes. ITBIS not stated on this page (a search snippet of /precios said + ITBIS; not read)"
+        },
+        {
+          "plan_name": "Tienda Online Premium",
+          "currency": "DOP",
+          "price_major": 35000,
+          "period": "one_off",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "RD$35,000",
+          "url": "https://gestiondo.com.do/tienda-online/",
+          "note": "\"Pago único\"; includes \"Dominio propio personalizado\""
+        },
+        {
+          "plan_name": "RestaurantOS Pro (required POS)",
+          "currency": "DOP",
+          "price_major": 1989,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "RD$1,989/mes",
+          "url": "https://gestiondo.com.do/tienda-online/",
+          "note": "monthly POS the online shop runs on"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Pedidos pickup y delivery",
+          "url": "https://gestiondo.com.do/tienda-online/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Dominio propio personalizado",
+          "url": "https://gestiondo.com.do/tienda-online/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "RD$1,989/mes",
+          "url": "https://gestiondo.com.do/tienda-online/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% de comisión — el pedido es 100% tuyo",
+          "url": "https://gestiondo.com.do/tienda-online/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://gestiondo.com.do/tienda-online/"
+      ]
+    },
+    {
+      "name": "Manú",
+      "website": "https://www.holamanu.do",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Dominican QR menu with ordering from the table only (\"Pedido individual desde la mesa\"; food-truck plaza plan: \"Un solo QR por mesa para todos los negocios de la plaza.\"), no pickup / ordering-ahead wording -> table ordering only. Prices \"RD$2,900/mes\", \"RD$5,900/mes\", food-truck plaza \"RD$3,500/mes\" + \"RD$900 al mes por cada negocio de la plaza\"",
+      "eligibility": {
+        "food_quote": "Un solo QR por mesa para todos los negocios de la plaza.",
+        "food_url": "https://www.holamanu.do/",
+        "country_quote": "Hecho en República Dominicana.",
+        "country_url": "https://www.holamanu.do/"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.holamanu.do/"
+      ]
+    },
+    {
+      "name": "POS DO",
+      "website": "https://www.pos.com.do",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Dominican restaurant till; only QR-menu table orders (\"Pedidos digitales sin contacto para los clientes\") and staff-entered takeaway orders, no customer online ordering ahead. Prices RD$0 / RD$2,249.00 Mensual",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.pos.com.do/"
+      ]
+    },
+    {
+      "name": "Pedix",
+      "website": "https://pedix.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Argentine WhatsApp online-shop builder (Latin-American multi-country, owned by agent 7 in wave 2); customer builds the order online, \"Retiro en persona\" pickup option (help-centre article title); its price list names República Dominicana in the USD section. No food-truck wording; no chosen pickup time stated",
+      "eligibility": {
+        "order_quote": "¿Cómo configurar la opción \"Retiro en persona\"?",
+        "order_url": "https://ayuda.pedix.app/es/article/precios-pedix",
+        "country_quote": "República Dominicana",
+        "country_url": "https://ayuda.pedix.app/es/article/precios-pedix"
+      },
+      "plans": [
+        {
+          "plan_name": "Principiante",
+          "currency": "USD",
+          "price_major": 9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "Price list read today (wave 2); info.pedix.app quotes (WhatsApp, domain, no commission) from wave-1 agent 3 read today. Country named in the USD section heading: Estados Unidos, resto de países de Latinoamérica ... Centroamérica (...). USD price list for \"resto de países\"; USD is NOT this country's stored currency, so it does not count. Yearly \"Anual: $90 (con 2 meses bonificados)\". "
+        },
+        {
+          "plan_name": "Especialista",
+          "currency": "USD",
+          "price_major": 16,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $16",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": ""
+        },
+        {
+          "plan_name": "PRO",
+          "currency": "USD",
+          "price_major": 23,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $23",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": ""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "recibir pedidos organizados por WhatsApp",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Dominio web propio (mitienda.com)",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "no cobra comisiones por venta ni por pedido",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ayuda.pedix.app/es/article/precios-pedix",
+        "https://info.pedix.app/"
+      ]
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Latin-American restaurant digital menu / WhatsApp ordering / POS (owned by agent 7 in wave 2). NEW in wave 2: its help centre shows digital-menu counter orders \"para recoger\" and scheduled orders outside opening hours, so it is eligible (wave 1 had it not_relevant for lack of pickup wording). Spanish site, USD prices only",
+      "eligibility": {
+        "order_quote": "para recoger o consumir en el local",
+        "order_url": "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, NOT this country's currency, so it does not count. \"Los precios son para suscripciones anuales pagadas al momento de la compra\" (billed yearly; list price US$ 12.00). "
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "USD",
+          "price_major": 25,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 25.00/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly; list US$ 29.00"
+        },
+        {
+          "plan_name": "Elite",
+          "currency": "USD",
+          "price_major": 59,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 59.00/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly; list US$ 70.00"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Esta es la opción para los clientes que recogerán el pedido en persona en la tienda, para los desplazamientos.",
+          "url": "https://help.olaclick.com/es/help/cuales-son-los-tipos-de-servicio-de-olaclick"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Permitir pedidos agendados: Habilita que los clientes soliciten pedidos fuera del horario de atención.",
+          "url": "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Pedidos en OlaClick y WhatsApp",
+          "url": "https://pricing.olaclick.app/es"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% de comisión.",
+          "url": "https://www.olaclick.com/es/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es",
+        "https://help.olaclick.com/es/help/cuales-son-los-tipos-de-servicio-de-olaclick",
+        "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital"
+      ]
+    }
+  ],
+  "notes": "One eligible tool with a DOP price: Gestióndo RestaurantOS Pro Tienda Online (one-off RD$15,000 / RD$35,000 on top of the RD$1,989/mes POS). No Dominican food-truck ordering tool found; the food-truck search returned only marketplaces (Uber Eats, DiDi Food, Glovo, PedidosYa — never counted) and Viralata (a consumer drive-in pickup app, not a vendor tool; not read). Manú (Dominican, RD$ prices, a food-truck-plaza plan) is QR table ordering only, no pickup or ordering ahead -> not_relevant (found later via a Honduras search). Pedix and OlaClick are eligible but priced only in USD (do not count). Seen in search, not read: TOI (web.toi.do, POS RD$5,500/mes with PedidosYa/Uber Eats integration), ComandPOS (POS, delivery-app integration add-on), Alegra POS (USD), SJ BREST (ERP), Avify (Costa Rican WhatsApp sales AI, not food-specific). Capterra DO listings (TouchBistro, Weevi, Yelo, Restroworks, Toast) are not sources. MENU TIGER: owned by agent 6. Fudo has no DO site (its selector lists AR, BR, CL, CO, MX, PE, PY, UY)."
+}

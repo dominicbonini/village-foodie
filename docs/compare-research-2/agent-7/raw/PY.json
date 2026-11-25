@@ -1,0 +1,626 @@
+{
+  "country": "PY",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Paraguay sistema pedidos online restaurantes menú digital WhatsApp \"retiro\" OR \"para llevar\" precio Gs mensual plataforma",
+    "\"Gs.\" \"/mes\" tienda online pedidos restaurante Paraguay retiro en local delivery sistema"
+  ],
+  "vendors": [
+    {
+      "name": "ClickParaPedir",
+      "website": "https://clickparapedir.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Paraguayan ordering system with a food-truck / fast-casual solution page: customers build the order and send it by WhatsApp to be ready before they come to collect; QR, counter and take-away in one kitchen flow; fixed price per location, no commission. No price on the site (hidden plan)",
+      "eligibility": {
+        "food_quote": "Recibí pedidos por QR, mostrador o Take Away, mostrales el estado a tus clientes y centralizá comandas en cocina.",
+        "food_url": "https://clickparapedir.com/soluciones/food-trucks-fast-casual",
+        "order_quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.",
+        "order_url": "https://clickparapedir.com/",
+        "country_quote": "Hecho en Paraguay para negocios que quieren crecer.",
+        "country_url": "https://clickparapedir.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "Precio por local (on request)",
+          "currency": "PYG",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://clickparapedir.com/soluciones/food-trucks-fast-casual",
+          "note": "no price on the site: \"No. La oferta gastronómica usa precio fijo por local.\" / \"Elegimos plan, módulos y orden según la operación.\""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Recibí por WhatsApp pedidos listos para preparar antes de que el cliente llegue a retirar.",
+          "url": "https://clickparapedir.com/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "¿Funciona para eventos o ubicaciones variables?",
+          "url": "https://clickparapedir.com/soluciones/food-trucks-fast-casual"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Tus clientes arman el pedido completo y te lo envían por WhatsApp, sin comisión por venta.",
+          "url": "https://clickparapedir.com/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Dale a cocina una vista clara de prioridades, tiempos y detalles de cada comanda.",
+          "url": "https://clickparapedir.com/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Recibí pedidos por QR, mostrador o Take Away, mostrales el estado a tus clientes y centralizá comandas en cocina.",
+          "url": "https://clickparapedir.com/soluciones/food-trucks-fast-casual"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No. La oferta gastronómica usa precio fijo por local.",
+          "url": "https://clickparapedir.com/soluciones/food-trucks-fast-casual"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://clickparapedir.com/",
+        "https://clickparapedir.com/soluciones/food-trucks-fast-casual"
+      ]
+    },
+    {
+      "name": "Fudo",
+      "website": "https://fu.do",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Argentine restaurant system (Latin-American multi-country, owned by agent 7) with a Paraguay site (/es-py/) and \"Food Trucks y Ferias\" business type; \"Tienda Online\" included in its plans and a \"Tu Delivery\" online-shop module. Paraguay prices are USD only. BORDERLINE: es-py delivery page answers 404, so the pickup wording (\"Para retirar\") comes from the Argentine Tu Delivery page; food-truck line is a business-type label",
+      "eligibility": {
+        "food_quote": "Movilidad para food trucks y ferias.",
+        "food_url": "https://fu.do/es-py/precios/",
+        "order_quote": "Vende online con todo resuelto.",
+        "order_url": "https://fu.do/es-py/precios/",
+        "country_quote": "Precios en dólares.",
+        "country_url": "https://fu.do/es-py/precios/"
+      },
+      "plans": [
+        {
+          "plan_name": "Plan Avanzado",
+          "currency": "USD",
+          "price_major": 35,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "USD 35 /mes",
+          "url": "https://fu.do/es-py/precios/",
+          "note": "USD only, NOT PYG, so it does not count. \"Tienda Online\" listed as \"Incluido\". Semestral −10%, Anual −15%. IVA not mentioned"
+        },
+        {
+          "plan_name": "Plan Pro",
+          "currency": "USD",
+          "price_major": 45,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "USD 45 /mes",
+          "url": "https://fu.do/es-py/precios/",
+          "note": "USD only"
+        },
+        {
+          "plan_name": "Tu Delivery (add-on module)",
+          "currency": "USD",
+          "price_major": 30,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "USD 30 /mes",
+          "url": "https://fu.do/es-py/precios/",
+          "note": "add-on on top of a base plan; \"Vende online con todo resuelto.\""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Para retirar",
+          "url": "https://fu.do/es-ar/delivery/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Nuestro agente con IA atiende consultas y toma pedidos 24/7 por tu WhatsApp.",
+          "url": "https://fu.do/es-ar/delivery/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Monitor de Cocina (KDS)",
+          "url": "https://fu.do/es-py/precios/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "USD 35 /mes",
+          "url": "https://fu.do/es-py/precios/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://fu.do/es-py/precios/",
+        "https://fu.do/es-py/delivery/",
+        "https://fu.do/es-ar/delivery/",
+        "https://fu.do/"
+      ]
+    },
+    {
+      "name": "PedíFácil (System Center)",
+      "website": "https://pedifacil.com.py",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Paraguayan (.com.py, +595) restaurant ordering / digital menu: customers order \"para llevar\" from the digital menu, own domain or subdomain, no commission. No price on today's page (Standard / Pro / Premium with \"Solicitar Demo\"); a search snippet said Gs. 300.000/mes but the page read shows no price",
+      "eligibility": {
+        "order_quote": "Tus clientes piden para llevar directo desde tu Menú Digital",
+        "order_url": "https://pedifacil.com.py/landing/",
+        "country_quote": "© 2026 System Center — Plataforma PedíFácil",
+        "country_url": "https://pedifacil.com.py/landing/"
+      },
+      "plans": [
+        {
+          "plan_name": "Standard / Pro / Premium (on request)",
+          "currency": "PYG",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://pedifacil.com.py/landing/",
+          "note": "no price shown; country presence only from the .com.py domain and +595 WhatsApp number (no explicit statement). www.popsquare.io/landing/ redirects here"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Tus clientes piden para llevar directo desde tu Menú Digital",
+          "url": "https://pedifacil.com.py/landing/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Recibí pedidos directo desde tu propio dominio o subdominio.",
+          "url": "https://pedifacil.com.py/landing/"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Sin comisiones por venta",
+          "url": "https://pedifacil.com.py/landing/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://pedifacil.com.py/landing/"
+      ]
+    },
+    {
+      "name": "KaruMenu",
+      "website": "https://karumenu.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE: QR menu whose order goes to the business WhatsApp (\"Tus clientes escanean, eligen y vos recibís la comanda completa en 1 CLIC.\"), names \"Food Trucks en Paraguay\", but no pickup / ordering-ahead wording and no price on the page (\"Pagá en la moneda de tu país.\")",
+      "eligibility": {
+        "food_quote": "Dueños de Restaurantes, Pizzerías y Food Trucks en Paraguay",
+        "food_url": "https://karumenu.com/"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://karumenu.com/"
+      ]
+    },
+    {
+      "name": "RestoPRO",
+      "website": "https://restopro.com.py",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "script-rendered: the page reader saw only the title \"RestoPRO | Software para restaurantes en Paraguay\"; a search snippet mentioned a WhatsApp bot for delivery, retiro and pedidos programados at Gs. 490.000 per sucursal/month — not quotable",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://restopro.com.py/"
+      ]
+    },
+    {
+      "name": "Pedix",
+      "website": "https://pedix.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Argentine WhatsApp online-shop builder (Latin-American multi-country, owned by agent 7 in wave 2); customer builds the order online, \"Retiro en persona\" pickup option (help-centre article title); its price list names Paraguay in the USD section. No food-truck wording; no chosen pickup time stated",
+      "eligibility": {
+        "order_quote": "¿Cómo configurar la opción \"Retiro en persona\"?",
+        "order_url": "https://ayuda.pedix.app/es/article/precios-pedix",
+        "country_quote": "Paraguay",
+        "country_url": "https://ayuda.pedix.app/es/article/precios-pedix"
+      },
+      "plans": [
+        {
+          "plan_name": "Principiante",
+          "currency": "USD",
+          "price_major": 9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "Price list read today (wave 2); info.pedix.app quotes (WhatsApp, domain, no commission) from wave-1 agent 3 read today. Country named in the USD section heading: Estados Unidos, resto de países de Latinoamérica ... Centroamérica (...). USD price list for \"resto de países\"; USD is NOT this country's stored currency, so it does not count. Yearly \"Anual: $90 (con 2 meses bonificados)\". "
+        },
+        {
+          "plan_name": "Especialista",
+          "currency": "USD",
+          "price_major": 16,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $16",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": ""
+        },
+        {
+          "plan_name": "PRO",
+          "currency": "USD",
+          "price_major": 23,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $23",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": ""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "recibir pedidos organizados por WhatsApp",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Dominio web propio (mitienda.com)",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "no cobra comisiones por venta ni por pedido",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ayuda.pedix.app/es/article/precios-pedix",
+        "https://info.pedix.app/"
+      ]
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Latin-American restaurant digital menu / WhatsApp ordering / POS (owned by agent 7 in wave 2). NEW in wave 2: its help centre shows digital-menu counter orders \"para recoger\" and scheduled orders outside opening hours, so it is eligible (wave 1 had it not_relevant for lack of pickup wording). Spanish site, USD prices only",
+      "eligibility": {
+        "order_quote": "para recoger o consumir en el local",
+        "order_url": "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, NOT this country's currency, so it does not count. \"Los precios son para suscripciones anuales pagadas al momento de la compra\" (billed yearly; list price US$ 12.00). OlaClick has a Paraguay POS blog page (seen in search, not read); Spanish site \"Restaurantes en América Latina\"."
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "USD",
+          "price_major": 25,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 25.00/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly; list US$ 29.00"
+        },
+        {
+          "plan_name": "Elite",
+          "currency": "USD",
+          "price_major": 59,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 59.00/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly; list US$ 70.00"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Esta es la opción para los clientes que recogerán el pedido en persona en la tienda, para los desplazamientos.",
+          "url": "https://help.olaclick.com/es/help/cuales-son-los-tipos-de-servicio-de-olaclick"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Permitir pedidos agendados: Habilita que los clientes soliciten pedidos fuera del horario de atención.",
+          "url": "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Pedidos en OlaClick y WhatsApp",
+          "url": "https://pricing.olaclick.app/es"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% de comisión.",
+          "url": "https://www.olaclick.com/es/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es",
+        "https://help.olaclick.com/es/help/cuales-son-los-tipos-de-servicio-de-olaclick",
+        "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible with a PYG price. Eligible but unpriced: ClickParaPedir (Paraguayan, food-truck / fast-casual page, WhatsApp orders ready before pickup; price per location on request) and PedíFácil (Paraguayan, \"para llevar\" from the digital menu; no price on the page). Eligible but USD-only: Fudo (Paraguay site, USD 35 / 45 per month, Tu Delivery USD 30 add-on; food_truck BORDERLINE), Pedix, OlaClick. RestoPRO (Gs. per search snippet) is script-rendered and unreadable. KaruMenu (QR -> WhatsApp, names food trucks) has no pickup wording or price. Seen in search, not read: MaxTiendas (generic Paraguayan store builder with \"retiro en local\", Gs. prices — generic e-commerce, not a food tool), Shoperly (generic e-commerce), Redtouch (Odoo POS), HETEREI (restaurant management), Menui / Treggio / MenuApp / MásPedidos / LOQUIERO (other countries' currencies). PedidosYa: marketplace."
+}

@@ -1,0 +1,401 @@
+{
+  "country": "BD",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Bangladesh restaurant online ordering system own website pickup pricing BDT",
+    "Bangladesh restaurant POS online ordering website takeaway pre-order software \"৳\" monthly package",
+    "RestroGreen restaurant POS Bangladesh pricing online ordering website"
+  ],
+  "vendors": [
+    {
+      "name": "Restora POS",
+      "website": "https://restorapos.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Dhaka-based restaurant POS with a food-truck page and an online food ordering system (own website / branded app, takeaway and pre-order); BDT monthly prices. Borderline food-truck: the food-truck page is a POS page; the ordering-ahead words are on the general online-ordering page",
+      "eligibility": {
+        "food_quote": "We provide the best and cheapest food truck POS system at the best price.",
+        "food_url": "https://restorapos.com/food-truck-pos-system",
+        "order_quote": "Pre-Order facilities",
+        "order_url": "https://restorapos.com/online-food-ordering-system",
+        "country_quote": "Mannan Plaza, Khilkhet, Dhaka-1229, Bangladesh",
+        "country_url": "https://restorapos.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "BDT",
+          "price_major": 2499,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "৳ 2499 month",
+          "url": "https://restorapos.com/pricing",
+          "note": "Monthly Plan; '+ Installation charge and training fees are applicable **' (amount not stated). Also shown as $49. Includes 'Online Order Management'."
+        },
+        {
+          "plan_name": "Mild",
+          "currency": "BDT",
+          "price_major": 4499,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "৳ 4499 month",
+          "url": "https://restorapos.com/pricing",
+          "note": "Monthly Plan; installation and training fees extra. Also $69."
+        },
+        {
+          "plan_name": "Spicy",
+          "currency": "BDT",
+          "price_major": 7999,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "৳ 7999 month",
+          "url": "https://restorapos.com/pricing",
+          "note": "Monthly Plan; installation and training fees extra. Also $99."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Take Away Ordering facilities",
+          "url": "https://restorapos.com/online-food-ordering-system",
+          "note": "takeaway ordering online; no chosen-time wording"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Pre-Order facilities",
+          "url": "https://restorapos.com/online-food-ordering-system"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "WhatsApp Order Management",
+          "url": "https://restorapos.com/pricing",
+          "note": "plan feature line only, not described"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Multi Kitchen Management with KDS",
+          "url": "https://restorapos.com/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "Working POS both Online & Offline",
+          "url": "https://restorapos.com/food-truck-pos-system",
+          "note": "the POS; not said of online ordering"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Online Order Management",
+          "url": "https://restorapos.com/pricing",
+          "note": "online orders handled in the same POS as counter sales (POS product)"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Enjoy a hassle-free step-up of your domain, logo, branding page, etc.",
+          "url": "https://restorapos.com/online-food-ordering-system"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "৳ 2499 month",
+          "url": "https://restorapos.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://restorapos.com/pricing",
+        "https://restorapos.com/online-food-ordering-system",
+        "https://restorapos.com/food-truck-pos-system"
+      ]
+    },
+    {
+      "name": "RestroGreen (Quickly Services)",
+      "website": "https://quicklyservices.com/restrogreen",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Dhaka-based restaurant POS with a 'Food Cart / Truck' page: customers order online and collect from the food cart (e-Restaurant module). No price readable: the pricing page shows plan names and monthly/yearly toggles but no amounts (likely rendered by script)",
+      "eligibility": {
+        "food_quote": "Food Cart Management Software",
+        "food_url": "https://quicklyservices.com/restrogreen/restaurants/food-cart",
+        "order_quote": "Allow customers to order online and collect their food from your food cart.",
+        "order_url": "https://quicklyservices.com/restrogreen/restaurants/food-cart",
+        "country_quote": "Moghbazar, Dhaka-1217, Bangladesh",
+        "country_url": "https://quicklyservices.com/restrogreen/restaurants/food-cart"
+      },
+      "plans": [
+        {
+          "plan_name": "All in One",
+          "currency": "BDT",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://quicklyservices.com/restrogreen/pricing-plan",
+          "note": "Hidden plan: plans 'Sales & Marketing' and 'All in One', 'Per Business Billed Monthly', '30-day free trial', but no amounts on the page as read (currency not shown; BDT assumed for the home market). Search snippets from listing sites give USD figures — not used."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Allow customers to order online and collect their food from your food cart.",
+          "url": "https://quicklyservices.com/restrogreen/restaurants/food-cart",
+          "note": "pickup ordering; no chosen-time wording"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen Display System",
+          "url": "https://quicklyservices.com/restrogreen/restaurants/food-cart"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "a straightforward billing process helps you serve more customers efficiently.",
+          "url": "https://quicklyservices.com/restrogreen/restaurants/food-cart",
+          "note": "POS billing for counter sales alongside e-Restaurant online orders"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Explore multi-outlet management capabilities if you add another cart or food location.",
+          "url": "https://quicklyservices.com/restrogreen/restaurants/food-cart"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "partial",
+          "quote": "Per Business Billed Monthly",
+          "url": "https://quicklyservices.com/restrogreen/pricing-plan",
+          "note": "amount not shown"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://quicklyservices.com/restrogreen/restaurants/food-cart",
+        "https://quicklyservices.com/restrogreen/pricing-plan"
+      ]
+    },
+    {
+      "name": "Blink (blinkco.io)",
+      "website": "https://www.blinkco.io",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Pakistan-based restaurant POS and branded ordering website/app with a Bangladesh page ('for delivery, pick-up, and in-store orders'); prices only in '$' per branch on the global pricing page, none in BDT (BD: not counted)",
+      "eligibility": {
+        "order_quote": "for delivery, pick-up, and in-store orders",
+        "order_url": "https://www.blinkco.io/online-ordering-for-restaurants-in-bangladesh/",
+        "country_quote": "Branded Online Ordering for Restaurants in Bangladesh",
+        "country_url": "https://www.blinkco.io/online-ordering-for-restaurants-in-bangladesh/"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering F&B — Website Only",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "Only '$' shown (no currency code; read as USD), not tied to any country. No commission mentioned. Global pricing page (read today by agent 2, reused); no BD local-currency price."
+        },
+        {
+          "plan_name": "Online Ordering F&B — Website + App",
+          "currency": "USD",
+          "price_major": 100,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$100/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "'$' only (read as USD). Global pricing page (read today by agent 2, reused); no BD local-currency price."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Give your customers the option between delivery and pickup",
+          "url": "https://www.blinkco.io/?p=20107",
+          "note": "no chosen-time ordering stated"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing",
+          "note": "priced per branch"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "welcome your customers to a fully branded website showcasing your restaurant.",
+          "url": "https://www.blinkco.io/?p=20107"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$50/branch /month",
+          "url": "https://www.blinkco.io/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.blinkco.io/online-ordering-for-restaurants-in-bangladesh/",
+        "https://www.blinkco.io/pricing",
+        "https://www.blinkco.io/?p=20107"
+      ]
+    },
+    {
+      "name": "MENU TIGER",
+      "website": "https://www.menutiger.com/bn",
+      "stored_id_prefix": "d00d6bfd",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Bengali-language pricing page, but prices in USD only (no BDT), Bangladesh never named, and no sentence about takeaway / pickup or ordering ahead (only a bare 'অর্ডার সময়সূচি' table row) — as in KR/TH/RO/HK",
+      "eligibility": {},
+      "plans": [
+        {
+          "plan_name": "Regular",
+          "currency": "USD",
+          "price_major": 17,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "17US$/মাস",
+          "url": "https://www.menutiger.com/bn/pricing",
+          "note": "For reference only. Free 0US$/মাস, Advanced 46US$/মাস, Premium 119US$/মাস; 'প্রতি অর্ডারে কোনো কমিশন নেই।'"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.menutiger.com/bn/pricing"
+      ]
+    }
+  ],
+  "notes": "Take App's countries page does not list Bangladesh (not recorded). Foodpanda, Pathao Food and Foodi are marketplaces (not looked at). Deonde (deonde.co, Indian white-label) has a Bangladesh page — not read. Shayan POS (a lovable.app page) and CloudWave BD seen in search only. Blink and MENU TIGER owned by agent 6."
+}

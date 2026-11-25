@@ -1,0 +1,441 @@
+{
+  "country": "BO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Bolivia sistema pedidos en línea restaurantes menú digital pedidos WhatsApp \"para llevar\" OR \"recoger\" precio \"Bs\" mensual",
+    "Santa Cruz Bolivia restaurante tienda online pedidos \"recojo\" menú web plan Bs mensual sin comisión"
+  ],
+  "vendors": [
+    {
+      "name": "Mezzita",
+      "website": "https://mezzita.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Bolivian (La Paz) own web menu with table QR ordering plus delivery and pickup (\"recojo\") orders, kitchen view, WhatsApp status messages, 0% commission; BOB prices incl. IVA. No chosen pickup time; no food-truck wording (mentions \"Patios de comidas y plazas\")",
+      "eligibility": {
+        "order_quote": "Delivery y recojo por tu propio menú web, sin app.",
+        "order_url": "https://mezzita.com/",
+        "country_quote": "Pedidos con QR para restaurantes en Bolivia.",
+        "country_url": "https://mezzita.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "Arranca",
+          "currency": "BOB",
+          "price_major": 400,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 3500,
+          "quote": "400 Bs al mes",
+          "url": "https://mezzita.com/planes/",
+          "note": "page renders \"400 Bs\" then \"al mes\"; one-off installation \"3.500 Bs, una sola vez, igual en los tres planes.\"; \"Precios en bolivianos con IVA incluido.\""
+        },
+        {
+          "plan_name": "Crece",
+          "currency": "BOB",
+          "price_major": 600,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 3500,
+          "quote": "600 Bs al mes",
+          "url": "https://mezzita.com/planes/",
+          "note": "+ 3.500 Bs installation"
+        },
+        {
+          "plan_name": "Escala",
+          "currency": "BOB",
+          "price_major": 900,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 3500,
+          "quote": "900 Bs al mes",
+          "url": "https://mezzita.com/planes/",
+          "note": "+ 3.500 Bs installation"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Elige recojo en el local y deja su nombre.",
+          "url": "https://mezzita.com/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Avisos por WhatsApp a tu cliente de delivery y recojo: «tu pedido está listo», «salió el repartidor»",
+          "url": "https://mezzita.com/planes/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Cocina lo ve al instante, con las notas.",
+          "url": "https://mezzita.com/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Incluye tu dominio .com propio.",
+          "url": "https://mezzita.com/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Una mensualidad fija y 0 % de comisión, siempre: en la mesa, para llevar y a domicilio.",
+          "url": "https://mezzita.com/planes/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0 % de comisión, siempre: en la mesa, para llevar y a domicilio.",
+          "url": "https://mezzita.com/planes/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://mezzita.com/",
+        "https://mezzita.com/planes/"
+      ]
+    },
+    {
+      "name": "Pídeme.online",
+      "website": "https://pideme.online",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE: Bolivian catalogue / WhatsApp cart ordering (\"Tus clientes piden desde tu enlace web con carrito interactivo sin comisiones.\"), BOB prices (Sazón \"Bs 34,00/mes\", Gourmet \"Bs 89,00/mes\"; FAQ: charged in USD via PayPal), but no pickup / recojo / scheduling wording",
+      "eligibility": {
+        "order_quote": "Tus clientes piden desde tu enlace web con carrito interactivo sin comisiones.",
+        "order_url": "https://pideme.online/bolivia",
+        "country_quote": "Moderniza la atención de tu local en La Paz, Santa Cruz, Cochabamba y todo el país",
+        "country_url": "https://pideme.online/bolivia"
+      },
+      "plans": [
+        {
+          "plan_name": "Sazón",
+          "currency": "BOB",
+          "price_major": 34,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Bs 34,00/mes",
+          "url": "https://pideme.online/bolivia",
+          "note": "not counted (not eligible)"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://pideme.online/bolivia"
+      ]
+    },
+    {
+      "name": "Outperform",
+      "website": "https://cardona-rb.github.io/outperform-site/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "page answered HTTP 404 (a github.io site; search snippet described QR, takeaway and delivery orders for Bolivia)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://cardona-rb.github.io/outperform-site/"
+      ]
+    },
+    {
+      "name": "Pedix",
+      "website": "https://pedix.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Argentine WhatsApp online-shop builder (Latin-American multi-country, owned by agent 7 in wave 2); customer builds the order online, \"Retiro en persona\" pickup option (help-centre article title); its price list names Bolivia in the USD section. No food-truck wording; no chosen pickup time stated",
+      "eligibility": {
+        "order_quote": "¿Cómo configurar la opción \"Retiro en persona\"?",
+        "order_url": "https://ayuda.pedix.app/es/article/precios-pedix",
+        "country_quote": "Bolivia",
+        "country_url": "https://ayuda.pedix.app/es/article/precios-pedix"
+      },
+      "plans": [
+        {
+          "plan_name": "Principiante",
+          "currency": "USD",
+          "price_major": 9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "Price list read today (wave 2); info.pedix.app quotes (WhatsApp, domain, no commission) from wave-1 agent 3 read today. Country named in the USD section heading: Estados Unidos, resto de países de Latinoamérica ... Centroamérica (...). USD price list for \"resto de países\"; USD is NOT this country's stored currency, so it does not count. Yearly \"Anual: $90 (con 2 meses bonificados)\". "
+        },
+        {
+          "plan_name": "Especialista",
+          "currency": "USD",
+          "price_major": 16,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $16",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": ""
+        },
+        {
+          "plan_name": "PRO",
+          "currency": "USD",
+          "price_major": 23,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $23",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": ""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "recibir pedidos organizados por WhatsApp",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Dominio web propio (mitienda.com)",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "no cobra comisiones por venta ni por pedido",
+          "url": "https://info.pedix.app/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ayuda.pedix.app/es/article/precios-pedix",
+        "https://info.pedix.app/"
+      ]
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Latin-American restaurant digital menu / WhatsApp ordering / POS (owned by agent 7 in wave 2). NEW in wave 2: its help centre shows digital-menu counter orders \"para recoger\" and scheduled orders outside opening hours, so it is eligible (wave 1 had it not_relevant for lack of pickup wording). Spanish site, USD prices only",
+      "eligibility": {
+        "order_quote": "para recoger o consumir en el local",
+        "order_url": "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital",
+        "country_quote": "Restaurantes en América Latina",
+        "country_url": "https://www.olaclick.com/es/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "USD only, NOT this country's currency, so it does not count. \"Los precios son para suscripciones anuales pagadas al momento de la compra\" (billed yearly; list price US$ 12.00). No Bolivia page; Spanish site \"Restaurantes en América Latina\"."
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "USD",
+          "price_major": 25,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 25.00/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly; list US$ 29.00"
+        },
+        {
+          "plan_name": "Elite",
+          "currency": "USD",
+          "price_major": 59,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 59.00/mes",
+          "url": "https://pricing.olaclick.app/es",
+          "note": "billed yearly; list US$ 70.00"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Esta es la opción para los clientes que recogerán el pedido en persona en la tienda, para los desplazamientos.",
+          "url": "https://help.olaclick.com/es/help/cuales-son-los-tipos-de-servicio-de-olaclick"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Permitir pedidos agendados: Habilita que los clientes soliciten pedidos fuera del horario de atención.",
+          "url": "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Pedidos en OlaClick y WhatsApp",
+          "url": "https://pricing.olaclick.app/es"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "US$ 9.90/mes",
+          "url": "https://pricing.olaclick.app/es"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% de comisión.",
+          "url": "https://www.olaclick.com/es/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.olaclick.com/es/",
+        "https://pricing.olaclick.app/es",
+        "https://help.olaclick.com/es/help/cuales-son-los-tipos-de-servicio-de-olaclick",
+        "https://help.olaclick.com/es/help/c%C3%B3mo-configurar-la-p%C3%A1gina-de-ajustes-de-pedidos-en-mi-men%C3%BA-digital"
+      ]
+    }
+  ],
+  "notes": "One eligible tool with a BOB price: Mezzita (400 / 600 / 900 Bs al mes incl. IVA + 3.500 Bs one-off installation; delivery and \"recojo\" from its own web menu). Search snippets claimed 5 % / 8 % per QR-paid order for Mezzita, but today's /planes/ page says \"0 % de comisión, siempre\". Pídeme.online (BOB, WhatsApp cart) shows no pickup wording -> BORDERLINE not_relevant. No Bolivian food-truck ordering tool found. Pedix and OlaClick: USD only (do not count). Seen in search, not read: MultiControlSoft (Santa Cruz restaurant management, Bs 120–250/mes, no online ordering stated), Recafy (free QR menu), TuLink, MenuApp, Di-Menu, Uffunmenu (other countries / no BOB). Yango, PedidosYa: marketplaces."
+}

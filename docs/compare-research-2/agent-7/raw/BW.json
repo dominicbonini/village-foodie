@@ -1,0 +1,104 @@
+{
+  "country": "BW",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Botswana restaurant online ordering platform pickup click and collect \"BWP\" OR \"P\" per month Gaborone software takeaway order ahead"
+  ],
+  "vendors": [
+    {
+      "name": "YUMBI",
+      "website": "https://www.yumbi.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "South African restaurant/QSR ordering technology (African multi-country, owned by agent 7 in wave 2): white-label web and app ordering for delivery, pickup and order-ahead; its home page lists Botswana among seven markets. No price on the site (sales contact) -> hidden plan, does not count as priced. Home page read today by wave-1 agent 3 (reused, not re-fetched)",
+      "eligibility": {
+        "order_quote": "White-label web and app ordering that builds owned customer relationships.",
+        "order_url": "https://www.yumbi.com/",
+        "country_quote": "Botswana",
+        "country_url": "https://www.yumbi.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "StoreFront (price on request)",
+          "currency": "BWP",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://www.yumbi.com/",
+          "note": "no price on the site; \"Get Started\" goes to a sales contact form. country_quote is the market name from the home page list of seven markets (South Africa, Botswana, Namibia, Kenya, Nigeria, Zambia, Côte d'Ivoire), as reported by agent 3's page reader today"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "delivery, pickup, and order-ahead",
+          "url": "https://www.yumbi.com/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "White-label web and app ordering that builds owned customer relationships.",
+          "url": "https://www.yumbi.com/"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.yumbi.com/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible with a BWP price. YUMBI (South African, lists Botswana) is eligible but has no price (hidden plan). Everything else found is a consumer marketplace or delivery app (never counted, not read): Gabs Eats, Zebras, Wanzy, MyFoodness, Dijo, Yamee; Debonairs is a chain app. FoodChow (stored candidate, Indian): not my vendor. Mr D: marketplace. Square / Toast / Clover / Owner.com: no Botswana presence."
+}

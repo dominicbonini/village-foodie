@@ -1,0 +1,955 @@
+{
+ "country": "OWNED",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Ukrainian white-label ordering website/app + POS (pickup, orders for a set time, own domain) with its own price page for Iceland in ISK; excl. VAT",
+   "eligibility": {
+    "order_quote": "Order ahead on the website and pick up without queuing",
+    "order_url": "https://vitrina.cafe",
+    "country_quote": "Currency of this price list: Icelandic Króna (ISK).",
+    "country_url": "https://vitrina.cafe/en/prices/is"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "ISK",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "kr 0/mo",
+     "url": "https://vitrina.cafe/en/prices/is",
+     "note": "No subscription; 3% of online payments (delivery and pickup), as on the main page. 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Start",
+     "currency": "ISK",
+     "price_major": 5390,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "kr 5,390",
+     "url": "https://vitrina.cafe/en/prices/is",
+     "note": "Price block shows three amounts (billed monthly first, then cheaper for longer billing periods); the first, monthly-billed amount is recorded. Start includes 'Ordering website on your own domain' and 'Delivery and pickup'. Up to 0.9% of online payments only (main page). 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "ISK",
+     "price_major": 10790,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "kr 10,790",
+     "url": "https://vitrina.cafe/en/prices/is",
+     "note": "Monthly-billed amount (first of three). Adds table QR ordering and booking."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Delivery, pickup and orders for a set time",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Orders for a set time and pickup",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "kr 5,390",
+     "url": "https://vitrina.cafe/en/prices/is"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe/en/prices/is",
+    "https://vitrina.cafe"
+   ],
+   "country": "IS"
+  },
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Ukrainian white-label ordering website/app + POS (pickup, orders for a set time, own domain) with its own price page for Sweden in SEK; excl. VAT",
+   "eligibility": {
+    "order_quote": "Order ahead on the website and pick up without queuing",
+    "order_url": "https://vitrina.cafe",
+    "country_quote": "Currency of this price list: Swedish Krona (SEK).",
+    "country_url": "https://vitrina.cafe/en/prices/se"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "SEK",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "kr 0/mo",
+     "url": "https://vitrina.cafe/en/prices/se",
+     "note": "No subscription; 3% of online payments (delivery and pickup), as on the main page. 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Start",
+     "currency": "SEK",
+     "price_major": 439,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "kr 439",
+     "url": "https://vitrina.cafe/en/prices/se",
+     "note": "Price block shows three amounts (billed monthly first, then cheaper for longer billing periods); the first, monthly-billed amount is recorded. Start includes 'Ordering website on your own domain' and 'Delivery and pickup'. Up to 0.9% of online payments only (main page). 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "SEK",
+     "price_major": 889,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "kr 889",
+     "url": "https://vitrina.cafe/en/prices/se",
+     "note": "Monthly-billed amount (first of three). Adds table QR ordering and booking."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Delivery, pickup and orders for a set time",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Orders for a set time and pickup",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "kr 439",
+     "url": "https://vitrina.cafe/en/prices/se"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe/en/prices/se",
+    "https://vitrina.cafe"
+   ],
+   "country": "SE"
+  },
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Ukrainian white-label ordering website/app + POS (pickup, orders for a set time, own domain) with its own price page for Norway in NOK; excl. VAT",
+   "eligibility": {
+    "order_quote": "Order ahead on the website and pick up without queuing",
+    "order_url": "https://vitrina.cafe",
+    "country_quote": "Currency of this price list: Norwegian Krone (NOK).",
+    "country_url": "https://vitrina.cafe/en/prices/no"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "NOK",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "kr 0/mo",
+     "url": "https://vitrina.cafe/en/prices/no",
+     "note": "No subscription; 3% of online payments (delivery and pickup), as on the main page. 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Start",
+     "currency": "NOK",
+     "price_major": 419,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "kr 419",
+     "url": "https://vitrina.cafe/en/prices/no",
+     "note": "Price block shows three amounts (billed monthly first, then cheaper for longer billing periods); the first, monthly-billed amount is recorded. Start includes 'Ordering website on your own domain' and 'Delivery and pickup'. Up to 0.9% of online payments only (main page). 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "NOK",
+     "price_major": 849,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "kr 849",
+     "url": "https://vitrina.cafe/en/prices/no",
+     "note": "Monthly-billed amount (first of three). Adds table QR ordering and booking."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Delivery, pickup and orders for a set time",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Orders for a set time and pickup",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "kr 419",
+     "url": "https://vitrina.cafe/en/prices/no"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe/en/prices/no",
+    "https://vitrina.cafe"
+   ],
+   "country": "NO"
+  },
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe/hr",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "white-label ordering site + POS (Complete Solution s.r.o., Slovakia) with a Croatian-language site and € prices: Express 0 €/mj. + 3 %, Start 39 €/mj., excl. PDV; pickup and orders for a chosen time. Croatia presence shown only by the Croatian-language site (no sentence naming Croatia in the part read)",
+   "eligibility": {
+    "order_quote": "Dostava, preuzimanje i narudžbe za željeno vrijeme",
+    "order_url": "https://vitrina.cafe/hr",
+    "country_quote": "Jezik stranice: hrHrvatski",
+    "country_url": "https://vitrina.cafe/hr"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "0 €/mj.",
+     "url": "https://vitrina.cafe/hr",
+     "note": "Croatian page price blocks: Start ’39 €35,10 €31,20 €/mj.’, Restoran ’79 €71,10 €63,20 €/mj.’ (monthly / 6 months / yearly; monthly-billed amount recorded). Cijene bez PDV-a. Express: no subscription, 3 % of online payments; Start/Restaurant up to 0.9 % of online payments (English main page)."
+    },
+    {
+     "plan_name": "Start",
+     "currency": "EUR",
+     "price_major": 39,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "39 €",
+     "url": "https://vitrina.cafe/hr",
+     "note": "Croatian page price blocks: Start ’39 €35,10 €31,20 €/mj.’, Restoran ’79 €71,10 €63,20 €/mj.’ (monthly / 6 months / yearly; monthly-billed amount recorded). Cijene bez PDV-a. Express: no subscription, 3 % of online payments; Start/Restaurant up to 0.9 % of online payments (English main page)."
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "EUR",
+     "price_major": 79,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "79 €",
+     "url": "https://vitrina.cafe/hr",
+     "note": "Croatian page price blocks: Start ’39 €35,10 €31,20 €/mj.’, Restoran ’79 €71,10 €63,20 €/mj.’ (monthly / 6 months / yearly; monthly-billed amount recorded). Cijene bez PDV-a. Express: no subscription, 3 % of online payments; Start/Restaurant up to 0.9 % of online payments (English main page)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Dostava, preuzimanje i narudžbe za željeno vrijeme",
+     "url": "https://vitrina.cafe/hr"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Dostava, preuzimanje i narudžbe za željeno vrijeme",
+     "url": "https://vitrina.cafe/hr"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "39 €",
+     "url": "https://vitrina.cafe/hr"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe",
+    "https://vitrina.cafe/hr"
+   ],
+   "country": "HR"
+  },
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe/sl",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "white-label ordering site + POS (Complete Solution s.r.o., Slovakia) with a Slovenian-language site and € prices: Express 0 €/mes. + 3 %, Start 39 €/mes., excl. DDV; pickup and orders for a chosen time. Slovenia presence shown only by the Slovenian-language site (no sentence naming Slovenia in the part read)",
+   "eligibility": {
+    "order_quote": "Dostava, osebni prevzem in naročila za želeni čas",
+    "order_url": "https://vitrina.cafe/sl",
+    "country_quote": "Cene brez DDV.",
+    "country_url": "https://vitrina.cafe/sl"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "0 €/mes.",
+     "url": "https://vitrina.cafe/sl",
+     "note": "Slovenian page price blocks: Start 39 €35,10 €31,20 €/mes., Restavracija 79 €71,10 €63,20 €/mes. (monthly / 6 months / yearly; monthly-billed amount recorded). Cene brez DDV. Express: no subscription, 3 % of online payments; Start/Restaurant up to 0.9 % of online payments (English main page)."
+    },
+    {
+     "plan_name": "Start",
+     "currency": "EUR",
+     "price_major": 39,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "39 €",
+     "url": "https://vitrina.cafe/sl",
+     "note": "Slovenian page price blocks: Start 39 €35,10 €31,20 €/mes., Restavracija 79 €71,10 €63,20 €/mes. (monthly / 6 months / yearly; monthly-billed amount recorded). Cene brez DDV. Express: no subscription, 3 % of online payments; Start/Restaurant up to 0.9 % of online payments (English main page)."
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "EUR",
+     "price_major": 79,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "79 €",
+     "url": "https://vitrina.cafe/sl",
+     "note": "Slovenian page price blocks: Start 39 €35,10 €31,20 €/mes., Restavracija 79 €71,10 €63,20 €/mes. (monthly / 6 months / yearly; monthly-billed amount recorded). Cene brez DDV. Express: no subscription, 3 % of online payments; Start/Restaurant up to 0.9 % of online payments (English main page)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Dostava, osebni prevzem in naročila za želeni čas",
+     "url": "https://vitrina.cafe/sl"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Dostava, osebni prevzem in naročila za želeni čas",
+     "url": "https://vitrina.cafe/sl"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "39 €",
+     "url": "https://vitrina.cafe/sl"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe",
+    "https://vitrina.cafe/sl"
+   ],
+   "country": "SI"
+  },
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe/sk",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "white-label ordering site + POS (Complete Solution s.r.o., Slovakia); its English main page names Lithuania as a market where it sells the ordering site but not the POS; € prices as on its EU (Slovak) page — Express 0 € + 3 %, Start 39 €/month, excl. VAT. Weak: no Lithuanian page or Lithuania-specific price page",
+   "eligibility": {
+    "order_quote": "Order ahead on the website and pick up without queuing",
+    "order_url": "https://vitrina.cafe",
+    "country_quote": "in Romania, Lithuania and Latvia we don’t offer the POS.",
+    "country_url": "https://vitrina.cafe"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "0 €/mes.",
+     "url": "https://vitrina.cafe/sk",
+     "note": "No Lithuanian-language site or price page; the € price list was read on the Slovak page (https://vitrina.cafe/sk: Štart 39 €35,10 €31,20 €/mes., Reštaurácia 79 €…), assumed to be the EU € list — a reviewer may decide not to count it. Excl. VAT."
+    },
+    {
+     "plan_name": "Start",
+     "currency": "EUR",
+     "price_major": 39,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "39 €",
+     "url": "https://vitrina.cafe/sk",
+     "note": "No Lithuanian-language site or price page; the € price list was read on the Slovak page (https://vitrina.cafe/sk: Štart 39 €35,10 €31,20 €/mes., Reštaurácia 79 €…), assumed to be the EU € list — a reviewer may decide not to count it. Excl. VAT."
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "EUR",
+     "price_major": 79,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "79 €",
+     "url": "https://vitrina.cafe/sk",
+     "note": "No Lithuanian-language site or price page; the € price list was read on the Slovak page (https://vitrina.cafe/sk: Štart 39 €35,10 €31,20 €/mes., Reštaurácia 79 €…), assumed to be the EU € list — a reviewer may decide not to count it. Excl. VAT."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Order ahead on the website and pick up without queuing",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Order ahead on the website and pick up without queuing",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "39 €",
+     "url": "https://vitrina.cafe/sk"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe",
+    "https://vitrina.cafe/sk"
+   ],
+   "country": "LT"
+  },
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe/sk",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "white-label ordering site + POS (Complete Solution s.r.o., Slovakia); its English main page names Latvia as a market where it sells the ordering site but not the POS; € prices as on its EU (Slovak) page — Express 0 € + 3 %, Start 39 €/month, excl. VAT. Weak: no Latvian page or Latvia-specific price page",
+   "eligibility": {
+    "order_quote": "Order ahead on the website and pick up without queuing",
+    "order_url": "https://vitrina.cafe",
+    "country_quote": "in Romania, Lithuania and Latvia we don’t offer the POS.",
+    "country_url": "https://vitrina.cafe"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "0 €/mes.",
+     "url": "https://vitrina.cafe/sk",
+     "note": "No Latvian-language site or price page; the € price list was read on the Slovak page (https://vitrina.cafe/sk: Štart 39 €35,10 €31,20 €/mes., Reštaurácia 79 €…), assumed to be the EU € list — a reviewer may decide not to count it. Excl. VAT."
+    },
+    {
+     "plan_name": "Start",
+     "currency": "EUR",
+     "price_major": 39,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "39 €",
+     "url": "https://vitrina.cafe/sk",
+     "note": "No Latvian-language site or price page; the € price list was read on the Slovak page (https://vitrina.cafe/sk: Štart 39 €35,10 €31,20 €/mes., Reštaurácia 79 €…), assumed to be the EU € list — a reviewer may decide not to count it. Excl. VAT."
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "EUR",
+     "price_major": 79,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "79 €",
+     "url": "https://vitrina.cafe/sk",
+     "note": "No Latvian-language site or price page; the € price list was read on the Slovak page (https://vitrina.cafe/sk: Štart 39 €35,10 €31,20 €/mes., Reštaurácia 79 €…), assumed to be the EU € list — a reviewer may decide not to count it. Excl. VAT."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Order ahead on the website and pick up without queuing",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Order ahead on the website and pick up without queuing",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "39 €",
+     "url": "https://vitrina.cafe/sk"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe",
+    "https://vitrina.cafe/sk"
+   ],
+   "country": "LV"
+  }
+ ],
+ "notes": "Vitrina (vitrina.cafe; white-label ordering site/app + POS developed by Complete Solution s.r.o., Trnava, Slovakia; found by me in UA) is a European multi-country tool, so mine. It has its own local-currency price pages for Iceland (ISK: Start kr 5,390/mo), Sweden (SEK: kr 439/mo) and Norway (NOK: kr 419/mo) — Express kr 0/mo + 3 % of online payments everywhere; all excl. VAT; first figure of each block is the monthly-billed price, then 6-month (−10 %) and yearly (−20 %). Croatia and Slovenia: Croatian (/hr) and Slovenian (/sl) language sites with € prices (Start 39 €/mj.|mes.) but no sentence naming the country — presence by language only. Lithuania and Latvia: only named on its English main page ('in Romania, Lithuania and Latvia we don’t offer the POS.'), € prices taken from its Slovak page — weakest; a reviewer may drop them. Price pages also exist for DK, CH, GB (and languages cs, pl, de, hu, ro) — not research countries in this wave, not opened. Not recorded but worth knowing: Delever (Tashkent; mine) says it has legal entities in Uzbekistan, Kazakhstan, UAE and Azerbaijan and names Cyprus and Georgia among its countries, but shows prices only in сум — not opened for AE/CY; Clopos (Baku; QR-menu POS, USD) has a Turkey office per search — not relevant (no takeaway ordering). Iceland is notable: agent 4 found nothing ISK-priced there, and Vitrina's ISK page would be the first.",
+ "countries": [
+  "IS",
+  "SE",
+  "NO",
+  "HR",
+  "SI",
+  "LT",
+  "LV"
+ ]
+}

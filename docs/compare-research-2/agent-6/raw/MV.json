@@ -1,0 +1,142 @@
+{
+  "country": "MV",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Maldives restaurant cafe online ordering system pickup takeaway order ahead MVR pricing Malé POS",
+    "Maldives POS software restaurant \"MVR\" online order website Maldivian company F&B"
+  ],
+  "vendors": [
+    {
+      "name": "Qvian",
+      "website": "https://qvian.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Maldivian (Fuvahmulah) business suite with a restaurant POS, kitchen display and a Qvian consumer app giving 'an online menu for pickup and delivery'; MVR prices per location per month. BORDERLINE: pickup ordering runs through Qvian's own multi-business consumer app (not the restaurant's own site), and no chosen-time / pre-order wording",
+      "eligibility": {
+        "order_quote": "an online menu for pickup and delivery",
+        "order_url": "https://qvian.com/restaurant-pos-maldives",
+        "country_quote": "Restaurant POS Maldives",
+        "country_url": "https://qvian.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "Restaurant or Café",
+          "currency": "MVR",
+          "price_major": 3500,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "MVR 3,500",
+          "url": "https://qvian.com/pricing",
+          "note": "'Per location, per month.' 'All prices in MVR.' 'Setup and onboarding details are confirmed with you before you start.' The pricing page does not list which features each plan includes."
+        },
+        {
+          "plan_name": "Street Vendor",
+          "currency": "MVR",
+          "price_major": 750,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "MVR 750",
+          "url": "https://qvian.com/pricing",
+          "note": "'Per location, per month.' Whether the consumer-app pickup ordering is included is not stated; street vendors are not described as food sellers."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "an online menu for pickup and delivery",
+          "url": "https://qvian.com/restaurant-pos-maldives",
+          "note": "pickup ordering in the consumer app; no chosen-time wording"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders fire to the kitchen display as tickets with dishes, modifiers, and a timer.",
+          "url": "https://qvian.com/restaurant-pos-maldives"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Kitchen display, QR ordering, floor plans, recipe costing and buffet planning",
+          "url": "https://qvian.com/",
+          "note": "POS suite handles counter orders alongside app orders"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Multi-location, multi-currency and multi-entity control",
+          "url": "https://qvian.com/"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Per location, per month.",
+          "url": "https://qvian.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://qvian.com/",
+        "https://qvian.com/pricing",
+        "https://qvian.com/restaurant-pos-maldives"
+      ]
+    },
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Pricing page lists local prices for 7 markets only (Singapore, Philippines, Indonesia, Malaysia, Thailand, Japan, Taiwan) — this country is not among them",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://klikit.io/en/pricing"
+      ]
+    }
+  ],
+  "notes": "MV count: 1 priced in MVR (Qvian, borderline). freedom251.com was a listing page for Qvian (not used as a source; showed an older 2,500 MVR price). Laniakea Tech RAS POS (news only), fi es systems (hotel PMS) and listing-site tools (MyDineHub, HashMicro) not read. Foodics: no Maldives presence seen. Take App's countries page does not list the Maldives. MENU TIGER: global USD-only (see BD)."
+}

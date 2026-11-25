@@ -1,0 +1,24 @@
+{
+  "country": "LA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Laos restaurant POS online ordering Vientiane takeaway pre-order system price kip monthly"
+  ],
+  "vendors": [
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Pricing page lists local prices for 7 markets only (Singapore, Philippines, Indonesia, Malaysia, Thailand, Japan, Taiwan) — this country is not among them",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://klikit.io/en/pricing"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible found. Search returns Aldelo Cloud POS's Laos page (browser-based online ordering, no price; US vendor, agent 7's region — only named), Thai-market tools (eMenu Thailand, Papaya, Qashier TH — no Laos presence shown), Eats365's US USD page and travel listings. Delivery apps (foodpanda Laos, LOCA, Gokab) are marketplaces, not looked at. Take App's countries page does not list Laos. Klikit: no Laos market. No LAK price for any ordering tool seen."
+}

@@ -1,0 +1,143 @@
+{
+ "country": "MD",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Moldova sistem comenzi online restaurant ridicare de la local precomandă preț lei/lună Chișinău software"
+ ],
+ "vendors": [
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "White-label ordering website/app + POS (pickup, orders for a set time, own domain) with its own price page for Moldova in MDL; developer Complete Solution s.r.o. (Trnava, Slovakia) per its main page ('Vitrina is developed by Complete Solution, a company based in Slovakia.'), hryvnia is the main page's default currency",
+   "eligibility": {
+    "order_quote": "Order ahead on the website and pick up without queuing",
+    "order_url": "https://vitrina.cafe",
+    "country_quote": "Currency of this price list: Moldovan Leu (MDL).",
+    "country_url": "https://vitrina.cafe/en/prices/md"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "MDL",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "MDL 0/mo",
+     "url": "https://vitrina.cafe/en/prices/md",
+     "note": "No subscription; 3% of online payments (delivery and pickup), as on the main page. 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Start",
+     "currency": "MDL",
+     "price_major": 789,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "MDL 789",
+     "url": "https://vitrina.cafe/en/prices/md",
+     "note": "Price block shows three amounts (billed monthly first, then cheaper for longer billing periods); the first, monthly-billed amount is recorded. Start includes 'Ordering website on your own domain' and 'Delivery and pickup'. Up to 0.9% of online payments only (main page). 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "MDL",
+     "price_major": 1589,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "MDL 1,589",
+     "url": "https://vitrina.cafe/en/prices/md",
+     "note": "Monthly-billed amount (first of three). Adds table QR ordering and booking."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Delivery, pickup and orders for a set time",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Orders for a set time and pickup",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "MDL 789",
+     "url": "https://vitrina.cafe/en/prices/md"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe/en/prices/md",
+    "https://vitrina.cafe"
+   ]
+  }
+ ],
+ "notes": "One eligible tool with an MDL price: Vitrina (white-label ordering site + POS, developed by Complete Solution s.r.o. in Slovakia; its own Moldova price page in MDL: Express MDL 0/mo + 3% of online payments, Start MDL 789/mo monthly-billed, Restaurant MDL 1,589/mo, excl. VAT; pickup and orders for a set time) — a restaurant tool, not a food-truck tool. No Moldovan-made ordering tool found: the Romanian search returned Glovo stores (marketplace, never), MENU TIGER /ro (agent 6, USD — not fetched) and an investment-agency PDF catalogue with no restaurant ordering prices. Poster: no Moldova page (https://joinposter.com/en/pages/md-main 404; no Moldova in its selector). Paloma365's country selector names Moldova but it shows no pickup ordering (see KZ). FoxiFood, Storekit, SumUp do not list Moldova. Stop rule applied."
+}

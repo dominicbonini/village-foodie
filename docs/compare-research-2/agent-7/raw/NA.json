@@ -1,0 +1,104 @@
+{
+  "country": "NA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Namibia restaurant online ordering system click and collect pickup \"N$\" per month food truck order ahead Windhoek software"
+  ],
+  "vendors": [
+    {
+      "name": "YUMBI",
+      "website": "https://www.yumbi.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "South African restaurant/QSR ordering technology (African multi-country, owned by agent 7 in wave 2): white-label web and app ordering for delivery, pickup and order-ahead; its home page lists Namibia among seven markets. No price on the site (sales contact) -> hidden plan, does not count as priced. Home page read today by wave-1 agent 3 (reused, not re-fetched)",
+      "eligibility": {
+        "order_quote": "White-label web and app ordering that builds owned customer relationships.",
+        "order_url": "https://www.yumbi.com/",
+        "country_quote": "Namibia",
+        "country_url": "https://www.yumbi.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "StoreFront (price on request)",
+          "currency": "NAD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://www.yumbi.com/",
+          "note": "no price on the site; \"Get Started\" goes to a sales contact form. country_quote is the market name from the home page list of seven markets (South Africa, Botswana, Namibia, Kenya, Nigeria, Zambia, Côte d'Ivoire), as reported by agent 3's page reader today"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "delivery, pickup, and order-ahead",
+          "url": "https://www.yumbi.com/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "White-label web and app ordering that builds owned customer relationships.",
+          "url": "https://www.yumbi.com/"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.yumbi.com/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible with an NAD price. YUMBI (South African, lists Namibia) is eligible but has no price (hidden plan). No Namibian ordering tool a business can buy was found (one search): Tap a Meal and Dial-A-Meal Namibia are consumer delivery/collection services (marketplaces, never counted); Debonairs / Steers are chain apps; Andy's Bar runs its own pickup page (GloriaFood-style wording, vendor not named — not read). FoodChow (stored candidate 196dc923, Indian) has a Namibia landing page — not my vendor, only named. Mr D: marketplace. Square / Toast / Clover / Owner.com: no Namibia presence."
+}

@@ -1,0 +1,24 @@
+{
+  "country": "BS",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Bahamas restaurant online ordering system pickup Nassau \"BSD\" OR \"B$\" software platform order ahead food truck"
+  ],
+  "vendors": [
+    {
+      "name": "OrderBahamas",
+      "website": "https://orderbahamas.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "diner marketplace: restaurants join as sellers, customers pay an 11% service charge (\"Restaurants are never billed fees.\"); pay-ahead pickup (\"Pay ahead & skip the line\") but a marketplace -> never counted. Says it works with restaurants' existing Square systems",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://orderbahamas.com/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible with a BSD price; no Bahamian ordering tool a business can buy was found. OrderBahamas is a diner marketplace (customer pays 11%). Bahamagrub, JustFoodz are marketplaces / directories (never counted). Several Nassau takeaways run their own \"Order online\" pages with pickup (\"Takeaway food - Nassau - Order online\", manually confirmed orders) — the wording looks like GloriaFood restaurant sites (agent 1/5 region; not read, the vendor is not named on those pages in the snippets). Square: its own availability list (wave 1, read today) does not include the Bahamas, although OrderBahamas mentions restaurants using Square there; Toast / Clover / Owner.com show no Bahamas presence. Pedix / OlaClick / Fudo do not cover the English-speaking Caribbean. One search only: the snippets showed nothing else plausible."
+}

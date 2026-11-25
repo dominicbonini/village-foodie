@@ -1,0 +1,276 @@
+{
+ "country": "RS",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "sistem za online porudžbine za restorane preuzimanje cena mesečno RSD food truck",
+  "online naručivanje za restorane i brzu hranu sopstveni sajt \"din\" mesečno paket porudžbine za poneti",
+  "Srbija aplikacija za restorane online porudžbine QR meni preuzimanje u lokalu cenovnik dinara",
+  "Serbian restaurant online ordering software own website pickup pricing RSD Beograd startup platforma porudžbine restorani bez provizije",
+  "софтвер онлајн поруџбине ресторан сајт за наручивање преузимање у ресторану цена месечно динара"
+ ],
+ "vendors": [
+  {
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com/sr/",
+   "stored_id_prefix": "d03a6e1f",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "ordering platform with a Serbian-language site (/sr/), a food-truck page and pre-orders for a chosen date and time; its country-terms page lists Serbia; prices only in EUR (0 € a month, 0,45 € per order), so not counted for RSD",
+   "eligibility": {
+    "food_quote": "Online narucivanje za food truck",
+    "food_url": "https://www.foxifood.com/sr/primeri-koriscenja/food-truck/",
+    "order_quote": "Omogucite kupcima da naruce unapred za odredjeni datum i vreme.",
+    "order_url": "https://www.foxifood.com/sr/funkcije/",
+    "country_quote": "Serbia",
+    "country_url": "https://www.foxifood.com/legal/country-terms/"
+   },
+   "plans": [
+    {
+     "plan_name": "FoxiFood (no monthly fee, per order)",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": 0.45,
+     "setup_major": 0,
+     "quote": "Mesečna naknada 0 €",
+     "url": "https://www.foxifood.com/sr/",
+     "note": "EUR only — no RSD price, so it does not count for RS. 'Naknada za obradu (Foxi) 0,45 €', 'Naknada za aktivaciju 0 €'. Features page: 'Samo 2% + 0,45 EUR po narudzbi, bez mesecne naknade.' (card-fee wording differs between pages, as agent 4 saw). The page reader returned the /sr/ text without diacritics on the features and food-truck pages."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Omogucite kupcima da naruce unapred za odredjeni datum i vreme.",
+     "url": "https://www.foxifood.com/sr/funkcije/"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Omogucite kupcima da naruce unapred za odredjeni datum i vreme.",
+     "url": "https://www.foxifood.com/sr/funkcije/"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "kampanje na drustvenim mrezama",
+     "url": "https://www.foxifood.com/sr/funkcije/"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Vidite sve narudzbe u realnom vremenu -- QR, online, telefonske i walk-in.",
+     "url": "https://www.foxifood.com/sr/funkcije/"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "partial",
+     "quote": "Vidite sve narudzbe u realnom vremenu -- QR, online, telefonske i walk-in.",
+     "url": "https://www.foxifood.com/sr/funkcije/"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "Upravljajte vise restoranskih lokacija sa jedne table.",
+     "url": "https://www.foxifood.com/sr/funkcije/"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Pokrenite sajt za narucivanje na sopstvenom domenu.",
+     "url": "https://www.foxifood.com/sr/funkcije/"
+    },
+    {
+     "key": "monthly",
+     "value": "no",
+     "quote": "Samo 2% + 0,45 EUR po narudzbi, bez mesecne naknade.",
+     "url": "https://www.foxifood.com/sr/funkcije/"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "Naknada za obradu (Foxi) 0,45 €",
+     "url": "https://www.foxifood.com/sr/"
+    },
+    {
+     "key": "cardfee",
+     "value": "yes",
+     "quote": "Samo 2% + 0,45 EUR po narudzbi, bez mesecne naknade.",
+     "url": "https://www.foxifood.com/sr/funkcije/"
+    }
+   ],
+   "check_urls": [
+    "https://www.foxifood.com/sr/",
+    "https://www.foxifood.com/sr/funkcije/",
+    "https://www.foxifood.com/sr/primeri-koriscenja/food-truck/",
+    "https://www.foxifood.com/legal/country-terms/"
+   ]
+  },
+  {
+   "name": "doXmenu",
+   "website": "https://www.doxmenu.com/qr-menu/serbia/",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "QR digital menu only (view the menu in the browser); no online ordering, takeaway or pickup on its Serbia page; EUR prices",
+   "check_urls": [
+    "https://www.doxmenu.com/qr-menu/serbia/"
+   ],
+   "answers": [],
+   "plans": [],
+   "eligibility": {}
+  },
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "White-label ordering website/app + POS (pickup, orders for a set time, own domain) with its own price page for Serbia in RSD; developer Complete Solution s.r.o. (Trnava, Slovakia) per its main page ('Vitrina is developed by Complete Solution, a company based in Slovakia.'), hryvnia is the main page's default currency",
+   "eligibility": {
+    "order_quote": "Order ahead on the website and pick up without queuing",
+    "order_url": "https://vitrina.cafe",
+    "country_quote": "Currency of this price list: Serbian Dinar (RSD).",
+    "country_url": "https://vitrina.cafe/en/prices/rs"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "RSD",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "RSD 0/mo",
+     "url": "https://vitrina.cafe/en/prices/rs",
+     "note": "No subscription; 3% of online payments (delivery and pickup), as on the main page. 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Start",
+     "currency": "RSD",
+     "price_major": 4590,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "RSD 4,590",
+     "url": "https://vitrina.cafe/en/prices/rs",
+     "note": "Price block shows three amounts (billed monthly first, then cheaper for longer billing periods); the first, monthly-billed amount is recorded. Start includes 'Ordering website on your own domain' and 'Delivery and pickup'. Up to 0.9% of online payments only (main page). 'Prices exclude VAT.'"
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "RSD",
+     "price_major": 9290,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "RSD 9,290",
+     "url": "https://vitrina.cafe/en/prices/rs",
+     "note": "Monthly-billed amount (first of three). Adds table QR ordering and booking."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Delivery, pickup and orders for a set time",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Orders for a set time and pickup",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "RSD 4,590",
+     "url": "https://vitrina.cafe/en/prices/rs"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe/en/prices/rs",
+    "https://vitrina.cafe"
+   ]
+  }
+ ],
+ "notes": "One eligible tool with an RSD price: Vitrina (white-label ordering site + POS developed by Complete Solution s.r.o., Slovakia; its own Serbia price page 'Currency of this price list: Serbian Dinar (RSD).': Express RSD 0/mo + 3% of online payments, Start RSD 4,590/mo monthly-billed, Restaurant RSD 9,290/mo, excl. VAT; pickup and orders for a set time) — a restaurant tool. FoxiFood (Serbian /sr/ site, food-truck page, pre-orders for a date and time; Serbia on its country-terms list) is eligible but priced only in EUR (0 € a month + 0,45 € per order), so it does not count. Four searches (Serbian Latin, Cyrillic, English) returned Glovo/Wolt/Mr D/Alideda (marketplaces, never), Jotform forms, doXmenu (QR menu only, EUR — recorded not_relevant), Gostio (booking only, a TechCrunch article, not opened), a StarTech beta project 'Order' (no own site/price, not opened) and foreign tools without Serbian presence. Global pages checked today (mine): UpMenu pricing (USD/CAD/EUR/CHF/GBP, English only, no Serbia), Restaumatic price list (no prices, English only, no Serbia). SumUp's country selector and Storekit's regions doc have no Serbia. Not fetched: MENU TIGER (agent 6), Restimo (Polish; Serbia not shown). Stop rule applied."
+}

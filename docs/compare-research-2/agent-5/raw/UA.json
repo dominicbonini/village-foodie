@@ -1,0 +1,521 @@
+{
+ "country": "UA",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "joinposter.com ua тарифи грн на місяць Poster Shop сайт самовивіз",
+  "онлайн замовлення для ресторану сайт самовивіз передзамовлення тариф грн/міс фудтрак",
+  "Expirenza QR-меню доставка самовивіз тарифи грн",
+  "українська система онлайн-замовлень для кафе і ресторанів без комісії власний сайт самовивіз ціна на місяць",
+  "Ukrainian restaurant tech startup online ordering pickup for cafes pricing UAH (Choice, Expirenza, Poster alternatives)",
+  "Vitrina онлайн-замовлення ресторан 1600 грн підписка 0,9%"
+ ],
+ "vendors": [
+  {
+   "name": "Poster",
+   "website": "https://joinposter.com/ua",
+   "stored_id_prefix": "0802a7c8",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "Ukrainian cloud POS with a Ukrainian food-truck page and UAH prices; its Poster Site add-on (or the Business/Pro plans) gives an ordering website with pickup. Weak: no order-for-a-chosen-time wording",
+   "eligibility": {
+    "food_quote": "Автоматизація фудтрака: рішення для вашого бізнесу.",
+    "food_url": "https://joinposter.com/ua/business/foodtruck",
+    "order_quote": "Сайт для замовлень з вашого закладу — за 5 хвилин",
+    "order_url": "https://joinposter.com/ua/pricing",
+    "country_quote": "Вартість — 760 ₴/міс.",
+    "country_url": "https://joinposter.com/ua/pricing"
+   },
+   "plans": [
+    {
+     "plan_name": "Business (includes Сайт для замовлень)",
+     "currency": "UAH",
+     "price_major": 1530,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "1 530 ₴/міс.",
+     "url": "https://joinposter.com/ua/pricing",
+     "note": "Shown with a crossed-out 1 700 ₴ under an 'Оплата за рік' toggle, so 1 530 is likely the per-month price billed yearly (page does not say so explicitly); 1 700 ₴ likely the monthly-billed price. Business and Pro list 'Сайт для замовлень' and 'Управління доставкою'."
+    },
+    {
+     "plan_name": "Starter + Poster Site add-on",
+     "currency": "UAH",
+     "price_major": 540,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "540 ₴/міс.",
+     "url": "https://joinposter.com/ua/pricing",
+     "note": "Starter POS plan (crossed-out 600 ₴, yearly toggle as above). Online ordering needs the Poster Site add-on: 'Вартість — 760 ₴/міс.' extra."
+    },
+    {
+     "plan_name": "Poster Site (ordering website add-on)",
+     "currency": "UAH",
+     "price_major": 760,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Вартість — 760 ₴/міс.",
+     "url": "https://joinposter.com/ua/pricing",
+     "note": "Add-on price on top of a POS plan; described 'Доставлення і самовивіз'. The food-truck page headline price is '1 080 ₴ /на міс.' (Mini)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Доставлення і самовивіз",
+     "url": "https://joinposter.com/ua/pricing"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Екран на кухню",
+     "url": "https://joinposter.com/ua/business/foodtruck"
+    },
+    {
+     "key": "offline",
+     "value": "partial",
+     "quote": "не припиняє роботу, навіть якщо немає електрики",
+     "url": "https://joinposter.com/ua/business/foodtruck"
+    },
+    {
+     "key": "walkup",
+     "value": "yes",
+     "quote": "Програма для фудтрака, яка допомагає вести облік замовлень, продажів та складських залишків на колесах.",
+     "url": "https://joinposter.com/ua/business/foodtruck"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "Єдиний акаунт для всіх точок продажу",
+     "url": "https://joinposter.com/ua/business/foodtruck"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "1 080 ₴ /на міс.",
+     "url": "https://joinposter.com/ua/business/foodtruck"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://joinposter.com/ua/pricing",
+    "https://joinposter.com/ua/business/foodtruck"
+   ]
+  },
+  {
+   "name": "Choice",
+   "website": "https://choiceqr.com/ua",
+   "stored_id_prefix": "70b34967",
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "choiceqr.com/ua/pricing and choiceqr.com/ua both answered HTTP 403 (bot block), tried once each; same block agent 1 and compare-research-1 hit for other countries",
+   "check_urls": [
+    "https://choiceqr.com/ua/pricing",
+    "https://choiceqr.com/ua"
+   ],
+   "answers": [],
+   "plans": [],
+   "eligibility": {}
+  },
+  {
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com/uk/",
+   "stored_id_prefix": "d03a6e1f",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "ordering platform with a Ukrainian-language site (/uk/), a food-truck page and pre-orders for a chosen date and time; its country-terms page lists Ukraine; prices only in EUR (0 € a month, 0,45 € per order), so not counted for UAH",
+   "eligibility": {
+    "food_quote": "Онлайн-замовлення для фудтраків",
+    "food_url": "https://www.foxifood.com/uk/varanti-vikoristannya/food-truck/",
+    "order_quote": "Клієнти роблять замовлення заздалегідь на певну дату і час.",
+    "order_url": "https://www.foxifood.com/uk/funkts/",
+    "country_quote": "Ukraine",
+    "country_url": "https://www.foxifood.com/legal/country-terms/"
+   },
+   "plans": [
+    {
+     "plan_name": "FoxiFood (no monthly fee, per order)",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": 0.45,
+     "setup_major": 0,
+     "quote": "Щомісячна плата 0 €",
+     "url": "https://www.foxifood.com/uk/",
+     "note": "EUR only — no UAH price, so it does not count for UA. 'Комісія за обробку (Foxi) 0,45 €', 'Плата за підключення 0 €'; Stripe card fee separate. Features page: 'Лише 2% + 0,45 EUR за замовлення, без щомісячних платежів.' (card-fee wording differs between pages)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Клієнти роблять замовлення заздалегідь на певну дату і час.",
+     "url": "https://www.foxifood.com/uk/funkts/"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Клієнти роблять замовлення заздалегідь на певну дату і час.",
+     "url": "https://www.foxifood.com/uk/funkts/"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "посилання на соцмережі",
+     "url": "https://www.foxifood.com/uk/funkts/"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Усі замовлення в реальному часі — QR, онлайн, телефон і самовивіз.",
+     "url": "https://www.foxifood.com/uk/funkts/"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "partial",
+     "quote": "Інтегруйте FoxiFood з вашою POS-системою або використовуйте як основну платформу.",
+     "url": "https://www.foxifood.com/uk/funkts/"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "Керуйте кількома локаціями з однієї панелі.",
+     "url": "https://www.foxifood.com/uk/funkts/"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Запустіть сайт замовлень на власному домені.",
+     "url": "https://www.foxifood.com/uk/funkts/"
+    },
+    {
+     "key": "monthly",
+     "value": "no",
+     "quote": "Лише 2% + 0,45 EUR за замовлення, без щомісячних платежів.",
+     "url": "https://www.foxifood.com/uk/funkts/"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "Комісія за обробку (Foxi) 0,45 €",
+     "url": "https://www.foxifood.com/uk/"
+    },
+    {
+     "key": "cardfee",
+     "value": "yes",
+     "quote": "Лише 2% + 0,45 EUR за замовлення, без щомісячних платежів.",
+     "url": "https://www.foxifood.com/uk/funkts/"
+    }
+   ],
+   "check_urls": [
+    "https://www.foxifood.com/uk/",
+    "https://www.foxifood.com/uk/funkts/",
+    "https://www.foxifood.com/uk/varanti-vikoristannya/food-truck/",
+    "https://www.foxifood.com/legal/country-terms/"
+   ]
+  },
+  {
+   "name": "Delivety",
+   "website": "https://delivety.com/uk",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "takeaway/delivery ordering system with a Ukrainian-language site, scheduled pickup in time slots, zero commission; prices only in USD, so not counted for UAH; operator USIP Solutions LTD, no Ukrainian office stated",
+   "eligibility": {
+    "order_quote": "Запропонуйте клієнтам можливість запланувати самовивіз.",
+    "order_url": "https://delivety.com/uk/online-ordering-system-for-takeaway",
+    "country_quote": "Жодних комісій.",
+    "country_url": "https://delivety.com/uk/online-ordering-system-for-takeaway"
+   },
+   "plans": [
+    {
+     "plan_name": "Up to 1,000 orders",
+     "currency": "USD",
+     "price_major": 9,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Just $9 for up to 1,000 orders per month",
+     "url": "https://delivety.com/uk/online-ordering-system-for-takeaway",
+     "note": "USD only (English comparison table on the Ukrainian page) — does not count for UA. Country evidence is only the Ukrainian-language site; pricing page https://delivety.com/uk/pricing not opened."
+    },
+    {
+     "plan_name": "Up to 5,000 orders",
+     "currency": "USD",
+     "price_major": 49,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "$49 for up to 5,000",
+     "url": "https://delivety.com/uk/online-ordering-system-for-takeaway",
+     "note": "USD only."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Ви встановлюєте доступні тайм-слоти, а клієнти обирають найзручніший час.",
+     "url": "https://delivety.com/uk/online-ordering-system-for-takeaway"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Цифровий екран замінює паперові тикети.",
+     "url": "https://delivety.com/uk/online-ordering-system-for-takeaway"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Just $9 for up to 1,000 orders per month",
+     "url": "https://delivety.com/uk/online-ordering-system-for-takeaway"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "Жодних комісій.",
+     "url": "https://delivety.com/uk/online-ordering-system-for-takeaway"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://delivety.com/uk/online-ordering-system-for-takeaway"
+   ]
+  },
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "White-label ordering website/app + POS for cafés and restaurants: pickup and orders for a set time, own domain; default prices in hryvnia (Express ₴0 + 3% of online payments, Start ₴1,600/mo),; developer Complete Solution s.r.o. (Trnava, Slovakia) per its main page ('Vitrina is developed by Complete Solution, a company based in Slovakia.'), hryvnia is the main page's default currency",
+   "eligibility": {
+    "order_quote": "Order ahead on the website and pick up without queuing",
+    "order_url": "https://vitrina.cafe",
+    "country_quote": "Tablet POS with the Checkbox or Vchasno.Kasa PRRO",
+    "country_url": "https://vitrina.cafe"
+   },
+   "plans": [
+    {
+     "plan_name": "Express",
+     "currency": "UAH",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "₴0/mo",
+     "url": "https://vitrina.cafe",
+     "note": "Express includes 'Ordering website on your own domain' and 'Delivery and pickup'; '+ 3% of online payments (delivery and pickup)'. 'Prices exclude VAT.' Read on the English page (hryvnia is the default view; a Ukrainian /ua version exists, not opened)."
+    },
+    {
+     "plan_name": "Start",
+     "currency": "UAH",
+     "price_major": 1600,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "₴1,600",
+     "url": "https://vitrina.cafe",
+     "note": "Price block reads '₴1,600₴1,440₴1,280/mo': 1,600 billed monthly; 1,440 and 1,280 for longer billing periods. 'At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.' Excl. VAT."
+    },
+    {
+     "plan_name": "Restaurant",
+     "currency": "UAH",
+     "price_major": 2650,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 0.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "₴2,650",
+     "url": "https://vitrina.cafe",
+     "note": "Price block '₴2,650₴2,385₴2,120/mo' (monthly / longer billing). Adds table QR ordering and booking. Full ₴4,100 and Chain from ₴3,290 per location also shown."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Delivery, pickup and orders for a set time",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Orders for a set time and pickup",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "partial",
+     "quote": "Your venue's Wi-Fi and social links on the website",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Kitchen display on a tablet: stations, timers and Ready",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "partial",
+     "quote": "Tablet POS with the Checkbox or Vchasno.Kasa PRRO",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Your domain, logo and colours: guests see your brand, not ours",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "₴1,600",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+     "url": "https://vitrina.cafe"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://vitrina.cafe"
+   ]
+  }
+ ],
+ "notes": "Two eligible tools with UAH prices: Poster (stored 0802a7c8; Ukrainian pricing page joinposter.com/ua/pricing: Starter 540 ₴/міс., Business 1 530 ₴/міс. incl. 'Сайт для замовлень', Poster Site add-on 760 ₴/міс.; prices shown beside crossed-out 600/1 700 under an 'Оплата за рік' toggle, so likely billed yearly; Ukrainian food-truck page — counted food_truck, weak on ordering ahead: only 'Доставлення і самовивіз') and Vitrina (white-label ordering site + POS developed by Complete Solution s.r.o., Slovakia, with hryvnia as its main page's default and Ukrainian fiscal PRRO support: Express ₴0/mo + 3%, Start ₴1,600/mo monthly-billed, excl. VAT; pickup and orders for a set time). Eligible but not counted: FoxiFood (Ukrainian /uk/ site, EUR only) and Delivety (Ukrainian-language takeaway page with time slots, USD only: //). Choice (stored 70b34967): choiceqr.com/ua and /ua/pricing both 403 — unreadable. Search leads not opened: Expirenza (QR pay/menu app; App Store pages only), Paloma365 (Kazakhstan POS, see KZ; a /promoukraine page), Eatery Club (individual pricing), GetOrder (PWA, no price seen), 4mobile.me / Smartomato (Russian), webscraft (web studio, one-off build prices). Glovo, Bolt Food (marketplaces) never. SumUp and Storekit have no Ukraine presence."
+}

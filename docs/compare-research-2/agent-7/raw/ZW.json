@@ -1,0 +1,25 @@
+{
+  "country": "ZW",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Zimbabwe restaurant online ordering system pickup Harare USD per month software own website takeaway order ahead EcoCash",
+    "Zimbabwe online store builder restaurants WhatsApp orders collection \"per month\" \"$\" plan Harare menu ordering link small business"
+  ],
+  "vendors": [
+    {
+      "name": "Bereka Bites",
+      "website": "https://www.berekabites.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "diner delivery marketplace (\"Order your favorite food from local restaurants in Zimbabwe via our app or WhatsApp.\"), delivery only -> never counted",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.berekabites.com/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible exists that I could find (two searches, one vendor site read). Food results were consumer apps / marketplaces (never counted): AfroBites (Harare dining app with pickup and pre-orders for diners), Harare Eats, Idya, dot., Zimeats, Bereka Bites, Loko, ZimQuote, KFC Zimbabwe (single chain). Storelync (Harare WhatsApp store builder, $9 / $29 per month per snippet) and Mosi365 are generic e-commerce store builders, not food tools (not read). FieldPOS: a till. YUMBI's market list (South Africa, Botswana, Namibia, Kenya, Nigeria, Zambia, Côte d'Ivoire) does not include Zimbabwe. FoodChow (stored candidate, Indian): not my vendor. Square / Toast / Clover / Owner.com: no Zimbabwe presence. Pedix / OlaClick / Fudo: Latin America only."
+}

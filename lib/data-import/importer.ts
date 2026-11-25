@@ -24,6 +24,8 @@ export const DATA_FILES = [
   // compare-research-2 (25 Nov 2026): the same research for the countries not yet live, by four region agents (built by
   // docs/compare-research-2/build.cjs; plans the review found without a stated currency or without online ordering are unclear).
   { path: 'data/compare-research-2/competitors.json', label: 'Comparison research 2 (25 Nov)', kind: 'research' },
+  // compare-research-2 wave 2 (25 Nov 2026): the remaining switched-on countries (agents 5–7; docs/compare-research-2/build-wave-2.cjs).
+  { path: 'data/compare-research-2b/competitors.json', label: 'Comparison research 2, wave 2 (25 Nov)', kind: 'research' },
 ] as const
 export type DataFile = (typeof DATA_FILES)[number]
 

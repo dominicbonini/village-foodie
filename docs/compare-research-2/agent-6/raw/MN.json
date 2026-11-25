@@ -1,0 +1,25 @@
+{
+  "country": "MN",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Mongolia restaurant online ordering system POS Ulaanbaatar takeaway pre-order pricing төгрөг сар",
+    "ресторан онлайн захиалга систем POS программ үнэ сарын төлбөр Монгол"
+  ],
+  "vendors": [
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Pricing page lists local prices for 7 markets only (Singapore, Philippines, Indonesia, Malaysia, Thailand, Japan, Taiwan) — this country is not among them",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://klikit.io/en/pricing"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible found. English and Mongolian searches return only Songo.mn and Toki-type delivery apps (marketplaces, not looked at), an Odoo eBarimt POS module (till/tax add-on) and foreign tools priced in USD (Eats365 US page, UpMenu, Poster, Toast, Heartland, MENU TIGER) — no Mongolian presence shown for any; Poster and UpMenu are agent 5's (only named). Take App's countries page does not list Mongolia. No MNT price for any ordering tool seen."
+}

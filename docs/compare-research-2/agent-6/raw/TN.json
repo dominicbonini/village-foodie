@@ -1,0 +1,127 @@
+{
+  "country": "TN",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Tunisie logiciel commande en ligne restaurant click and collect à emporter abonnement prix DT mois site de commande"
+  ],
+  "vendors": [
+    {
+      "name": "Sinqro",
+      "website": "https://sinqro.com/en-tn",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Restaurant ordering/operations platform with a Tunisia market site ('© 2026 Sinqro Tunisia'); intake from the restaurant's own ordering web, table QR and kiosks, with pickup as an order type. BORDERLINE: no sentence on click-and-collect or ordering for a chosen time; price not readable ('Pricing temporarily unavailable. Please try again.'). Home market unclear (market selector, € in the sample dashboard) — may be a European multi-country tool",
+      "eligibility": {
+        "order_quote": "your own ordering web, table QR and kiosks",
+        "order_url": "https://sinqro.com/en-tn",
+        "country_quote": "© 2026 Sinqro Tunisia",
+        "country_url": "https://sinqro.com/en-tn/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Monthly",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://sinqro.com/en-tn/pricing",
+          "note": "Hidden plan: the page showed 'Pricing temporarily unavailable. Please try again.'; FAQ says billed 'monthly (no commitment, cancel any time)'. Currency not shown (EUR assumed from the sample dashboard; TN stored as EUR). A search snippet quoted % fees — not used."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "your own ordering web, table QR and kiosks",
+          "url": "https://sinqro.com/en-tn",
+          "note": "own ordering web; pickup shown only as an order type in a preview, no chosen-time wording"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Automatic printing to the right POS",
+          "url": "https://sinqro.com/en-tn",
+          "note": "orders pass to the POS"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Pay only for what each venue uses.",
+          "url": "https://sinqro.com/en-tn"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "partial",
+          "quote": "monthly (no commitment, cancel any time)",
+          "url": "https://sinqro.com/en-tn/pricing",
+          "note": "amount not shown"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://sinqro.com/en-tn/pricing",
+        "https://sinqro.com/en-tn"
+      ]
+    },
+    {
+      "name": "inyad",
+      "website": "https://inyad.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Moroccan POS suite; home page offers only EN/FR/AR and a Morocco-scoped pricing page, Tunisia never named (only a reviewer from 'Tunis'); /en-tn/pricing answers 404 — no Tunisian presence shown",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://inyad.com/",
+        "https://inyad.com/en-tn/pricing"
+      ]
+    }
+  ],
+  "notes": "TN currency is stored as EUR (prices in Tunisia are normally in TND/DT). TN count: 0 priced in EUR or TND. Glovo is a marketplace (not looked at); Capsa Food (Gafsa delivery app, news only); Carthaji (App Store click-and-collect app, origin unclear, not read); Tunisianet sells till software (Lineo Store). Foreign tools from listing sites (Foodiv, Hungrrr, orders2.me, MenuTouch, Flipdish — Flipdish is agent 5's) not read. Take App's countries page does not list Tunisia. MENU TIGER: global USD-only (see BD)."
+}

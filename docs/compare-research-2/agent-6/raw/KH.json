@@ -1,0 +1,25 @@
+{
+  "country": "KH",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Cambodia restaurant online ordering system own website pickup pre-order POS pricing Phnom Penh",
+    "Cambodian POS software restaurant cafe online order website Telegram ordering KHR riel pricing plan"
+  ],
+  "vendors": [
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Pricing page lists local prices for 7 markets only (Singapore, Philippines, Indonesia, Malaysia, Thailand, Japan, Taiwan) — this country is not among them",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://klikit.io/en/pricing"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible found. Searches return marketplaces (foodpanda, Grab, Nham24 not looked at), App Store-only POS apps (MyLekha POS, POS CAMBODIA, Angkor Tep POS — no online ordering stated) and a student project (Haang). Aldelo Cloud POS has a Cambodia page with browser-based online ordering but no prices — US vendor, belongs to agent 7's region (only named). Take App's countries page does not list Cambodia. MENU TIGER: global USD-only, not eligible (see BD). No KHR price for any ordering tool seen; Cambodian software is usually priced in USD."
+}

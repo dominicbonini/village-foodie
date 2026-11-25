@@ -1,0 +1,38 @@
+{
+  "country": "UG",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Uganda restaurant online ordering system own website pickup takeaway POS pricing UGX per month Kampala"
+  ],
+  "vendors": [
+    {
+      "name": "Deonde",
+      "website": "https://deonde.co",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Indian white-label ordering platform with a Uganda page (seen in search: MTN Mobile Money, 'zero commission'); page answered HTTP 403 (the one retry after the 403 on its Sri Lanka page) — no more Deonde pages tried",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://deonde.co/uganda/online-ordering-and-delivery-system.shtml"
+      ]
+    },
+    {
+      "name": "RestaurantOS",
+      "website": "https://restaurant-os-ug.vercel.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "'Uganda-first' restaurant POS on a vercel.app page; orders entered by staff only ('A waiter or cashier creates the order from a cached menu.'); no customer online ordering; no prices shown",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://restaurant-os-ug.vercel.app/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible found. Glovo, SafeBoda Food and Jumia Food are marketplaces (not looked at). Pesapal is a card-terminal / payments provider. Take App's countries page does not list Uganda. No UGX price for any ordering tool seen."
+}

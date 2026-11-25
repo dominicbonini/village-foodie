@@ -1,0 +1,26 @@
+{
+ "country": "AM",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Armenia restaurant online ordering system pickup pricing AMD ֏ per month Yerevan առցանց պատվեր ռեստորան համակարգ",
+  "site:joinposter.com pages \"Poster POS in\" Armenia OR Azerbaijan OR Uzbekistan OR Kyrgyzstan OR Moldova",
+  "Ереван система онлайн заказов для ресторанов кафе самовывоз сайт тариф драм в месяц армянский сервис"
+ ],
+ "vendors": [
+  {
+   "name": "Kovzy",
+   "website": "https://kovzy.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Georgian restaurant website/QR menu/POS with an office in Yerevan (33 Vahe Vahian Street) per its own site, but prices only in ₾ and its site shows only delivery (courier integration), no pickup/pre-order wording — see GE.json",
+   "check_urls": [
+    "https://kovzy.com"
+   ],
+   "answers": [],
+   "plans": [],
+   "eligibility": {}
+  }
+ ],
+ "notes": "Nothing eligible exists that I could find. Three searches (Armenian, Russian, English) returned Glovo, Yandex Eats and Menu.am (marketplaces, never), Zegashop blog posts (an Indian generic website builder, USD; not opened), MENU TIGER /ru (agent 6, USD — not fetched), Choice /us pricing in USD (mine; choiceqr.com answers 403 to me, see UA) and UpMenu/Restimo pages without Armenian presence. Kovzy (Tbilisi + Yerevan offices) recorded not_relevant: ₾ prices only and delivery-only online orders. Poster: no Armenia page (https://joinposter.com/en/pages/am-main 404; selector has no Armenia; only a third-party directory names Armenia — never a source). Paloma365 names Armenia in its country selector but shows no pickup ordering (see KZ). FoxiFood, Storekit, SumUp, Vitrina do not list Armenia. Stop rule applied."
+}

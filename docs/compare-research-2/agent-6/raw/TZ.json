@@ -1,0 +1,24 @@
+{
+  "country": "TZ",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Tanzania restaurant online ordering system own website pickup pre-order POS pricing TZS per month Dar es Salaam"
+  ],
+  "vendors": [
+    {
+      "name": "Sakura Host (restaurant hosting)",
+      "website": "https://sakurahost.co.tz",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Tanzanian web host ('Web hosting for restaurants, cafes, and food businesses in Tanzania.'); sells hosting (from 'Tsh. 55,000/year'), ordering only as an add-on WooCommerce plugin or WhatsApp link; no pickup / ordering-ahead wording — not an ordering tool",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://sakurahost.co.tz/restaurant-hosting/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible found. Piki and Duka Direct are marketplaces (not looked at). Tayari Payments (dine-in digital waiter, investor-network page only), Samba POS, Inaya POS (PDF) and Smartbiashara ERP are till/ERP tools seen in search only, no online ordering ahead shown. Zegashop (stored, candidate) appeared with generic 'how to create an online ordering website in Tanzania' SEO pages — not owned by agent 6, only named. Take App's countries page does not list Tanzania. No TZS price for any ordering tool seen."
+}

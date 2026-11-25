@@ -1,0 +1,183 @@
+{
+  "country": "BN",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Brunei restaurant online ordering system pickup pre-order own website pricing BND F&B POS",
+    "Ordder online ordering Brunei restaurants pricing"
+  ],
+  "vendors": [
+    {
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Link / QR / WhatsApp ordering for food businesses with customer-chosen pickup time slots; lists this country on its countries page (with BND); prices shown in USD only (BN: no BND price, so not counted)",
+      "eligibility": {
+        "order_quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+        "order_url": "https://www.take.app/templates/food",
+        "country_quote": "🇧🇳BruneiBND",
+        "country_url": "https://www.take.app/countries"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "Free plan, '50 orders per month'; 'No commissions on your orders.' USD only on the site (no BND price).. Quote as joined by the page reader. Pricing and food-template quotes reused from wave-1 reading today (agent 2); countries page re-read today for BN."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only on the site (no BND price).; unlimited orders. Quote as joined by the page reader. Pricing and food-template quotes reused from wave-1 reading today (agent 2); countries page re-read today for BN."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "'Most popular'; 5 stores, 5 staff. USD only on the site (no BND price). Quote as joined by the page reader. Pricing and food-template quotes reused from wave-1 reading today (agent 2); countries page re-read today for BN."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+          "note": "quote from compare-research-1 (24 Nov); help page not re-read today"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple branches under one dashboard.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes. Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/templates/food"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on your orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/countries",
+        "https://www.take.app/templates/food"
+      ]
+    },
+    {
+      "name": "StoreHub",
+      "website": "https://www.storehub.com",
+      "stored_id_prefix": "ddc61529",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "The Brunei landing page seen in search (lp.storehub.com/bn/en/point-of-sale) now redirects (301) to storehub.com, whose home page names only Malaysia; no Brunei presence or BND price shown today",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://lp.storehub.com/bn/en/point-of-sale",
+        "https://www.storehub.com/"
+      ]
+    },
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Pricing page lists local prices for 7 markets only (Singapore, Philippines, Indonesia, Malaysia, Thailand, Japan, Taiwan) — this country is not among them",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://klikit.io/en/pricing"
+      ]
+    }
+  ],
+  "notes": "BN count: 0 priced in BND (Take App eligible but USD only). GoMamam and Dart are marketplaces; pasarpbg.com (Gadong night market online) is a marketplace — not looked at. Ordder (Ulibero FZCO, UAE; listing sites only, no Brunei presence), NextOrder and POSAPT (Australian) seen in search only. A government digital-solutions list (aiti.gov.bn) names TechBru Solution POS — not a vendor page. MENU TIGER: global USD-only, not eligible (see BD)."
+}

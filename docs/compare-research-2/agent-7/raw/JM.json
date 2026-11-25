@@ -1,0 +1,128 @@
+{
+  "country": "JM",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Jamaica online ordering system restaurants food truck pickup \"JMD\" OR \"J$\" per month platform Jamaican",
+    "Jamaican restaurant online ordering website pickup \"J$\" monthly plan Kingston software menu orders"
+  ],
+  "vendors": [
+    {
+      "name": "Ezy Cart (EzyWebPro)",
+      "website": "https://ezywebpro.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Jamaican online-store builder with a food-products / restaurants offer: pre-orders with pickup dates, pickup slots, weekly meal-prep menus with cut-off times, catering quote requests; JMD prices; no commission on own sales. Aimed at food producers / meal prep as much as restaurants; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Pre-orders with pickup dates and deposits",
+        "order_url": "https://ezywebpro.com/online-store/food-products-restaurants/",
+        "country_quote": "Registered Jamaican business",
+        "country_url": "https://ezywebpro.com/online-store/food-products-restaurants/"
+      },
+      "plans": [
+        {
+          "plan_name": "Store (Growth)",
+          "currency": "JMD",
+          "price_major": 15000,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 45000,
+          "quote": "Store (Growth) J$15,000 (to 1,500 products)",
+          "url": "https://ezywebpro.com/online-store/food-products-restaurants/",
+          "note": "monthly store engine (\"Growth (store engine) from J$15,000/mo\" per the page reader, abridged); store setup \"from J$45,000\" (deposit J$17,500, balance at launch). A search snippet earlier showed J$35,000 + J$9,500/mo — today's page differs"
+        },
+        {
+          "plan_name": "Store Pro (Scale)",
+          "currency": "JMD",
+          "price_major": 30000,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Store Pro (Scale) J$30,000 (to 10,000).",
+          "url": "https://ezywebpro.com/online-store/food-products-restaurants/",
+          "note": "period assumed monthly like Growth (page reader did not repeat \"/mo\" on this line)"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Pickup slots, local delivery zones, Knutsford for shelf-stable goods.",
+          "url": "https://ezywebpro.com/online-store/food-products-restaurants/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Yes — pre-orders with a date, deposit and notes.",
+          "url": "https://ezywebpro.com/online-store/food-products-restaurants/"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Pickup slots, local delivery zones, Knutsford for shelf-stable goods.",
+          "url": "https://ezywebpro.com/online-store/food-products-restaurants/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "Take pre-orders for cakes and meal prep, sell your sauces to the diaspora, and stop typing the menu into WhatsApp.",
+          "url": "https://ezywebpro.com/online-store/food-products-restaurants/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Your domain, card payments, the phone app, receipts inbox, eBay import, no commission on your own sales.",
+          "url": "https://ezywebpro.com/online-store/food-products-restaurants/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Store (Growth) J$15,000 (to 1,500 products)",
+          "url": "https://ezywebpro.com/online-store/food-products-restaurants/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No per-sale commission.",
+          "url": "https://ezywebpro.com/online-store/food-products-restaurants/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ezywebpro.com/online-store/food-products-restaurants/"
+      ]
+    }
+  ],
+  "notes": "One eligible tool with a JMD price: Ezy Cart by EzyWebPro (Jamaican online store with pre-orders, pickup dates and pickup slots; J$15,000 Growth / J$30,000 Scale + setup from J$45,000). No Jamaican food-truck ordering tool found. Pedix lists no Caribbean English-speaking countries; OlaClick is Spanish/Portuguese-only Latin America; Fudo has no JM site; Square / Toast / Clover / Owner.com show no Jamaica presence (Square availability list from wave 1: US, CA, AU, JP, GB, IE, FR, ES). Seen in search, not used: FoodChow (stored candidate 196dc923, Indian — not my vendor, only named), Jamezz (stored, Dutch — agent 5 region, only named), DoorstepJA, 7Krave, QuickCart, 876get, Ordaz Express (marketplaces / delivery services, never counted), DoorDash order.online pages (US restaurants)."
+}

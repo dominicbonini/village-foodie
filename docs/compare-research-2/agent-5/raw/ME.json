@@ -1,0 +1,26 @@
+{
+ "country": "ME",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Crna Gora online naručivanje restoran sistem preuzimanje cijena €/mjesečno Podgorica softver za restorane porudžbine",
+  "Montenegro restaurant online ordering website builder pickup pre-order Budva Podgorica startup \"€\" per month ordering system for restaurants Montenegrin"
+ ],
+ "vendors": [
+  {
+   "name": "Vitrina",
+   "website": "https://vitrina.cafe",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "no Montenegro price page (https://vitrina.cafe/en/prices/me answered 404) and Montenegro is not named on its main page; no presence shown",
+   "check_urls": [
+    "https://vitrina.cafe/en/prices/me",
+    "https://vitrina.cafe"
+   ],
+   "answers": [],
+   "plans": [],
+   "eligibility": {}
+  }
+ ],
+ "notes": "Nothing eligible exists that I could find. Two searches (Montenegrin/Serbian Latin and English) returned only Glovo restaurant pages (marketplace, never), TableAgent and OpenTable (booking only), a doXmenu Montenegro QR-menu page (menu only; its Serbia page read today shows no ordering — recorded not_relevant in RS) and Capterra/SaaS-directory listings (never a source). Multi-country tools checked today that do NOT list Montenegro: FoxiFood country terms, Storekit supported regions, SumUp country selector, Vitrina (no /en/prices/me — 404), Poster (selector has no Montenegro). UpMenu and Restaumatic show no Montenegro presence. METRO/DISH has no Montenegro market (not fetched). Stop rule applied."
+}

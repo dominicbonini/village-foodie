@@ -1,0 +1,105 @@
+{
+  "country": "AO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Angola sistema pedidos online restaurantes Luanda take away levantamento \"Kz\" OR \"AOA\" mensal plataforma menu digital encomendas",
+    "software restauração Angola loja online encomendas restaurante kwanzas preço plano faturação pedidos online Luanda"
+  ],
+  "vendors": [
+    {
+      "name": "Ocuioso",
+      "website": "https://www.ocuioso.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Angolan (Luanda) order management + digital menu for restaurants, cafés and roulotes (food trucks) with a public page where customers place orders. BORDERLINE: no explicit pickup / ordering-ahead wording (recorded eligible because a roulote's online orders are collected at the truck; a reviewer may prefer not_relevant, as for the WhatsApp-cart tools without pickup wording elsewhere). No price on the site -> hidden plan",
+      "eligibility": {
+        "food_quote": "Funciona para roulotes e pequenos espaços?",
+        "food_url": "https://www.ocuioso.com/",
+        "order_quote": "Uma página pública ajuda os teus clientes a encontrar o menu e fazer pedidos.",
+        "order_url": "https://www.ocuioso.com/",
+        "country_quote": "Pensado para a realidade de Angola.",
+        "country_url": "https://www.ocuioso.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "Plans (no price shown)",
+          "currency": "AOA",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://www.ocuioso.com/",
+          "note": "\"Preços e benefícios sempre atualizados pela equipa Ocuioso.\" — no figures or currency; \"Estamos a abrir as primeiras 30 vagas em Luanda.\""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "Se sabes usar o WhatsApp, sabes usar o Ocuioso.",
+          "url": "https://www.ocuioso.com/"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.ocuioso.com/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible with an AOA price. Ocuioso (Luanda, names roulotes, public ordering page) is a BORDERLINE eligible food_truck with no price (hidden). Seen in search, not read: Kacennu (AGT-certified POS with KDS, no online ordering stated, no price), Zone Soft Angola (POS, table PDA orders), Menu Online / menuao.online (QR menu -> WhatsApp), Tutiserver (web agency), Tukoo, Nacozinhaa. Consumer marketplaces (never counted): Tupuca, Koxito, Mano, Pitéu, Trazaqui. YUMBI does not list Angola. Square / Toast / Clover / Owner.com: no presence."
+}
