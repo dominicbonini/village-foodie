@@ -51,3 +51,11 @@ No endpoint. The pricing page's own HTML holds the amounts in `data-month` / `da
 | IN, MV | handed to agent 3 (not started) | — | — |
 
 ## Pass 2 (food-truck only): SG HK MY TH TW — nothing found; ID already 3 (majoo). DineOpen IN: priced (₹899 / ₹1,799 a month) but no pickup wording → not relevant (raw/IN.json). TW leads for a restaurant pass: 快一點 QuickClick, 點點食.
+
+## Round 3 (restaurant tools) and leads
+
+- **SG 3:** + Dinlr (Waiter + Online Order, S$198/month billed monthly; S$178 billed annually; scheduled pick-up date & time).
+- **MY 3:** + Dinlr (RM400/month billed monthly; RM300 billed annually).
+- **TW:** 快一點 QuickClick eligible ('外帶 – 顧客提前預約免等待'), '$1,688/月' in bare '$' — 3rd only if accepted as TWD. 點點食: no own site.
+- **Feasty ZA:** names no country, no currency → not counted (raw/ZA-feasty.json).
+- HK, TH: nothing new (Atlas, Tablevibe 401, Ser.vi, Eats365 TH unpriced, catalogue-only HK vendors).
