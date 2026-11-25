@@ -129,3 +129,7 @@ None found with an own-site PKR price (Nosh PKR prices only on a listing site). 
 ## KH (Cambodia, KHR)
 
 None exists that I could find (marketplaces, App Store POS apps, Aldelo without price, MENU TIGER USD). count now: 0
+
+## NP (Nepal, NPR)
+
+None exists that I could find (NRestro and MeroMenu are table-QR only; others USD or directories). count now: 0
