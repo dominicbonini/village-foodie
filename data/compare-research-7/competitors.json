@@ -1884,80 +1884,6 @@
    "set_focus": false
   },
   {
-   "id": "647628e6-7d0b-56a7-9869-c71fe7c13e3e",
-   "name": "Eats365",
-   "website": "https://www.eats365pos.com/th",
-   "focus": "nearest_local",
-   "lifecycle": "active",
-   "payment_providers": null,
-   "features_checked_on": "2026-11-25",
-   "features_verified_at": null,
-   "notes": "compare-research-7 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: TH.",
-   "check_urls": [
-    "https://www.eats365pos.com/th/pricing"
-   ],
-   "request_check": true,
-   "answers": [
-    {
-     "key": "ahead",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "preorder",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "capacity",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "schedule",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "whatsapp",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "social",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "kds",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "offline",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "walkup",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "vans",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "domain",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "monthly",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "perorder",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "cardfee",
-     "value": "not_mentioned"
-    }
-   ],
-   "set_focus": true
-  },
-  {
    "id": "f695c133-bbbc-5874-861f-ae6376c29492",
    "name": "Komisyonsuz",
    "website": "https://partner.komisyonsuz.com",
@@ -5543,16 +5469,6 @@
    "verified_by": null
   },
   {
-   "id": "d19e77db-049e-5dcd-81cd-bcdbaf923ac1",
-   "country_code": "TH",
-   "competitor_id": "647628e6-7d0b-56a7-9869-c71fe7c13e3e",
-   "primary_plan_id": null,
-   "choose_when": null,
-   "sort_order": 50,
-   "verified_at": null,
-   "verified_by": null
-  },
-  {
    "id": "4cffea72-95f9-5300-85d9-4ae37c3986de",
    "country_code": "TR",
    "competitor_id": "f695c133-bbbc-5874-861f-ae6376c29492",
@@ -6128,15 +6044,6 @@
      "country_quote": "1,090บาท/เดือน",
      "country_url": "https://www.wongnai.com/pos/",
      "reason": "BORDERLINE (unchanged from compare-research-1): Thai restaurant POS with THB monthly packages; order-and-pay-ahead then self-pickup is through LINE MINI Eats (a LINE app where customers find shops — marketplace-like), and the page doesn't say which package includes it ('สิทธิ์ใช้งานเป็นไปตามแพ็กเกจ', 'ราคาซอฟต์แวร์ ไม่รวมอุปกรณ์และ Add-on')"
-    }
-   ]
-  },
-  {
-   "name": "Eats365",
-   "evidence": [
-    {
-     "country": "TH",
-     "reason": "has a Thailand region; raw HTML of https://www.eats365pos.com/th/pricing contains no ฿ / บาท / THB amount — Online Ordering module unpriced (as in KR, LK, SG)"
     }
    ]
   },
@@ -6967,6 +6874,13 @@
    "website": "https://ocha.in.th",
    "stored": null,
    "reason": "raw HTML of https://ocha.in.th/price (8 KB) holds only the title 'Ocha POS - แอปพลิเคชันบริหารจัดการธุรกิจ'; content is script-rendered (as in compare-research-1); no price or ordering text readable"
+  },
+  {
+   "country": "TH",
+   "name": "Eats365",
+   "website": "https://www.eats365pos.com/th",
+   "stored": "647628e6",
+   "reason": "left out on review: marked eligible without an order-ahead quote; its TH pricing page shows no amounts (compare-research-7 agent 2)"
   },
   {
    "country": "CL",

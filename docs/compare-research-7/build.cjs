@@ -96,7 +96,8 @@ const PLAN_TOTAL = [
   ['joinposter.com', 'UA', 'Starter + Poster Site add-on', 1360, '540 ₴600 ₴/міс. · Вартість — 760 ₴/міс.', 'Starter 600 ₴ + Poster Site 760 ₴ a month, billed monthly (Starter 540 ₴ a month if billed yearly)'],
   ['joinposter.kz', 'KZ', 'Starter + Poster Site add-on', 21000, '8 640 ₸9 600 ₸/мес. · Стоимость — 11 400 ₸/мес.', 'Starter 9 600 ₸ + Poster Site 11 400 ₸ a month, billed monthly (Starter 8 640 ₸ a month if billed yearly)'],
 ]
-const INCOMPLETE = [['qashier.com', 'SG', 'marked eligible without an order-ahead quote (compare-research-7 agent 2)'],
+const INCOMPLETE = [['eats365pos.com', 'TH', 'marked eligible without an order-ahead quote; its TH pricing page shows no amounts (compare-research-7 agent 2)'],
+  ['qashier.com', 'SG', 'marked eligible without an order-ahead quote (compare-research-7 agent 2)'],
   ['eats365pos.com', 'SG', 'marked eligible without an order-ahead quote (compare-research-7 agent 2)'],
   ['eats365pos.com', 'MO', 'marked eligible without an order-ahead quote; its Macau pricing page shows no amounts (compare-research-6 agent 2)'],
   ['tossdown.com', 'PK', 'marked eligible without an order-ahead quote; still no rupee price (compare-research-6 agent 2)'],
