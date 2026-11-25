@@ -1,0 +1,43 @@
+{
+  "country": "AO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Angola encomenda online para levantar restaurante pedido antecipado sistema Luanda roulote plano mensal Kz software angolano"
+  ],
+  "vendors": [
+    {
+      "name": "Ocuioso",
+      "website": "https://www.ocuioso.com",
+      "stored_id_prefix": "8bcbd76a",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "unchanged BORDERLINE (waves 2/3): Luanda ordering from a public menu, 'Roulotes' category; still no price readable on the page. Re-read /precos 25 Nov: the page text has no amounts; the plan cards are filled in the browser from the site's own plans endpoint (the page script calls GET /api/plans and shows priceKz with '/mês', '/trimestre' or '/ano'). That endpoint was NOT read (the request was blocked in this session), and a value from it would not be a quote of the visible page anyway — price stays hidden",
+      "eligibility": {
+        "food_quote": "Boa comida, por perto",
+        "food_url": "https://www.ocuioso.com",
+        "order_quote": "Pede sem filas",
+        "order_url": "https://www.ocuioso.com",
+        "country_quote": "Preços em kwanzas · período indicado em cada plano",
+        "country_url": "https://www.ocuioso.com/precos"
+      },
+      "plans": [
+        {
+          "plan_name": "(plan cards, script-loaded)",
+          "currency": "AOA",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "O cartão de cada plano apresenta o preço e o respetivo período. Confirma os detalhes no processo de adesão antes de efetuar o pagamento.",
+          "url": "https://www.ocuioso.com/precos",
+          "note": "hidden. Also on /precos: 'Menu e pedidos são a base.' (all plans include menu + orders; cupões, clientes, relatórios e gestão de entregas only on some plans); trial: '14 dias gratuitos para conhecer o Ocuioso.' … 'sem cobrança automática' … 'tens 3 dias de graça para escolher e pagar um plano.'"
+        }
+      ],
+      "answers": [],
+      "check_urls": ["https://www.ocuioso.com/precos"]
+    }
+  ],
+  "notes": "Count now: 0 priced in AOA (Ocuioso stored, eligible but unpriced). One new Portuguese search (encomenda para levantar / pedido antecipado / roulote / plano mensal Kz): only Tupuca (marketplace — app orders, take-away or delivery; never counted), Aquias Store (App Store only, free consumer app, Luanda — not read), restaurant guides (Ver Angola, Tripadvisor), a university thesis. No other local vendor site worth reading. Earlier waves: Kacennu, Zone Soft (tills), menuao.online (QR -> WhatsApp), Zapchef. Stopped. For Dominic: Ocuioso's price can only be seen in a real browser on /precos (cards are rendered by script)."
+}
