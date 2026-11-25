@@ -1,0 +1,26 @@
+{
+  "country": "MA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Maroc logiciel commande en ligne restaurant \"à emporter\" click and collect \"DH\" par mois site de commande sans commission marocain",
+    "menu digital Maroc restaurants commande en ligne WhatsApp à emporter abonnement mensuel DH startup marocaine snack food truck",
+    "نظام طلبات أونلاين للمطاعم المغرب استلام من المطعم اشتراك شهري درهم منصة مغربية"
+  ],
+  "vendors": [
+    {
+      "name": "SA-Menu",
+      "website": "https://sa-menu.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Moroccan digital-menu platform (FNH press: table ordering and delivery modules 'prévus prochainement'); https://sa-menu.com/ is a JavaScript-only app shell ('You need to enable JavaScript to run this app.') — nothing readable",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://sa-menu.com/"
+      ]
+    }
+  ],
+  "notes": "Count now: 2 (Asila, inyad) — no third. Orika (orika-drv.pages.dev — 'cafés, restaurants, boulangeries et food trucks') is the pages.dev copy of Asila found in compare-research-3 (links to app.asila.ma) — same vendor, not a third. inyad (agent 2's) not fetched. Otherwise: Food on Demand (a single Marrakech restaurant), Fiverr / Khamsat freelancers and Avito kiosk packs (not vendors / marketplace listings), foreign tools (Innovorder, Lightspeed CA, Menu Touch FR — agent 1's; MENU TIGER, CloudWaitress, OlaClick — no Morocco / MAD), Glovo (marketplace). YouCan (generic store builder) not read. Stopped: no Moroccan ordering vendor site with a MAD price surfaced."
+}
