@@ -1,0 +1,7 @@
+{
+  "vendor": "Restora POS",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "notes": "Restora POS (841dfd9e) already counts in BD (BDT). https://restorapos.com/pricing has a BDT / USD currency toggle (USD: '$49 month' Starter, '$69 month' Mild, '$99 month' Spicy) but names no country for the USD prices; the only other country named is the UAE (Dubai office; 'Restaurant POS System in UAE'). Sri Lanka, Qatar, Bahrain and Jordan are not named, so the USD prices don't make it count in BH or JO, and there is no LKR price. Nothing new."
+}
