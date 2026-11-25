@@ -1,0 +1,233 @@
+{
+ "country": "NG",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Nigeria restaurant online ordering website builder pickup orders food vendors pricing \"₦\" per month Nigerian platform (Capterra/GetApp/G2 excluded)",
+  "Nigerian online ordering software for restaurants and food vendors \"pickup\" OR \"pick-up\" customers order ahead subscription \"₦\" monthly plan Lagos"
+ ],
+ "vendors": [
+  {
+   "name": "Mylo",
+   "website": "https://mylo.africa",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Nigerian ordering storefront for restaurants, bars and food vendors: one ordering link where the customer chooses pickup or delivery; flat NGN monthly fee, zero commission",
+   "eligibility": {
+    "order_quote": "Pickup, delivery or dine-in: the customer chooses.",
+    "order_url": "https://mylo.africa/",
+    "country_quote": "For restaurants, bars, hotels and shops in Nigeria.",
+    "country_url": "https://mylo.africa/"
+   },
+   "plans": [
+    {
+     "plan_name": "Essentials",
+     "currency": "NGN",
+     "price_major": 7500,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "₦7,500/ month",
+     "url": "https://mylo.africa/",
+     "note": "'No commission on your orders.' 'No setup fee'"
+    },
+    {
+     "plan_name": "Growth",
+     "currency": "NGN",
+     "price_major": 35000,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "₦35,000/ month",
+     "url": "https://mylo.africa/",
+     "note": ""
+    },
+    {
+     "plan_name": "Business",
+     "currency": "NGN",
+     "price_major": 75000,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "₦75,000/ month",
+     "url": "https://mylo.africa/",
+     "note": ""
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Pickup, delivery or dine-in: the customer chooses.",
+     "url": "https://mylo.africa/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "₦7,500/ month",
+     "url": "https://mylo.africa/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "No commission on your orders.",
+     "url": "https://mylo.africa/"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://mylo.africa/"
+   ]
+  },
+  {
+   "name": "Restorant",
+   "website": "https://restorant.com.ng",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Nigerian restaurant ordering platform (Brandyeast, Nnewi): branded storefront where customers 'choose delivery or pickup'; free with 5% commission on online-paid orders (8% on a marketplace-found customer's first order). Also runs a marketplace listing, but the storefront is the restaurant's own.",
+   "eligibility": {
+    "order_quote": "they choose delivery or pickup,",
+    "order_url": "https://restorant.com.ng/guides/how-to-start-online-ordering-for-your-restaurant-in-nigeria",
+    "country_quote": "Restorant is a product of Brandyeast, based in Nnewi, Anambra State, Nigeria.",
+    "country_url": "https://restorant.com.ng"
+   },
+   "plans": [
+    {
+     "plan_name": "Free",
+     "currency": "NGN",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 5,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "No monthly fee, no setup fee, no minimum.",
+     "url": "https://restorant.com.ng/pricing",
+     "note": "5% 'Of the order value, when a customer pays online.'; cash/transfer orders confirmed at the counter carry no commission; 8% on a marketplace-found customer's first order; Paystack fees separate. A search snippet's 'Starter ₦30,000 a month' is not on today's pages."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "they choose delivery or pickup,",
+     "url": "https://restorant.com.ng/guides/how-to-start-online-ordering-for-your-restaurant-in-nigeria"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "no",
+     "quote": "No monthly fee, no setup fee, no minimum.",
+     "url": "https://restorant.com.ng/pricing"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "Of the order value, when a customer pays online.",
+     "url": "https://restorant.com.ng/pricing"
+    },
+    {
+     "key": "cardfee",
+     "value": "partial",
+     "quote": "Commission is separate from Paystack's own processing fee.",
+     "url": "https://restorant.com.ng/pricing"
+    }
+   ],
+   "check_urls": [
+    "https://restorant.com.ng",
+    "https://restorant.com.ng/pricing",
+    "https://restorant.com.ng/guides/how-to-start-online-ordering-for-your-restaurant-in-nigeria"
+   ]
+  }
+ ],
+ "notes": "Count now: 2 (Mylo ₦7,500 / 35,000 / 75,000 per month, zero commission; Restorant free + 5% per online-paid order) — both Nigerian restaurant pickup tools (nearest_local); no Nigerian food-truck tool found. Restorant: its pickup quote is from its own guide page (the home and pricing pages don't say pickup); it also has a marketplace layer, but businesses get their own branded storefront link — BORDERLINE if Dominic sees it as a marketplace. Seen, not read: eRestaurant.ng (POS, from ₦10,000/month, no pickup focus), Dishly by OPUS (QR table ordering, ₦55,000), FoodChow Nigeria page (Indian, not mine; only named), Orda (acquired, wave 2). YUMBI (hidden price) and Catlog (no pickup) as in wave 2."
+}

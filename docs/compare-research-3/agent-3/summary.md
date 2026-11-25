@@ -142,3 +142,12 @@ count now: 0
 | WebOrder | nearest_local | not_relevant (BORDERLINE: no pickup wording) | R99 per month + R199 | https://weborder.co.za/ |
 
 count now: 2 (food-truck: 0)
+
+## NG (NGN)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Mylo | nearest_local | eligible | ₦7,500 / ₦35,000 / ₦75,000 per month, 0% commission | https://mylo.africa/ |
+| Restorant | nearest_local | eligible (BORDERLINE: also a marketplace; pickup quote from its guide page) | ₦0/month + 5% per online-paid order | https://restorant.com.ng/pricing |
+
+count now: 2 (food-truck: 0)
