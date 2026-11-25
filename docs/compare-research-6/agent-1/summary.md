@@ -181,3 +181,8 @@ count now: 0
 
 FoxiFood, Storekit: not listed. nothing eligible exists.
 count now: 0
+
+## FO
+
+FoxiFood, Storekit: not listed. NemTakeAway: Danish, no Faroe Islands on its site. nothing eligible exists.
+count now: 0
