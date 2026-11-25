@@ -147,3 +147,8 @@ count now: 0
 
 None exists: The Maua App = marketplace; Port Pizza Bar = one restaurant's app.
 count now: 0
+
+## GU (USD)
+
+Nothing eligible among my vendors: Good To Go, Grab N Grub = marketplaces. US tools (Square, Toast, Clover, ChowNow) may serve Guam — agent 3's, not fetched.
+count now: 0
