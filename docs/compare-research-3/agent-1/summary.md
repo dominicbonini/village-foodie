@@ -43,3 +43,14 @@ Shown '1 530 ₴1 700 ₴/міс.' with only the toggle 'Оплата за рі�
 | Subger | — | not_relevant: comparison site | — | https://subger.com/is/food-delivery/restaurant-takeout |
 
 Found no other tool priced in ISK (Dineout and Stefna show no price; FoxiFood is EUR only). count now: 1
+
+## RS (Serbia, RSD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Vitrina | nearest_local | already counted | RSD | — |
+| Kafeterija | — | not_relevant: one coffee chain's app | — | — |
+| Ordera - Topli obrok | — | not_relevant: workplace catering | — | — |
+| UpMenu | nearest_local | not_relevant: USD only, no Serbia page | — | — |
+
+Found no other tool priced in RSD. count now: 1

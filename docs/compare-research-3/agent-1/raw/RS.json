@@ -1,0 +1,39 @@
+{
+  "country": "RS",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "online poručivanje za restorane sopstveni sajt preuzimanje \"RSD\" mesečno paket \"lično preuzimanje\"",
+    "aplikacija za online porudžbine restoran Srbija cena dinara mesečno poruči unapred preuzmi u lokalu food truck",
+    "Kafeterija aplikacija za kafiće i restorane poručivanje unapred partneri cena"
+  ],
+  "vendors": [
+    {
+      "name": "Kafeterija",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Ordering app of one Belgrade coffee chain (pickup-time ordering for its own outlets only), not software sold to food businesses. Seen via search (App Store) only.",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": []
+    },
+    {
+      "name": "Ordera - Topli obrok",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Workplace hot-meal ordering (companies order from caterers a day ahead); no price. Seen via search (App Store) only.",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": []
+    },
+    {
+      "name": "UpMenu",
+      "website": "https://www.upmenu.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Polish ordering tool with an app in Balkan App Stores, but search results show only USD prices ($89 / $119 a month) and no Serbia page or RSD price. Not opened.",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": []
+    }
+  ],
+  "notes": "Vitrina (RSD) is already counted and FoxiFood is EUR only (compare-research-2). Three searches today, in Serbian and English, found no other tool priced in RSD. Results were consumer delivery apps (Glovo, Mr D, Alideda), single-chain apps (Kafeterija, Pizza Bar), B2B catering apps (Ordera, COrdering) and foreign tools priced in USD or EUR (UpMenu, Orders.co, Listim, Restimo, Restaumatic, mobi2go). Compare-research-2's dead end doXmenu (QR menu only) wasn't repeated. Count stays 1."
+}
