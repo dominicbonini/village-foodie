@@ -1,0 +1,27 @@
+{
+  "country": "HN",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Honduras sistema de pedidos en línea para restaurantes \"para recoger\" OR \"pasar a traer\" plan mensual lempiras \"L.\" Tegucigalpa San Pedro Sula software",
+    "\"Honduras\" menú digital restaurantes pedidos por WhatsApp \"para llevar\" precio \"Lps\" OR \"lempiras\" al mes catálogo online negocio",
+    "WizPOS Honduras restaurantes pedidos en línea tienda online precio lempiras ISV"
+  ],
+  "vendors": [
+    {
+      "name": "Sinqro",
+      "website": "https://sinqro.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "restaurant operations layer with a Honduras market page ('© 2026 Sinqro Honduras'), but its pages show only channel / delivery orchestration ('Receive and orchestrate orders, bookings, payments and deliveries from every channel.'), no pickup / takeaway / order-ahead wording; pricing page showed 'Pricing temporarily unavailable. Please try again.'",
+      "eligibility": {
+        "country_quote": "© 2026 Sinqro Honduras",
+        "country_url": "https://sinqro.com/en-hn/pricing"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://sinqro.com/en-hn/solutions", "https://sinqro.com/en-hn/pricing"]
+    }
+  ],
+  "notes": "Count now: 0. Round 2 (compare-research-6): nothing eligible with an HNL price. New: Sinqro (Honduras page, delivery/channel orchestration only, no pickup wording, price unavailable -> not_relevant). Seen in search, not read: Neolo Menú QR Honduras (neolo.com/honduras/menu-qr, free view-only QR menu in HNL — same product agent 3 rejected for NI as view-only), WizPOS (Honduran till in lempiras, no own site found in search, no online ordering stated), Clinpays (Honduran multi-merchant delivery app -> marketplace), Odoo partner HNET (ERP integrator), Uber Eats / PedidosYa (marketplaces). Earlier rejects not re-read: HNMenu (unreadable twice), Sitec, LemonPad, OlaClick (USD). Pedix / Fudo belong to agent 3 (Pedix USD only). Stopped after ~5 new candidates."
+}

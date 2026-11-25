@@ -30,3 +30,16 @@ count now: 0
 
 Nothing new eligible with a PYG price after ~5 new candidates (GU, KaruFast = marketplaces; YoFacturo = POS). Fudo / Pedix: agent 3.
 count now: 0
+
+## HN (HNL)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Sinqro | pos | not_relevant (delivery/channel orchestration, no pickup; price unavailable) | – | https://sinqro.com/en-hn/pricing |
+
+Nothing eligible exists with an HNL price after ~5 new candidates (Neolo = view-only QR menu; WizPOS = till, no site; Clinpays = marketplace; HNET = Odoo integrator).
+count now: 0
+
+## Skipped
+
+NI, BS, TT: taken by agent 3 (coordinator, 25 Nov).
