@@ -1,0 +1,7 @@
+{
+  "vendor": "Take App",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "notes": "Take App (2a58410a) prices only in USD ('$29USD / month' etc., https://www.take.app/pricing, read in earlier rounds). Its countries page https://www.take.app/countries does NOT list El Salvador, Bahrain, Jordan or Qatar (Middle East section: only '🇱🇧LebanonLBP', '🇮🇶IraqIQD'), so it cannot count in SV, BH or JO (the USD countries). It does list '🇱🇰Sri LankaLKR', '🇩🇴Dominican RepublicDOP', '🇬🇹GuatemalaGTQ', '🇯🇲JamaicaJMD', '🇨🇴ColombiaCOP', but those need a local-currency price and the site shows USD only, so no count. Not listed either: BD KR UZ KZ MT IS RS AL BA MK MD BO UY. Nothing new."
+}
