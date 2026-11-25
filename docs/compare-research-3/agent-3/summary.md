@@ -119,3 +119,9 @@ count now: 0
 No PYG-priced eligible tool: ClickParaPedir and PedíFácil (stored) stay unpriced; Fudo USD only; Monchis marketplace.
 
 count now: 0
+
+## TT (TTD)
+
+No vendor read today (WiEat: marketplace; TTMS = TT Menus listing, not_relevant in wave 2). Nothing eligible exists with a TTD price.
+
+count now: 0
