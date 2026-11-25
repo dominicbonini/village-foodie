@@ -1,0 +1,121 @@
+{
+ "country": "TR",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "restoran kafe online sipariş gel-al önceden sipariş sistemi komisyonsuz paket fiyatları ₺/ay FineDine OR Menulux OR Robotpos OR SimpraPOS"
+ ],
+ "vendors": [
+  {
+   "name": "Simpra POS (SimpraSuite)",
+   "website": "https://simprasuite.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "POS price page in EUR ('€50' 'TAX Included / Monthly'); no online ordering / gel-al in any package",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://simprasuite.com/restaurant-software/pos-system/price/"
+   ]
+  },
+  {
+   "name": "Komisyonsuz",
+   "website": "https://partner.komisyonsuz.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Turkish commission-free online ordering for restaurants/cafés: own web & mobile ordering page with paket servis / gel-al (pickup), QR queue pre-order; 'Online Sipariş Sistemi' 999 ₺ a month on its own price page",
+   "eligibility": {
+    "order_quote": "Sipariş masada, gel-al noktasında, QR ile veya web’den gelsin;",
+    "order_url": "https://partner.komisyonsuz.com/",
+    "country_quote": "999₺ + KDV / ay’dan başlayan fiyatlarla",
+    "country_url": "https://partner.komisyonsuz.com/"
+   },
+   "plans": [
+    {
+     "plan_name": "Online Sipariş Sistemi",
+     "currency": "TRY",
+     "price_major": 999,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "999 ₺/ ay",
+     "url": "https://partner.komisyonsuz.com/fiyatlar.html",
+     "note": "Package lines: 'Web & Mobil Sipariş Sayfası', 'Paket servis / gel-al'. Monthly/yearly toggle (29% off yearly; yearly amounts not listed). VAT: the home page says '999₺ + KDV / ay’dan başlayan fiyatlarla' (excl. KDV); the price page itself shows no '+ KDV'. komisyonsuz.com 301-redirects to partner.komisyonsuz.com (its own host)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "kuyruk QR ile gel-al ön sipariş",
+     "url": "https://partner.komisyonsuz.com/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "999 ₺/ ay",
+     "url": "https://partner.komisyonsuz.com/fiyatlar.html"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "Kendi markanızla komisyonsuz online sipariş alın.",
+     "url": "https://partner.komisyonsuz.com/fiyatlar.html"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://partner.komisyonsuz.com/",
+    "https://partner.komisyonsuz.com/fiyatlar.html"
+   ]
+  }
+ ],
+ "notes": "TR count now: 3 (İletmen, Zunapro + Komisyonsuz). Komisyonsuz was only searched for (not opened) in compare-research-2. Also opened: SimpraSuite (EUR, no online ordering). Menulux pricing shows no figures (search snippet; not opened); MENU TIGER USD (rejected). Stopped at 3."
+}
