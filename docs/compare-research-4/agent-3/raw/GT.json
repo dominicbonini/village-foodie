@@ -1,0 +1,10 @@
+{
+  "country": "GT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Guatemala software restaurantes \"pedidos en línea\" OR \"tienda en línea\" \"para recoger\" OR \"recoger en tienda\" OR \"pickup\" POS guatemalteco FEL precios \"Q\" al mes",
+    "menú digital Guatemala \"pedidos\" \"pasar a recoger\" OR \"recoger en el restaurante\" OR \"para llevar\" planes \"Q\" mensual sin comisiones emprendedores comida guatemalteca plataforma"
+  ],
+  "vendors": [],
+  "notes": "Count now: 1 (Sabbor, GTQ, stored). Nothing new found to read: two new-angle searches (POS with FEL e-invoicing + tienda en línea / pickup; menú digital + pasar a recoger) returned only the Shopify 'FEL Guatemala' app (generic web shop add-on, not a food tool), Odoo partners (Doolabs, Intéligos — ERP integrators, quote only), POSMOVI (Costa Rican, app listing), Mister Menu (restaurant guide), MENU TIGER (agent 2), Meniu (no GT presence, read for DO), Maspedidos (Mexican, MX off; comparasoftware page not a source), Toast / DoorDash / Mercado Pago (no GT presence or GTQ price) and Uber Eats (marketplace). Wave-2/3 dead ends (Midelivery Food, Scrampi, ConectaT, Jefe, Quantika) not re-read. Stopped."
+}

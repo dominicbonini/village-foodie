@@ -15,3 +15,7 @@ count now: 1 (Gestióndo, DOP, stored)
 |---|---|---|---|---|
 | Kioskito (stored) | nearest_local | not_relevant (Panama only on its own site) | $5–15/mes USD | https://kioskito.app |
 count now: 1 (Pedix, USD, stored)
+
+## GT
+No new vendor read (two new-angle searches surfaced only generic/ERP tools, directories, marketplaces and foreign tools).
+count now: 1 (Sabbor, GTQ, stored)
