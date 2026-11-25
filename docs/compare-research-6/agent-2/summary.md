@@ -127,3 +127,8 @@ count now: 0
 
 Nothing eligible: only travel listings and generic builders (Wix, Jotform).
 count now: 0
+
+## BT (BTN)
+
+Nothing eligible: Dish8Door, ZheyGo, DrukFood = marketplaces.
+count now: 0
