@@ -1,0 +1,7226 @@
+[
+{
+"c": "000f94fa",
+"cc": "BE",
+"n": "Combo",
+"m": 7900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "000f94fa",
+"cc": "BE",
+"n": "Webshop",
+"m": 4900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "01fa170d",
+"cc": "HK",
+"n": "Basic (self-ordering + payment)",
+"m": 120000,
+"cur": "HKD",
+"st": "counted"
+},
+{
+"c": "01fa170d",
+"cc": "HK",
+"n": "Basic plan + Option 1",
+"m": 290000,
+"cur": "HKD",
+"st": "counted"
+},
+{
+"c": "01fa170d",
+"cc": "HK",
+"n": "Basic plan + Option 2",
+"m": 220000,
+"cur": "HKD",
+"st": "counted"
+},
+{
+"c": "01fa170d",
+"cc": "HK",
+"n": "Self-ordering / online takeaway",
+"m": null,
+"cur": "HKD",
+"st": "hidden"
+},
+{
+"c": "034d1e1a",
+"cc": "ES",
+"n": "Liderazgo",
+"m": 12900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "034d1e1a",
+"cc": "ES",
+"n": "Pedidos",
+"m": 2400,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "040f4b59",
+"cc": "CZ",
+"n": "Objednávkový systém",
+"m": 35000,
+"cur": "CZK",
+"st": "counted"
+},
+{
+"c": "040f4b59",
+"cc": "CZ",
+"n": "Plná verze",
+"m": 48000,
+"cur": "CZK",
+"st": "counted"
+},
+{
+"c": "04a0ed24",
+"cc": "PA",
+"n": "Desde (lowest plan)",
+"m": 500,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "065d9dc6",
+"cc": "GT",
+"n": "Crece",
+"m": 50000,
+"cur": "GTQ",
+"st": "counted"
+},
+{
+"c": "065d9dc6",
+"cc": "GT",
+"n": "Esencial",
+"m": 37500,
+"cur": "GTQ",
+"st": "counted"
+},
+{
+"c": "07509d43",
+"cc": "MX",
+"n": "Plus",
+"m": 68900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "07509d43",
+"cc": "MX",
+"n": "Profesional",
+"m": 90900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "07509d43",
+"cc": "MX",
+"n": "Starter",
+"m": 44900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "EE",
+"n": "Mini (POS)",
+"m": 2600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "EE",
+"n": "Poster Site (add-on)",
+"m": 1900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "EE",
+"n": "Restaurant tablet POS (Estonia page)",
+"m": 2400,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "GE",
+"n": "Mini (Georgia page)",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "KZ",
+"n": "Mini (food-truck page price)",
+"m": 1740000,
+"cur": "KZT",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "KZ",
+"n": "Poster Site (ordering website add-on)",
+"m": 1140000,
+"cur": "KZT",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "KZ",
+"n": "Starter + Poster Site add-on",
+"m": 2100000,
+"cur": "KZT",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "UA",
+"n": "Business (includes Сайт для замовлень)",
+"m": 170000,
+"cur": "UAH",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "UA",
+"n": "Poster Site (ordering website add-on)",
+"m": 76000,
+"cur": "UAH",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "UA",
+"n": "Starter + Poster Site add-on",
+"m": 136000,
+"cur": "UAH",
+"st": "counted"
+},
+{
+"c": "0802a7c8",
+"cc": "UZ",
+"n": "Mini (English pricing page)",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "08a78851",
+"cc": "MD",
+"n": "Meniu QR (site de comenzi online)",
+"m": 91250,
+"cur": "MDL",
+"st": "counted"
+},
+{
+"c": "0947b3fc",
+"cc": "FR",
+"n": "Installation complète",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "0947b3fc",
+"cc": "FR",
+"n": "One-off installation (owned site)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "0947b3fc",
+"cc": "FR",
+"n": "Site vitrine",
+"m": 74300,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "0947b3fc",
+"cc": "FR",
+"n": "Site vitrine et supports personnalisés",
+"m": 94900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "09cbaaeb",
+"cc": "IT",
+"n": "COMPLETO",
+"m": 12417,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "09cbaaeb",
+"cc": "IT",
+"n": "DELIVERY (site + app ordering)",
+"m": 8250,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "09cbaaeb",
+"cc": "IT",
+"n": "Modulo: WhatsApp Automation",
+"m": 1900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "0b177e65",
+"cc": "GB",
+"n": "Customer Covers Fee (Option 1)",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "0b177e65",
+"cc": "GB",
+"n": "Platform fee per order",
+"m": null,
+"cur": "GBP",
+"st": "hidden"
+},
+{
+"c": "0b177e65",
+"cc": "GB",
+"n": "Platform Pricing / Absorb All Fees (Option 2)",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "0b332418",
+"cc": "MX",
+"n": "Básico",
+"m": 14900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "0b332418",
+"cc": "MX",
+"n": "Plus",
+"m": 34900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "0b332418",
+"cc": "MX",
+"n": "Pro",
+"m": 89900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "0c786162",
+"cc": "BR",
+"n": "Food truck",
+"m": null,
+"cur": "BRL",
+"st": "hidden"
+},
+{
+"c": "0ccb6996",
+"cc": "US",
+"n": "Truckster Vendor",
+"m": null,
+"cur": "USD",
+"st": "hidden"
+},
+{
+"c": "0d361b15",
+"cc": "JM",
+"n": "Store (Growth)",
+"m": 1500000,
+"cur": "JMD",
+"st": "counted"
+},
+{
+"c": "0d361b15",
+"cc": "JM",
+"n": "Store Pro (Scale)",
+"m": 3000000,
+"cur": "JMD",
+"st": "counted"
+},
+{
+"c": "0e42d25f",
+"cc": "BE",
+"n": "Foodtruck kassasysteem + online ordering",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "0e42d25f",
+"cc": "BE",
+"n": "Kassa + online bestellen (configurator)",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "10aba63d",
+"cc": "US",
+"n": "Free",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "10aba63d",
+"cc": "US",
+"n": "Growth",
+"m": 8000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "10aba63d",
+"cc": "US",
+"n": "Pro",
+"m": 4000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "110abdac",
+"cc": "HK",
+"n": "All Access for One Price",
+"m": 125000,
+"cur": "HKD",
+"st": "counted"
+},
+{
+"c": "110abdac",
+"cc": "SG",
+"n": "All Access for One Price",
+"m": 30000,
+"cur": "SGD",
+"st": "counted"
+},
+{
+"c": "110abdac",
+"cc": "SG",
+"n": "Online Ordering (Package 1, via UOB BizSmart)",
+"m": 0,
+"cur": "SGD",
+"st": "counted"
+},
+{
+"c": "110abdac",
+"cc": "TW",
+"n": "一個價格，全面使用",
+"m": 300000,
+"cur": "TWD",
+"st": "counted"
+},
+{
+"c": "113508e1",
+"cc": "ES",
+"n": "n/a",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "11889b66",
+"cc": "IT",
+"n": "Free (takeaway/delivery)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "11e41caa",
+"cc": "FR",
+"n": "Fidélité",
+"m": 2000,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "11e41caa",
+"cc": "FR",
+"n": "Pro",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "11e41caa",
+"cc": "FR",
+"n": "Pro+",
+"m": 13900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "11e41caa",
+"cc": "FR",
+"n": "Start",
+"m": 5900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "1217609a",
+"cc": "BR",
+"n": "Gestão Avançada",
+"m": 39999,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "1217609a",
+"cc": "BR",
+"n": "Mensal >250 pedidos",
+"m": 29999,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "1217609a",
+"cc": "BR",
+"n": "Mensal ≤150 pedidos",
+"m": 9999,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "1217609a",
+"cc": "BR",
+"n": "Mensal 151–250 pedidos",
+"m": 19999,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "1311faad",
+"cc": "NZ",
+"n": "SMB",
+"m": null,
+"cur": "NZD",
+"st": "hidden"
+},
+{
+"c": "1311faad",
+"cc": "NZ",
+"n": "SMBs",
+"m": null,
+"cur": "NZD",
+"st": "hidden"
+},
+{
+"c": "145be338",
+"cc": "PT",
+"n": "Loja Online + App (Android & iOS)",
+"m": 10080,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "145be338",
+"cc": "PT",
+"n": "Loja Online + App + Reservas Online",
+"m": 12990,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "AE",
+"n": "Online Ordering F&B — Website + App",
+"m": 10000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "AE",
+"n": "Online Ordering F&B — Website Only",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "BD",
+"n": "Online Ordering F&B — Website + App",
+"m": 10000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "BD",
+"n": "Online Ordering F&B — Website Only",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "BH",
+"n": "Food & Beverages – Website Only",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "BH",
+"n": "Online Ordering F&B — Website + App",
+"m": 10000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "BH",
+"n": "Online Ordering F&B — Website Only",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "KW",
+"n": "Online Ordering F&B — Website + App",
+"m": 10000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "KW",
+"n": "Online Ordering F&B — Website Only",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "PK",
+"n": "Blink (Pakistan, quoted per branch)",
+"m": null,
+"cur": "PKR",
+"st": "hidden"
+},
+{
+"c": "14ed815d",
+"cc": "QA",
+"n": "Online Ordering F&B — Website + App",
+"m": 10000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "QA",
+"n": "Online Ordering F&B — Website Only",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "ZA",
+"n": "Online Ordering F&B — Website + App",
+"m": 10000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "14ed815d",
+"cc": "ZA",
+"n": "Online Ordering F&B — Website Only",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "18f621da",
+"cc": "CA",
+"n": "Free",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "18f621da",
+"cc": "CA",
+"n": "Premium",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "18f621da",
+"cc": "US",
+"n": "Free",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "18f621da",
+"cc": "US",
+"n": "Free Plan",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "18f621da",
+"cc": "US",
+"n": "Premium",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "18f621da",
+"cc": "US",
+"n": "Premium Plan",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "1a32fe8f",
+"cc": "CA",
+"n": "Flat Rate",
+"m": 59900,
+"cur": "CAD",
+"st": "counted"
+},
+{
+"c": "1a32fe8f",
+"cc": "CA",
+"n": "Flexible",
+"m": 29900,
+"cur": "CAD",
+"st": "counted"
+},
+{
+"c": "1a32fe8f",
+"cc": "US",
+"n": "Flat Rate",
+"m": 49900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "1a32fe8f",
+"cc": "US",
+"n": "Flexible",
+"m": 24900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "1af3a80c",
+"cc": "BR",
+"n": "(not published)",
+"m": null,
+"cur": "BRL",
+"st": "hidden"
+},
+{
+"c": "1b6afb43",
+"cc": "AU",
+"n": "Basic Bite / Main Course / Ultimate Feast",
+"m": null,
+"cur": "AUD",
+"st": "hidden"
+},
+{
+"c": "1c3ade45",
+"cc": "US",
+"n": "Basic / Growth / Pro",
+"m": null,
+"cur": "USD",
+"st": "hidden"
+},
+{
+"c": "1cccb6df",
+"cc": "HU",
+"n": "Alapcsomag (base subscription)",
+"m": 699000,
+"cur": "HUF",
+"st": "counted"
+},
+{
+"c": "20c3683b",
+"cc": "BR",
+"n": "Food truck setup",
+"m": null,
+"cur": "BRL",
+"st": "hidden"
+},
+{
+"c": "2392b933",
+"cc": "JP",
+"n": "Quote",
+"m": null,
+"cur": "JPY",
+"st": "hidden"
+},
+{
+"c": "2392b933",
+"cc": "JP",
+"n": "Quote (お見積もり)",
+"m": null,
+"cur": "JPY",
+"st": "hidden"
+},
+{
+"c": "24aa846b",
+"cc": "JP",
+"n": "BASIC",
+"m": 0,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "24aa846b",
+"cc": "JP",
+"n": "funfo Business AI",
+"m": 13200,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "24aa846b",
+"cc": "JP",
+"n": "funfo Free",
+"m": 0,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "24aa846b",
+"cc": "JP",
+"n": "funfo Lite AI",
+"m": 7700,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "24aa846b",
+"cc": "JP",
+"n": "Pro / Lite",
+"m": 5500,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "259d3513",
+"cc": "TR",
+"n": "Başlangıç",
+"m": 49167,
+"cur": "TRY",
+"st": "counted"
+},
+{
+"c": "259d3513",
+"cc": "TR",
+"n": "Kurumsal",
+"m": 132500,
+"cur": "TRY",
+"st": "counted"
+},
+{
+"c": "259d3513",
+"cc": "TR",
+"n": "Premium",
+"m": 215833,
+"cur": "TRY",
+"st": "counted"
+},
+{
+"c": "26c4e040",
+"cc": "SA",
+"n": "Linkin1 PRO (E-Menu)",
+"m": 5900,
+"cur": "SAR",
+"st": "counted"
+},
+{
+"c": "27ec5274",
+"cc": "TH",
+"n": "Full Service",
+"m": 179000,
+"cur": "THB",
+"st": "counted"
+},
+{
+"c": "27ec5274",
+"cc": "TH",
+"n": "Quick Service",
+"m": 109000,
+"cur": "THB",
+"st": "counted"
+},
+{
+"c": "29eec8ec",
+"cc": "US",
+"n": "All",
+"m": 49900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "29eec8ec",
+"cc": "US",
+"n": "Concierge",
+"m": 59900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "29eec8ec",
+"cc": "US",
+"n": "Operator",
+"m": 39900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "29eec8ec",
+"cc": "US",
+"n": "Operator + Tablet",
+"m": 49900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "29eec8ec",
+"cc": "US",
+"n": "Site",
+"m": 39900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a0e471f",
+"cc": "EE",
+"n": "Alusta",
+"m": 2900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2a0e471f",
+"cc": "EE",
+"n": "Lisaks integreeritud",
+"m": 6900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2a0e471f",
+"cc": "EE",
+"n": "Premium",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "AR",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "AR",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "AR",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "BN",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "BN",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "BN",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "CL",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "CL",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "CL",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "CO",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "CO",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "CO",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "CR",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "CR",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "CR",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "DO",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "DO",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "DO",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "GT",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "GT",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "GT",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "HK",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "HK",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "HK",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "ID",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "ID",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "ID",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "IN",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "IN",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "IN",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "LK",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "LK",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "LK",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "MU",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "MU",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "MU",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "MY",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "MY",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "MY",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "NG",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "NG",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "NG",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PA",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PA",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PA",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PE",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PE",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PE",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PK",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PK",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PK",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PR",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PR",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PR",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PT",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PT",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "PT",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "SG",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "SG",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "SG",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "SN",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "SN",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "SN",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "TH",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "TH",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "TR",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "TR",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "TR",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "TW",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "TW",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "TW",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "ZA",
+"n": "Basic",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "ZA",
+"n": "Business",
+"m": 5000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2a58410a",
+"cc": "ZA",
+"n": "Essential",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "2b36ed33",
+"cc": "JP",
+"n": "Quote",
+"m": null,
+"cur": "JPY",
+"st": "hidden"
+},
+{
+"c": "2bfa2064",
+"cc": "AL",
+"n": "Express",
+"m": 0,
+"cur": "ALL",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "AL",
+"n": "Restaurant",
+"m": 719000,
+"cur": "ALL",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "AL",
+"n": "Start",
+"m": 359000,
+"cur": "ALL",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "BA",
+"n": "Express",
+"m": 0,
+"cur": "BAM",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "BA",
+"n": "Restaurant",
+"m": 15490,
+"cur": "BAM",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "BA",
+"n": "Start",
+"m": 7590,
+"cur": "BAM",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "HR",
+"n": "Express",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "HR",
+"n": "Restaurant",
+"m": 7900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "HR",
+"n": "Start",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "IS",
+"n": "Express",
+"m": 0,
+"cur": "ISK",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "IS",
+"n": "Restaurant",
+"m": 1079000,
+"cur": "ISK",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "IS",
+"n": "Start",
+"m": 539000,
+"cur": "ISK",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "LT",
+"n": "Express",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "LT",
+"n": "Restaurant",
+"m": 7900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "LT",
+"n": "Start",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "LV",
+"n": "Express",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "LV",
+"n": "Restaurant",
+"m": 7900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "LV",
+"n": "Start",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "MD",
+"n": "Express",
+"m": 0,
+"cur": "MDL",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "MD",
+"n": "Restaurant",
+"m": 158900,
+"cur": "MDL",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "MD",
+"n": "Start",
+"m": 78900,
+"cur": "MDL",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "MK",
+"n": "Express",
+"m": 0,
+"cur": "MKD",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "MK",
+"n": "Restaurant",
+"m": 489000,
+"cur": "MKD",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "MK",
+"n": "Start",
+"m": 239000,
+"cur": "MKD",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "NO",
+"n": "Express",
+"m": 0,
+"cur": "NOK",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "NO",
+"n": "Restaurant",
+"m": 84900,
+"cur": "NOK",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "NO",
+"n": "Start",
+"m": 41900,
+"cur": "NOK",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "RS",
+"n": "Express",
+"m": 0,
+"cur": "RSD",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "RS",
+"n": "Restaurant",
+"m": 929000,
+"cur": "RSD",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "RS",
+"n": "Start",
+"m": 459000,
+"cur": "RSD",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "SE",
+"n": "Express",
+"m": 0,
+"cur": "SEK",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "SE",
+"n": "Restaurant",
+"m": 88900,
+"cur": "SEK",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "SE",
+"n": "Start",
+"m": 43900,
+"cur": "SEK",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "SI",
+"n": "Express",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "SI",
+"n": "Restaurant",
+"m": 7900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "SI",
+"n": "Start",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "SK",
+"n": "Express",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "SK",
+"n": "Reštaurácia",
+"m": 7900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "SK",
+"n": "Štart",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "UA",
+"n": "Express",
+"m": 0,
+"cur": "UAH",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "UA",
+"n": "Restaurant",
+"m": 265000,
+"cur": "UAH",
+"st": "counted"
+},
+{
+"c": "2bfa2064",
+"cc": "UA",
+"n": "Start",
+"m": 160000,
+"cur": "UAH",
+"st": "counted"
+},
+{
+"c": "2c3751b0",
+"cc": "IN",
+"n": "Dinehere + own ordering app",
+"m": 50000,
+"cur": "INR",
+"st": "counted"
+},
+{
+"c": "2c389cf4",
+"cc": "ES",
+"n": "n/a",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "2cbec3e7",
+"cc": "CH",
+"n": "Essentiel",
+"m": 8900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "2cbec3e7",
+"cc": "CH",
+"n": "Max",
+"m": 19900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "2cbec3e7",
+"cc": "CH",
+"n": "Plus",
+"m": 13900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "2cbec3e7",
+"cc": "LI",
+"n": "Essentiel",
+"m": 8900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "2de24ab5",
+"cc": "BG",
+"n": "Complete",
+"m": 5900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2de24ab5",
+"cc": "BG",
+"n": "Pro",
+"m": 2900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2e6f0051",
+"cc": "MY",
+"n": "Qashier platform (software only)",
+"m": 24333,
+"cur": "MYR",
+"st": "counted"
+},
+{
+"c": "2e6f0051",
+"cc": "SG",
+"n": "Software only",
+"m": 15208,
+"cur": "SGD",
+"st": "counted"
+},
+{
+"c": "2e7c69aa",
+"cc": "IT",
+"n": "From",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "2f51f8db",
+"cc": "NZ",
+"n": "Vendor (single plan shown)",
+"m": 4600,
+"cur": "NZD",
+"st": "counted"
+},
+{
+"c": "304ad1a7",
+"cc": "QA",
+"n": "Sapaad.Online (quote)",
+"m": null,
+"cur": "QAR",
+"st": "hidden"
+},
+{
+"c": "30664554",
+"cc": "AE",
+"n": "Vendor (free)",
+"m": 0,
+"cur": "AED",
+"st": "excluded"
+},
+{
+"c": "30bb8773",
+"cc": "US",
+"n": "Commerce (ordering & point of sale)",
+"m": null,
+"cur": "USD",
+"st": "hidden"
+},
+{
+"c": "30bb8773",
+"cc": "US",
+"n": "Custom",
+"m": null,
+"cur": "USD",
+"st": "hidden"
+},
+{
+"c": "30bb8773",
+"cc": "US",
+"n": "Pro",
+"m": 49900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "30f495eb",
+"cc": "GR",
+"n": "Business",
+"m": 2499,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "334357d0",
+"cc": "FR",
+"n": "Single offer (no subscription)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "34c0c62f",
+"cc": "GB",
+"n": "n/a",
+"m": null,
+"cur": "GBP",
+"st": "hidden"
+},
+{
+"c": "34c0c62f",
+"cc": "GB",
+"n": "Price on request",
+"m": null,
+"cur": "GBP",
+"st": "hidden"
+},
+{
+"c": "369127ec",
+"cc": "CH",
+"n": "Pro (monthly)",
+"m": 6900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "369127ec",
+"cc": "CH",
+"n": "Start (monthly)",
+"m": 3900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "369127ec",
+"cc": "CH",
+"n": "Start (yearly)",
+"m": 3250,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "3cc2b17f",
+"cc": "NL",
+"n": "Gratis",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "3cc2b17f",
+"cc": "NL",
+"n": "Lite",
+"m": 900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "3cc2b17f",
+"cc": "NL",
+"n": "Pro",
+"m": 2900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "3d587bd6",
+"cc": "PL",
+"n": "PRO",
+"m": null,
+"cur": "PLN",
+"st": "hidden"
+},
+{
+"c": "3d81b4a1",
+"cc": "US",
+"n": "$90 a month, billed yearly",
+"m": 9000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "3d81b4a1",
+"cc": "US",
+"n": "0.95% of card sales",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "3d81b4a1",
+"cc": "US",
+"n": "Annual",
+"m": 9000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "3d81b4a1",
+"cc": "US",
+"n": "Pay As You Go",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "3ec3fbaa",
+"cc": "FR",
+"n": "Basic",
+"m": 833,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "3ec3fbaa",
+"cc": "FR",
+"n": "Pro",
+"m": 1250,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "3f0b6c2e",
+"cc": "GB",
+"n": "No monthly fee (fee per payment)",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "41abaf89",
+"cc": "IS",
+"n": "Pöntunarkerfi (monthly fee, amount not shown)",
+"m": null,
+"cur": "ISK",
+"st": "hidden"
+},
+{
+"c": "42e450a6",
+"cc": "CA",
+"n": "Truck owner",
+"m": null,
+"cur": "CAD",
+"st": "hidden"
+},
+{
+"c": "430c8cb2",
+"cc": "CY",
+"n": "Online storefront",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "430c8cb2",
+"cc": "CY",
+"n": "Own app",
+"m": 8500,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "430c8cb2",
+"cc": "CY",
+"n": "Εφαρμογή (own app add-on)",
+"m": 8500,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "430c8cb2",
+"cc": "CY",
+"n": "Κατάστημα (online store)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "4524d8f0",
+"cc": "AU",
+"n": "Starter / Essential / Pro / Enterprise",
+"m": null,
+"cur": "AUD",
+"st": "hidden"
+},
+{
+"c": "4620b046",
+"cc": "EG",
+"n": "Advanced Bundle",
+"m": 373367,
+"cur": "EGP",
+"st": "counted"
+},
+{
+"c": "4620b046",
+"cc": "EG",
+"n": "Foodics Online (Egypt)",
+"m": null,
+"cur": "EGP",
+"st": "hidden"
+},
+{
+"c": "4620b046",
+"cc": "OM",
+"n": "Advanced Bundle",
+"m": 8900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "4620b046",
+"cc": "QA",
+"n": "Advanced Bundle",
+"m": 12500,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "4620b046",
+"cc": "SA",
+"n": "Advanced Bundle",
+"m": 76500,
+"cur": "SAR",
+"st": "counted"
+},
+{
+"c": "4620b046",
+"cc": "SA",
+"n": "Basic Bundle",
+"m": 45000,
+"cur": "SAR",
+"st": "counted"
+},
+{
+"c": "4620b046",
+"cc": "SA",
+"n": "Starter Bundle",
+"m": 24800,
+"cur": "SAR",
+"st": "counted"
+},
+{
+"c": "4620b046",
+"cc": "SA",
+"n": "الباقة المطورة (Advanced)",
+"m": 76500,
+"cur": "SAR",
+"st": "counted"
+},
+{
+"c": "462996c6",
+"cc": "SE",
+"n": "Säsongspaket",
+"m": 66667,
+"cur": "SEK",
+"st": "counted"
+},
+{
+"c": "462996c6",
+"cc": "SE",
+"n": "Säsongspaket (WEIQ Pro for a season)",
+"m": 66667,
+"cur": "SEK",
+"st": "counted"
+},
+{
+"c": "462996c6",
+"cc": "SE",
+"n": "Seasonal package",
+"m": 66667,
+"cur": "SEK",
+"st": "counted"
+},
+{
+"c": "462996c6",
+"cc": "SE",
+"n": "WEIQ Easy (+ online ordering add-on)",
+"m": 25000,
+"cur": "SEK",
+"st": "counted"
+},
+{
+"c": "462996c6",
+"cc": "SE",
+"n": "WEIQ Pro",
+"m": 75000,
+"cur": "SEK",
+"st": "counted"
+},
+{
+"c": "465f1ff8",
+"cc": "MU",
+"n": "Pro",
+"m": 440000,
+"cur": "MUR",
+"st": "counted"
+},
+{
+"c": "465f1ff8",
+"cc": "MU",
+"n": "Starter",
+"m": 180000,
+"cur": "MUR",
+"st": "counted"
+},
+{
+"c": "4c350e59",
+"cc": "AU",
+"n": "Restaurant",
+"m": 9900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "4c350e59",
+"cc": "US",
+"n": "Subscription",
+"m": null,
+"cur": "USD",
+"st": "hidden"
+},
+{
+"c": "4cde17cb",
+"cc": "US",
+"n": "Hotplate (no subscription)",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "4cde17cb",
+"cc": "US",
+"n": "Single plan (no subscription)",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "4eff2bd5",
+"cc": "FR",
+"n": "Classique",
+"m": 800,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "4eff2bd5",
+"cc": "FR",
+"n": "Premium",
+"m": 1200,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "4f54a28d",
+"cc": "NZ",
+"n": "Vendor",
+"m": null,
+"cur": "NZD",
+"st": "hidden"
+},
+{
+"c": "4f54a28d",
+"cc": "NZ",
+"n": "Vendor listing",
+"m": null,
+"cur": "NZD",
+"st": "hidden"
+},
+{
+"c": "50d5999f",
+"cc": "IN",
+"n": "AppXpress",
+"m": 1041658,
+"cur": "INR",
+"st": "counted"
+},
+{
+"c": "50d5999f",
+"cc": "IN",
+"n": "WebXpress",
+"m": 183325,
+"cur": "INR",
+"st": "counted"
+},
+{
+"c": "50d5999f",
+"cc": "IN",
+"n": "WebXpress + LoyaltyPro",
+"m": 333325,
+"cur": "INR",
+"st": "counted"
+},
+{
+"c": "5143bd80",
+"cc": "CA",
+"n": "Everything included",
+"m": 8900,
+"cur": "CAD",
+"st": "counted"
+},
+{
+"c": "515a8c44",
+"cc": "CH",
+"n": "Enterprise",
+"m": null,
+"cur": "CHF",
+"st": "hidden"
+},
+{
+"c": "515a8c44",
+"cc": "CH",
+"n": "Premium",
+"m": 22900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "51e6b79e",
+"cc": "ES",
+"n": "pidopago",
+"m": 3042,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "51e6b79e",
+"cc": "ES",
+"n": "pidopago (annual)",
+"m": 3042,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "51e6b79e",
+"cc": "ES",
+"n": "pidopago Factu",
+"m": 4042,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "53395fcb",
+"cc": "HU",
+"n": "Alapszolgáltatás (QR menu base)",
+"m": 390000,
+"cur": "HUF",
+"st": "counted"
+},
+{
+"c": "53395fcb",
+"cc": "HU",
+"n": "Digitális megrendelés (ordering module)",
+"m": 890000,
+"cur": "HUF",
+"st": "counted"
+},
+{
+"c": "54922ec3",
+"cc": "DK",
+"n": "Medium",
+"m": 69500,
+"cur": "DKK",
+"st": "counted"
+},
+{
+"c": "54922ec3",
+"cc": "DK",
+"n": "Standard",
+"m": 39500,
+"cur": "DKK",
+"st": "counted"
+},
+{
+"c": "54922ec3",
+"cc": "NO",
+"n": "Medium",
+"m": 99500,
+"cur": "NOK",
+"st": "counted"
+},
+{
+"c": "54922ec3",
+"cc": "NO",
+"n": "Standard",
+"m": 55500,
+"cur": "NOK",
+"st": "counted"
+},
+{
+"c": "54b82bfa",
+"cc": "GR",
+"n": "Growth",
+"m": 12000,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "54b82bfa",
+"cc": "GR",
+"n": "Pro",
+"m": 23000,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "54b82bfa",
+"cc": "GR",
+"n": "Starter",
+"m": 6000,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "55cd958d",
+"cc": "DE",
+"n": "Growth",
+"m": 12900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "55cd958d",
+"cc": "DE",
+"n": "Premium",
+"m": 24900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "55cd958d",
+"cc": "DE",
+"n": "Starter",
+"m": 4900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "55fd4d07",
+"cc": "PT",
+"n": "Takeaway & Delivery",
+"m": 9999,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "55fd4d07",
+"cc": "PT",
+"n": "Total",
+"m": 14999,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "56eb7481",
+"cc": "ID",
+"n": "Advance",
+"m": 49900000,
+"cur": "IDR",
+"st": "counted"
+},
+{
+"c": "56eb7481",
+"cc": "ID",
+"n": "Starter",
+"m": 24900000,
+"cur": "IDR",
+"st": "counted"
+},
+{
+"c": "58b9820f",
+"cc": "NO",
+"n": "Alt-i-ett kassesystem (from)",
+"m": 89900,
+"cur": "NOK",
+"st": "counted"
+},
+{
+"c": "58b9820f",
+"cc": "NO",
+"n": "Favrit kassesystem (from)",
+"m": 89900,
+"cur": "NOK",
+"st": "counted"
+},
+{
+"c": "598df7ba",
+"cc": "BR",
+"n": "Plano único",
+"m": 20000,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "5a8fd79e",
+"cc": "PY",
+"n": "Standard / Pro / Premium (on request)",
+"m": null,
+"cur": "PYG",
+"st": "hidden"
+},
+{
+"c": "5b0488ed",
+"cc": "PA",
+"n": "Actib",
+"m": 19900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "5b0488ed",
+"cc": "PA",
+"n": "Actib Scale",
+"m": null,
+"cur": "USD",
+"st": "hidden"
+},
+{
+"c": "5b0488ed",
+"cc": "PA",
+"n": "Actib Web",
+"m": 4900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "5b50f4e3",
+"cc": "GB",
+"n": "Essential Package (Point of Sale & Online Ordering)",
+"m": 13900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "5b50f4e3",
+"cc": "GB",
+"n": "Essential Package (POS + online ordering)",
+"m": 13900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "5b50f4e3",
+"cc": "GB",
+"n": "Online ordering (unnamed price on the online-ordering page)",
+"m": 6900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "5b50f4e3",
+"cc": "GB",
+"n": "Self-Service Kiosk",
+"m": 5900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "5b50f4e3",
+"cc": "GB",
+"n": "Website",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "5b50f4e3",
+"cc": "IE",
+"n": "Essential Package",
+"m": 13900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "5b50f4e3",
+"cc": "IE",
+"n": "Essential Package (POS + online ordering)",
+"m": 13900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "5b50f4e3",
+"cc": "IE",
+"n": "Online ordering (card name not shown; 99 card)",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "5b50f4e3",
+"cc": "IE",
+"n": "Online ordering (card name not shown; cheapest of three)",
+"m": 6900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "5b50f4e3",
+"cc": "IE",
+"n": "Website & Mobile App",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "5bb256b3",
+"cc": "FR",
+"n": "Click & collect avancé (Standard)",
+"m": 5900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "5bec1864",
+"cc": "NL",
+"n": "Pro",
+"m": 1999,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "5bec1864",
+"cc": "NL",
+"n": "Vev",
+"m": 999,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "5c805a29",
+"cc": "US",
+"n": "Custom Website + Ordering",
+"m": 13900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "5c805a29",
+"cc": "US",
+"n": "Full Service",
+"m": 34900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "5c805a29",
+"cc": "US",
+"n": "Growth",
+"m": 19900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "5c805a29",
+"cc": "US",
+"n": "Online Ordering",
+"m": 11900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "5c805a29",
+"cc": "US",
+"n": "Starter",
+"m": 15900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "5c805a29",
+"cc": "US",
+"n": "Web Based Menu",
+"m": 3495,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "5c808451",
+"cc": "BR",
+"n": "Automatizar",
+"m": 18490,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "5c808451",
+"cc": "BR",
+"n": "Básico",
+"m": 9990,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "5c808451",
+"cc": "BR",
+"n": "Básico (Delivery)",
+"m": 9990,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "5c808451",
+"cc": "BR",
+"n": "Grátis",
+"m": 0,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "5c808451",
+"cc": "BR",
+"n": "Integrar",
+"m": 29990,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "5c901b17",
+"cc": "CA",
+"n": "Basic Web Ordering",
+"m": 9900,
+"cur": "CAD",
+"st": "counted"
+},
+{
+"c": "5d40e41f",
+"cc": "AZ",
+"n": "Medium (up to 3 000 orders)",
+"m": 360000000,
+"cur": "UZS",
+"st": "counted"
+},
+{
+"c": "5d40e41f",
+"cc": "AZ",
+"n": "Start (up to 1 000 orders)",
+"m": 130000000,
+"cur": "UZS",
+"st": "counted"
+},
+{
+"c": "5d40e41f",
+"cc": "KZ",
+"n": "Medium (up to 3 000 orders)",
+"m": 360000000,
+"cur": "UZS",
+"st": "counted"
+},
+{
+"c": "5d40e41f",
+"cc": "KZ",
+"n": "Start (up to 1 000 orders)",
+"m": 130000000,
+"cur": "UZS",
+"st": "counted"
+},
+{
+"c": "5d40e41f",
+"cc": "UZ",
+"n": "Medium (up to 3 000 orders)",
+"m": 360000000,
+"cur": "UZS",
+"st": "counted"
+},
+{
+"c": "5d40e41f",
+"cc": "UZ",
+"n": "Start (up to 1 000 orders)",
+"m": 130000000,
+"cur": "UZS",
+"st": "counted"
+},
+{
+"c": "5f28f634",
+"cc": "IT",
+"n": "Food truck till (from)",
+"m": 3500,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "5f28f634",
+"cc": "IT",
+"n": "Ordering module (App ordinazione / delivery e asporto)",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "5f613b54",
+"cc": "SE",
+"n": "Yabie Express",
+"m": 89900,
+"cur": "SEK",
+"st": "counted"
+},
+{
+"c": "5f613b54",
+"cc": "SE",
+"n": "Yabie Online (plan not stated)",
+"m": null,
+"cur": "SEK",
+"st": "hidden"
+},
+{
+"c": "5f69d328",
+"cc": "BR",
+"n": "A partir de",
+"m": 7900,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "630bcb18",
+"cc": "BR",
+"n": "Pedi mais",
+"m": 14900,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "630bcb18",
+"cc": "BR",
+"n": "Pedi rápido",
+"m": 9900,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "630bcb18",
+"cc": "BR",
+"n": "Pedi tudo",
+"m": 19900,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "640ecd44",
+"cc": "FR",
+"n": "Click & Collect (module)",
+"m": 4900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "640ecd44",
+"cc": "FR",
+"n": "Synergie",
+"m": 6900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "640ecd44",
+"cc": "FR",
+"n": "Synergie (website + Click & Collect)",
+"m": 6900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "640ecd44",
+"cc": "FR",
+"n": "Vitrine",
+"m": 2900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "647628e6",
+"cc": "HK",
+"n": "QR code ordering (from)",
+"m": 120000,
+"cur": "HKD",
+"st": "counted"
+},
+{
+"c": "647628e6",
+"cc": "HK",
+"n": "QR code ordering scheme (from)",
+"m": 120000,
+"cur": "HKD",
+"st": "counted"
+},
+{
+"c": "647628e6",
+"cc": "MO",
+"n": "Biz + Branded Online Store",
+"m": null,
+"cur": "MOP",
+"st": "hidden"
+},
+{
+"c": "647628e6",
+"cc": "TW",
+"n": "Branded Online Store (price on request)",
+"m": null,
+"cur": "TWD",
+"st": "hidden"
+},
+{
+"c": "647a5e78",
+"cc": "US",
+"n": "Pioneer (launch pricing)",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "647a5e78",
+"cc": "US",
+"n": "Pioneer Tier",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "64e49b93",
+"cc": "CA",
+"n": "Quote",
+"m": null,
+"cur": "CAD",
+"st": "hidden"
+},
+{
+"c": "662c9884",
+"cc": "NL",
+"n": "All-in",
+"m": 4563,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "662c9884",
+"cc": "NL",
+"n": "All-in (bestelsite + kassa + betaalsysteem)",
+"m": 4563,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "678a4310",
+"cc": "BE",
+"n": "Click & collect (sur devis)",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "683bf425",
+"cc": "DE",
+"n": "Multi",
+"m": 14900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "683bf425",
+"cc": "DE",
+"n": "Premium",
+"m": 6900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "683bf425",
+"cc": "DE",
+"n": "Starter",
+"m": 4900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "6863aab3",
+"cc": "LK",
+"n": "Monthly Plan",
+"m": 750000,
+"cur": "LKR",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "AE",
+"n": "Advanced",
+"m": 41667,
+"cur": "AED",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "AE",
+"n": "Basic",
+"m": 25000,
+"cur": "AED",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "AE",
+"n": "Online Ordering Advanced",
+"m": 41667,
+"cur": "AED",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "AE",
+"n": "Online Ordering Basic",
+"m": 25000,
+"cur": "AED",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "BH",
+"n": "Online Ordering Advanced",
+"m": 20750,
+"cur": "BHD",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "BH",
+"n": "Online Ordering Basic",
+"m": 16583,
+"cur": "BHD",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "EG",
+"n": "Launch (Online Ordering)",
+"m": 233333,
+"cur": "EGP",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "EG",
+"n": "Scale (Online Ordering)",
+"m": 375000,
+"cur": "EGP",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "JO",
+"n": "Online Ordering Advanced",
+"m": 87500,
+"cur": "JOD",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "JO",
+"n": "Online Ordering Basic",
+"m": 47917,
+"cur": "JOD",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "KW",
+"n": "LaunchScale (Online Ordering)",
+"m": 20833,
+"cur": "KWD",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "OM",
+"n": "Online Ordering Advanced",
+"m": 37500,
+"cur": "OMR",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "OM",
+"n": "Online Ordering Basic",
+"m": 16667,
+"cur": "OMR",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "QA",
+"n": "Online Ordering Advanced",
+"m": 37500,
+"cur": "QAR",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "QA",
+"n": "Online Ordering Basic",
+"m": 25000,
+"cur": "QAR",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "SA",
+"n": "Online Ordering Advanced",
+"m": 50000,
+"cur": "SAR",
+"st": "counted"
+},
+{
+"c": "69a3cfce",
+"cc": "SA",
+"n": "Online Ordering Basic",
+"m": 29167,
+"cur": "SAR",
+"st": "counted"
+},
+{
+"c": "6afa79bc",
+"cc": "GB",
+"n": "£30 a month",
+"m": 3000,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6afa79bc",
+"cc": "GB",
+"n": "£60 a month",
+"m": 6000,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6afa79bc",
+"cc": "GB",
+"n": "£75 a month",
+"m": 7500,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6afa79bc",
+"cc": "GB",
+"n": "1% per order",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6afa79bc",
+"cc": "GB",
+"n": "2% per order",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6afa79bc",
+"cc": "GB",
+"n": "3% per order",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6afa79bc",
+"cc": "GB",
+"n": "Basic Pay Monthly",
+"m": 3000,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6afa79bc",
+"cc": "GB",
+"n": "Basic PAYG",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6afa79bc",
+"cc": "GB",
+"n": "Pro",
+"m": 5996,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6dc60fd2",
+"cc": "GB",
+"n": "Enterprise",
+"m": null,
+"cur": "GBP",
+"st": "hidden"
+},
+{
+"c": "6dc60fd2",
+"cc": "GB",
+"n": "Free",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6dc60fd2",
+"cc": "GI",
+"n": "Free (3% per order)",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "6fa20b90",
+"cc": "CH",
+"n": "Kassensystem für Foodtruck",
+"m": 4490,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "6fa20b90",
+"cc": "CH",
+"n": "Onlineshop – Bis zu 100 Produkte",
+"m": 2500,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "6fa20b90",
+"cc": "LI",
+"n": "Kassensystem für Foodtruck",
+"m": 4490,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "6fa20b90",
+"cc": "LI",
+"n": "Onlineshop – Bis zu 100 Produkte",
+"m": 2500,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "70b34967",
+"cc": "CZ",
+"n": "Basic (free) - see notes for paid tiers",
+"m": 0,
+"cur": "CZK",
+"st": "counted"
+},
+{
+"c": "70b34967",
+"cc": "EE",
+"n": "Basic (free) - see notes for paid tiers",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "70b34967",
+"cc": "HU",
+"n": "Basic (free) - see notes for paid tiers",
+"m": 0,
+"cur": "HUF",
+"st": "counted"
+},
+{
+"c": "70b34967",
+"cc": "LT",
+"n": "Basic (free) - see notes for paid tiers",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "70b34967",
+"cc": "LV",
+"n": "Basic (free) - see notes for paid tiers",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "70b34967",
+"cc": "RO",
+"n": "Basic",
+"m": 0,
+"cur": "RON",
+"st": "counted"
+},
+{
+"c": "70b34967",
+"cc": "RO",
+"n": "Pro",
+"m": 62500,
+"cur": "RON",
+"st": "counted"
+},
+{
+"c": "70b34967",
+"cc": "RO",
+"n": "Smart",
+"m": 42500,
+"cur": "RON",
+"st": "counted"
+},
+{
+"c": "70b34967",
+"cc": "RO",
+"n": "Standard",
+"m": 20000,
+"cur": "RON",
+"st": "counted"
+},
+{
+"c": "70b34967",
+"cc": "SK",
+"n": "Basic (free) - see notes for paid tiers",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "718f6290",
+"cc": "CO",
+"n": "Plan (not shown)",
+"m": null,
+"cur": "COP",
+"st": "hidden"
+},
+{
+"c": "71f255ff",
+"cc": "US",
+"n": "Quote",
+"m": null,
+"cur": "USD",
+"st": "hidden"
+},
+{
+"c": "71f255ff",
+"cc": "US",
+"n": "Truckfindr",
+"m": null,
+"cur": "USD",
+"st": "hidden"
+},
+{
+"c": "75a79897",
+"cc": "FR",
+"n": "E-commerce",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "769c4972",
+"cc": "MV",
+"n": "Restaurant or Café",
+"m": 350000,
+"cur": "MVR",
+"st": "counted"
+},
+{
+"c": "769c4972",
+"cc": "MV",
+"n": "Street Vendor",
+"m": 75000,
+"cur": "MVR",
+"st": "counted"
+},
+{
+"c": "7734b770",
+"cc": "BE",
+"n": "All-in Menu",
+"m": 34900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "7734b770",
+"cc": "BE",
+"n": "Quick Menu",
+"m": 24900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "7734b770",
+"cc": "BE",
+"n": "Table Menu",
+"m": 14900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "797df612",
+"cc": "AE",
+"n": "Growth",
+"m": 13500,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "797df612",
+"cc": "AE",
+"n": "Starter",
+"m": 8500,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "797df612",
+"cc": "KW",
+"n": "Growth",
+"m": 36000,
+"cur": "KWD",
+"st": "counted"
+},
+{
+"c": "797df612",
+"cc": "KW",
+"n": "Starter",
+"m": 20000,
+"cur": "KWD",
+"st": "counted"
+},
+{
+"c": "79fcc90d",
+"cc": "AT",
+"n": "GOLD",
+"m": 12900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "79fcc90d",
+"cc": "AT",
+"n": "STARTUP",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "79fcc90d",
+"cc": "DE",
+"n": "GOLD",
+"m": 12900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "79fcc90d",
+"cc": "DE",
+"n": "STARTUP",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "7bf0553c",
+"cc": "US",
+"n": "Vendor plan",
+"m": null,
+"cur": "USD",
+"st": "hidden"
+},
+{
+"c": "7e12931c",
+"cc": "AR",
+"n": "Plan Inicial (POS)",
+"m": 2390000,
+"cur": "ARS",
+"st": "counted"
+},
+{
+"c": "7e12931c",
+"cc": "AR",
+"n": "Tu Delivery (no monthly fee)",
+"m": 0,
+"cur": "ARS",
+"st": "counted"
+},
+{
+"c": "7e12931c",
+"cc": "CL",
+"n": "Tu Delivery",
+"m": 0,
+"cur": "CLP",
+"st": "counted"
+},
+{
+"c": "7e12931c",
+"cc": "CO",
+"n": "Plan Inicial (base plan)",
+"m": 6290000,
+"cur": "COP",
+"st": "counted"
+},
+{
+"c": "7e12931c",
+"cc": "CO",
+"n": "Plan Inicial + Tu Delivery",
+"m": 17380000,
+"cur": "COP",
+"st": "counted"
+},
+{
+"c": "7e12931c",
+"cc": "CO",
+"n": "Tu Delivery (add-on module)",
+"m": 11090000,
+"cur": "COP",
+"st": "counted"
+},
+{
+"c": "7e12931c",
+"cc": "CO",
+"n": "Tu Delivery (add-on)",
+"m": 11090000,
+"cur": "COP",
+"st": "counted"
+},
+{
+"c": "7e12931c",
+"cc": "PY",
+"n": "Plan Avanzado",
+"m": 3500,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "7e12931c",
+"cc": "PY",
+"n": "Plan Pro",
+"m": 4500,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "7e12931c",
+"cc": "PY",
+"n": "Tu Delivery (add-on module)",
+"m": 3000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "7e788860",
+"cc": "NG",
+"n": "Business",
+"m": 7500000,
+"cur": "NGN",
+"st": "counted"
+},
+{
+"c": "7e788860",
+"cc": "NG",
+"n": "Essentials",
+"m": 750000,
+"cur": "NGN",
+"st": "counted"
+},
+{
+"c": "7e788860",
+"cc": "NG",
+"n": "Growth",
+"m": 3500000,
+"cur": "NGN",
+"st": "counted"
+},
+{
+"c": "7fbcd197",
+"cc": "US",
+"n": "Monthly",
+"m": 5900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "80a8b5b2",
+"cc": "BE",
+"n": "Fritzy (sans abonnement)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "832a682c",
+"cc": "PR",
+"n": "Menufy online ordering",
+"m": 17900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "832a682c",
+"cc": "US",
+"n": "Annual",
+"m": 14900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "832a682c",
+"cc": "US",
+"n": "Month-to-month",
+"m": 17900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "841dfd9e",
+"cc": "BD",
+"n": "Mild",
+"m": 449900,
+"cur": "BDT",
+"st": "counted"
+},
+{
+"c": "841dfd9e",
+"cc": "BD",
+"n": "Spicy",
+"m": 799900,
+"cur": "BDT",
+"st": "counted"
+},
+{
+"c": "841dfd9e",
+"cc": "BD",
+"n": "Starter",
+"m": 249900,
+"cur": "BDT",
+"st": "counted"
+},
+{
+"c": "85c5360a",
+"cc": "PK",
+"n": "Direct Ordering",
+"m": 9900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "86a8eea4",
+"cc": "FR",
+"n": "Flotte",
+"m": 14900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "86a8eea4",
+"cc": "FR",
+"n": "Rouler",
+"m": 7900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "86a8eea4",
+"cc": "FR",
+"n": "Start",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "873c5c65",
+"cc": "DO",
+"n": "Cadenas y eventos",
+"m": null,
+"cur": "DOP",
+"st": "hidden"
+},
+{
+"c": "87b9b92a",
+"cc": "KR",
+"n": "토스오더 픽업주문",
+"m": 0,
+"cur": "KRW",
+"st": "counted"
+},
+{
+"c": "89a12466",
+"cc": "NL",
+"n": "Voorstel op maat",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "8bcbd76a",
+"cc": "AO",
+"n": "(plan cards)",
+"m": null,
+"cur": "AOA",
+"st": "hidden"
+},
+{
+"c": "8bcbd76a",
+"cc": "AO",
+"n": "Plans (no price shown)",
+"m": null,
+"cur": "AOA",
+"st": "hidden"
+},
+{
+"c": "8c7188e7",
+"cc": "AU",
+"n": "Custom Site",
+"m": 4900,
+"cur": "AUD",
+"st": "counted"
+},
+{
+"c": "8c7188e7",
+"cc": "AU",
+"n": "Custom Site & App Bundle",
+"m": 8900,
+"cur": "AUD",
+"st": "counted"
+},
+{
+"c": "8c7188e7",
+"cc": "AU",
+"n": "Your Storefront on Ywait",
+"m": 1500,
+"cur": "AUD",
+"st": "counted"
+},
+{
+"c": "92a350ce",
+"cc": "AU",
+"n": "Vendor listing + in-app ordering",
+"m": null,
+"cur": "AUD",
+"st": "hidden"
+},
+{
+"c": "92dbc215",
+"cc": "PY",
+"n": "Precio por local (on request)",
+"m": null,
+"cur": "PYG",
+"st": "hidden"
+},
+{
+"c": "938f3a06",
+"cc": "PL",
+"n": "Foodeliver",
+"m": null,
+"cur": "PLN",
+"st": "hidden"
+},
+{
+"c": "93cd38bf",
+"cc": "GB",
+"n": "Enterprise",
+"m": 19999,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "93cd38bf",
+"cc": "GB",
+"n": "Pro",
+"m": 6999,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "93cd38bf",
+"cc": "GB",
+"n": "Starter",
+"m": 2999,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "96772514",
+"cc": "TW",
+"n": "iCHEF POS 方案",
+"m": 195000,
+"cur": "TWD",
+"st": "counted"
+},
+{
+"c": "96ce7971",
+"cc": "AU",
+"n": "Online / table ordering",
+"m": null,
+"cur": "AUD",
+"st": "hidden"
+},
+{
+"c": "96ce7971",
+"cc": "AU",
+"n": "Order Up! online ordering",
+"m": null,
+"cur": "AUD",
+"st": "hidden"
+},
+{
+"c": "97922d9d",
+"cc": "MA",
+"n": "inyad eCommerce",
+"m": 14900,
+"cur": "MAD",
+"st": "counted"
+},
+{
+"c": "97922d9d",
+"cc": "MA",
+"n": "inyad POS",
+"m": 14900,
+"cur": "MAD",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "AL",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "AL",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "AL",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "BG",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "BG",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "BG",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "CY",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "CY",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "CY",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "EE",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "EE",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "EE",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "FI",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "FI",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "FI",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "GB",
+"n": "Enterprise",
+"m": 19900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "GB",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "GB",
+"n": "Pro",
+"m": 19900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "GB",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "HR",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "HR",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "HR",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "LT",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "LT",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "LT",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "LU",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "LU",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "LU",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "LV",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "LV",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "LV",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "MA",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "MA",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "MA",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "MT",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "MT",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "MT",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "NO",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "NO",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "NO",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "PT",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "PT",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "PT",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "SE",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "SE",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "SE",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "SI",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "SI",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "SI",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "SK",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "SK",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "SK",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "TR",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "TR",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "TR",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "ZA",
+"n": "Connect",
+"m": 4900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "ZA",
+"n": "Grow",
+"m": 9900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "98c064da",
+"cc": "ZA",
+"n": "Starter",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "9a4e55c0",
+"cc": "US",
+"n": "Online ordering (free to trucks)",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "9acae7b6",
+"cc": "AU",
+"n": "Square for Restaurants Free",
+"m": 0,
+"cur": "AUD",
+"st": "counted"
+},
+{
+"c": "9acae7b6",
+"cc": "AU",
+"n": "Square for Restaurants Plus",
+"m": 12900,
+"cur": "AUD",
+"st": "counted"
+},
+{
+"c": "9acae7b6",
+"cc": "AU",
+"n": "Square Online Plus",
+"m": 4000,
+"cur": "AUD",
+"st": "counted"
+},
+{
+"c": "9af04d84",
+"cc": "NG",
+"n": "Free",
+"m": 0,
+"cur": "NGN",
+"st": "counted"
+},
+{
+"c": "9bce2002",
+"cc": "US",
+"n": "Pro (from third-party sources)",
+"m": 22900,
+"cur": "USD",
+"st": "closed"
+},
+{
+"c": "9c2e5c2a",
+"cc": "LI",
+"n": "Business",
+"m": 7900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "9c2e5c2a",
+"cc": "LI",
+"n": "Professional",
+"m": 14800,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "9c2e5c2a",
+"cc": "LI",
+"n": "Starter",
+"m": 4900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "9c855eec",
+"cc": "IT",
+"n": "Attivazione & Sito",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9c855eec",
+"cc": "IT",
+"n": "PLUS (list price)",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9c855eec",
+"cc": "IT",
+"n": "PLUS (promo)",
+"m": 6900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9df2dcd4",
+"cc": "DE",
+"n": "Business",
+"m": 24900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9df2dcd4",
+"cc": "DE",
+"n": "FoodsHero Business",
+"m": 24900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9df2dcd4",
+"cc": "DE",
+"n": "FoodsHero Growth",
+"m": 39900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9df2dcd4",
+"cc": "DE",
+"n": "FoodsHero Start",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9df2dcd4",
+"cc": "DE",
+"n": "Growth",
+"m": 39900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9df2dcd4",
+"cc": "DE",
+"n": "Premium",
+"m": 79900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9df2dcd4",
+"cc": "DE",
+"n": "Start",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9ed5a6b1",
+"cc": "AT",
+"n": "Online-Bestellsystem Pauschal-Flat",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9ed5a6b1",
+"cc": "AT",
+"n": "Online-Bestellsystem pay per order",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9ed5a6b1",
+"cc": "AT",
+"n": "Online-Bestellsystem pro Bestellung",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9ed5a6b1",
+"cc": "DE",
+"n": "Online-Bestellsystem Flat",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9ed5a6b1",
+"cc": "DE",
+"n": "Online-Bestellsystem Pauschal-Flat",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9ed5a6b1",
+"cc": "DE",
+"n": "Online-Bestellsystem pay per order",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9ed5a6b1",
+"cc": "DE",
+"n": "Online-Bestellsystem pro Bestellung",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "9f2ee7a6",
+"cc": "JP",
+"n": "Proposal-based plan",
+"m": null,
+"cur": "JPY",
+"st": "hidden"
+},
+{
+"c": "9f2ee7a6",
+"cc": "JP",
+"n": "Quote",
+"m": null,
+"cur": "JPY",
+"st": "hidden"
+},
+{
+"c": "9f932a75",
+"cc": "JP",
+"n": "Premium",
+"m": 3980,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "9f932a75",
+"cc": "JP",
+"n": "Standard",
+"m": 8980,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "a0052971",
+"cc": "SE",
+"n": "Online Order",
+"m": null,
+"cur": "SEK",
+"st": "hidden"
+},
+{
+"c": "a09713bc",
+"cc": "NO",
+"n": "Go",
+"m": 0,
+"cur": "NOK",
+"st": "counted"
+},
+{
+"c": "a09713bc",
+"cc": "NO",
+"n": "Plus",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "a09713bc",
+"cc": "NO",
+"n": "Plus (includes Online Takeaway)",
+"m": null,
+"cur": "NOK",
+"st": "hidden"
+},
+{
+"c": "a207b996",
+"cc": "FR",
+"n": "Eatch Fondateur (Membre Fondateur)",
+"m": 4450,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a207b996",
+"cc": "FR",
+"n": "Standard",
+"m": 8900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a207b996",
+"cc": "FR",
+"n": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+"m": 8900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a36488cf",
+"cc": "DK",
+"n": "1 food truck",
+"m": 99500,
+"cur": "DKK",
+"st": "counted"
+},
+{
+"c": "a36488cf",
+"cc": "DK",
+"n": "2 food trucks",
+"m": 169500,
+"cur": "DKK",
+"st": "counted"
+},
+{
+"c": "a431bf75",
+"cc": "AT",
+"n": "unknown",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "a59dfb20",
+"cc": "AT",
+"n": "Business & Ketten",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "a59dfb20",
+"cc": "AT",
+"n": "Gastro25 Komplett",
+"m": 6900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a59dfb20",
+"cc": "DE",
+"n": "Business & Ketten",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "a59dfb20",
+"cc": "DE",
+"n": "Gastro25 Komplett",
+"m": 6900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a65c8f98",
+"cc": "MX",
+"n": "(not published)",
+"m": null,
+"cur": "MXN",
+"st": "hidden"
+},
+{
+"c": "a8ba9459",
+"cc": "AU",
+"n": "Online ordering",
+"m": 4900,
+"cur": "AUD",
+"st": "counted"
+},
+{
+"c": "a8ba9459",
+"cc": "AU",
+"n": "Storefront",
+"m": 0,
+"cur": "AUD",
+"st": "counted"
+},
+{
+"c": "a8ba9459",
+"cc": "AU",
+"n": "White-label for Web (add-on)",
+"m": 9900,
+"cur": "AUD",
+"st": "counted"
+},
+{
+"c": "a8ba9459",
+"cc": "NZ",
+"n": "Online ordering",
+"m": 4900,
+"cur": "NZD",
+"st": "counted"
+},
+{
+"c": "a8ecbf68",
+"cc": "FR",
+"n": "Free",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a8ecbf68",
+"cc": "FR",
+"n": "Gratuit",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a8ecbf68",
+"cc": "FR",
+"n": "Standard",
+"m": 1999,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a9825e32",
+"cc": "RO",
+"n": "Plus",
+"m": 1000,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a9825e32",
+"cc": "RO",
+"n": "Pro",
+"m": 2000,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a9825e32",
+"cc": "RO",
+"n": "Start",
+"m": 500,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "a9d7b921",
+"cc": "AR",
+"n": "Brote Gastronómico",
+"m": 1900000,
+"cur": "ARS",
+"st": "counted"
+},
+{
+"c": "a9d7b921",
+"cc": "AR",
+"n": "Crecimiento Gastronómico",
+"m": 2900000,
+"cur": "ARS",
+"st": "counted"
+},
+{
+"c": "a9d7b921",
+"cc": "AR",
+"n": "Inicio Gastronómico",
+"m": 0,
+"cur": "ARS",
+"st": "counted"
+},
+{
+"c": "a9fafd04",
+"cc": "SE",
+"n": "Online-order",
+"m": null,
+"cur": "SEK",
+"st": "hidden"
+},
+{
+"c": "abd86253",
+"cc": "AT",
+"n": "Bestellsystem Jährlich",
+"m": 2417,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "abd86253",
+"cc": "AT",
+"n": "Bestellsystem Monatlich",
+"m": 2900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "abd86253",
+"cc": "DE",
+"n": "Bestellsystem (jährlich)",
+"m": 2417,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "abd86253",
+"cc": "DE",
+"n": "Bestellsystem (monatlich)",
+"m": 2900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "abd86253",
+"cc": "DE",
+"n": "Bestellsystem Jährlich",
+"m": 2417,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "abd86253",
+"cc": "DE",
+"n": "Bestellsystem Monatlich",
+"m": 2900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "ac1f084d",
+"cc": "GB",
+"n": "Events / markets",
+"m": null,
+"cur": "GBP",
+"st": "hidden"
+},
+{
+"c": "aebf5a80",
+"cc": "CH",
+"n": "Gastro",
+"m": 4900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "aebf5a80",
+"cc": "CH",
+"n": "Gastro (monthly)",
+"m": 4900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "aebf5a80",
+"cc": "CH",
+"n": "Gastro (yearly)",
+"m": 4083,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "aebf5a80",
+"cc": "LI",
+"n": "Food truck (from)",
+"m": 2900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "aebf5a80",
+"cc": "LI",
+"n": "Gastro (monthly)",
+"m": 4900,
+"cur": "CHF",
+"st": "counted"
+},
+{
+"c": "aed7bf67",
+"cc": "GB",
+"n": "Online Ordering",
+"m": 5900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "aed7bf67",
+"cc": "GI",
+"n": "Online Ordering",
+"m": 5900,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "aed7bf67",
+"cc": "IE",
+"n": "Online Ordering",
+"m": 5900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "aed7bf67",
+"cc": "US",
+"n": "EPOS",
+"m": 4900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "aed7bf67",
+"cc": "US",
+"n": "Online Ordering",
+"m": 6900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "aed7bf67",
+"cc": "US",
+"n": "Online Ordering + EPOS",
+"m": 10900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "afe2f58d",
+"cc": "ZA",
+"n": "Shop",
+"m": 100000,
+"cur": "ZAR",
+"st": "counted"
+},
+{
+"c": "b030b97d",
+"cc": "IT",
+"n": "Pay as you go",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b030b97d",
+"cc": "PT",
+"n": "Pay as you go",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b10476b9",
+"cc": "PL",
+"n": "GoOrder - Pakiet Online Basic",
+"m": 4900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "b10476b9",
+"cc": "PL",
+"n": "GoOrder - Pakiet Online Pro",
+"m": 12900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "b10476b9",
+"cc": "PL",
+"n": "GoOrder - Pakiet Online Unlimited",
+"m": 34900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "b32f19c9",
+"cc": "GB",
+"n": "Free forever",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "b32f19c9",
+"cc": "GB",
+"n": "Free forever",
+"m": 3000,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "b32f19c9",
+"cc": "GB",
+"n": "Free forever",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "b32f19c9",
+"cc": "GB",
+"n": "Pro",
+"m": 7500,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "b32f19c9",
+"cc": "GB",
+"n": "Standard",
+"m": 5500,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "b459885d",
+"cc": "AU",
+"n": "Online Orders module",
+"m": null,
+"cur": "AUD",
+"st": "hidden"
+},
+{
+"c": "b4d82532",
+"cc": "ES",
+"n": "Kiosk + MOSTACHA order system",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "b6a1a595",
+"cc": "IT",
+"n": "All in one (billed yearly)",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b6a1a595",
+"cc": "IT",
+"n": "Pro",
+"m": 5900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b6a1a595",
+"cc": "IT",
+"n": "Pro (billed monthly)",
+"m": 5900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b6a1a595",
+"cc": "IT",
+"n": "Pro (billed yearly)",
+"m": 4900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b70bbf5e",
+"cc": "IT",
+"n": "Pro",
+"m": 4499,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b70bbf5e",
+"cc": "IT",
+"n": "Regolare",
+"m": 899,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b70bbf5e",
+"cc": "RO",
+"n": "Pro",
+"m": 4499,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b70bbf5e",
+"cc": "RO",
+"n": "Regular",
+"m": 899,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b7b74ca7",
+"cc": "US",
+"n": "Fleet",
+"m": 9900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "b7b74ca7",
+"cc": "US",
+"n": "Free",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "b7b74ca7",
+"cc": "US",
+"n": "Pro",
+"m": 3900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "b82dcffe",
+"cc": "FR",
+"n": "Au camion",
+"m": 2900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b82dcffe",
+"cc": "FR",
+"n": "Clé en main",
+"m": 6900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b82dcffe",
+"cc": "FR",
+"n": "Commandable",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b82dcffe",
+"cc": "FR",
+"n": "Gratuit",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b94c7a14",
+"cc": "CZ",
+"n": "DISH Premium",
+"m": 159900,
+"cur": "CZK",
+"st": "counted"
+},
+{
+"c": "b94c7a14",
+"cc": "CZ",
+"n": "DISH Professional Order",
+"m": 134900,
+"cur": "CZK",
+"st": "counted"
+},
+{
+"c": "b94c7a14",
+"cc": "HR",
+"n": "DISH Premium (bundle)",
+"m": 4900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b94c7a14",
+"cc": "HR",
+"n": "DISH Professional Order (12-month term)",
+"m": 3500,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b94c7a14",
+"cc": "HR",
+"n": "DISH Professional Order (no commitment)",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "b94c7a14",
+"cc": "SK",
+"n": "DISH Professional Order",
+"m": 5900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "bc4c32f7",
+"cc": "BG",
+"n": "ORDERS",
+"m": 1500,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "bc4c32f7",
+"cc": "BG",
+"n": "PREMIUM",
+"m": 2000,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "bea75bdc",
+"cc": "PL",
+"n": "Standard",
+"m": null,
+"cur": "PLN",
+"st": "hidden"
+},
+{
+"c": "c0542ae9",
+"cc": "HU",
+"n": "Basic",
+"m": 973333,
+"cur": "HUF",
+"st": "counted"
+},
+{
+"c": "c06e5b78",
+"cc": "MA",
+"n": "Asila (monthly)",
+"m": 30000,
+"cur": "MAD",
+"st": "counted"
+},
+{
+"c": "c0793a8a",
+"cc": "UA",
+"n": "Up to 1,000 orders",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c0793a8a",
+"cc": "UA",
+"n": "Up to 5,000 orders",
+"m": 4900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "BR",
+"n": "Advanced",
+"m": 990,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "BR",
+"n": "Elite",
+"m": 5900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "BR",
+"n": "Gratis (base)",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "BR",
+"n": "Impulso",
+"m": 16000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "BR",
+"n": "Premium",
+"m": 2500,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "EC",
+"n": "Advanced",
+"m": 990,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "EC",
+"n": "Elite",
+"m": 5900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "EC",
+"n": "Premium",
+"m": 2500,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "MX",
+"n": "Advanced",
+"m": 990,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "MX",
+"n": "Elite",
+"m": 5900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "MX",
+"n": "Gratis (base)",
+"m": 0,
+"cur": "USD",
+"st": "closed"
+},
+{
+"c": "c400f63a",
+"cc": "MX",
+"n": "Impulso",
+"m": 16000,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c400f63a",
+"cc": "MX",
+"n": "Premium",
+"m": 2500,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c413ad17",
+"cc": "LT",
+"n": "ared (one plan)",
+"m": 2000,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "c4484192",
+"cc": "IS",
+"n": "Other systems (food ordering, by quote)",
+"m": null,
+"cur": "ISK",
+"st": "hidden"
+},
+{
+"c": "c4972b72",
+"cc": "HU",
+"n": "SM Max (includes OnlineMágus alap)",
+"m": 1680000,
+"cur": "HUF",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "AR",
+"n": "Especialista",
+"m": 2550000,
+"cur": "ARS",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "AR",
+"n": "Principiante",
+"m": 1900000,
+"cur": "ARS",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "AR",
+"n": "PRO",
+"m": 3500000,
+"cur": "ARS",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "BO",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "BO",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "BO",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "CL",
+"n": "Especialista",
+"m": 15000,
+"cur": "CLP",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "CL",
+"n": "Principiante",
+"m": 8500,
+"cur": "CLP",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "CL",
+"n": "PRO",
+"m": 21500,
+"cur": "CLP",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "CR",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "CR",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "CR",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "DO",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "DO",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "DO",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "EC",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "EC",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "EC",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "GT",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "GT",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "GT",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "HN",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "HN",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "HN",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "NI",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "NI",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "NI",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "PA",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "PA",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "PA",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "PE",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "PE",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "PE",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "PY",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "PY",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "PY",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "SV",
+"n": "Especialista",
+"m": 1600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "SV",
+"n": "Principiante",
+"m": 900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "SV",
+"n": "PRO",
+"m": 2300,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "UY",
+"n": "Especialista",
+"m": 66000,
+"cur": "UYU",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "UY",
+"n": "Principiante",
+"m": 40000,
+"cur": "UYU",
+"st": "counted"
+},
+{
+"c": "c615e67d",
+"cc": "UY",
+"n": "PRO",
+"m": 95000,
+"cur": "UYU",
+"st": "counted"
+},
+{
+"c": "c71ae83d",
+"cc": "GB",
+"n": "Essential",
+"m": 5417,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "c71ae83d",
+"cc": "GB",
+"n": "Essential (weekly billing)",
+"m": 5417,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "c71ae83d",
+"cc": "GB",
+"n": "Plus",
+"m": 6500,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "c71ae83d",
+"cc": "GB",
+"n": "Pro",
+"m": 8667,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "c762b9c2",
+"cc": "NL",
+"n": "Founder (first 50 customers)",
+"m": 1299,
+"cur": "EUR",
+"st": "excluded"
+},
+{
+"c": "c762b9c2",
+"cc": "NL",
+"n": "Pro",
+"m": 2999,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "c762b9c2",
+"cc": "NL",
+"n": "Starter",
+"m": 1299,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "ccd6121e",
+"cc": "US",
+"n": "Free listing",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "ccdd08d1",
+"cc": "DO",
+"n": "RestaurantOS Pro (required POS)",
+"m": 198900,
+"cur": "DOP",
+"st": "counted"
+},
+{
+"c": "ccdd08d1",
+"cc": "DO",
+"n": "Tienda Online Básico",
+"m": 0,
+"cur": "DOP",
+"st": "counted"
+},
+{
+"c": "ccdd08d1",
+"cc": "DO",
+"n": "Tienda Online Premium",
+"m": 0,
+"cur": "DOP",
+"st": "counted"
+},
+{
+"c": "ce1df15a",
+"cc": "DE",
+"n": "Bestell-Webshop (Flex / Saison / Jahr)",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "ce1df15a",
+"cc": "DE",
+"n": "Webshop (Abonnement pro Standort)",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "ce1df15a",
+"cc": "NL",
+"n": "Abonnement (offerte)",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "ce1df15a",
+"cc": "NL",
+"n": "Webshop / QR ordering",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "cfa5b47a",
+"cc": "ID",
+"n": "Advanced",
+"m": 49900000,
+"cur": "IDR",
+"st": "counted"
+},
+{
+"c": "cfa5b47a",
+"cc": "ID",
+"n": "Basic",
+"m": 0,
+"cur": "IDR",
+"st": "counted"
+},
+{
+"c": "cff055db",
+"cc": "BR",
+"n": "Grátis",
+"m": 0,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "cff055db",
+"cc": "BR",
+"n": "Profissional",
+"m": 29900,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "cff055db",
+"cc": "BR",
+"n": "Vex Black",
+"m": 49900,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "GR",
+"n": "Advanced",
+"m": 4600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "GR",
+"n": "Free",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "GR",
+"n": "Regular",
+"m": 1700,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "HK",
+"n": "Advanced",
+"m": 4600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "HK",
+"n": "Free",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "HK",
+"n": "Regular",
+"m": 1700,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "NO",
+"n": "Advanced",
+"m": 4600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "NO",
+"n": "Free",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "NO",
+"n": "Regular",
+"m": 1700,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "PT",
+"n": "Advanced",
+"m": 4600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "PT",
+"n": "Free",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "PT",
+"n": "Regular",
+"m": 1700,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "RO",
+"n": "Advanced",
+"m": 4600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "RO",
+"n": "Free",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "RO",
+"n": "Premium",
+"m": 11900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "RO",
+"n": "Regular",
+"m": 1700,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "TH",
+"n": "Advanced",
+"m": 4600,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "TH",
+"n": "Free",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d00d6bfd",
+"cc": "TH",
+"n": "Regular",
+"m": 1700,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d02db147",
+"cc": "BO",
+"n": "Arranca",
+"m": 40000,
+"cur": "BOB",
+"st": "counted"
+},
+{
+"c": "d02db147",
+"cc": "BO",
+"n": "Crece",
+"m": 60000,
+"cur": "BOB",
+"st": "counted"
+},
+{
+"c": "d02db147",
+"cc": "BO",
+"n": "Escala",
+"m": 90000,
+"cur": "BOB",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "AL",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "AT",
+"n": "Pay-per-Order",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "BA",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "BG",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "DE",
+"n": "Pay-per-Order",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "DE",
+"n": "Pay-per-Order (einziger Tarif)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "EE",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "IS",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "LU",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "LV",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "MK",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "MT",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "RS",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "SK",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d03a6e1f",
+"cc": "UA",
+"n": "FoxiFood (no monthly fee, per order)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d06ae0d2",
+"cc": "IE",
+"n": "Service",
+"m": 2900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "BG",
+"n": "Онлайн магазин (Online store)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "CL",
+"n": "Tienda en Línea",
+"m": 0,
+"cur": "CLP",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "CO",
+"n": "Online store",
+"m": 0,
+"cur": "COP",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "CY",
+"n": "Ηλεκτρονικό κατάστημα (Online Store)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "EE",
+"n": "Veebipood",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "FI",
+"n": "Verkkokauppa",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "GR",
+"n": "Ηλεκτρονικό κατάστημα (Online Store)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "HR",
+"n": "Internetska trgovina / Online plaćanja",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "LT",
+"n": "Internetinė parduotuvė",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "LU",
+"n": "E-shop (Boutique en ligne)",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "LV",
+"n": "Interneta veikals",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "NO",
+"n": "Nettbutikk",
+"m": 0,
+"cur": "NOK",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "PE",
+"n": "Tienda en línea",
+"m": 0,
+"cur": "PEN",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "PT",
+"n": "Loja online",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "SE",
+"n": "Webbutik",
+"m": 0,
+"cur": "SEK",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "SI",
+"n": "Spletna trgovina",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d0eb16fa",
+"cc": "SK",
+"n": "Online obchod / Online platby",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "d3218f9c",
+"cc": "AU",
+"n": "Custom food truck software",
+"m": null,
+"cur": "AUD",
+"st": "hidden"
+},
+{
+"c": "d35d4efa",
+"cc": "US",
+"n": "Single plan",
+"m": 1250,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "d41b0ca7",
+"cc": "NZ",
+"n": "Free",
+"m": 0,
+"cur": "NZD",
+"st": "counted"
+},
+{
+"c": "d41b0ca7",
+"cc": "NZ",
+"n": "Professional",
+"m": 9900,
+"cur": "NZD",
+"st": "counted"
+},
+{
+"c": "d41b0ca7",
+"cc": "NZ",
+"n": "Starter",
+"m": 4900,
+"cur": "NZD",
+"st": "counted"
+},
+{
+"c": "d4c5de98",
+"cc": "TR",
+"n": "TekMenü (per order)",
+"m": 0,
+"cur": "TRY",
+"st": "counted"
+},
+{
+"c": "da91c9a7",
+"cc": "JP",
+"n": "Flat",
+"m": 10000,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "da91c9a7",
+"cc": "JP",
+"n": "Takeout (固定料金)",
+"m": null,
+"cur": "JPY",
+"st": "hidden"
+},
+{
+"c": "dad148a7",
+"cc": "BW",
+"n": "StoreFront (price on request)",
+"m": null,
+"cur": "BWP",
+"st": "hidden"
+},
+{
+"c": "dad148a7",
+"cc": "NA",
+"n": "StoreFront (price on request)",
+"m": null,
+"cur": "NAD",
+"st": "hidden"
+},
+{
+"c": "dad148a7",
+"cc": "NG",
+"n": "StoreFront (price on request)",
+"m": null,
+"cur": "NGN",
+"st": "hidden"
+},
+{
+"c": "dad148a7",
+"cc": "ZA",
+"n": "StoreFront (price on request)",
+"m": null,
+"cur": "ZAR",
+"st": "hidden"
+},
+{
+"c": "dad148a7",
+"cc": "ZM",
+"n": "StoreFront (price on request)",
+"m": null,
+"cur": "ZMW",
+"st": "hidden"
+},
+{
+"c": "dc1d8f05",
+"cc": "AE",
+"n": "Free + Online Payment add-on",
+"m": 2900,
+"cur": "USD",
+"st": "closed"
+},
+{
+"c": "dc1d8f05",
+"cc": "GB",
+"n": "Free + Online / Credit Card Payment Service add-on",
+"m": 2900,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "dc1d8f05",
+"cc": "GB",
+"n": "Free + Online Payments add-on",
+"m": 2900,
+"cur": "USD",
+"st": "closed"
+},
+{
+"c": "dc1d8f05",
+"cc": "GB",
+"n": "Free service plan",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "dc1d8f05",
+"cc": "IE",
+"n": "Free + Online Payments add-on",
+"m": 2900,
+"cur": "USD",
+"st": "closed"
+},
+{
+"c": "dc1d8f05",
+"cc": "IN",
+"n": "Free + Online Payment add-on",
+"m": 2900,
+"cur": "USD",
+"st": "closed"
+},
+{
+"c": "dc1d8f05",
+"cc": "TH",
+"n": "Free + Online Payment add-on",
+"m": 2900,
+"cur": "USD",
+"st": "closed"
+},
+{
+"c": "ddc61529",
+"cc": "MY",
+"n": "Advanced (POS)",
+"m": 23500,
+"cur": "MYR",
+"st": "counted"
+},
+{
+"c": "ddc61529",
+"cc": "MY",
+"n": "Starter (POS)",
+"m": 12200,
+"cur": "MYR",
+"st": "counted"
+},
+{
+"c": "ddc61529",
+"cc": "MY",
+"n": "Takeaway & Pickup (Beep link)",
+"m": 0,
+"cur": "MYR",
+"st": "counted"
+},
+{
+"c": "ddc61529",
+"cc": "TH",
+"n": "Online ordering (Beep Delivery) fee",
+"m": null,
+"cur": "THB",
+"st": "hidden"
+},
+{
+"c": "ddc61529",
+"cc": "TH",
+"n": "แพ็คเกจกลาง",
+"m": 199900,
+"cur": "THB",
+"st": "counted"
+},
+{
+"c": "ddc61529",
+"cc": "TH",
+"n": "แพ็คเกจเริ่มต้น (Starter)",
+"m": 99000,
+"cur": "THB",
+"st": "counted"
+},
+{
+"c": "e01cb953",
+"cc": "MK",
+"n": "Advanced",
+"m": 869300,
+"cur": "MKD",
+"st": "counted"
+},
+{
+"c": "e01cb953",
+"cc": "MK",
+"n": "Standard",
+"m": 629500,
+"cur": "MKD",
+"st": "counted"
+},
+{
+"c": "e192197c",
+"cc": "AU",
+"n": "Qhop for stall holders",
+"m": null,
+"cur": "AUD",
+"st": "hidden"
+},
+{
+"c": "e192197c",
+"cc": "AU",
+"n": "Stall holder",
+"m": null,
+"cur": "AUD",
+"st": "hidden"
+},
+{
+"c": "e22529b7",
+"cc": "ES",
+"n": "Cheerfy Shop",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "e22529b7",
+"cc": "ES",
+"n": "Shop",
+"m": 0,
+"cur": "EUR",
+"st": "closed"
+},
+{
+"c": "e22529b7",
+"cc": "ES",
+"n": "Starter",
+"m": 9900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "e6a09d6e",
+"cc": "JP",
+"n": "Single plan",
+"m": 0,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "e6a09d6e",
+"cc": "JP",
+"n": "モバレジ (single plan)",
+"m": 0,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "e72778c0",
+"cc": "GB",
+"n": "Core (first location)",
+"m": 7100,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "e796f041",
+"cc": "MX",
+"n": "Esencial",
+"m": 14900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "e796f041",
+"cc": "MX",
+"n": "Gratis",
+"m": 0,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "e796f041",
+"cc": "MX",
+"n": "Premium",
+"m": 34900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "e796f041",
+"cc": "MX",
+"n": "Pro",
+"m": 24900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "e86ba596",
+"cc": "GB",
+"n": "Monthly plan per location (price not shown)",
+"m": null,
+"cur": "GBP",
+"st": "hidden"
+},
+{
+"c": "e86ba596",
+"cc": "GB",
+"n": "Web ordering / with branded app",
+"m": 12500,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "ece796a2",
+"cc": "NL",
+"n": "Bestellen",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "ece796a2",
+"cc": "NL",
+"n": "Menu",
+"m": 1200,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "ed59e1a6",
+"cc": "BD",
+"n": "All in One",
+"m": null,
+"cur": "BDT",
+"st": "hidden"
+},
+{
+"c": "ed59e1a6",
+"cc": "BD",
+"n": "Sales & Marketing / All in One",
+"m": null,
+"cur": "BDT",
+"st": "hidden"
+},
+{
+"c": "ef6eec53",
+"cc": "LT",
+"n": "Užsakymai internetu",
+"m": 3033,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "ef9dcbd8",
+"cc": "PL",
+"n": "Online ordering tier 1",
+"m": 16900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "ef9dcbd8",
+"cc": "PL",
+"n": "Online ordering tier 2",
+"m": 28900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "ef9dcbd8",
+"cc": "PL",
+"n": "Online ordering tier 3",
+"m": 49900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "ef9dcbd8",
+"cc": "PL",
+"n": "Zamówienia online (210 zamówień)",
+"m": 28900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "ef9dcbd8",
+"cc": "PL",
+"n": "Zamówienia online (75 zamówień)",
+"m": 16900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "ef9dcbd8",
+"cc": "PL",
+"n": "Zamówienia online (Bez limitu)",
+"m": 49900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "f025fc79",
+"cc": "CO",
+"n": "Pago único / Anualidad",
+"m": null,
+"cur": "COP",
+"st": "hidden"
+},
+{
+"c": "f07f8ff1",
+"cc": "MX",
+"n": "Gratis",
+"m": 0,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "f07f8ff1",
+"cc": "MX",
+"n": "Plus",
+"m": 19900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "f07f8ff1",
+"cc": "MX",
+"n": "Pro",
+"m": 29900,
+"cur": "MXN",
+"st": "counted"
+},
+{
+"c": "f349ff27",
+"cc": "NL",
+"n": "Compleet",
+"m": 5900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "f349ff27",
+"cc": "NL",
+"n": "Pro",
+"m": 8900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "f349ff27",
+"cc": "NL",
+"n": "Start",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "ID",
+"n": "Core",
+"m": 26900000,
+"cur": "IDR",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "ID",
+"n": "Core + Omni (webshop)",
+"m": 95800000,
+"cur": "IDR",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "MY",
+"n": "Core",
+"m": 5900,
+"cur": "MYR",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "MY",
+"n": "Core + Omni (webshop / QR ordering)",
+"m": 21800,
+"cur": "MYR",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "SG",
+"n": "Core",
+"m": 1900,
+"cur": "SGD",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "SG",
+"n": "Core + Omni (webshop / QR ordering)",
+"m": 6800,
+"cur": "SGD",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "SG",
+"n": "Core + Omni (webshop)",
+"m": 6800,
+"cur": "SGD",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "TH",
+"n": "Core",
+"m": 49900,
+"cur": "THB",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "TH",
+"n": "Core + Omni (webshop / QR ordering)",
+"m": 178900,
+"cur": "THB",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "TW",
+"n": "Core",
+"m": 49000,
+"cur": "TWD",
+"st": "counted"
+},
+{
+"c": "f44927e4",
+"cc": "TW",
+"n": "Core + Omni (webshop)",
+"m": 168000,
+"cur": "TWD",
+"st": "counted"
+},
+{
+"c": "f5707721",
+"cc": "SE",
+"n": "All",
+"m": null,
+"cur": "SEK",
+"st": "hidden"
+},
+{
+"c": "f5707721",
+"cc": "SE",
+"n": "Onlinebeställningar",
+"m": null,
+"cur": "SEK",
+"st": "hidden"
+},
+{
+"c": "f6a04474",
+"cc": "FI",
+"n": "Aktiivinen",
+"m": 3900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "f6a04474",
+"cc": "FI",
+"n": "Kasvu",
+"m": 8900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "f6a04474",
+"cc": "FI",
+"n": "Startti",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "f7343532",
+"cc": "MV",
+"n": "Free",
+"m": 0,
+"cur": "MVR",
+"st": "counted"
+},
+{
+"c": "f7343532",
+"cc": "MV",
+"n": "Pro",
+"m": 75000,
+"cur": "MVR",
+"st": "counted"
+},
+{
+"c": "f7343532",
+"cc": "MV",
+"n": "Starter",
+"m": 45000,
+"cur": "MVR",
+"st": "counted"
+},
+{
+"c": "f8d9d52d",
+"cc": "US",
+"n": "Pay per order",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "f8d9d52d",
+"cc": "US",
+"n": "Per-order (no monthly)",
+"m": 0,
+"cur": "USD",
+"st": "counted"
+},
+{
+"c": "fbbf6c37",
+"cc": "GB",
+"n": "Online ordering",
+"m": 0,
+"cur": "GBP",
+"st": "counted"
+},
+{
+"c": "fbea19b8",
+"cc": "JP",
+"n": "Annual",
+"m": 3317,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "fbea19b8",
+"cc": "JP",
+"n": "Monthly",
+"m": 3980,
+"cur": "JPY",
+"st": "counted"
+},
+{
+"c": "fbfecac2",
+"cc": "PL",
+"n": "Basic",
+"m": 19900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "fbfecac2",
+"cc": "PL",
+"n": "Premium",
+"m": 34900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "fbfecac2",
+"cc": "PL",
+"n": "Starter",
+"m": 9900,
+"cur": "PLN",
+"st": "counted"
+},
+{
+"c": "fc80e04f",
+"cc": "DE",
+"n": "Basis Flat",
+"m": 24900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "fc80e04f",
+"cc": "DE",
+"n": "Komplett",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "fc80e04f",
+"cc": "DE",
+"n": "Komplett Flat",
+"m": 34900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "fc80e04f",
+"cc": "DE",
+"n": "Start",
+"m": 0,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "fca70222",
+"cc": "FR",
+"n": "L'Addition Click & Collect",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "fca70222",
+"cc": "LU",
+"n": "Formule flexible (from)",
+"m": 4900,
+"cur": "EUR",
+"st": "counted"
+},
+{
+"c": "fdcd9f95",
+"cc": "BR",
+"n": "A partir de",
+"m": 16999,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "fdcd9f95",
+"cc": "BR",
+"n": "Delivery / Premium / Mesas",
+"m": 16999,
+"cur": "BRL",
+"st": "counted"
+},
+{
+"c": "fedc794a",
+"cc": "ZA",
+"n": "Start (1 product, e.g. Online)",
+"m": 45000,
+"cur": "ZAR",
+"st": "counted"
+},
+{
+"c": "fefb8e43",
+"cc": "TN",
+"n": "Monthly",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "ff78ffa2",
+"cc": "ES",
+"n": "FesteaPay",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "ff78ffa2",
+"cc": "ES",
+"n": "n/a",
+"m": null,
+"cur": "EUR",
+"st": "hidden"
+},
+{
+"c": "ffac93b0",
+"cc": "CA",
+"n": "Partner",
+"m": null,
+"cur": "CAD",
+"st": "hidden"
+}
+]

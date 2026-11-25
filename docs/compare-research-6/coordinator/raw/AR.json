@@ -1,0 +1,55 @@
+{
+ "country": "AR",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "notes": "COORDINATOR MERGE (no new read): agent 3's Fudo re-read (docs/compare-research-6/agent-3/raw/fudo.json) as one monthly price; eligibility quotes from compare-research-2 agent-3 raw/AR.json.",
+ "vendors": [
+  {
+   "name": "Fudo",
+   "website": "https://fu.do",
+   "stored_id_prefix": "7e12931c",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "Plan Inicial + Tu Delivery (Dominic, 25 Nov)",
+   "eligibility": {
+    "food_quote": "Movilidad para food trucks y ferias",
+    "food_url": "https://fu.do/es-ar/delivery/",
+    "order_quote": "Los clientes te compran directo.",
+    "order_url": "https://fu.do/es-ar/delivery/",
+    "country_quote": "Precios finales en pesos argentinos.",
+    "country_url": "https://fu.do/es-ar/precios/"
+   },
+   "plans": [
+    {
+     "plan_name": "Plan Inicial + Tu Delivery",
+     "currency": "ARS",
+     "price_major": 23900,
+     "period": "month",
+     "vat": "incl",
+     "per_order_pct": 1.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "$23.900 /mes … Precio final … Sin impuestos nacionales: $19.752 · 1,9% + IVA de tasa de servicio por cada venta, con un tope de $99.000 + IVA por mes",
+     "url": "https://fu.do/es-ar/precios/",
+     "note": "Plan Inicial 23900 a month + 1.9 % + IVA per sale through Tu Delivery (https://fu.do/es-ar/delivery/); «Solo necesitás una cuenta activa en Fudo.» (https://fu.do/es-ar/delivery/) — Tu Delivery needs a paid Fudo account (Dominic, 25 Nov: no free plan; the V16.38 module rule read with 'no free plan'); cap: «con un tope de $99.000 + IVA por mes … El tope aplica solo si activás Fudo Pagos como procesador de pago online.»; prices shown '/mes' under a Mensual / Semestral / Anual toggle"
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Para retirar",
+     "url": "https://fu.do/es-ar/delivery/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://fu.do/es-ar/precios/",
+    "https://fu.do/es-ar/delivery/"
+   ]
+  }
+ ]
+}

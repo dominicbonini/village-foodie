@@ -1,0 +1,55 @@
+{
+ "country": "CL",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "notes": "COORDINATOR MERGE (no new read): agent 3's Fudo re-read (docs/compare-research-6/agent-3/raw/fudo.json) as one monthly price; eligibility quotes from compare-research-2 agent-3 raw/CL.json.",
+ "vendors": [
+  {
+   "name": "Fudo",
+   "website": "https://fu.do",
+   "stored_id_prefix": "7e12931c",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "Plan Inicial + Tu Delivery (Dominic, 25 Nov)",
+   "eligibility": {
+    "food_quote": "Movilidad para food trucks y ferias",
+    "food_url": "https://fu.do/es-cl/delivery/",
+    "order_quote": "Para retirar",
+    "order_url": "https://fu.do/es-cl/delivery/",
+    "country_quote": "Luego pagas una tasa de servicio del 1,9% + IVA por cada venta",
+    "country_url": "https://fu.do/es-cl/delivery/"
+   },
+   "plans": [
+    {
+     "plan_name": "Plan Inicial + Tu Delivery",
+     "currency": "CLP",
+     "price_major": 25500,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 1.9,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "$25.500 /mes … Precios en pesos chilenos, sin IVA. · Luego pagas una tasa de servicio del 1,9% + IVA por cada venta realizada a través de Tu Delivery,",
+     "url": "https://fu.do/es-cl/precios/",
+     "note": "Plan Inicial 25500 a month + 1.9 % + IVA per sale through Tu Delivery (https://fu.do/es-cl/delivery/); «Solo necesitas una cuenta activa en Fudo.» (https://fu.do/es-cl/delivery/) — Tu Delivery needs a paid Fudo account (Dominic, 25 Nov: no free plan; the V16.38 module rule read with 'no free plan'); prices shown '/mes' under a Mensual / Semestral / Anual toggle"
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Para retirar",
+     "url": "https://fu.do/es-cl/delivery/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://fu.do/es-cl/precios/",
+    "https://fu.do/es-cl/delivery/"
+   ]
+  }
+ ]
+}

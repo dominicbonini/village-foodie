@@ -1,0 +1,265 @@
+{
+ "$comment": "compare-research-6 (25 Nov 2026): competitors read on their OWN websites by three Claude Code agents, one request at a time each (docs/compare-research-6-report.md; built by docs/compare-research-6/build.cjs). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import/). Every row source research, UNVERIFIED (35.an-1). Each answer carries the vendor’s verbatim quote and its page (35.an-4); \"no\" only with a quote saying it is not offered, silence is not_mentioned (35.ao-7). monthly_minor is MINOR units, converted from the page’s amount with lib/money-format.ts toMinorUnits (the 100× guard). request_check sets check_requested_at. \"evidence\" and \"not_relevant\" are for the reviewer; the import does not read them (the importer cannot mark a competitor not relevant).",
+ "id": "compare-research-6",
+ "checked_on": "2026-11-25",
+ "competitors": [
+  {
+   "id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "name": "Fudo",
+   "website": "https://fu.do",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-6 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: AR, CL.",
+   "check_urls": [
+    "https://fu.do/es-ar/precios/",
+    "https://fu.do/es-ar/delivery/",
+    "https://fu.do/es-cl/precios/",
+    "https://fu.do/es-cl/delivery/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Para retirar",
+     "source_url": "https://fu.do/es-ar/delivery/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": false
+  }
+ ],
+ "plans": [
+  {
+   "id": "4967b515-0570-54aa-8213-e7d8e6880910",
+   "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "country_code": "AR",
+   "plan_name": "Plan Inicial + Tu Delivery",
+   "currency": "ARS",
+   "price_hidden": false,
+   "monthly_minor": 2390000,
+   "monthly_major": 23900,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 190,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "incl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://fu.do/es-ar/precios/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-6, read 25 Nov 2026: \"$23.900 /mes … Precio final … Sin impuestos nacionales: $19.752 · 1,9% + IVA de tasa de servicio por cada venta, con un tope de $99.000 + IVA por mes\" — Plan Inicial 23900 a month + 1.9 % + IVA per sale through Tu Delivery (https://fu.do/es-ar/delivery/); «Solo necesitás una cuenta activa en Fudo.» (https://fu.do/es-ar/delivery/) — Tu Delivery needs a paid Fudo account (Dominic, 25 Nov: no free plan; the V16.38 module rule read with 'no free plan'); cap: «con un tope de $99.000 + IVA por mes … El tope aplica solo si activás Fudo Pagos como procesador de pago online.»; prices shown '/mes' under a Mensual / Semestral / Anual toggle"
+  },
+  {
+   "id": "48b6fdbd-0b0e-57b5-b9bd-9973a0765e81",
+   "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "country_code": "CL",
+   "plan_name": "Plan Inicial + Tu Delivery",
+   "currency": "CLP",
+   "price_hidden": false,
+   "monthly_minor": 25500,
+   "monthly_major": 25500,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 190,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://fu.do/es-cl/precios/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-6, read 25 Nov 2026: \"$25.500 /mes … Precios en pesos chilenos, sin IVA. · Luego pagas una tasa de servicio del 1,9% + IVA por cada venta realizada a través de Tu Delivery,\" — Plan Inicial 25500 a month + 1.9 % + IVA per sale through Tu Delivery (https://fu.do/es-cl/delivery/); «Solo necesitas una cuenta activa en Fudo.» (https://fu.do/es-cl/delivery/) — Tu Delivery needs a paid Fudo account (Dominic, 25 Nov: no free plan; the V16.38 module rule read with 'no free plan'); prices shown '/mes' under a Mensual / Semestral / Anual toggle"
+  }
+ ],
+ "entries": [
+  {
+   "id": "93bdf9b7-d9bc-5b67-a895-09263f6d8768",
+   "country_code": "AR",
+   "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "primary_plan_id": "4967b515-0570-54aa-8213-e7d8e6880910",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "0dcf6f9e-ca83-52fc-8be9-64e4d4facaf5",
+   "country_code": "CL",
+   "competitor_id": "7e12931c-a5ee-5681-b0fd-2df360ba62c8",
+   "primary_plan_id": "48b6fdbd-0b0e-57b5-b9bd-9973a0765e81",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  }
+ ],
+ "evidence": [
+  {
+   "name": "Fudo",
+   "evidence": [
+    {
+     "country": "AR",
+     "food_quote": "Movilidad para food trucks y ferias",
+     "food_url": "https://fu.do/es-ar/delivery/",
+     "order_quote": "Los clientes te compran directo.",
+     "order_url": "https://fu.do/es-ar/delivery/",
+     "country_quote": "Precios finales en pesos argentinos.",
+     "country_url": "https://fu.do/es-ar/precios/",
+     "reason": "Plan Inicial + Tu Delivery (Dominic, 25 Nov)"
+    },
+    {
+     "country": "CL",
+     "food_quote": "Movilidad para food trucks y ferias",
+     "food_url": "https://fu.do/es-cl/delivery/",
+     "order_quote": "Para retirar",
+     "order_url": "https://fu.do/es-cl/delivery/",
+     "country_quote": "Luego pagas una tasa de servicio del 1,9% + IVA por cada venta",
+     "country_url": "https://fu.do/es-cl/delivery/",
+     "reason": "Plan Inicial + Tu Delivery (Dominic, 25 Nov)"
+    }
+   ]
+  }
+ ],
+ "not_relevant": [
+  {
+   "country": "MC",
+   "name": "LivePepper",
+   "website": "https://www.livepepper.fr",
+   "stored": "5bb256b3",
+   "reason": "French click-and-collect tool (from 59 € HT/mois) but its own pricing page does not mention Monaco; country selector lists Australie, France, Royaume-Uni, Italy only. MC is strict (own site must show Monaco).",
+   "url": "https://www.livepepper.fr/tarifs/",
+   "plans": []
+  },
+  {
+   "country": "MC",
+   "name": "Innovorder",
+   "website": "https://www.innovorder.com",
+   "stored": null,
+   "reason": "Paris POS with click and collect ('Développez votre chiffre d’affaires grâce à la livraison et au click and collect.') but no Monaco mention; home page says 'Fait avec amour à Paris'. /tarifs 404.",
+   "url": "https://www.innovorder.com/",
+   "plans": []
+  },
+  {
+   "country": "PE",
+   "name": "Mesakloud",
+   "website": "https://mesakloud.com",
+   "stored": null,
+   "reason": "Peruvian restaurant POS in soles (Básico S/240/mes, Regular S/320/mes, Pro S/420/mes), but its online channel is delivery only ('Delivery completo — gestión de pedidos, app de repartidor y portal web (creamos tu sitio web)') plus QR table ordering; no pickup / recojo / para llevar or order-ahead wording on its site",
+   "url": "https://mesakloud.com",
+   "plans": []
+  },
+  {
+   "country": "PE",
+   "name": "What The Truck!",
+   "website": "https://whatthetruck.app",
+   "stored": null,
+   "reason": "US food-truck finder app (What The Truck LLC); the App Store listing shows a vendor subscription (S/ 39.90 monthly in the Peru store) but describes finding trucks only, no pre-order or order ahead; Peru App Store prices are store localisation, not a Peruvian presence. Own site not read (App Store Peru page answered 404).",
+   "url": "https://apps.apple.com/pe/app/what-the-truck/id6474005821",
+   "plans": []
+  }
+ ],
+ "unreadable": [
+  {
+   "country": "MC",
+   "name": "Obypay",
+   "website": "https://obypay.com",
+   "stored": null,
+   "reason": "HTTP 403 on https://obypay.com/fr/tarifs/ and on retry https://obypay.com/en/?p=987; Monaco presence not checkable."
+  },
+  {
+   "country": "MC",
+   "name": "L'Addition",
+   "website": "https://commande-en-ligne.laddition.com",
+   "stored": "fca70222",
+   "reason": "Stored website https://commande-en-ligne.laddition.com/ returned HTTP 404 today; Monaco presence not checkable."
+  },
+  {
+   "country": "PE",
+   "name": "Inforest",
+   "website": "https://www.inforest.com.pe",
+   "stored": null,
+   "reason": "Peruvian restaurant POS (press: PagoEfectivo payments for delivery and pickup orders made through bank apps, 2021); guessed domain www.inforest.com.pe did not resolve (DNS ENOTFOUND) and no own site appeared in search"
+  }
+ ],
+ "not_needed": []
+}
