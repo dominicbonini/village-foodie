@@ -1,0 +1,9 @@
+{
+  "vendor": "Kioskito",
+  "stored_id_prefix": "04a0ed24",
+  "countries": [],
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "notes": "Panamanian, USD ('Desde $5/mes'). Re-read https://kioskito.app today (raw HTML) for SV, the only one-short USD country: meta description 'Crea tu tienda online en Panamá y vende por WhatsApp.'; structured data '\"areaServed\":{\"@type\":\"Country\",\"name\":\"Panamá\",\"identifier\":\"PA\"}'; directory heading 'Negocios panameños, vendiendo hoy.' The FAQ '¿Kioskito funciona solo en Panamá?' has no answer in the page HTML (script-loaded). No other country named -> does not count in SV or elsewhere. No new country rows."
+}
