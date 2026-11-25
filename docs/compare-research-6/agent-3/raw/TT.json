@@ -1,0 +1,24 @@
+{
+  "country": "TT",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Trinidad food vendors \"order ahead\" pickup website ordering system subscription TT$ per month sign up your business",
+    "Trinidad and Tobago POS system restaurants online ordering module price TT$ monthly local company",
+    "Trinidad startup app lets customers pre-order and pick up from food trucks doubles vendors restaurants merchants fee"
+  ],
+  "vendors": [
+    {
+      "name": "eVendor (B Scanned)",
+      "website": "https://bscanned.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "App Store listing only (per search snippet: vendors post a daily menu and manage pickup and delivery orders; Small/Medium/Large monthly subscriptions, 'pricing is shown in the app'; Caribbean support). The developer's site bscanned.com is a Calgary AI/web agency with no eVendor, no ordering wording, no Trinidad mention and no TTD price: no own-site evidence",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://bscanned.com/"]
+    }
+  ],
+  "notes": "Count now: 0. Nothing eligible with a TTD price after three new searches (English: order ahead / pickup / POS online-ordering module / food-truck pre-order). New names, not read: Pickituptt, WiEat, Skip D Line, foodDROP (consumer apps / marketplaces — never counted), Bara (a 'which vendors are open' app for doubles vendors, no ordering, Guardian TT article), Lavu / Eats365 / TouchBistro / Dinlr / Stove POS (USD, no Trinidad presence). TT Menus (ttms-app) already not_relevant in wave 2. Stopped: no T&T vendor site worth reading."
+}
