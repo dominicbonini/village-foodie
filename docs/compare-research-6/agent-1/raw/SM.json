@@ -1,0 +1,39 @@
+{
+  "country": "SM",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "San Marino ristoranti ordini online asporto ritiro in negozio software \"San Marino\" click and collect prezzo mensile",
+    "\"Repubblica di San Marino\" software ristorazione ordini online asporto cassa cloud disponibile San Marino ristoratori sammarinesi"
+  ],
+  "vendors": [
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://storekit.com/docs/getting-started/supported-regions"
+      ]
+    },
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible exists that I could find (round 4, first research). Italian searches show no tool whose own site names San Marino with pickup ordering and an EUR price: Italian tools (TeamSystem Cassa in Cloud, Appresto, Satisorder, Syrve IT) and SumUp it-ch pages show no San Marino presence in results; not opened (SumUp only ever as fallback, and its country selector had no San Marino in earlier rounds' checks of micro-states). Count: 0."
+}

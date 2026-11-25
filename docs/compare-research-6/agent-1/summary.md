@@ -171,3 +171,8 @@ count now: 0
 
 FoxiFood, Storekit: not listed. CityXerpa: delivery app; Andornet: generic web agency. nothing eligible exists.
 count now: 0
+
+## SM
+
+FoxiFood, Storekit: not listed. Italian tools seen show no San Marino presence. nothing eligible exists.
+count now: 0
