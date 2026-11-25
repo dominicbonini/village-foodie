@@ -1,0 +1,23 @@
+{
+ "country": "JO",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Jordan restaurant online ordering website pickup pricing JOD per month Amman"
+ ],
+ "vendors": [
+  {
+   "name": "Foodics (Foodics Online)",
+   "website": "https://www.foodics.com",
+   "stored_id_prefix": "4620b046",
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "no Jordan pricing page: https://www.foodics.com/foodics-pricing-jordan/ serves the homepage; country pricing links cover only KSA, Egypt, UAE, Kuwait, Oman, Qatar; Jordan appears only as a phone number",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.foodics.com/foodics-pricing-jordan/"
+   ]
+  }
+ ],
+ "notes": "JO: no second tool priced in JOD or USD found. Search returned marketplaces (Talabat, Careem, Clicks Jordan app), single-restaurant apps, Zegashop blog pages (generic Indian website builder, no price, not opened) and Mobi2go (no Jordan, no figures). Zyda and Blink don't list Jordan (compare-research-2). count now: 1 (Ordable JOD)."
+}

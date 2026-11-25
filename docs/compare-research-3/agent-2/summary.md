@@ -60,3 +60,11 @@ count now: 2 (Ordable BHD + Blink USD) if Blink's '$' and pickup evidence are ac
 | Foodics | nearest_local | eligible | Advanced USD 1,068/year (only plan listing 'Website') | https://www.foodics.com/foodics-pricing-oman/ |
 
 count now: 2 (Ordable OMR + Foodics USD)
+
+## JO (Jordan, JOD or USD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Foodics | nearest_local | not_relevant (no Jordan pricing page) | — | https://www.foodics.com/foodics-pricing-jordan/ |
+
+No second tool found (marketplaces, single-restaurant apps, Zegashop blog only). count now: 1 (Ordable)
