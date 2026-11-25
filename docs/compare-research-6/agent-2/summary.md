@@ -117,3 +117,8 @@ count now: 0
 
 Nothing eligible: GoFood PNG = marketplace; Kina Bank / BSP = payments; AU/SG tools show no PNG page.
 count now: 0
+
+## TM (TMT)
+
+Nothing eligible: Ashgabat apps are marketplaces (Altyn Açar, Biar, Dostawka.Bar) or single restaurants' own apps.
+count now: 0
