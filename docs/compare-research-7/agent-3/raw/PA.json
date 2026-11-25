@@ -1,0 +1,129 @@
+{
+  "country": "PA",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Pedix",
+      "website": "https://pedix.app",
+      "stored_id_prefix": "c615e67d",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Argentine WhatsApp online-shop / catalogue ordering with 'Retiro en persona' pickup; its price list names Panamá in the USD section (USD accepted for PA). Re-read today",
+      "eligibility": {
+        "order_quote": "La opción \"Retiro en persona\" permite que tus clientes hagan el pedido desde el catálogo online y pasen luego a buscarlo por el local.",
+        "order_url": "https://ayuda.pedix.app/es/article/como-configurar-la-opcion-retiro-en-persona",
+        "country_quote": "y los de Centroamérica (Belice, Costa Rica, El Salvador, Guatemala, Honduras, Nicaragua, Panamá, Cuba, República Dominicana)",
+        "country_url": "https://ayuda.pedix.app/es/article/precios-pedix"
+      },
+      "plans": [
+        {
+          "plan_name": "Principiante",
+          "currency": "USD",
+          "price_major": 9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "USD section of the price list (heading names Panamá), read today; yearly 'Anual: $90 (con 2 meses bonificados)'. PA accepts USD."
+        },
+        {
+          "plan_name": "Especialista",
+          "currency": "USD",
+          "price_major": 16,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $16",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "USD section of the price list (heading names Panamá), read today; yearly 'Anual: $160 (con 2 meses bonificados)'. PA accepts USD."
+        },
+        {
+          "plan_name": "PRO",
+          "currency": "USD",
+          "price_major": 23,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Mensual: $23",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix",
+          "note": "USD section of the price list (heading names Panamá), read today; yearly 'Anual: $230 (con 2 meses bonificados)'. PA accepts USD."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "La opción \"Retiro en persona\" permite que tus clientes hagan el pedido desde el catálogo online y pasen luego a buscarlo por el local.",
+          "url": "https://ayuda.pedix.app/es/article/como-configurar-la-opcion-retiro-en-persona"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Mensual: $9",
+          "url": "https://ayuda.pedix.app/es/article/precios-pedix"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ayuda.pedix.app/es/article/precios-pedix",
+        "https://ayuda.pedix.app/es/article/como-configurar-la-opcion-retiro-en-persona"
+      ]
+    }
+  ],
+  "notes": "Count now: 3 if Pedix is counted (was 2: Take App, Actib). Pedix (stored c615e67d) is eligible in PA from its own price list, re-read today (raw/V-Pedix.json): the USD section heading names Panamá; PA accepts USD (compare-research-3 §3). The 'Retiro en persona' quote is from its help article (read in compare-research-4 topups.json; applies to every country). Also: Kioskito (stored 04a0ed24, Panamanian, eligible in compare-research-2 with 'retiro en el local' and 'Desde $5/mes') — '$' with no currency code; if the reviewer accepts '$' as USD in Panama it would make 4. No new search needed — stopped at 3."
+}
