@@ -2,8 +2,25 @@
   "country": "EE",
   "researched_on": "2026-11-25",
   "searches": [
-    "tellimiskeskkond restoranile oma veebileht järeletulemisega ette tellimine hind € kuus toiduauto Eesti"
+    "tellimiskeskkond restoranile oma veebileht järeletulemisega ette tellimine hind € kuus toiduauto Eesti",
+    "kassasüsteem restoranile veebitellimused kaasa ostmiseks järeletulemine hinnakiri €/kuu Eesti ettevõte Erply OR Tickett OR Smartpos"
   ],
-  "vendors": [],
-  "notes": "EE counts FoxiFood and Jitmeal. No third found. Earlier evidence not counted: Poster (Estonia page, USD only - its Estonia ad page in today's search again shows '$24 per month'), Storekit (GBP only), SumUp (generic web shop - the single-fallback type, eligible EUR 0 in compare-research-2), EestiPOS, Tellikohe, Kassahaldus (rejected/unreadable). One Estonian search returned Wolt (marketplace), Subger, Restimo (Polish; no Estonia presence shown), TalTech theses and Capterra. EE stays at 2 (3 only if the coordinator lets SumUp's web shop count as a third)."
+  "vendors": [
+    {
+      "name": "Restimo",
+      "website": "https://www.restimo.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Polish ordering platform with € prices ('ORDERING' €39/month per store; 'All prices are net (excluding VAT).', pricing for clients outside Poland) and a contact-form country dropdown that includes Estonia; but neither its pricing page nor its ordering page mentions pickup, takeaway or ordering ahead ('5 Countries', no country named in a sentence). Fails the order-ahead rule.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.restimo.com/en/pricing",
+        "https://www.restimo.com/en/ordering"
+      ]
+    }
+  ],
+  "notes": "EE counts FoxiFood and Jitmeal. No third found. Earlier evidence not counted: Poster (Estonia page, USD only - its Estonia ad page in today's search again shows '$24 per month'), Storekit (GBP only), SumUp (generic web shop - the single-fallback type, eligible EUR 0 in compare-research-2), EestiPOS, Tellikohe, Kassahaldus (rejected/unreadable). One Estonian search returned Wolt (marketplace), Subger, Restimo (Polish; no Estonia presence shown), TalTech theses and Capterra. EE stays at 2 (3 only if the coordinator lets SumUp's web shop count as a third). Second pass: Restimo (Polish, € prices, shows up in many countries' searches) read - no pickup / order-ahead wording, so not eligible anywhere on its own pages; Erply/Tickett/Smartpos did not surface. EE stays at 2."
 }
