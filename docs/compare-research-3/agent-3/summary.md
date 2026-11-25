@@ -235,3 +235,13 @@ count now: 0
 No vendor site worth reading (only marketplaces). Nothing eligible exists with a ZMW price (YUMBI unpriced).
 
 count now: 0
+
+## ZW (USD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Storelync | nearest_local | unreadable (guessed domain 404; generic store builder) | — | https://storelync.com |
+
+Nothing eligible exists with a Zimbabwe presence and a USD price.
+
+count now: 0

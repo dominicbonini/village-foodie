@@ -1,0 +1,24 @@
+{
+ "country": "ZW",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Zimbabwe restaurant online ordering website builder pickup collection orders WhatsApp Harare pricing \"$\" per month restaurants takeaway software (Capterra/GetApp/G2/FoodChow excluded)"
+ ],
+ "vendors": [
+  {
+   "name": "Storelync",
+   "website": "https://storelync.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "Harare WhatsApp store builder ($9 / $29 per month per a wave-2 snippet, generic e-commerce); storelync.com answered HTTP 404 (domain guessed from the name)",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://storelync.com"
+   ]
+  }
+ ],
+ "notes": "Count now: 0. Nothing eligible exists with a USD price and a Zimbabwe presence that I could find (wave 2 + today ~5 candidates). KFC Zimbabwe: a single chain's own ordering site. Bereka Bites: marketplace (wave 2). Results otherwise were global vendors and review blogs with no Zimbabwe presence (StoreOrdering, Order Tiger [agent 1], GloriaFood [agent 1], Menufy, ChowNow). Storelync's guessed domain answered 404 (generic store builder anyway). YUMBI does not list Zimbabwe."
+}
