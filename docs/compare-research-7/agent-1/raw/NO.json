@@ -1,0 +1,131 @@
+{
+  "country": "NO",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "NemTakeAway",
+      "website": "https://www.nemtakeaway.no",
+      "stored_id_prefix": "54922ec3",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Danish takeaway ordering system with a Norwegian site (nemtakeaway.no) and NOK prices: customers order or pre-order on the restaurant's own ordering page; 0 % commission; capacity control",
+      "eligibility": {
+        "order_quote": "Kundene dine slipper å stå i lange telefonkøer, og kan i stedet bestille eller forhåndsbestille på nett.",
+        "order_url": "https://www.nemtakeaway.no/",
+        "country_quote": "NOK 1,00,- pr. utsendt SMS (gjelder kun +47-numre)",
+        "country_url": "https://www.nemtakeaway.no/priser/",
+        "food_quote": "store og små restauranter, takeaway-steder, kaféer, kantiner, pølsevogner med flere.",
+        "food_url": "https://www.nemtakeaway.no/"
+      },
+      "plans": [
+        {
+          "plan_name": "Standard",
+          "currency": "NOK",
+          "price_major": 555,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 555,
+          "quote": "555",
+          "url": "https://www.nemtakeaway.no/priser/",
+          "note": "Shown as '555' 'per måned', 'Faktureres månedlig' (yearly billing: 499 per måned, 'Faktureres årlig'). Set-up 'Opprettelse fra NOK 555,-' (a from-amount). 'Takeaway-system med 0 % kommisjon'. VAT not stated. Odd: the home page says 'Vi fakturerer i danske kroner (DKK). Vi omregner til DKK med kurs 1,4', so NOK is shown but invoices are in DKK."
+        },
+        {
+          "plan_name": "Medium",
+          "currency": "NOK",
+          "price_major": 995,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 975,
+          "quote": "995",
+          "url": "https://www.nemtakeaway.no/priser/",
+          "note": "'995' 'per måned', 'Faktureres månedlig' (yearly: 895 per måned). Adds kitchen display, delivery module, own website and subdomain. 'Opprettelse fra NOK 975,-'. Hovedkontor for 2-10 locations '+ 750,-/md.'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Kundene dine slipper å stå i lange telefonkøer, og kan i stedet bestille eller forhåndsbestille på nett.",
+          "url": "https://www.nemtakeaway.no/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Bestem selv hvor langt inn i fremtiden kunden kan bestille.",
+          "url": "https://www.nemtakeaway.no/"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Kapasitetsstyring – bestillinger/poeng",
+          "url": "https://www.nemtakeaway.no/priser/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kjøkken-display produksjonsstatus",
+          "url": "https://www.nemtakeaway.no/priser/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Administrer flere restauranter på ett sted",
+          "url": "https://www.nemtakeaway.no/priser/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Alt du trenger er et domene.",
+          "url": "https://www.nemtakeaway.no/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Faktureres månedlig",
+          "url": "https://www.nemtakeaway.no/priser/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Takeaway-system med 0 % kommisjon",
+          "url": "https://www.nemtakeaway.no/priser/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.nemtakeaway.no/priser/",
+        "https://www.nemtakeaway.no/"
+      ],
+      "country": "NO"
+    }
+  ],
+  "notes": "NO counts Favrit and Superb. Third: NemTakeAway (stored 54922ec3, mine; Norwegian site nemtakeaway.no, NOK prices, order or pre-order on the restaurant's own page) copied from compare-research-2 agent-1 (read today, 25 Nov; not re-read): Standard 555 NOK a month. Vitrina (NOK page, Start 419 NOK) is a possible fourth. Stopped at 3."
+}
