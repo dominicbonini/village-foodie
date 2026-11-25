@@ -85,3 +85,9 @@ count now: 0
 No vendor opened: Armenian/English searches gave single-restaurant apps, Menu.am (marketplace), Dinebook (booking) and Orders.co (US, agent 2's). Earlier rejects not re-read.
 nothing eligible exists.
 count now: 0
+
+## ME (EUR)
+
+No vendor opened: Montenegrin/Serbian searches (lično preuzimanje / poručivanje unaprijed / cjenovnik €) gave only Glovo, directories, Jotform and Zegashop.
+nothing eligible exists.
+count now: 0
