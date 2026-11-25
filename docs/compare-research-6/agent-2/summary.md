@@ -122,3 +122,8 @@ count now: 0
 
 Nothing eligible: Ashgabat apps are marketplaces (Altyn Açar, Biar, Dostawka.Bar) or single restaurants' own apps.
 count now: 0
+
+## TL (USD)
+
+Nothing eligible: only travel listings and generic builders (Wix, Jotform).
+count now: 0
