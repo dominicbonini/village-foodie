@@ -1,0 +1,101 @@
+{
+ "country": "TW",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "餐廳 線上點餐 預約自取 外帶 系統 方案 月費 NT$ 肚肚 OR 你訂 OR 快一點 OR 微碧 官網 價格",
+  "肚肚 Dudoo 線上點餐 方案價格 月費"
+ ],
+ "vendors": [
+  {
+   "name": "iCHEF",
+   "website": "https://www.ichefpos.com/zh-tw",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "lists '預定自取外帶' (scheduled self-pickup takeaway) but online takeaway is an unpriced add-on on top of the paid POS plan → base + module not both quoted → unpriced",
+   "eligibility": {
+    "order_quote": "預定自取外帶",
+    "order_url": "https://www.ichefpos.com/zh-tw/pricing"
+   },
+   "plans": [
+    {
+     "plan_name": "iCHEF POS + 線上外帶 (add-on)",
+     "currency": "TWD",
+     "price_major": null,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": 990,
+     "quote": "",
+     "url": "https://www.ichefpos.com/zh-tw/pricing",
+     "note": "Base: 'iCHEF POS 方案月費 NT$1,950 元、一次性開通費 NT$990 元。' FAQ: '掃碼點餐、LINE 點餐、線上外帶等進階功能為加購方案，依需求選配。' Only the QR scan-ordering add-on is priced ('500 單方案每月 NT$600 元起'); the 線上點餐 block says '方案彈性 滿足不同需求 讓顧問幫你 量身打造最佳方案' — no price for online takeaway. Read from the raw HTML today."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "預定自取外帶",
+     "url": "https://www.ichefpos.com/zh-tw/pricing"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.ichefpos.com/zh-tw/pricing"
+   ]
+  }
+ ],
+ "notes": "TW count now: 2 (Klikit, Oddle) — unchanged. iCHEF re-read for a price (it was eligible but unpriced): the online-takeaway add-on is still unpriced. Eats365 TW pricing page shows no amounts (earlier rounds). Searches for 肚肚 Dudoo / 你訂 nidin / 快一點 / 微碧 found only comparison articles, news (2020–21 promotions) and App Store pages — no own-site price found to open. MENU TIGER USD (rejected). Stopped."
+}
