@@ -80,3 +80,9 @@ count now: 0
 No vendor worth reading: foodpanda (marketplace), Yoosay (consumer dining app), TableCheck (booking), US/Thai tools with no Laos presence. Aldelo: agent 3.
 Nothing eligible exists with a LAK price.
 count now: 0
+
+## MN (MNT)
+
+No vendor worth reading: Songo.mn (marketplace with self-pickup), Onis Food / Ones (App Store POS / waiter apps), QPay (payments), MENU TIGER / Saby (no Mongolia presence).
+Nothing eligible exists with an MNT price.
+count now: 0
