@@ -177,3 +177,8 @@ count now: 0
 
 Nothing eligible among my vendors: Eats Easy = marketplace; US tools are agent 3's.
 count now: 0
+
+## MH (USD)
+
+None exists: only a Majuro eatery directory (phone orders); US tools are agent 3's.
+count now: 0
