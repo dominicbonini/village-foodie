@@ -1,0 +1,74 @@
+{
+  "country": "BD",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "অনলাইন অর্ডার পিকআপ রেস্টুরেন্ট সফটওয়্যার ৳ মাসিক প্যাকেজ নিজস্ব ওয়েবসাইট",
+    "Bangladesh restaurant online ordering website app takeaway pickup pricing BDT Tk per month POS Dhaka",
+    "রেস্টুরেন্ট অনলাইন অর্ডারিং সিস্টেম টেকঅ্যাওয়ে প্রি-অর্ডার বাংলাদেশ টাকা প্রতি মাসে প্যাকেজ",
+    "Bhojon restaurant software online order takeaway price BDT taka (allowed: bdtask.com)"
+  ],
+  "vendors": [
+    {
+      "name": "RestroGreen (Quickly Services)",
+      "website": "https://quicklyservices.com/restrogreen",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Dhaka restaurant POS whose own site shows online pre-orders for pickup; still no price shown (pricing page names plans and a monthly / yearly toggle, no amounts), so not counted",
+      "eligibility": {
+        "order_quote": "Let customers find the nearest branch, explore the menu, and pre-order with e-Restaurant for smooth dine-in or pickup.",
+        "order_url": "https://quicklyservices.com/restrogreen/restaurants/takeaway"
+      },
+      "plans": [
+        {
+          "plan_name": "Sales & Marketing / All in One", "currency": "BDT", "price_major": null, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "", "url": "https://quicklyservices.com/restrogreen/pricing-plan",
+          "note": "Price hidden: the pricing page shows plan names 'Sales & Marketing' and 'All in One', a 'Paid Monthly' / 'Paid Yearly' toggle and a 30-day free trial, but no amounts in the page text (probably script-rendered). Same as compare-research-2."
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "yes", "quote": "Let customers find the nearest branch, explore the menu, and pre-order with e-Restaurant for smooth dine-in or pickup.", "url": "https://quicklyservices.com/restrogreen/restaurants/takeaway" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "not_mentioned" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "not_mentioned" },
+        { "key": "monthly", "value": "not_mentioned" },
+        { "key": "perorder", "value": "not_mentioned" },
+        { "key": "cardfee", "value": "not_mentioned" }
+      ],
+      "check_urls": ["https://quicklyservices.com/restrogreen/restaurants/takeaway", "https://quicklyservices.com/restrogreen/pricing-plan"]
+    },
+    {
+      "name": "Deonde",
+      "website": "https://deonde.co",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Bangladesh page answered HTTP 403 (as did its Sri Lanka page); search snippets say only a flat monthly fee, no amount.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://deonde.co/bangladesh/online-ordering-and-delivery-system.shtml"]
+    },
+    {
+      "name": "Bhojon (Bdtask)",
+      "website": "https://www.bdtask.com/restaurant-management-system.php",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Dhaka developer's self-hosted restaurant script sold as a one-off licence in USD ($99); no BDT price. Seen in search on its own domain only, not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "BD count stays 1 (Restora POS, BDT). RestroGreen still shows ordering ahead for pickup but no price (recorded with a hidden plan, not counted). Deonde's Bangladesh page is blocked (403). Other results: Blink (USD, compare-research-2), MENU TIGER (USD), Menumium / Zing My Order (USD, not Bangladesh), CloudWave BD (rejected in compare-research-3; till, 1000TK/month per search), HisabPlus (QR only, compare-research-3), Info-iCafe (netlify, QR ordering), Shayan POS (lovable.app throwaway host), Foodpanda / Pathao Food (marketplaces), Upwork / Fiverr / Bikroy listings. Nothing else eligible in BDT."
+}

@@ -25,3 +25,13 @@ count now: 2 (uEngage + Dinehere).
 | Deonde | nearest_local | unreadable (HTTP 403 again) | none | https://deonde.co/sri-lanka/online-ordering-and-delivery-system.shtml |
 
 count now: 1 (POS Masters). Nothing else eligible in LKR.
+
+## BD (BDT)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| RestroGreen | nearest_local | eligible, price hidden (not counted) | none shown | https://quicklyservices.com/restrogreen/pricing-plan |
+| Deonde | nearest_local | unreadable (HTTP 403) | none | https://deonde.co/bangladesh/online-ordering-and-delivery-system.shtml |
+| Bhojon (Bdtask) | pos | not_relevant (USD one-off script licence) | $99 one-off | https://www.bdtask.com/restaurant-management-system.php |
+
+count now: 1 (Restora POS). Nothing else eligible in BDT.
