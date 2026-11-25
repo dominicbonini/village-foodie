@@ -4,7 +4,8 @@
   "searches": [
     "India online ordering website for restaurants takeaway pickup commission-free \"₹\" per month plan own brand ordering food truck cafe software",
     "Indian startup pre-order pickup skip the queue cafes restaurants own ordering page \"₹\" \"/month\" subscription Bengaluru Mumbai takeaway counter token",
-    "restaurant POS India \"online ordering\" website module takeaway pickup price \"₹\" per year Rista OR Torqus OR \"Slick POS\" OR Billberry OR \"Ezee\""
+    "restaurant POS India \"online ordering\" website module takeaway pickup price \"₹\" per year Rista OR Torqus OR \"Slick POS\" OR Billberry OR \"Ezee\"",
+    "India food truck pre-order app order ahead pickup food stall ordering software \"food truck\" India ₹ monthly QR order counter pickup token Indian startup"
   ],
   "vendors": [
     {
@@ -22,5 +23,5 @@
       ]
     }
   ],
-  "notes": "Count now: 2 (Dinehere, uEngage — agent 2's, not fetched) — no third. New: RoyalPOS (row above). Not read: RezoTap (Indian WhatsApp ordering, USD prices $11 / $28 per month per SoftwareSuggest — USD would not count in IN), Supaorder / Deonde / FoodChow (Indian multi-country, agent 2's), Petpooja / Prime POS / Mink Foodiee / Romio (tills, listing sites only), EasyQueue / SmartQ / Eatable / InvisQue / drivethruu (consumer multi-restaurant queue / pre-order apps — marketplace-like, press only), Foodiv (USD). For the coordinator: DineOpen (rejected by agent 2 in -2/-3 for no pickup wording) now has a product page https://www.dineopen.com/products/orders/online for a 'branded online ordering' page with India prices (search snippets: ₹299 / ₹899 / ₹1,799 per month) — not re-read (rejected vendor); agent 2 could re-check it. Stopped."
+  "notes": "Count now: 2 (Dinehere, uEngage — agent 2's, not fetched) — no third. New: RoyalPOS (row above). Not read: RezoTap (Indian WhatsApp ordering, USD prices $11 / $28 per month per SoftwareSuggest — USD would not count in IN), Supaorder / Deonde / FoodChow (Indian multi-country, agent 2's), Petpooja / Prime POS / Mink Foodiee / Romio (tills, listing sites only), EasyQueue / SmartQ / Eatable / InvisQue / drivethruu (consumer multi-restaurant queue / pre-order apps — marketplace-like, press only), Foodiv (USD). For the coordinator: DineOpen (rejected by agent 2 in -2/-3 for no pickup wording) now has a product page https://www.dineopen.com/products/orders/online for a 'branded online ordering' page with India prices (search snippets: ₹299 / ₹899 / ₹1,799 per month) — not re-read (rejected vendor); agent 2 could re-check it. Stopped. SECOND PASS (food-truck only): no Indian food-truck ordering tool found: 'Truck Treats' is a designer's portfolio concept (contra.com / notion.site), not a product; Rocketchefs (2016 pizza-van delivery brand), MealPe / Zoop / TapCibo (consumer canteen / train / food-court ordering apps — marketplace-like), DineOpen's food-truck blog (agent 2's reject — see the note above), Scan-n-Order / Food Truck Pub (US), Jotform (generic forms). No vendor site to read. Count stays 2."
 }
