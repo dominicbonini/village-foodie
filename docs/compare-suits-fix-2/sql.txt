@@ -1,0 +1,90 @@
+-- compare-suits-fix-2 (26 Nov 2026): every SQL statement, in order of use. READ = read-only.
+
+-- 1 · READ (run in compare-suits-fix-1, the same day): each live country's locale, payment model and app flags — the source of the migration's two lists
+select cs.locale, string_agg(cs.country_code || ':' || coalesce(cb.payment_model,'none') || ':' || case when cs.ios_app_available then 'i' else '-' end || case when cs.android_app_available then 'a' else '-' end, ' ' order by cs.country_code) countries, count(*) n from comparison_publish cp join country_settings cs on cs.country_code=cp.country_code left join country_billing cb on cb.country_code=cp.country_code where cp.auto_publish and cp.auto_live and not coalesce(cp.admin_off,false) group by 1 order by 1;
+
+-- 2 · migration 20261148 — pre-flighted (scripts/compare-db-proofs.cjs --preflight, rolled back), committed 9ca5b402, applied (scripts/db-migrate.cjs):
+-- 20261148_compare_suits_fix_2.sql — compare-suits-fix-2 (Dominic, 26 Nov 2026; docs/compare-suits-fix-2-report.md): the per-country words
+-- of the comparison page's "Which system suits whom?" guide. INERT until the code that reads it ships (lib/comparison-server.ts).
+--   fit_off             — no guide on that country's page (and none in its .md twin). Every live country whose locale is not English:
+--                         their guide stays hidden until a native speaker has checked new wording.
+--   delivery_apps       — the delivery apps named in the "Delivery apps" card (null: the card names none). No rates anywhere.
+--   pay_methods_missing — the payment methods named in "may not suit you if … you want customers to pay with …" (countries where
+--                         HatchGrab takes online card payments; the billed-at-truck countries use the at-the-truck line instead).
+--   collect_word        — 'collection' or 'pickup' in the guide's lines.
+-- Comparison data only; RLS on, no policies (service role only), like the other comparison tables.
+begin;
+
+create table public.comparison_country_copy (
+  country_code        text primary key check (country_code ~ '^[A-Z]{2}$'),
+  fit_off             boolean not null default false,
+  delivery_apps       text[],
+  pay_methods_missing text,
+  collect_word        text check (collect_word in ('collection', 'pickup')),
+  created_at          timestamptz not null default now(),
+  updated_at          timestamptz not null default now()
+);
+alter table public.comparison_country_copy enable row level security;
+revoke all on public.comparison_country_copy from anon, authenticated, public;
+grant all on public.comparison_country_copy to service_role;
+comment on table public.comparison_country_copy is
+  'compare-suits-fix-2: per-country words of the comparison guide ("Which system suits whom?"): fit_off hides it; delivery_apps, pay_methods_missing and collect_word fill its lines. No row = the defaults (English locale: shown, no apps, "PayPal", collection; other locales: hidden).';
+
+-- The English-locale live countries, each with its own row (Dominic's decisions, 26 Nov).
+create temporary table csf2_en (country_code text, delivery_apps text[], pay_methods_missing text, collect_word text);
+insert into csf2_en values
+  ('GB', array['Deliveroo', 'Uber Eats', 'Just Eat'], 'PayPal or Klarna', 'collection'),
+  ('IE', array['Deliveroo'], 'PayPal or Klarna', 'collection'),
+  ('US', null, 'PayPal or Venmo', 'pickup'),
+  ('AU', null, 'PayPal or Afterpay', 'pickup'),
+  ('GU', null, 'PayPal', 'pickup'), ('VI', null, 'PayPal', 'pickup'),
+  ('CA', null, 'PayPal', 'collection'), ('GG', null, 'PayPal', 'collection'), ('GI', null, 'PayPal', 'collection'),
+  ('IM', null, 'PayPal', 'collection'), ('IN', null, 'PayPal', 'collection'), ('JE', null, 'PayPal', 'collection'),
+  ('JM', null, 'PayPal', 'collection'), ('MT', null, 'PayPal', 'collection'), ('MV', null, 'PayPal', 'collection'),
+  ('NG', null, 'PayPal', 'collection'), ('NZ', null, 'PayPal', 'collection'), ('SG', null, 'PayPal', 'collection'),
+  ('ZA', null, 'PayPal', 'collection');
+
+-- The live countries whose locale is NOT English (read-only from the live locale data on 26 Nov; docs/compare-suits-fix-2/sql.txt §1):
+-- the guide hidden until a native speaker has checked new wording.
+create temporary table csf2_off (country_code text);
+insert into csf2_off values
+  ('AD'), ('AL'), ('AR'), ('AT'), ('AX'), ('BA'), ('BD'), ('BE'), ('BG'), ('BH'), ('BL'), ('BO'), ('BR'), ('CH'), ('CL'), ('CO'), ('CY'), ('CZ'),
+  ('DE'), ('DK'), ('DO'), ('EC'), ('EE'), ('EG'), ('ES'), ('FI'), ('FR'), ('GF'), ('GP'), ('GR'), ('HK'), ('HR'), ('HU'), ('ID'), ('IS'), ('IT'),
+  ('JO'), ('JP'), ('KW'), ('KZ'), ('LI'), ('LK'), ('LT'), ('LU'), ('LV'), ('MA'), ('MD'), ('MF'), ('MK'), ('MQ'), ('MY'), ('NL'), ('NO'), ('OM'),
+  ('PA'), ('PL'), ('PM'), ('PR'), ('PT'), ('QA'), ('RE'), ('RO'), ('RS'), ('SA'), ('SE'), ('SI'), ('SK'), ('SM'), ('SV'), ('TH'), ('TR'), ('TW'),
+  ('UA'), ('UY'), ('UZ'), ('VA'), ('YT');
+
+do $$
+declare want text; got text;
+begin
+  -- the two lists together must be exactly today's live countries, with no country in both
+  select string_agg(country_code, ' ' order by country_code) into want from (select country_code from csf2_en union all select country_code from csf2_off) x;
+  select string_agg(country_code, ' ' order by country_code) into got from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off, false);
+  if want is distinct from got then raise exception 'compare-suits-fix-2: the live countries are %, not %', got, want; end if;
+  if (select count(*) from csf2_en) <> 19 or (select count(*) from csf2_off) <> 77 then raise exception 'compare-suits-fix-2: expected 19 + 77 rows'; end if;
+end $$;
+
+insert into public.comparison_country_copy (country_code, fit_off, delivery_apps, pay_methods_missing, collect_word)
+select country_code, false, delivery_apps, pay_methods_missing, collect_word from csf2_en;
+
+insert into public.comparison_country_copy (country_code, fit_off) select country_code, true from csf2_off;
+
+do $$
+begin
+  if (select count(*) from public.comparison_country_copy) <> (select count(*) from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off, false)) then
+    raise exception 'compare-suits-fix-2: not one row per live country'; end if;
+  if (select count(*) from public.comparison_country_copy where not fit_off) <> 19 then raise exception 'compare-suits-fix-2: expected 19 shown guides'; end if;
+  if exists (select 1 from public.comparison_country_copy where delivery_apps is not null and country_code not in ('GB', 'IE')) then
+    raise exception 'compare-suits-fix-2: delivery apps named outside GB and IE'; end if;
+end $$;
+
+drop table csf2_en;
+drop table csf2_off;
+
+commit;
+
+-- 3 · READ: the rows, read back after the migration
+select fit_off, count(*), string_agg(country_code || coalesce(':' || array_to_string(delivery_apps, '/'), '') || coalesce(':' || pay_methods_missing, '') || coalesce(':' || collect_word, ''), ' ; ' order by country_code) from public.comparison_country_copy group by 1;
+
+-- 4 · READ: the harness fixture (docs/compare-suits-fix-2/live-countries.json)
+select json_agg(json_build_object('code', cp.country_code, 'locale', cs.locale, 'name', cs.name, 'paymentModel', cb.payment_model, 'copy', case when cc.country_code is null then null else json_build_object('fitOff', cc.fit_off, 'deliveryApps', cc.delivery_apps, 'payMethodsMissing', cc.pay_methods_missing, 'collectWord', cc.collect_word) end) order by cp.country_code) from public.comparison_publish cp join public.country_settings cs on cs.country_code = cp.country_code left join public.country_billing cb on cb.country_code = cp.country_code left join public.comparison_country_copy cc on cc.country_code = cp.country_code where cp.auto_publish and cp.auto_live and not coalesce(cp.admin_off, false);
