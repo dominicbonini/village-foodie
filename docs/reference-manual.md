@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.40
+HatchGrab Engineering Reference Manual · V16.41
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.40**
+**Version 16.41**
 
 November 2026
 
@@ -120,7 +120,7 @@ identical; a **pre-flight** before the migration runs and a **check** after it. 
 insert fail (its own exception block; on error it leaves the value NULL and logs a WARNING). Never run a proof against Pizzeria
 Gusto or any trading truck. A proof that can't be run is a stop: say so; don't apply the migration.
 
-# Open items (V16.40, 25 November 2026) — THE ONLY CURRENT LIST
+# Open items (V16.41, 26 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
@@ -293,6 +293,8 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 42. **Knowledge screen** to approve or retire suggested `reply_knowledge` lines (mockup first). Until then, SQL. OBSERVED 24 Nov:
     approved 4 fact, 1 gap, 2 guidance; suggested 1 fact.
 43. **Decision: the till line** (held as suggested) — follows the till-software decision (item 47).
+    *V16.41: the till module is built (observe mode, not deployed); the line stays held until till-pack-3 enforces and the
+    attestation is signed.*
 44. 🔴 **Forecasting and a per-market prep summary** (how many of each product are pre-ordered for a market, ahead of time).
     **Promised to a French prospect "well before June 2027".** Today Reports' market picker shows only the last 30 days up to today
     (`get_recent_events`), and Items is one line per item per order — no future-market totals exist.
@@ -309,13 +311,23 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 47. 🔴 **Decision: France till-software compliance (art. 286 CGI)** — most likely the software maker's individual attestation. ~~Have:
     receipt numbers, audit rows, the finished-order lock (route only). Missing: a database guard on completed orders, a daily close
     ("Z" total) frozen per truck per day, a tamper-evident log, archiving.~~
-    ⛔ *V16.36: **Have:** receipt numbers, audit rows, the finished-order lock (route only), business details, the VAT-regime stamp,
+    ~~⛔ *V16.36: **Have:** receipt numbers, audit rows, the finished-order lock (route only), business details, the VAT-regime stamp,
     line notes outside the lines (retention no longer rewrites new orders' items or deals). **Missing:** a database guard on
     completed orders; earlier versions of edited orders; a daily close ("Z" total) frozen per truck per day; a tamper-evident chain;
     an archive export; counter refunds recorded as refunds (today only online card refunds have a row); `undo_collected` /
     `undo_mark_paid` delete the payment row (should reverse it); the attestation text (model BOI-LETTRE-000242). 🔴 Seal / hash an
     order only after france-notes-1's follow-up move.* **Keep: until decided, don't tell VAT-registered French trucks
-    that HatchGrab replaces their till** (micro-entrepreneurs on franchise en base are exempt).
+    that HatchGrab replaces their till** (micro-entrepreneurs on franchise en base are exempt).~~
+    ⛔ *V16.41: **decided (Dominic, 24 Nov): build the backend now, country-neutral** ("Till module", after §37). **Built (database
+    live, code not deployed):** the chain, reversals, counter refunds, closes, signing, archive, version 1.0.0, attestation and
+    technical-document drafts. **Left:** (1) deploy; (2) after the deploy, run the baseline truck by truck at a quiet hour
+    (`select public.till_baseline('<truck>');` — EXECUTE is revoked from every API role, so it runs as the database owner, and it
+    writes the till tables: ask Dominic first) and make one on-demand archive of a test truck that is in the till (a demo truck is
+    outside it and is refused with HGT20), checked with `till-verify --archive`; (3) till-pack-3: switch the guard to enforce after
+    7 clean days of `till_guard_events` once till-pack-2 is deployed (till-pack-0 Q6), a major bump to 2.0.0 with its tag; (4) the
+    screens (item 60); (5) a French tax adviser's review of the law report's §4 questions (item 64); (6) Dominic signs the
+    attestation naming 2.0.0. Until all six, don't tell VAT-registered French trucks that HatchGrab replaces their till*
+    (micro-entrepreneurs on franchise en base are exempt).
 48. **France receipts:** a receipt for counter orders when no email is taken (print or QR); ~~business details and VAT regime on
     receipts (france-receipts-1 in progress: `6ed618a9`, `56ce9d7d` committed, more uncommitted work in the folder on 24 Nov).~~
     ⛔ *V16.36: business details, receipt number, date of sale and the franchise line are on the customer email, status page and
@@ -409,6 +421,24 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     (neighbour fits), Fudo AR / CL (an "active account" read as a paid plan), Pedix, DISH HR/SK, Vitrina SI, FoxiFood (presence from its
     country-terms page). **Held uncounted (compare-research-7 §9):** Thinker POS MK, Quick Resto KZ (would make MK / KZ live), SumUp CO,
     GoSufra EG, SisFood BR, GoOrder PL, Fritzy BE, QuickClick TW, Feasty ZA, Kravon IN.
+60. **The till screens (need mockups first; V16.41):** counter refund (the API exists, till-pack-2); a payment method required when
+    collecting (law change 7, not built) and a "to settle" list; the daily close (Z) view; the archive list and download (`POST
+    /api/till/archive`); the Inspection page (attestation, version and licence, devices, payout account, Z, export, archive); volet
+    2's e-signature per truck; hide the payment-recording buttons for French VAT-registered trucks until the attestation exists, with a
+    line saying why; account deletion's "a final archive will be emailed first" warning; stop offering edit / undo on a closed sale.
+    What each screen must know: "Till module" › Screens.
+61. **Online walk-ups carry no device fingerprint** (only offline replays from an updated app do; their `till_id` stays `manual`).
+    Adding it changes the live request body (till-pack-2 §7).
+62. **Tap to Pay money** isn't covered by counter refunds or Q5 (they cover `in_person_other` — cash or the truck's own card
+    machine — only; till-pack-2 §9).
+63. **Decision: a second archive store** (object lock; Supabase storage has none — today a database trigger refuses any change or
+    deletion of an archive). Decide when the first French VAT-registered truck signs up (Q10).
+64. **The adviser questions** — the 10 in `docs/till-law-1-report.md` §4 (§ 90 by chain plus delta; leaving personal data out; the
+    day and VAT date of a deposit; « chiffre d'affaires » incl. or excl. VAT; the UK and the 15 May 2013 list / hosting; L80 O's
+    « certificat », the move to CIBS L216-48 and the archive "standards"; whether a UK editor can sign; Stripe and the bank
+    exemption; Q9: must a sole trader's legal name **and address** stay in the till record for 10 years after they close their
+    account; offline orders). Also give the adviser the texts the law report could not read (its §5 "Not checked": loi n° 2026-534
+    arts. 36 and 87 and CIBS L216-48 — Légifrance refused automated fetches). Before the attestation is signed.
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -661,6 +691,95 @@ board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings 
 
 # Changelog
 
+## V16.41 — 24–26 November 2026 — **THE TILL MODULE: A TAMPER-EVIDENT, SIGNED SALES RECORD FOR EVERY TRUCK (OBSERVE MODE), WITH CLOSES, ARCHIVES AND VERSION 1.0.0; THE LAW CHECKED; THE ATTESTATION DRAFTED**
+
+- **Nothing was deployed.** Everything is on `france-vat-1`. **The database parts are live** (shared database; migrations
+  `20261129_till_pack_1.sql`, `20261133_till_pack_2.sql`, `20261140_till_pack_4.sql`, `20261150_till_pack_5_6.sql`, each pre-flighted
+  rolled back on demo/test trucks, applied with `db-migrate.cjs`, and checked after). The code — routes, the cron, the archive, the
+  email — waits for the next deploy. The guard is in **observe** mode. Local tag `till-module-1.0.0` on `ea4fb658` (not pushed).
+  The whole module: **"Till module"** (new, after §37).
+- **OBSERVED when applying** (26 Nov 2026, 08:59 UTC, read-only git and SQL through the MCP):
+  - **Git:** `france-vat-1` checked out; origin/main `5df925d8`, main `59ae6161` (2 ahead of origin/main), france-vat-1 `ea4fb658`
+    (**588** ahead of main); tag `till-module-1.0.0` → `ea4fb658` (not on origin).
+  - **Till tables (13), rows:** `till_settings` 1; `till_chain`, `till_chain_heads`, `till_order_seals`, `till_failures`,
+    `till_guard_events`, `till_device_fingerprints`, `till_entry_actors`, `till_truck_settings`, `till_closes`,
+    `till_close_signatures`, `till_archives`, `till_archive_signatures` all **0** (no order placed since 25 Nov; the baseline not run).
+    RLS on all, no policy; the service role reads all and writes only `till_settings`, `till_failures`, `till_guard_events`.
+  - **`till_settings`:** `guard_mode` **observe**; "HatchGrab, till module" **1.0.0**; `signing_key_id` **null** and no public key
+    (registered by the first deployed run).
+  - **Triggers:** `orders` — `orders_till_seal` (after insert), `orders_till_guard` (after update), `orders_till_guard_delete`;
+    `order_payments` — `order_payments_till_chain` (after insert), `order_payments_till_guard`, `order_payments_till_guard_delete`;
+    `action_audit_log` — `action_audit_log_append_only` (before update, delete), `action_audit_log_no_truncate`; `storage.objects` —
+    `till_archive_objects_keep` (before update, delete); all enabled.
+  - **Bucket `till-archives`:** `public` false, 524288000 bytes, `application/zip`; 0 objects; 0 storage policies name it; no
+    `storage.objects` policy for anon or public.
+  - **`order_payments` by kind:** charge 882, refund 1, reversal 0. **`place_order_atomic_v2` md5** `e4b273abcf8e7609c6ca54033ed59332`
+    (as expected).
+- **Why:** France's till law (art. 286 I 3° bis CGI, §83.9) applies to VAT-registered businesses that record consumers' payments in
+  HatchGrab. Dominic decided (24 Nov) to build the backend now, country-neutral, so it is ready when the first such truck signs up. No
+  French truck is on HatchGrab yet.
+- **till-pack-0** (read-only plan; Q1–Q15) and **till-law-1** (read-only legal check against BOFiP BOI-TVA-DECLA-30-10-30 and
+  BOI-LETTRE-000242, both version of 25/03/2026): the design follows the texts; a per-truck sha256 chain is « chaînage » ("yes in
+  form"; stronger with the signature and the hash sent to the owner); **twelve gaps** (law report §1) became **fourteen changes**
+  (§3: thirteen into the packs, the Inspection page to the screens); **10 questions** kept for a French tax adviser (§4), to ask before
+  the attestation is signed (Open item 64).
+- **till-pack-1 → 1b:** the first design (written 24 Nov) put seal state on `orders`; `db-migrate.cjs` refused it (a protected table)
+  and Dominic said **no** on 25 Nov; it was reworked as 1b and applied (25 Nov 10:00 UTC):
+  - one append-only chain per truck (`till_chain`, gap-free `seq`, `hash = sha256(prev_hash | seq | kind | ref | payload_hash)`, the
+    fields joined by a literal `|`), written by database triggers, so it covers the deployed code with no deploy; seal state in
+    `till_order_seals`; **the triggers never write to `orders`, `order_payments` or `trucks`** and never fail a sale (2 s lock
+    timeout, `till_failures`, a warning — the receipt-number pattern);
+  - seals at acceptance, first payment or final state (1b), or at the day's close (added by till-pack-4), whichever comes first; each
+    later change to a sealed field is a new version with a plus/minus delta; per-line VAT (excl. VAT and rate) reconciled to the
+    totals; a `till_id` on every version; `identity` entries (legal name, address, registration number, VAT number, regime); an
+    `event` kind;
+  - the sealed form is a strict whitelist with no customer personal data (names, contact details, notes, line notes, free-text
+    reasons), so retention and account deletion never break the chain — but a sole trader's legal name and address are in the identity
+    entries (adviser question 9);
+  - the guard on `orders` / `order_payments` in **observe** mode (writes the version, logs `would_refuse_*` to `till_guard_events`,
+    never blocks); `action_audit_log` append-only; `till_verify(truck)`; `scripts/till-verify.cjs`; the baseline
+    (`till_baseline(p_truck)`) **built, not run**;
+  - extra time per write 0.1–8.5 ms (report 1b §9).
+- **till-pack-2:** undo collected / undo Mark paid / a failed refund now insert a **`reversal`** row (`reverses_payment_id`, `reason`)
+  instead of deleting; balances net reversal pairs to nothing; counter cash / card refunds (API only); **Q5:** cancelling an order paid
+  at the counter (cash or the truck's own card machine) records a counter refund with the original method (it then reads "refunded");
+  offline walk-ups carry a device fingerprint and device id (`till_device_fingerprints`; `till_id` = van, else `web`, else the device,
+  else the source); the actor's role on corrections (`till_entry_actors`, roles only); guard sqlstates mapped to HTTP 409 "This sale is
+  closed. Record a refund instead."
+- **till-pack-4:** day, month and year closes (`till_closes`, append-only, chained): totals per VAT rate and per payment method,
+  refunds, "accepted, no payment recorded" (Q4), late records, "payments received for later days", receipt range, the perpetual net
+  and absolute grand totals from the till's start (the `till_start` entry; Q11), `gt_period`; trading day = `event_date`, the day
+  closed after 06:00 the next day, truck time (Q2); empty days skipped, months and years always closed (Q12); per-truck accounting
+  year end (`till_truck_settings`); the daily-totals file now dates sales by `event_date` (Q3), so it matches the Z at each close (in
+  observe mode an edit after the close moves the daily totals but not the Z); `till_verify` after every close, chained; **Ed25519
+  signatures** with the server-only `TILL_SIGNING_KEY` (Dominic set it in Vercel Production on 25 Nov; the public key in
+  `docs/till-signing-public-key.md`, registered in `till_settings` by the first deployed run); enforce preparations: undo
+  all-or-nothing, event / van deletion allowed through the guard, admin delete-truck refuses a truck with till records with a clear
+  reason (409 `till_records_present`). Cron `/api/cron/till-close`, hourly at :15.
+- **till-pack-5-6:**
+  - **archive:** private bucket `till-archives` (no storage policy; a storage trigger refuses any change or deletion of an object,
+    whoever asks), per truck and period: CSV + JSONL of every sealed record, the whole chain, closes, signatures, device fingerprints,
+    actors, verify events, the public key, a French and English README, a signed manifest (with each day's chain head, Q14), chained as
+    `archive`; after each year close, on demand (`POST /api/till/archive`, owner or admin), and a **final archive before account
+    deletion** (deletion stops with `till_final_archive_failed` if it, or its email, fails); the owner gets one short email with a
+    7-day link and the fingerprint (Q10; Dominic's approved wording; en-GB and 59 bases); verifiable offline with `till-verify --archive`;
+  - **version:** "HatchGrab, till module" 1.0.0 (`lib/till/version.ts`), stamped on new entries, closes and archives; a pin harness
+    refuses a fiscal change without a major bump; local tag `till-module-1.0.0` with its source archive hash;
+  - **attestation and technical document drafts** in `docs/till/` (model BOI-LETTRE-000242 word for word, checked by harness;
+    placeholders for Dominic's name, company number, registered address, dates and place); **both say: sign only once the guard
+    enforces** (till-pack-3); the drafts name 1.0.0, and the report says to sign naming **2.0.0**, since till-pack-3 is a major bump;
+  - **privacy policy** section 7: "**Accounting records:** at least six years from the end of the relevant financial year, and ten
+    years where the law requires it." (Dominic, 25 Nov), in English and the 54 bases in use; "Last updated" 25 November 2026.
+- **Decisions (Dominic, 24–26 Nov):** build the backend now, country-neutral; Q1–Q15 as in till-pack-0 §8, with the law check's
+  changes (Q1 gains acceptance, law change 1), except Q9 (wording above), Q13 ("HatchGrab, till module", major bump on any fiscal
+  change) and Q15 (Dominic signs as director of HatchGrab Ltd; till-pack-0 made no recommendation); NO to the first till-pack-1
+  migration (seal state off `orders`); hide the payment-recording buttons for French VAT-registered trucks until the attestation is
+  signed (the law report's recommendation, accepted with "go with your suggestions"; to be built with the screens, after a mockup).
+- **Reference sections updated:** "Till module" (new, after §37); §16 (the till tables, the reversal columns); §19 (daily totals by
+  `event_date`); §37 (reversals, counter refunds, Q5); §41 (step 1b, the final archive); §43 (the accounting-records line; the
+  retention summary); §83.9 (a pointer); Open items 43, 47 and new 60–64; V16.37's France-chat line. The cron is in "Till module"
+  (the manual has no separate crons section).
+
 ## V16.40 — 25 November 2026 — **75 COMPARISON COUNTRIES LIVE (14 TERRITORIES BY THE NEIGHBOUR RULE); THE CHECKER'S SETTINGS AND STAGGER APPLIED; THE WORKFLOW'S IMPORT STEP ON THE DATABASE SECRET (NOT PUSHED)**
 
 - **compare-territories-1** (Dominic's decision, 25 Nov; commit `3b9da546`; `data/compare-territories-1/` registered thirteenth;
@@ -833,7 +952,7 @@ board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings 
   `cde49a32` (146 ahead of main), checked out; `Competitor check  disabled_manually`; **56 live** (the list above, exactly); AE
   `auto_publish` false, `auto_live` false; the 6 newest `data_imports` rows all `ok` (data/compare-research-3 ×5, 12:15–12:57 UTC;
   data/compare-research-2b 10:42 UTC); competitors 216 active, 31 candidate, 25 not relevant; 8 files registered in `DATA_FILES`.
-- till-pack-1/1b and france-privacy-2: see their reports; recorded by the France chat.
+- till-pack-1/1b and france-privacy-2: see their reports; recorded by the France chat. ⛔ V16.41 records the till module.
 
 ## V16.36 — 24 November 2026 — **RECEIPTS CARRY THE RECEIPT NUMBER, DATE OF SALE AND BUSINESS DETAILS; FRANCHISE EN BASE SELLS AT 0 % ("TVA NON APPLICABLE"); LINE NOTES LIVE OUTSIDE THE ORDER LINES; ACCOUNT DELETION CLEARS CUSTOMERS' NOTES; ONE PRIVACY POLICY FOR EVERY COUNTRY; THE FRANCE DECISIONS AND THE LAW AS RESEARCHED**
 
@@ -15297,6 +15416,22 @@ without an email. See §27.
   (notes still inside `items` / `deals`). Read and write only through `lib/line-notes.ts` (§37, §43).
 - OBSERVED 24 Nov 21:32 UTC: all four columns and both triggers live; 0 orders with `line_notes`, 0 with `vat_regime`.
 
+## The till tables and the reversal columns (V16.41 — till-pack-1b, -2, -4, -5-6; live in the shared database)
+
+- **13 `till_*` tables** (RLS on, no policy; the service role reads them and writes only `till_settings`, `till_failures`,
+  `till_guard_events`; the rest are written by security-definer functions): `till_settings`, `till_chain`, `till_chain_heads`,
+  `till_order_seals`, `till_failures`, `till_guard_events` (1b); `till_device_fingerprints`, `till_entry_actors` (2);
+  `till_truck_settings`, `till_closes`, `till_close_signatures` (4); `till_archives`, `till_archive_signatures` (5-6). The append-only
+  ones and every function, trigger and grant: "Till module" › Tables, functions and grants (after §37).
+- **`order_payments`** gains **`reverses_payment_id`** (uuid → `order_payments(id)` ON DELETE CASCADE) and **`reason`** (text); the
+  kind check is now **`charge | refund | reversal`**; a reversal must point and only a reversal points
+  (`order_payments_reversal_points_chk`); one reversal per payment (`order_payments_one_reversal_uidx`); the reason is a word
+  (`^[a-z_]{1,40}$`). OBSERVED 26 Nov: 882 charges, 1 refund, 0 reversals.
+- **Triggers** (AFTER, never failing a sale, never writing these tables): `orders_till_seal`, `orders_till_guard`,
+  `orders_till_guard_delete`, `order_payments_till_chain`, `order_payments_till_guard`, `order_payments_till_guard_delete`,
+  `trucks_till_identity`; `action_audit_log` is append-only (`action_audit_log_append_only`, `action_audit_log_no_truncate`).
+- **Storage:** the private bucket `till-archives` and its trigger `till_archive_objects_keep` on `storage.objects`.
+
 # 17. Menu API behaviour
 
 - Slug or ID lookup — /api/menu/[truckId] and /api/orders/submit accept slug or UUID. Try slug first, fall back to ID.
@@ -15791,7 +15926,7 @@ accountant").
 - **Reports › For your accountant › "Daily totals by VAT rate (CSV)":** rows by date and VAT rate (Date, Type "Goods", VAT rate,
   Sales incl. VAT, Refunds incl. VAT, Net excl. VAT, VAT), one totals row per rate, header rows with the business details and the
   regime; no customer data — the shape France's B2C e-reporting asks for (from 1 Sep 2027, §83.9). Accepted orders only; a sale counts
-  on the day placed and a refund on the day made, in the truck's time zone; rates from `tax_breakdown`, else the order's stored rate;
+  ~~on the day placed~~ ⛔ *V16.41: on its `event_date` (Q3; below)* and a refund on the day made, in the truck's time zone; rates from `tax_breakdown`, else the order's stored rate;
   no-rate orders are left out and counted. **Presets follow the regime** (`lib/accounts/periods.ts`): franchise en base two-month
   blocks; réel simplifié the month; réel normal monthly 1–10 / 11–20 / 21–end; réel normal quarterly, no regime or not France the
   month; "Custom dates" always.
@@ -15800,6 +15935,13 @@ accountant").
   (`lib/accounts/csv.ts`: `rates.length > 1 || rates.includes(0)`), so a franchise-en-base truck's file says 0 % explicitly. The
   daily-totals file needed no change: a franchise sale is a 0 % row with VAT 0.*
 - The format is still to be confirmed with a French accountant / an approved platform (Open items 46).
+
+### Daily totals dated by the trading day (V16.41 — till-pack-4, Q3; not deployed)
+
+- **The daily-totals file now dates a sale by its `event_date`** (the trading day) and a refund
+  on the day made, so its rows are the till's day close (Z) — both read through `lib/accounts/daily-inputs.ts`, which nets reversal
+  pairs (§37). They match at each close; in observe mode an edit after a day's close changes that day's daily totals but not its Z
+  (parity is permanent once till-pack-3 enforces). "Till module" › Closes.
 
 # 20. Social media and WhatsApp auto-replies
 
@@ -26953,6 +27095,337 @@ it was not. Same class as the success-reporting writes already recorded. **OPEN.
 - **OBSERVED** Offline walk-up totals use the same engine (`truck.charge_rules` in the dashboard snapshot).
 - **OBSERVED** The Items CSV is unchanged on purpose: tax, tips and fees are order-level.
 
+## Reversals, counter refunds and Q5 (V16.41 — till-pack-2, `20261133_till_pack_2.sql` live 25 Nov; code not deployed)
+
+- **A payment row is never deleted by code any more** (until now `undo_collected` / `undo_mark_paid` deleted it). Undo
+  collected, undo Mark paid and a failed online refund (`refund.failed`) **insert a `reversal` row** (`kind = 'reversal'`,
+  `reverses_payment_id` → the row it cancels, `reason` `undo_collected` / `undo_mark_paid` / `refund_failed`). An undo that has an
+  external reference (Tap to Pay) still writes a refund row, as before. A redelivered `refund.failed` writes nothing more.
+- **Balances net a reversal pair to nothing:** exactly the rows that would remain had the reversed row been deleted (checked on 2,000
+  random ledgers). The rule lives in one helper, `lib/payments/reversals.ts` (`netted`, `withoutReversals`, `reversalCount`,
+  `NETTING_COLUMNS`). Who nets: `readLedger` (server ledger reads, the order balance, the collect logic) and, as the defensive second
+  layer, `getOrderBalance` (`readOrderBalance` = both); `/api/dashboard` before rows reach the browser (dashboard, KDS, printed ticket);
+  the two `/api/manage` reads (daily totals, the accountant CSV); refunds in a period (a refund its reversal cancels is dropped);
+  loyalty, billing and reviews. After N reversals the collect idempotency key gains `:rN`; with none it is byte-identical to before.
+- ⚠️ **Rolling the code back after reversals exist** makes the old code read an undone collection as `paid` (it filters `kind` by
+  name and ignores the reversal). A DELETE of the reversed row cascades to its reversal.
+- **Counter refunds** (API only; no screen yet, Open item 60): `POST /api/dashboard/action` with `action: 'refund'`,
+  `refund_channel: 'in_person'`, `method: 'cash' | 'card'` — one refund row (`in_person_other`, method, reason); refused beyond the
+  counter money held; no customer email, no card-processor call; a bad method → 400 `refund_amount_invalid`.
+- **Q5:** cancelling an order paid at the counter (operator cancel, `/api/orders/cancel`, `/api/events/action`) records one counter
+  refund per original method (reason `order_cancelled`, key `cancel_refund:<key>:<method>:<minor>`), after the cancellation email; the
+  order then reads **refunded** and the accountant CSV shows the money refunded. It covers `in_person_other` (cash, the truck's own card
+  machine) only — not Tap to Pay, not online card money (Open item 62).
+- **The role behind a correction** (edit, both undos, refunds, cancel) goes to `till_entry_actors` via `lib/till/actor-role.ts`
+  (`admin`, `owner`, `staff`, `system`, `unknown`; never a name or id). **Offline walk-ups** carry `till_device` (a stable device id
+  and a sha256 of the order) from `lib/native/orderGate.ts`, recorded by `till_record_device` before the order upsert, best effort
+  (Open item 61 for online walk-ups).
+- **The 409** "This sale is closed. Record a refund instead." (`errorsKitchen.sale_closed`) answers the till guard's refusals; not
+  raised in observe mode. Everything else customers and operators see is unchanged. The whole module: "Till module" (below).
+
+# Till module — tamper-evident sales records (V16.41 — till-pack-0 to till-pack-5-6, 24–26 November 2026; database live, code not deployed)
+
+**What it is.** A per-truck, append-only, hash-chained, signed record of every sale and payment, with day / month / year closes,
+yearly and final archives and a version number. It was built for France's till-software law (art. 286 I 3° bis CGI;
+BOI-TVA-DECLA-30-10-30 and BOI-LETTRE-000242, both version of 25/03/2026), **country-neutral**: it covers every truck that is not a
+demo truck, in every country and under every VAT regime (`till_applies`: not `demo-…`, plan not `demo`; `till.include_demo = 'on'`
+for proofs only). No French truck is on HatchGrab yet.
+
+**Status (OBSERVED 26 Nov, read-only):**
+- Four migrations are live in the shared database (`20261129_till_pack_1.sql`, `20261133_till_pack_2.sql`,
+  `20261140_till_pack_4.sql`, `20261150_till_pack_5_6.sql`), each pre-flighted rolled back and applied with `db-migrate.cjs`.
+- Every till table is empty except `till_settings` (no order has been placed since the chain went live; the baseline has not run).
+- The guard is in **observe** mode; the software is "HatchGrab, till module" 1.0.0; no signing key registered yet.
+- The code — the routes, the cron, the archive, the email — is on `france-vat-1`, not deployed. Local tag `till-module-1.0.0` on
+  `ea4fb658`, not pushed.
+
+**The reports** (each holds its own proofs, timings and undo SQL under "Undo (only if Dominic asks)"):
+
+| Report | What |
+|---|---|
+| `docs/till-pack-0-report.md` | the read-only diagnosis and plan; Q1–Q15 (§8) |
+| `docs/till-law-1-report.md` | the legal check: twelve gaps (§1), fourteen changes (§3), ten adviser questions (§4), what was not checked (§5) |
+| `docs/till-pack-1-report.md` | the first design (seal columns on `orders`, BEFORE triggers) — **never applied; history only**; its undo SQL is obsolete |
+| `docs/till-pack-1b-report.md` | the chain as applied: tables, functions, triggers, sealed form, identity, timings (§9) |
+| `docs/till-pack-2-report.md` | reversals, counter refunds, Q5, device fingerprints, actor roles, the 409 |
+| `docs/till-pack-4-report.md` | closes, grand totals, signing, the cron, the enforce preparations |
+| `docs/till-pack-5-6-report.md` | the archive, the bucket, the email, the API, the final archive, the version, the pin, the tag, the drafts, the privacy line |
+
+## The chain
+
+- **One chain per truck** (`till_chain`, primary key `(truck_id, seq)`, `seq` gap-free from 1). For each entry:
+  `payload_hash = sha256(payload)` and **`hash = sha256(prev_hash || '|' || seq || '|' || kind || '|' || ref || '|' || payload_hash)`**
+  — the five fields joined by a literal `|`, `seq` as text, UTF-8, hex; the first `prev_hash` is 64 zeros. Changing or removing an
+  entry breaks every later one. `till_chain_heads` holds each truck's last seq and hash (and its identity digest) and is the per-truck
+  lock.
+- **Kinds:** `order`, `payment`, `deletion`, `identity`, `event`, `close`, `archive`. **Event types:** `mode`, `version`, `close`,
+  `archive`, `verify`, `export`, `till_start`, `till_end`. A truck's chain starts with `till_start` (seq 1) and its identity (seq 2).
+- **The payload** is the jsonb text of a 12-key envelope: `v` (1), `kind`, `truck_id`, `ref`, `version`, `reason`, `trading_day`,
+  `software_version`, `recorded_at` (UTC), `identity` (`{seq, hash}` on order entries), `delta` (null on v1 and non-order entries),
+  `data`. jsonb's own key order (length, then bytes) — `scripts/_till-sealed-mirror.cjs` rebuilds it byte for byte.
+- **Written by database triggers**, so it covers the deployed code with no deploy. **The triggers never write `orders`,
+  `order_payments` or `trucks`** (seal state lives in `till_order_seals`) and **never fail a sale**: every trigger on an order table
+  runs under a 2 s `lock_timeout` inside an exception block; a failure writes `till_failures`, raises a WARNING and the sale goes on
+  (the receipt-number pattern).
+- **Seal moments:** an order is sealed at **acceptance** (law change 1; a hatch sale is accepted when created, an online order when
+  the truck confirms it), at its **first payment** (even while pending), at a **final state**, or — for any still unsealed — at **the
+  day's close** (`till_seal(…, 'day_close')`, till-pack-4), whichever comes first. A pending order is not a sale. Reasons: `accepted`,
+  `first_payment`, `final_state`, `baseline`, `day_close` (v1); `state_change` / `edit`, each `_after_close` once the day is closed;
+  payments `recorded` / `changed`; `observed_delete`.
+- **Versions and deltas:** every later change to a sealed field is a new version of the order with a plus/minus **delta**
+  (`from_version`; items and deals removed and added; 9 amounts with from / to / change; VAT per rate; changed fields). The original
+  stays in the chain. A sealed order deleted writes a `deletion` entry.
+- **The sealed form is a strict whitelist** (37 order fields, 12 payment fields; any other key is only named under `_other_keys`):
+  receipt number, dates and the truck's time zone, `till_id`, totals, every line with `vat_rate_milli`, `line_price_minor` and
+  `line_total_excl_vat_minor` (deals split into `vat_parts`), `vat_summary` reconciled to the totals (six checks), state, each
+  payment's method. **Never sealed:** customers' names, contact details, notes and line notes, free-text reasons, table reference,
+  staff ids, kitchen / slot / buzzer fields, caches, the platform fee, card funding, a payment's note, `created_by` and idempotency key —
+  so retention and account deletion never break the chain.
+- **`till_id`** on every version: the van's id; else `web` for an online order; else the offline device's id (till-pack-2, when an
+  updated app sends one); else the order's source (`manual` for a hatch walk-up or an offline replay without a device); else
+  `unrecorded`.
+- **Identity entries** (`identity` kind): legal name, registered address (address, town, suburb, region, postcode), registration
+  number (SIREN / SIRET), VAT number, VAT regime — written when they change (`trucks_till_identity`, for a truck that has a chain, and
+  before any entry whose digest differs); each order version names the entry in force, so an older receipt can be rebuilt.
+  ⚠️ **A sole trader's legal name and address are personal data in the chain:** account deletion cannot remove them (adviser
+  question 9; Open item 64).
+- **The trading day** is the order's `event_date`. A payment counts on its order's day while that day is open, else on today (truck
+  time). A day is closed after 06:00 the next day, truck time (Q2). A record made after its day's close counts in the close of the day
+  it was recorded, listed with its own day. A closed day is never reopened.
+- **`till_verify(truck)`** re-checks the whole chain in the database (and closes and archives); **`node scripts/till-verify.cjs
+  <chain.jsonl> [--json]`** does it offline (exit 0 / 1 / 2), and `--archive <zip> [--pub <key>]` checks an archive (below).
+- **The baseline** `public.till_baseline(p_truck text default null)` seals and chains a truck's existing orders and payments
+  (null = every till truck; returns `{trucks, orders_sealed, payments_chained}`). **Built, not run.** EXECUTE is revoked from every API
+  role, service role included, so it runs only as the database owner. Run it after the deploy, truck by truck at a quiet hour (about
+  2,900 orders and 880 payments in all on 25 Nov), with Dominic's yes (Open item 47).
+- **Cost:** +0.1 ms (pending insert) to +8.5 ms (edit of a sealed order) per write, against a 20 ms limit (till-pack-1b §9).
+
+## The guard and the sqlstates
+
+- **`till_settings.guard_mode`**: `observe` (now) or `enforce` (till-pack-3). In observe mode the AFTER triggers on `orders` /
+  `order_payments` write the new version or deletion entry and log what enforce would refuse to **`till_guard_events`**
+  (`would_refuse_after_close`, `would_refuse_delete`, `would_refuse_delete_unchained`, `would_refuse_payment_change`; field names
+  only, never values) — they never block.
+- **`action_audit_log` is append-only** (BEFORE UPDATE / DELETE and TRUNCATE triggers; UPDATE / DELETE / TRUNCATE revoked from every
+  API role).
+- **Sqlstates:**
+
+| Code | Meaning |
+|---|---|
+| HGT01 | append-only refusal: any update, delete or truncate of the chain, the closes, the signatures, the archives, the audit log, the device / actor rows — and any change or deletion of a stored archive object |
+| HGT02 | a correction to a closed sale — returned by `till_correction_check` in enforce mode only; HGT02–HGT04 are reserved for till-pack-3 |
+| HGT20 | a close or archive refused: outside the till (a demo truck), a bad period, not yet due, already closed / year already archived, a path not under `<truck>/` |
+| HGT21 | the close's input rows changed after it was computed / the archive names a head that is not the truck's |
+| HGT22 | signing: a malformed key or signature, a key that is not the registered one, no such close or archive |
+
+- **The 409:** `lib/till/guard-errors.ts` maps HGT01–HGT04 to **HTTP 409 `errorsKitchen.sale_closed`** — "This sale is closed. Record
+  a refund instead." (60 locales) — at cancel, undo collected, undo Mark paid, edit and collected, and in the dashboard action route's
+  catch-all (which answers in the default locale). Nothing raises it in observe mode.
+
+## Reversals, counter refunds and Q5 (till-pack-2)
+
+Detail in §37 "Reversals, counter refunds and Q5". In short: a payment row is never deleted by code any more — undo collected, undo
+Mark paid and a failed online refund insert a **`reversal`** row pointing at the row it cancels; every reader nets the pair to
+nothing; counter refunds (cash / card) exist by API; cancelling an order paid at the counter records a counter refund (Q5); offline
+walk-ups carry a device fingerprint (`till_device_fingerprints`); the role behind each correction is recorded (`till_entry_actors`:
+owner, staff, admin, system, unknown — never a name or id).
+
+## Closes (till-pack-4)
+
+- **`till_closes`** (append-only, chained as kind `close`, unique `(truck_id, period_type, period_start)`): **day**, **month** and
+  **year** (the truck's accounting year). Day D is due after 06:00 on D+1, truck time, and days close in order. **An empty day has no
+  close** (only marked scanned, `till_truck_settings.days_scanned_through`); **months and years are always written, even at zero**
+  (Q12). A month closes once its last day is scanned; a year once its last day is scanned and that month is closed (a GB year ending
+  5 Apr closes after 06:00 on 1 May).
+- **The accounting year:** `till_truck_settings.fiscal_year_end_month / _day` (per truck; nothing sets it yet), else the day before
+  the country's `tax_year_start`, else 31 December (GB 5 Apr, AU 30 Jun, HK / NZ 31 Mar, FR / IE / US 31 Dec).
+- **A close holds:** per VAT rate incl. VAT, excl. VAT and VAT; per payment method; refunds; payments received for later days;
+  accepted orders with no payment recorded (Q4); late records; reversals netted; counts; by van and by channel; the receipt range;
+  and the **grand totals**, never reset (Q11): `gt_incl` (perpetual incl. VAT), `gt_excl` (perpetual excl. VAT), `gt_abs`
+  (perpetual absolute: every operation counted positive) and `gt_period` (the accounting year's). They count from the till's start
+  (the `till_start` entry, seq 1; `till_closes.till_started_at`). Months and years carry their last day's totals.
+- **The figures** are the daily-totals file's rows (both read through `lib/accounts/daily-inputs.ts`), which now date a sale by its
+  `event_date` (Q3; §19). They match the Z at each close; in observe mode an edit after a day's close changes that day's daily
+  totals but not its Z — parity is permanent only once till-pack-3 enforces.
+- **`till_close_commit`** writes a close in one transaction (refusing HGT20 / HGT21), then **`till_verify` runs and its result is
+  chained** (an `event` with ref `verify`).
+- **Enforce preparations:** undo is all-or-nothing (the route asks `till_correction_check` first); deleting an event or a van (its
+  `event_id` / `van_id` SET NULL on sealed orders) passes the guard; **admin delete-truck refuses a truck with till records** — 409
+  `till_records_present`, with a clear reason.
+
+## Signing
+
+- **Ed25519**, by the server-only **`TILL_SIGNING_KEY`** (PKCS#8 DER, base64). Dominic made it with `scripts/till-signing-keygen.cjs`
+  and set it in Vercel Production on 25 Nov; **Claude never runs the keygen or reads the key**. The public key and its id
+  (`ff6ea8b232e9bc8e`, the first 16 hex of sha256 of the SPKI DER) are in `docs/till-signing-public-key.md`.
+- **What is signed:** a close's chain hash, and an archive manifest's sha256 — each as its 64 lowercase hex characters, UTF-8.
+- **Registration:** the first run that has the key registers its public key in `till_settings.signing_public_key` / `signing_key_id`
+  (`till_register_signing_key`, which refuses a different key later). **Not registered yet** (OBSERVED 26 Nov: both null — the code
+  is not deployed).
+- **Without a key** (or with an invalid one) closes and archives are written `unsigned` and the next run with a key signs them
+  (`till_close_signatures`, `till_archive_signatures`).
+
+## The cron
+
+**`/api/cron/till-close`**, hourly at :15 (`vercel.json` `15 * * * *`; `Bearer CRON_SECRET` or an admin; demo trucks skipped;
+`lib/till/close-run.ts`). Per truck, in order: register the key; days; months; years; sign unsigned closes; **the year archive for
+every year close that has none** (retried next run on failure); sign unsigned archives. Its answer is counts only.
+
+## The archive (till-pack-5)
+
+- **When:** after each year close (the cron); **on demand** — `POST /api/till/archive`; and **a final archive before an account is
+  deleted** (§41 step 1b; deletion stops if it fails). Each makes one ZIP and one chain entry (kind `archive`, `till_archive_commit`).
+  There is no "leave till mode" action today; `finalArchivesFor()` is ready for one.
+- **Contents** (CSV in UTF-8 with a BOM, JSON Lines): `chain.jsonl` (the whole chain from entry 1 to the head covered);
+  `orders.csv`, `order_lines.csv`, `order_vat.csv`, `order_versions.jsonl` (every sealed order version of the period, with lines,
+  VAT, delta, `till_id`, identity entry); `payments.csv` / `.jsonl` (charges, refunds, reversals); `deletions.jsonl`; `closes.csv` /
+  `.jsonl`, `close_signatures.csv`; `archives.csv` (earlier archives); `device_fingerprints.csv`, `entry_actors.csv`,
+  `verify_events.jsonl`; `public_key.txt`, `SHA256SUMS.txt`; `README-FR.txt` and `README-EN.txt` (the software and version, the
+  business's legal details, the period, every file explained, "no customer data", five offline checks, keep 10 years); `manifest.json`
+  (every file's sha256 and size; truck, reason, period, accounting year, time zone, currency, software and version, the head covered,
+  **each day's chain head** — Q14 — and the key); `manifest.sig.json` when signed (21 files; 20 unsigned). No customer personal data;
+  only the identity entries' legal details. The ZIP is deterministic (`fflate` 0.8.2).
+- **Where:** the private bucket **`till-archives`** (`public = false`, 500 MB, `application/zip` only, **no storage policy**), at
+  `<truck>/<accounting year>/<reason>-<from>_<to>-<hash12>.zip`, uploaded without overwrite. **The trigger
+  `till_archive_objects_keep`** (BEFORE UPDATE OR DELETE on `storage.objects`) refuses any change or deletion in that bucket, whoever
+  asks (HGT01). Kept at least 10 years. Proved private from outside (`--bucket-privacy`: the public URL, a download, a listing and a
+  bucket read as anon were all refused or empty).
+- **`till_archives`** (append-only; reason `year` / `on_demand` / `final`; requested by `system` / `owner` / `admin`; one year archive
+  per year; the manifest and zip sha256, the head covered, the version, signed or unsigned) and **`till_archive_signatures`**.
+- **The email** to the truck's owner (`trucks.operator_id` → `operators.email`), in the truck's country's language (en-GB and all 59
+  bases), from hello@hatchgrab.com (Brevo, tag `till-archive`), Dominic's approved wording: subject "Your sales archive for {period}
+  is ready"; body "Your HatchGrab sales archive for {period} is ready. Download it here: {link} (the link works for 7 days). Keep a
+  copy: in some countries, such as France, you must keep sales records for 10 years. Archive fingerprint: {hash}. You don't need to
+  do anything else." The link is a 7-day signed URL, never stored; `{hash}` is the manifest's sha256 (Q10: no second store).
+- **The API** `POST /api/till/archive` (no screen): `{action: 'build', from?, to?}` (default: the accounting year's start to today;
+  a period ending after today is refused) or `{action: 'link', archiveId}` (a new 7-day link, emailed too). An admin with `truckId`,
+  or the truck's **owner** (dashboard `token` plus a session `lib/truck-access.ts` resolves to `owner`). Staff, a manager, a demo
+  visitor or no session → 403 `owner_only`; a wrong token or none → 401; HGT20 → 409.
+- **An archive refuses to be made** if the database's version is not the code's.
+- **Offline check:** `node scripts/till-verify.cjs --archive <zip> --pub <public key>` — every file's sha256 and size (no unlisted
+  file), the manifest's signature, the chain, each close (entry, head, signature), each earlier archive, the manifest's head and each
+  day's head. A damaged file is reported, never a crash.
+
+## The version (till-pack-6)
+
+- **`lib/till/version.ts`:** `TILL_SOFTWARE_NAME` "HatchGrab, till module", `TILL_VERSION` 1.0.0 (root 1), the 18 `FISCAL_FILES` (the
+  four till migrations; `lib/till/` version, close, close-run, signing, archive, archive-files, guard-errors, actor-role,
+  device-fingerprint; `lib/accounts/daily-totals.ts`, `daily-inputs.ts`; `lib/payments/reversals.ts`; `scripts/till-verify.cjs`,
+  `scripts/_till-sealed-mirror.cjs`) and `FISCAL_PARAMETERS`. The database stamps `till_settings.software_version` on every chain
+  entry, close and archive; a version change is a chained `version` event.
+- **The rule (Q13):** MAJOR.MINOR.PATCH; **any change to a fiscal file is a major bump**, and every new major needs a new attestation
+  for every truck (§ 380), so fiscal changes are grouped.
+- **The pin:** `lib/till/version-pins.json` records each version's fiscal source hash (1.0.0: `0348d16e…`, 18 files), its tag and its
+  source archive's sha256; `scripts/till-version-pin.cjs` (a sweep harness) fails a fiscal change without a bump, a fiscal change
+  numbered as a minor version, and a migration version that differs from `version.ts`. An entry is never changed after its tag
+  (1.0.0's was re-recorded once, before tagging).
+- **The tag and the source archive** (LPF L102 D / L96 J): local tag `till-module-1.0.0` on `ea4fb658` (not pushed);
+  `node scripts/till-source-archive.cjs till-module-1.0.0 [--out <file outside the repo>]` gives a deterministic tar of the fiscal
+  files and `docs/till/` (23 files, 407,040 bytes, sha256 `a471aecb…`). Keep both until the end of the third year after the version
+  stops being distributed.
+- 🔴 **Till-pack-3 is a fiscal change, so it is 2.0.0:** set it in the migration, pin it, tag `till-module-2.0.0`.
+
+## The drafts in `docs/till/` (not published, not in the app)
+
+- `attestation-draft-fr.md` — model BOI-LETTRE-000242 word for word where the model is fixed (harness I1 checks all 19
+  paragraphs), filled in for HatchGrab Ltd, "HatchGrab, till module", version 1.0.0 (root 1, minor versions 1.y.z), the licence number
+  = the truck's HatchGrab id, the perimeter, volet 1 and volet 2, signed "[Full name], director, HatchGrab Ltd" (Q15). Placeholders:
+  the name, company number, registered address, market date, place and date. `attestation-draft-en.md` is a reading copy with no
+  legal value.
+- `technical-document-fr.md` / `-en.md` — identification, perimeter, inalterability, security, conservation, archiving, version rules,
+  how an inspector verifies, what the truck must do, open points. `BOI-LETTRE-000242-model.md` — the model as published.
+- 🔴 **Both say: sign only once the guard enforces (till-pack-3).** The drafts name 1.0.0; the till-pack-5-6 report (§12) says to
+  sign naming the enforce version, 2.0.0.
+
+## Tables, functions and grants
+
+- **13 tables**, RLS on, **no policy**, nothing granted to anon or authenticated. The service role may **read** all of them and
+  **write only** `till_settings`, `till_failures` and `till_guard_events` (OBSERVED 26 Nov); every other till table is written only by
+  security-definer functions. Append-only (HGT01 triggers): `till_chain`, `till_closes`, `till_close_signatures`, `till_archives`,
+  `till_archive_signatures`, `till_device_fingerprints`, `till_entry_actors` (and `action_audit_log`).
+
+| Table | Pack | What |
+|---|---|---|
+| `till_settings` | 1b, 4, 5-6 | one row: `guard_mode`, `software_name`, `software_version`, `signing_public_key`, `signing_key_id` |
+| `till_chain` | 1b | the chain |
+| `till_chain_heads` | 1b | each truck's head and identity digest; the lock |
+| `till_order_seals` | 1b | seal state per order (never on `orders`) |
+| `till_failures` | 1b | trigger failures (a sale never fails) |
+| `till_guard_events` | 1b | what enforce would refuse |
+| `till_device_fingerprints` | 2 | offline walk-ups' device id and fingerprint |
+| `till_entry_actors` | 2 | the role behind each correction |
+| `till_truck_settings` | 4 | accounting-year end, days scanned |
+| `till_closes`, `till_close_signatures` | 4 | closes and their signatures |
+| `till_archives`, `till_archive_signatures` | 5-6 | archives and their signatures |
+
+- **Functions:** 51 `till_*` in `public`, every one with EXECUTE revoked from public, anon and authenticated. **EXECUTE for the
+  service role** only on: `till_verify`, `till_head_seq`, `till_record_device`, `till_record_actor`, `till_close_context`,
+  `till_mark_scanned`, `till_close_commit`, `till_register_signing_key`, `till_sign_close`, `till_correction_check`,
+  `till_archive_commit`, `till_sign_archive`. All others (the trigger functions, `till_write` / `till_append`, `till_seal`,
+  `till_baseline` …) run only as the owner.
+- **Triggers:** on `orders` — `orders_till_seal` (AFTER INSERT), `orders_till_guard` (AFTER UPDATE), `orders_till_guard_delete`;
+  on `order_payments` — `order_payments_till_chain` (AFTER INSERT), `order_payments_till_guard`, `order_payments_till_guard_delete`;
+  on `trucks` — `trucks_till_identity`; on `action_audit_log` — `action_audit_log_append_only`, `action_audit_log_no_truncate`; on
+  `storage.objects` — `till_archive_objects_keep`; 14 append-only / no-truncate triggers on the till tables.
+- `place_order_atomic_v2` is untouched (md5 `e4b273abcf8e7609c6ca54033ed59332`).
+
+## Proofs and harnesses
+
+- **Rollback proofs** (`scripts/db-rollback-proofs.cjs`; one transaction, always rolled back; demo / test trucks only, never a live
+  trading truck): `--preflight-till-1 <file>` / `--till-1-check`, `--preflight-till-2 <file>` / `--till-2-check`,
+  `--preflight-till-4 <file>` / `--till-4-check`, `--preflight-till-5 <file>` / `--till-5-check`, and `--bucket-privacy`. Rework the
+  till only through these and the harnesses. Logs: `docs/till-pack-4/`, `docs/till-pack-5-6/`; exports in `docs/till-pack-1/`,
+  `docs/till-pack-2/` (re-written by every check run).
+- **Harnesses:** `till-pack-1.cjs`, `till-pack-2.cjs`, `till-pack-4.cjs`, `till-pack-5-6.cjs`, `till-version-pin.cjs`. Layers for
+  older byte-identity checks: `scripts/_lp-till-pack-2.cjs`, `_lp-till-pack-4.cjs`, `_lp-till-pack-5-6.cjs`, and
+  `_named-till-pack-5-6.cjs` (the legal edit and the sitemap's lastmod). Harness files must not name the service-role key,
+  `createClient` or the word "stripe".
+- **Undo SQL:** in each applied pack's report, under "Undo (only if Dominic asks)" (till-pack-1b, -2, -4, -5-6; pack-1's is obsolete).
+  The 5-6 undo cannot delete an archive object without dropping the object trigger first.
+
+## Decisions (Dominic, 24–26 November)
+
+- **Build the backend now, country-neutral** (24 Nov), ready for the first French VAT-registered truck. **NO to the first till-pack-1
+  migration** (25 Nov: seal state off `orders`) → till-pack-1b.
+- **Q1–Q15** (till-pack-0 §8, with the law check's changes):
+
+| Q | Decided |
+|---|---|
+| 1 | seal at acceptance (law change 1), first payment, final state or the day's close, whichever comes first |
+| 2 | trading day = `event_date`; day D closed after 06:00 on D+1, truck time |
+| 3 | the daily-totals file dates sales by `event_date` |
+| 4 | the Z counts accepted orders with no payment recorded, on their own line |
+| 5 | cancelling a counter-paid order records a counter refund with the original method |
+| 6 | enforce after till-pack-2 is deployed and 7 clean days of guard events |
+| 7 | demo trucks are outside the till |
+| 8 | the baseline at go-live, after the deploy (built, not run) |
+| 9 | archives kept 10 years for every truck; privacy-policy line "at least six years … ten years where the law requires it" (25 Nov) |
+| 10 | email the owner the fingerprint and a 7-day download link; no second store (revisit: Open item 63) |
+| 11 | perpetual net and absolute grand totals, never reset (plus `gt_period`, law change 9) |
+| 12 | skip empty days; always write month and year closes |
+| 13 | "HatchGrab, till module", 1.0.0; a major bump on any fiscal change |
+| 14 | each day's chain head in the manifest (an external anchor later) |
+| 15 | Dominic signs, as director of HatchGrab Ltd |
+
+- **Hide the payment-recording buttons for French VAT-registered trucks until the attestation is signed** (the law report's
+  recommendation, accepted with "go with your suggestions"); to be built with the screens, after a mockup (Open item 60).
+
+## What till-pack-3 (enforce) must do
+
+- Switch `guard_mode` to `enforce` after 7 clean days of `till_guard_events` (Q6); raise HGT02–HGT04 on the `would_refuse_*` paths;
+  keep `till_correction_check` identical to the enforce rule (ideally the guard calls it); make the payment guard refuse a closed-day
+  reversal; don't re-add a refusal for event / van deletion.
+- Never block `till_archive_commit`, the storage trigger, or account deletion's anonymising; keep the final archive first.
+- `deleteTruckCascade` and demo restarts still delete rows: keep the admin route's refusal.
+- **A major bump to 2.0.0** (above); the attestation is signed after it.
+
+## Screens (none built; Open item 60)
+
+- Show `TILL_SOFTWARE` and the licence (the truck id) on the Inspection page and the Z.
+- Volet 2: store the signer, the date of signing, the download date (sign-up) and the start of use per truck.
+- Archives: the download button calls `POST /api/till/archive` (owner, dashboard token); list `till_archives`; never store links.
+- Account deletion: warn that a final archive will be emailed first; if it fails, deletion stops (`till_final_archive_failed`).
+
 # 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
 
 Provenance is stated per claim: **live-verified** (seen rendered on screen), **read from code**, or **computed** (arithmetic, unobserved).
@@ -28398,6 +28871,17 @@ The admin route refuses with **409 `accounting_records_present`**, keyed on **th
 
 **The execute route returns `paymentsIntact` with a before/after count**, so a regression that starts deleting payments **shows up as a changed number** rather than being found years later by an accountant.
 
+### Step 1b — the final till archive, before anything is anonymised (V16.41 — till-pack-5-6; not deployed)
+
+- **Before step 2,** `lib/account-deletion.ts` makes a **final archive** (reason `final`, requested by `admin`, from the till's start
+  to today) for every truck of the account that has a till chain, stores it in `till-archives`, chains it and **emails it to the
+  owner** — afterwards the owner can no longer sign in to ask for a link. If the archive or its email fails, deletion **stops before
+  any write** with `AccountDeletionError('till_final_archive')`; the admin execute route answers 500 `{ code:
+  'till_final_archive_failed', partial: false }`. Re-running makes a new final archive. The result gains `tillArchives`.
+- Sealed records and closes are never deleted: account deletion clears only personal data, which the seal never holds (except the
+  identity entries' legal details — Open item 64); admin delete-truck refuses a truck with till records (409 `till_records_present`).
+  "Till module" › The archive.
+
 ### Step 2b — customers' notes are cleared (V16.36 — france-privacy-1, `bafd1495`; not deployed)
 
 - **After the name / email / phone step,** for every truck of the account, `lib/account-deletion.ts` pages through **every order and
@@ -28770,7 +29254,7 @@ the word "thermal" is gone. ⚠️ **HOLD those files until both app store updat
 
 **HatchGrab Ltd, company number 17381557.** `privacy@hatchgrab.com` and `hello@hatchgrab.com` are **LIVE AND TESTED as receiving**.
 
-**Retention:** operator accounts 12 months after closure · order personal details anonymised at 12 months · **accounting 6 years** · support 24 months · logs 90 days. ~~**No analytics or tracking cookies, so no consent banner is needed.**~~
+**Retention:** operator accounts 12 months after closure · order personal details anonymised at 12 months · ~~**accounting 6 years**~~ ⛔ *V16.41: accounting records at least six years, ten where the law requires it (§43 "The accounting-records line")* · support 24 months · logs 90 days. ~~**No analytics or tracking cookies, so no consent banner is needed.**~~
 ⛔ **STRUCK V11.45 — THAT SENTENCE IS FALSE AND IT IS PUBLISHED.** `posthog.init` runs at MODULE SCOPE
 in `app/providers.tsx` and passes exactly two options, neither of which is `persistence` — so it takes
 the library default, read out of the installed `posthog-js` 1.386.6 bundle rather than assumed:
@@ -29074,6 +29558,17 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 | EEA and Switzerland, Ireland, France, Gibraltar, UK | one month |
 
 The policy promises one month everywhere, or sooner where the law requires: answer by the earlier of the two.
+
+### The accounting-records line (V16.41 — till-pack-5-6, Q9; not deployed)
+
+- Section 7 of `content/legal/privacy-policy.md`: ~~"**Accounting records:** six years from the end of the relevant financial year,
+  as UK tax law requires."~~ ⛔ "**Accounting records:** at least six years from the end of the relevant financial year, and ten years
+  where the law requires it." (Dominic's wording, 25 Nov; France keeps till and tax records 10 years). Nothing else changed.
+- "Last updated" ~~24~~ ⛔ **25 November 2026**; `lib/legal.ts` `PRIVACY_UPDATED` mirrors it and the sitemap's `/privacy` lastmod
+  moved; `COUNTRY_TERMS_UPDATED` and **`TERMS_VERSION` (`'2026-11-24'`) are unchanged** (the prompt said change nothing else).
+- Translated in the **54 bases** enabled countries use (re-stamped, structure checker clean); back-translations in
+  `docs/till-pack-5-6/privacy-line-back-translations.md`; fil-PH, hi-IN, ur-PK, ta-LK, vi-VN untouched (Open item 39). The next legal
+  edit chains a newer undo module in front of `scripts/_named-till-pack-5-6.cjs` (called first by `_named-france-privacy-1.cjs`).
 
 ### The contact form's email (V16.10 — contact-1, 2 November 2026)
 
@@ -38190,7 +38685,9 @@ code. A country stays switched off until its launch list is done.
     payment (typically services — goods or services for a food truck is for a French accountant). Built: the daily-totals file (§19).
   - **Till software (article 286 I 3° bis CGI):** VAT-registered businesses selling to consumers must use compliant till software —
     an NF525 / LNE certificate **or the software maker's individual attestation** (restored by the 2026 finance law, 19 Feb 2026).
-    Exempt: franchise en base, B2B-only, VAT-exempt-only. Fine €7,500 per non-compliant software. HatchGrab has neither.
+    Exempt: franchise en base, B2B-only, VAT-exempt-only. Fine €7,500 per non-compliant software. ~~HatchGrab has neither.~~
+    ⛔ *V16.41: the till module is built (database live in observe mode, code not deployed) and the attestation is drafted, not
+    signed — "Till module" (after §37) and Open item 47's six steps.*
   - **Promised in writing to Le Poulpe à Pattes** (crêpe trailer, Lens, opening June 2027): forecasting "well before June 2027", and
     the sales records she needs for e-reporting (Open items 44, 46).
   - **Held:** the `reply_knowledge` till line ("HatchGrab … replaces it") stays suggested, and VAT-registered French trucks are not
