@@ -12,6 +12,24 @@ import type { ImportRecord } from '@/lib/data-import/importer'
 
 type Row = Record<string, unknown>
 const db = async () => (await import('@/lib/supabase')).supabase
+type DbError = { message: string; code?: string }
+
+/** compare-calc-fix-1 (26 Nov 2026; docs/compare-calc-fix-1-report.md): Supabase's "Max rows" caps EVERY response (1,000 by
+ *  default), so an unpaged read of a table that has grown past it silently drops rows — competitor_plans reached 1,057 and the
+ *  newest 57 plans (Square, What The Truck, Hatches Up…) never reached the comparison pages. Every read here that can pass
+ *  1,000 rows is PAGED: pages of PAGE rows in a stable order (ending in the id) until a short page. scripts/compare-calc-fix-1.cjs
+ *  fails if a multi-row read is not. */
+const PAGE = 1000
+async function pageAll(page: (from: number, to: number) => PromiseLike<{ data: unknown; error: DbError | null }>): Promise<{ data: Row[]; error: DbError | null }> {
+  const out: Row[] = []
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await page(from, from + PAGE - 1)
+    if (error) return { data: out, error }
+    const rows = (data ?? []) as Row[]
+    out.push(...rows)
+    if (rows.length < PAGE) return { data: out, error: null }
+  }
+}
 const TABLE = { competitors: 'competitors', plans: 'competitor_plans', benchmarks: 'country_benchmarks' } as const
 
 /** The tables are not there yet — the migration has not been run. The page says so instead of failing. */
@@ -77,9 +95,9 @@ export const servicePricingStore: PricingStore = {
   async listAll() {
     const s = await db()
     const [c, p, b] = await Promise.all([
-      readCompetitors(cols => s.from(TABLE.competitors).select(cols).order('name')),
-      s.from(TABLE.plans).select(COLUMNS.plans).order('created_at'),
-      s.from(TABLE.benchmarks).select(COLUMNS.benchmarks).order('created_at'),
+      readCompetitors(cols => pageAll((a, z) => s.from(TABLE.competitors).select(cols).order('name').order('id').range(a, z))),
+      pageAll((a, z) => s.from(TABLE.plans).select(COLUMNS.plans).order('created_at').order('id').range(a, z)),
+      pageAll((a, z) => s.from(TABLE.benchmarks).select(COLUMNS.benchmarks).order('created_at').order('id').range(a, z)),
     ])
     for (const [what, r] of [['competitors', c], ['plans', p], ['benchmarks', b]] as const) if (r.error) fail(`read ${what}`, r.error)
     return { competitors: (c.data ?? []) as unknown as Row[], plans: (p.data ?? []) as unknown as Row[], benchmarks: (b.data ?? []) as unknown as Row[] }
@@ -196,7 +214,7 @@ export const servicePricingStore: PricingStore = {
   },
   async listEntries() {
     const s = await db()
-    const { data, error } = await entryCols(cols => s.from('comparison_entries').select(cols).order('sort_order'))
+    const { data, error } = await entryCols(cols => pageAll((a, z) => s.from('comparison_entries').select(cols).order('sort_order').order('id').range(a, z)))
     if (error) { if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|schema cache/i.test(error.message)) return []; fail('read comparison entries', error) }
     return (data ?? []) as unknown as Row[]
   },
@@ -220,8 +238,8 @@ export const servicePricingStore: PricingStore = {
   // ── comparison-features-1: the master list and the answers (20261047). Missing tables → null / [] (the callers fall back).
   async features() {
     const s = await db()
-    let { data, error } = await s.from('comparison_features').select(FEATURE_COLUMNS_SUITS)
-    if (missingColumn(error)) ({ data, error } = await s.from('comparison_features').select(FEATURE_COLUMNS))   // before 20261075
+    let { data, error } = await pageAll((a, z) => s.from('comparison_features').select(FEATURE_COLUMNS_SUITS).order('key').range(a, z))
+    if (missingColumn(error)) ({ data, error } = await pageAll((a, z) => s.from('comparison_features').select(FEATURE_COLUMNS).order('key').range(a, z)))   // before 20261075
     if (error) { if (tableMissing(error)) return null; fail('read features', error) }
     return (data ?? []) as unknown as Row[]
   },
@@ -238,8 +256,9 @@ export const servicePricingStore: PricingStore = {
   },
   // compare-suits-1: the feature findings still waiting for review in a country — an answer with one is never shown as "not listed".
   async pendingFeatureFindings(code) {
-    const { data, error } = await (await db()).from('competitor_check_findings').select('competitor_id, country_code, found')
-      .eq('field', 'feature').eq('review_status', 'pending').or(`country_code.eq.${code},country_code.is.null`).limit(5000)
+    const s = await db()
+    const { data, error } = await pageAll((a, z) => s.from('competitor_check_findings').select('competitor_id, country_code, found')
+      .eq('field', 'feature').eq('review_status', 'pending').or(`country_code.eq.${code},country_code.is.null`).order('id').range(a, z))
     if (error) { if (tableMissing(error)) return []; fail('read pending findings', error) }
     return (data ?? []) as unknown as Row[]
   },
@@ -302,8 +321,8 @@ export const servicePricingStore: PricingStore = {
   async markFeatureDue(key, today) {
     const s = await db()
     const [c, v] = await Promise.all([
-      s.from('competitors').select('id, next_check_at').eq('lifecycle', 'active'),
-      s.from('competitor_feature_values').select('competitor_id').eq('feature_key', key).is('country_code', null).is('superseded_at', null),
+      pageAll((a, z) => s.from('competitors').select('id, next_check_at').eq('lifecycle', 'active').order('id').range(a, z)),
+      pageAll((a, z) => s.from('competitor_feature_values').select('competitor_id').eq('feature_key', key).is('country_code', null).is('superseded_at', null).order('id').range(a, z)),
     ])
     if (c.error) fail('read competitors', c.error)
     if (v.error) fail('read feature values', v.error)
@@ -317,8 +336,13 @@ export const servicePricingStore: PricingStore = {
   },
   async existingIds(table, ids) {
     if (!ids.length) return []
-    const { data, error } = await (await db()).from(table === 'entries' ? 'comparison_entries' : TABLE[table]).select('id').in('id', ids)
-    if (error) fail(`read ${table}`, error)
-    return ((data ?? []) as { id: string }[]).map(r => r.id)
+    // compare-calc-fix-1: in chunks of 500 ids, so no response can reach the 1,000-row cap.
+    const s = await db(), out: string[] = []
+    for (let i = 0; i < ids.length; i += 500) {
+      const { data, error } = await s.from(table === 'entries' ? 'comparison_entries' : TABLE[table]).select('id').in('id', ids.slice(i, i + 500))
+      if (error) fail(`read ${table}`, error)
+      out.push(...((data ?? []) as { id: string }[]).map(r => r.id))
+    }
+    return out
   },
 }
