@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.41
+HatchGrab Engineering Reference Manual · V16.42
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.41**
+**Version 16.42**
 
 November 2026
 
@@ -120,7 +120,7 @@ identical; a **pre-flight** before the migration runs and a **check** after it. 
 insert fail (its own exception block; on error it leaves the value NULL and logs a WARNING). Never run a proof against Pizzeria
 Gusto or any trading truck. A proof that can't be run is a stop: say so; don't apply the migration.
 
-# Open items (V16.41, 26 November 2026) — THE ONLY CURRENT LIST
+# Open items (V16.42, 26 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
@@ -370,6 +370,8 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     confirms the Console spend limit on the Competitor checks workspace; (4) the batch deploy, which carries `18836cf5`; (5) one manual
     dispatch with `dry_run = true` (mode routine), then `gh workflow enable competitor-check.yml` **before 4 January 2027**; (6) a read-only
     check that 2–4 competitors are checked a day (up to ~6 in early February with the kept dates) and the live countries stay live.
+    **V16.42:** settings now core 180 days, monthly cap $50 (`20261143`). The batch deploy must carry compare-square-1's rule (`5135f4e3`)
+    as well as `18836cf5`; re-enabling on the old `main` would take the 22 one-tool pages down.
 56. 🔴 **Vercel Spend Management:** confirm there is no budget with "Pause production deployments" (a pause = 503 for every page, Pizzeria
     Gusto included); keep alerts only. **Decision: Observability** events (≈ $0.13–0.31 a day) — switch off if unused.
 57. ~~**Comparison research — next waves**, in launch order (the method in §91):
@@ -390,10 +392,16 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     - ~~**The remaining lever is a decision:** extend the GI rule (a parent-country tool counts unless its own site excludes the territory)~~
       ~~to JE GG IM (from GB), AX (FI), RE GP MQ GF YT BL MF PM (FR), SM VA (IT), AD (ES / FR) — evidence in compare-research-7 §5.~~
     - ~~Later: which comparison pages get search traffic (Search Console / Bing by country; Open item 50).~~
-    ⛔ **V16.40:** **Comparison research — status after compare-territories-1 (75 live).** Every enabled country has been researched; the one-short ones
-    two to five times.
-    - one short: MT IS RS AL BA MK MD UZ KZ JO LK BD BO DO SV JM UY CO GU VI AX;
-    - at 0: KR GT and the rest.
+    ~~⛔ **V16.40:** **Comparison research — status after compare-territories-1 (75 live).** Every enabled country has been researched; the one-short ones~~
+    ~~two to five times.~~
+    - ~~one short: MT IS RS AL BA MK MD UZ KZ JO LK BD BO DO SV JM UY CO GU VI AX;~~
+    - ~~at 0: KR GT and the rest.~~
+    - ~~Later: which comparison pages get search traffic (Search Console / Bing by country; Open item 50).~~
+    ⛔ **V16.42:** **Comparison research — status after compare-square-1 (96 live; 1 tool is enough).** Next:
+    - ~~**Hatches Up:** Dominic to supply its website; then set website / check_urls and its price from its own site (class A; would rank~~
+      ~~first in GB).~~ ⛔ done V16.42 (hatches-up-1: hatchesup.co.uk; GB shows Ordea · What The Truck · Hatches Up · Square; Eventifood out).
+    - Add class A / B food-truck tools where a page shows only restaurant tools (the 22 Gulf / Asia / Africa / Latin America pages and the
+      new one-tool pages), largest markets first.
     - Later: which comparison pages get search traffic (Search Console / Bing by country; Open item 50).
 58. ~~**Comparison open points (compare-research-3b §4):** Poster's "Site" add-on (kept unclear); KZ — add joinposter.kz to Poster's check
     pages; **Toss Place KR** — the fee in force (0 won "try" against the planned 3.5 % + VAT) must be confirmed on its own site before KR
@@ -408,9 +416,14 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     ~~⛔ **V16.39:** **Comparison open points:** Poster's "Site" add-on alone stays unclear (UA, KZ).~~ ~~KZ check page~~ ~~⛔ done V16.39~~
     ~~(20261135).~~ ~~Fudo AR~~ ~~⛔ done V16.39 (plan + module; the «No tiene abono mensual» flag noted). Check on a live page that Zyda's QA /~~
     ~~BH / OM / SA / EG prices read as "from" and "billed yearly".~~
-    ⛔ **V16.40:** **Comparison open points:** Poster's "Site" add-on alone stays unclear (UA, KZ). **Zyda's plan name leaks in English on QA / BH pages
-    ("Zyda plans (lowest, 'from')") and "from" is missing from the price cell:** a data-only rename (with Dominic's yes) and a sweep of
-    every stored plan name for the same class; showing "from" in the price cell is a code change (mockup first, then the batch deploy).
+    ~~⛔ **V16.40:** **Comparison open points:** Poster's "Site" add-on alone stays unclear (UA, KZ). **Zyda's plan name leaks in English on QA / BH pages~~
+    ~~("Zyda plans (lowest, 'from')") and "from" is missing from the price cell:** a data-only rename (with Dominic's yes) and a sweep of~~
+    ~~every stored plan name for the same class; showing "from" in the price cell is a code change (mockup first, then the batch deploy).~~
+    ⛔ **V16.42:** **Comparison open points:** Poster's "Site" add-on alone stays unclear (UA, KZ). "From" missing in the price cell for "from" prices
+    (Zyda, Oddle, Eats365 and others): a code change, mockup first. The 4 duplicate plan names (Eatch FR, Perkss GB, pidopago ES, Yoveletta
+    CH) need their older duplicate retired first, one at a time. Vendor display names with English in brackets (Chuzmonster, Nomad). Square:
+    the US Plus billing period; AU's unused older plans (Square Online Plus $40, two Square for Restaurants plans) to tidy. The comparison
+    cost calculator must add Stripe's fee to HatchGrab and no extra card fee to bundled rates (What The Truck, Square) — check (Open item 16).
 59. ~~**Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, Restorant NG, Menufy PR, Oddle TW, Yoveletta /
     Rent-a-Shop LI and Ordea GI (neighbour fits), Fudo AR/CL, Pedix, DISH HR/SK, Vitrina SI.~~
     ~~⛔ **V16.38:** **Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, **Linkin1 SA**, Restorant NG,
@@ -421,6 +434,8 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     (neighbour fits), Fudo AR / CL (an "active account" read as a paid plan), Pedix, DISH HR/SK, Vitrina SI, FoxiFood (presence from its
     country-terms page). **Held uncounted (compare-research-7 §9):** Thinker POS MK, Quick Resto KZ (would make MK / KZ live), SumUp CO,
     GoSufra EG, SisFood BR, GoOrder PL, Fritzy BE, QuickClick TW, Feasty ZA, Kravon IN.
+    V16.42: classes stored in `competitors.food_truck_class` (A 16, B 34; the audit's weakest B: Click & Collection IE, Jitmeal EE). Square
+    takes the 4th slot even from a class A tool (Eatch FR, Moonrise US) — Dominic's rule as written.
 60. **The till screens (need mockups first; V16.41):** counter refund (the API exists, till-pack-2); a payment method required when
     collecting (law change 7, not built) and a "to settle" list; the daily close (Z) view; the archive list and download (`POST
     /api/till/archive`); the Inspection page (attestation, version and licence, devices, payout account, Z, export, archive); volet
@@ -690,6 +705,54 @@ actions, `refund`, the Manage-level token routes. 6. After two clean weeks, grou
 board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings (owner only; needs a mockup first).
 
 # Changelog
+
+## V16.42 — 26 November 2026 — **96 COMPARISON COUNTRIES LIVE: 1 TOOL IS ENOUGH; FOOD-TRUCK TOOLS RANKED A → B; SQUARE IN ITS 8 COUNTRIES; WHAT THE TRUCK ON THE UK PAGE; FEATURES CHECKED EVERY 180 DAYS, $50 A MONTH**
+
+- **plan-names-1** (25 Nov; migration `20261142`, `ee2d855b`): 90 shown plan names renamed to the vendor's own plan name (or the vendor's
+  name where it names none; Zyda → "Zyda"), proved by md5 that nothing else changed. 4 left out because the name is already another
+  current plan's (Eatch FR, Perkss GB, pidopago ES, Yoveletta CH). The importer's corrected-plans route can't rename (it supersedes and
+  inserts). Future builds must refresh stored plan names from the database first.
+- **checker-cadence-1** (Dominic's decisions, 26 Nov; migration `20261143`): tier_intervals commercial 90 · **core 180** · secondary 365;
+  daily cap $3; **monthly cap $50** (of his $100 monthly API limit; the rest is kept for other work). Measured: routine $0.046, deep
+  $0.101 a competitor; expected ≈ $5–6 a month (upper bound $7.6). Daily quota 5; busiest day 7 Feb 2027 (15 due), cleared by ~18 Feb.
+  Never checkable (no website): Hatches Up, RapidOrderz.
+- **Chuzmonster JP** (`20261144`): its price came from a third-party article (lme.jp, stored as its website), so its plan is unclear. That
+  took JP down (75 → 74) without the prompt warning of it. ⚠️ Lesson, now a rule (§91): a publish that would take a live page down stops
+  first.
+- **foodtruck-audit-1** (read-only): of 47 food_truck-focus tools shown or marked, 13 are **class A** (built for food trucks) and 34
+  **class B** (general tools with their own food-truck offer); 0 class C. Scenarios S2 / S3 / S4 would have kept 33 / 12 / 19 pages.
+  **Dominic decided (26 Nov): drop none.** Aphelios was already not relevant (24 Nov).
+- **compare-square-1** (Dominic's decisions, 26 Nov; commit `5135f4e3`; migration `20261145`; `data/compare-square-1/` registered
+  fourteenth; `data_imports` 25 → 26):
+  - **The rule:** a country is live with **1** eligible priced tool (`MIN_SHOWN = 1`); food-truck tools ranked **class A → class B →
+    unclassed food-truck focus**; restaurant / till tools only make up 2; **Square always takes the 4th slot** where it is eligible and
+    priced (`ALWAYS_SHOWN_DOMAINS`), pushing out the lowest-ranked tool; SumUp only as the single fallback; at most 4; AE never; Admin wins.
+  - **`competitors.food_truck_class`** ('A' / 'B' / null): A 16, B 34. Read by the publish through `lib/pricing-check.ts`
+    (`foodTruckClass`) and the column map in `lib/admin/pricing-check-actions.ts` (Dominic's Option 1); no page or Admin screen reads it.
+    ⚠️ The deployed Admin store now selects the column, so migration 20261145 must stay (it is applied).
+  - **Square** in its own 8 countries (US CA GB IE AU JP FR ES): pickup quote; Free plan and Plus plan in each country's currency (Plus
+    `yearly_only` where only billed annually: CA GB IE AU FR ES; JP stores the monthly-billing ¥3,780; the US Plus $49 billing period not
+    stated); its online rate as the bundled card fee; features read once from the GB page and applied to every country.
+  - **What The Truck GB** (class A): £0 a month; online 3.95 % + VAT for new accounts (tiers 3.25–3.95 %); in person 1.25 % for new
+    accounts (0.80–1.25 %); card fee **included on its own payment provider** (quote: «100% of every sale paid with a UK personal card is
+    yours, with nothing deducted» — on the first-month offer, «subject to the use of our card terminal and payment provider»; terms §6 say
+    provider fees «are set by them»).
+  - **Hatches Up:** no own website found in one search; can't be shown or checked. **Chuzmonster's** website corrected to order.yapp.li.
+  - **Live 74 → 96** (none dropped). New: AL AX BA BD BO CO DO GU IS JM JO **JP** KZ LK MD MK MT RS SV UY UZ VI.
+  - **Line-ups:** **GB Ordea · What The Truck · Eventifood · Square** (Order Tiger, Perkss, Grafterr out); FR and US: Square replaces Eatch
+    and Moonrise (class A); IE, CA, ES gain Square; BR reordered (A first).
+  - 7 comparison harnesses pass (compare-square-1 27/0 new; compare-fix-1 65/0; compare-autopublish-1 75/0; compare-fix-2 79/0;
+    compare-suits-1 72/0; checker-prep-1 18/0; competitor-check-1 227/0); `tsc` 0 errors. Verified: 96 live; shown = marked; AE false/false;
+    0 of 920 plans over the ceiling.
+  - ⚠️ **Before the checker is re-enabled:** the new rule runs only locally until the batch deploy. The old code on GitHub `main` would
+    apply "2 needed" and take the 22 new pages down. The workflow stays disabled until the deploy.
+- **Live comparison countries (26 Nov): 96** — AD AL AR AT AU AX BA BD BE BG BH BL BO BR CA CH CL CO CY CZ DE DK DO EC EE EG ES FI FR GB GF
+  GG GI GP GR GU HK HR HU ID IE IM IN IS IT JE JM JO JP KW KZ LI LK LT LU LV MA MD MF MK MQ MT MV MY NG NL NO NZ OM PA PL PM PR PT QA RE RO
+  RS SA SE SG SI SK SM SV TH TR TW UA US UY UZ VA VI YT ZA.
+- **Card fees, for reference (26 Nov, own sites):** Stripe UK online 1.5 % + 20p (standard UK cards), 1.9 % + 20p (premium); SumUp UK
+  1.69 % in person (0.99 % on Payments Plus, £19 a month); Square UK 1.75 % in person. What The Truck's rates undercut these at the hatch
+  only with its own terminal and provider.
+- **OBSERVED when applying (26 Nov, read-only, section E):** 96 live — the list above, exactly; AE auto_publish false / auto_live false; tier_intervals commercial 90 · core 180 · secondary 365, daily cap 3.00, monthly cap 50.00; food_truck_class A 16 · B 34 · null 234. ⚠️ **Differs from the delta (hatches-up-1 ran after it was written):** the newest `data_imports` row is `data/hatches-up-1/competitors.json`, `ok` (13:13 UTC), not compare-square-1, and `DATA_FILES` holds **15** files. Hatches Up now has its own site (hatchesup.co.uk, from Dominic): plan "Unlock orders & payments" £0 with 4.5 % + 20p bundled, 13 quoted answers (`9a4e4380`), migration `20261146` (`7013ff6a`: check_urls, the GB entry's plan, the old unsourced plan superseded); **GB now shows Ordea · What The Truck · Hatches Up · Square** — Eventifood out. Still 96 live, none dropped (docs/hatches-up-1-report.md). The version is V16.42 because V16.41 was already taken by the till-module entry.
 
 ## V16.41 — 24–26 November 2026 — **THE TILL MODULE: A TAMPER-EVIDENT, SIGNED SALES RECORD FOR EVERY TRUCK (OBSERVE MODE), WITH CLOSES, ARCHIVES AND VERSION 1.0.0; THE LAW CHECKED; THE ATTESTATION DRAFTED**
 
@@ -40645,7 +40708,11 @@ Reports: `docs/enquiries-backend-1-report.md`, `docs/inbox-1-report.md`, `docs/i
   KW KWD, BH BHD, OM OMR, JO JOD), with a source on the vendor's own site, checked within its interval + 30 days; one check is enough;
   Admin-verified counts. Price on request = hidden plan. A yearly toggle → the monthly-billing price, the yearly one in the note; if it
   can't be stated exactly → unclear. **Amounts are major units end to end** (the 100× guard rejects implausible ones as unclear).
-- **Live:** at least 2 eligible priced competitors, at most 4 shown, auto-publish on, Admin not off, not AE. Features may be
+- **Live:** a country is live with **1** eligible competitor with a price on its own site (V16.42,
+  Dominic: "even one comparison is sufficient"; pages are never dropped for having too few). Food-truck tools are ranked class A (built
+  for food trucks), then class B (a general tool with its own food-truck offer), then other food-truck-focus tools; restaurant / till
+  tools only make up 2; **Square always takes the 4th slot** in the countries it sells in (same features everywhere, each country's own
+  price and rates); SumUp only as the single fallback; at most 4. Auto-publish on, Admin not off, not AE. Features may be
   "not stated". `country_settings.comparison_status` stays `off` for auto-published countries; Admin's per-country switch wins.
 - **Data in:** research goes into `data/<workstream>/competitors.json` in the importer's format, built by a script from raw evidence
   (so a rebuild reproduces it), each competitor once (by id, name and domain), validated with the database's own rules and the 100×
@@ -40675,6 +40742,10 @@ Reports: `docs/enquiries-backend-1-report.md`, `docs/inbox-1-report.md`, `docs/i
 - **The Competitor check's settings (V16.40, `20261140`):** prices (commercial) every 90 days; core and secondary features every 365;
   deep queue, quick pass and semi-deep off; caps $3 a day and $90 a month. Due dates are staggered 4 a day by earliest expiry
   (`20261141`); after each check the next date is 90 days on, so the spread keeps itself.
+- **A publish that would take a live page down stops first (V16.42):** every prompt that publishes runs a rolled-back dry run and stops
+  if any live country would stop being live, naming it.
+- **Bundled card fees (V16.42):** where a vendor's rate includes card processing (Square, What The Truck), it is stored as `card_mode`
+  bundled with the rate, never as a separate per-order fee on top.
 
 ---
 
