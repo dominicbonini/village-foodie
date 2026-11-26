@@ -1,0 +1,190 @@
+-- docs/foodtruck-audit-1/sql.txt — every SQL statement of checker-cadence-1 + foodtruck-audit-1 (26 November 2026).
+-- 1 · the two migrations in full (pre-flighted rolled back, applied with scripts/db-migrate.cjs); 2 · the publish dry run (rolled back) and
+-- the publish, as the entry point logged them ("SQL>" lines, de-duplicated, "-- ×n" = run n times with bound parameters); 3 · every
+-- read-only query (Supabase MCP), in the order run. Part 2 wrote nothing.
+
+
+-- 1a · Part 1a settings (commit a97be783): supabase/migrations/20261143_checker_cadence_1.sql
+-- 20261143_checker_cadence_1.sql — checker-cadence-1 Part 1a (Dominic, 26 November 2026; docs/foodtruck-audit-1-report.md).
+-- The Competitor check's settings: prices (commercial) every 90 days, core features every 180 (6 months), secondary every 365;
+-- check_interval_days 90; caps $3 a day and $50 a month (Dominic's budget: $50 of the $100 monthly API limit). Nothing else changes.
+-- Database only, inert while the workflow is disabled. ONE row of public.competitor_check_settings.
+-- Guarded; pre-flighted with scripts/compare-db-proofs.cjs --preflight-checker (rolled back).
+begin;
+
+do $$
+declare n int;
+begin
+  select count(*) into n from public.competitor_check_settings where id;
+  if n <> 1 then raise exception 'checker-cadence-1: expected the one settings row, found %', n; end if;
+end $$;
+
+update public.competitor_check_settings
+   set tier_intervals = jsonb_build_object('commercial', 90, 'core', 180, 'secondary', 365),
+       check_interval_days = 90,
+       daily_cap_usd = 3,
+       monthly_cap_usd = 50
+ where id;
+
+do $$
+declare n int;
+begin
+  select count(*) into n from public.competitor_check_settings
+   where id and tier_intervals = jsonb_build_object('commercial', 90, 'core', 180, 'secondary', 365)
+     and check_interval_days = 90 and daily_cap_usd = 3 and monthly_cap_usd = 50;
+  if n <> 1 then raise exception 'checker-cadence-1: the settings were not all written'; end if;
+end $$;
+
+commit;
+
+
+-- 1b · Part 1b Chuzmonster unclear (commit eb14dfaf): supabase/migrations/20261144_chuzmonster_unclear.sql
+-- 20261144_chuzmonster_unclear.sql — checker-cadence-1 Part 1b (Dominic, 26 November 2026; docs/foodtruck-audit-1-report.md,
+-- docs/plan-names-1-report.md B.5). どこでも注文くん (Chuzmonster) JP "Takeout" (¥10,000): its price came from a third-party article
+-- (lme.jp), not the vendor's own site. Its own page (https://order.yapp.li/takeout, read once on 26 Nov) says only
+-- «Takeoutは固定料金なので、モバイルオーダーの売上が増えても料金は一切変わりません。» — a fixed fee, no amount. So the plan is marked unclear.
+-- Competitor data only: ONE competitor_plans row (unclear + a note). Guarded; pre-flighted with
+-- scripts/compare-db-proofs.cjs --preflight (rolled back).
+begin;
+
+do $$
+declare n int;
+begin
+  select count(*) into n from public.competitor_plans
+   where id = '5050d0c5-71e0-586a-8486-1c6c7ef69569' and superseded_at is null and not unclear and plan_name = 'Takeout' and monthly_minor = 10000;
+  if n <> 1 then raise exception 'checker-cadence-1: expected Chuzmonster''s current Takeout plan (¥10,000, not unclear), found %', n; end if;
+end $$;
+
+update public.competitor_plans
+   set unclear = true,
+       notes = coalesce(notes || ' · ', '') || 'marked unclear (checker-cadence-1, 26 Nov): the ¥10,000 is from a third-party article (lme.jp); the vendor''s own page https://order.yapp.li/takeout states only «Takeoutは固定料金» with no amount'
+ where id = '5050d0c5-71e0-586a-8486-1c6c7ef69569' and superseded_at is null and not unclear;
+
+do $$
+declare n int;
+begin
+  select count(*) into n from public.competitor_plans where id = '5050d0c5-71e0-586a-8486-1c6c7ef69569' and unclear;
+  if n <> 1 then raise exception 'checker-cadence-1: the plan was not marked unclear'; end if;
+end $$;
+
+commit;
+
+
+-- 2a · publish DRY RUN (npx -y -p pg@8.13.1 node scripts/competitor-check/run.mjs scripts/comparison-publish/main.ts --dry-run) — ROLLED BACK
+set statement_timeout = '120s';
+set lock_timeout = '10s';
+-- ×3
+select (select count(*) from public.competitors) … (the comparison tables' row counts — scripts/comparison-db.ts comparisonTally);
+begin;
+select coalesce(json_agg(x), '[]'::json) as rows from (select country_code, currency, locale, enabled, comparison_status from public.country_settings) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.comparison_publish) x;
+-- ×2
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at, group_label, pinned, hidden, auto_verified_at, auto_blocked from public.comparison_entries order by sort_order) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, name, website, focus, payment_providers, features_checked_on, features_verified_at, notes, lifecycle, added_as_candidate, check_urls, check_interval_days, next_check_at, last_checked_at, deep_checked_at, check_requested_at, category, category_by, check_failures, check_urls_by, not_in_countries, updated_at from public.competitors order by name) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, country_code, plan_name, currency, price_hidden, monthly_minor, yearly_only, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, card_rate_assumed, order_cap, included_orders, overage_fixed_minor, vat, status, unclear, second_hand, source, source_url, checked_on, verified_at, verified_by, notes, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_plans order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, currency, meal_minor, meal_source_label, meal_source_url, meal_source_ok, order_multiplier, eur_rate, eur_rate_date, card_bps, card_fixed_minor, planned_pro_minor, planned_pro_included_minor, planned_unlimited_minor, notes, checked_on, superseded_at, created_at from public.country_benchmarks order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, checked_on, pages_checked from public.competitor_feature_checks where pages_checked is not null order by competitor_id, feature_key, country_code) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_feature_values where superseded_at is null order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, country_code, plan_id, found, created_at from public.competitor_check_findings where field = 'monthly_price' and second_check = 'confirmed' and quote_in_page = true and review_status <> 'rejected' order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.competitor_check_findings where review_status = 'pending' order by id) x;
+-- ×209
+insert into public."comparison_publish" ("auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+insert into public."comparison_publish" ("auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "auto_publish" = excluded."auto_publish", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+update public."comparison_entries" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[1], object
+update public."competitor_plans" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[1], object
+insert into public."comparison_publish_events" ("at", "competitor_id", "country_code", "detail", "kind") select "at", "competitor_id", "country_code", "detail", "kind" from json_populate_recordset(null::public."comparison_publish_events", $1::json)   -- params: json[2 rows]
+rollback;
+
+-- 2b · publish, real run — committed (live 75 → 74: JP)
+set statement_timeout = '120s';
+set lock_timeout = '10s';
+-- ×3
+select (select count(*) from public.competitors) … (the comparison tables' row counts — scripts/comparison-db.ts comparisonTally);
+begin;
+select coalesce(json_agg(x), '[]'::json) as rows from (select country_code, currency, locale, enabled, comparison_status from public.country_settings) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.comparison_publish) x;
+-- ×2
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at, group_label, pinned, hidden, auto_verified_at, auto_blocked from public.comparison_entries order by sort_order) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, name, website, focus, payment_providers, features_checked_on, features_verified_at, notes, lifecycle, added_as_candidate, check_urls, check_interval_days, next_check_at, last_checked_at, deep_checked_at, check_requested_at, category, category_by, check_failures, check_urls_by, not_in_countries, updated_at from public.competitors order by name) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, country_code, plan_name, currency, price_hidden, monthly_minor, yearly_only, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, card_rate_assumed, order_cap, included_orders, overage_fixed_minor, vat, status, unclear, second_hand, source, source_url, checked_on, verified_at, verified_by, notes, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_plans order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, currency, meal_minor, meal_source_label, meal_source_url, meal_source_ok, order_multiplier, eur_rate, eur_rate_date, card_bps, card_fixed_minor, planned_pro_minor, planned_pro_included_minor, planned_unlimited_minor, notes, checked_on, superseded_at, created_at from public.country_benchmarks order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, checked_on, pages_checked from public.competitor_feature_checks where pages_checked is not null order by competitor_id, feature_key, country_code) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_feature_values where superseded_at is null order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, country_code, plan_id, found, created_at from public.competitor_check_findings where field = 'monthly_price' and second_check = 'confirmed' and quote_in_page = true and review_status <> 'rejected' order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.competitor_check_findings where review_status = 'pending' order by id) x;
+-- ×209
+insert into public."comparison_publish" ("auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+insert into public."comparison_publish" ("auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "auto_publish" = excluded."auto_publish", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+update public."comparison_entries" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[1], object
+update public."competitor_plans" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[1], object
+insert into public."comparison_publish_events" ("at", "competitor_id", "country_code", "detail", "kind") select "at", "competitor_id", "country_code", "detail", "kind" from json_populate_recordset(null::public."comparison_publish_events", $1::json)   -- params: json[2 rows]
+commit;
+
+-- 3.1 · read-only
+select json_build_object('settings',(select row_to_json(s) from (select check_interval_days, tier_intervals, daily_cap_usd, monthly_cap_usd, deep_per_day, pass_requested_at, semi_deep->>'status' semi from public.competitor_check_settings) s),
+'chuz',(select json_agg(row_to_json(x)) from (select p.id, p.country_code, p.plan_name, p.monthly_minor, p.currency, p.status, p.unclear, p.price_hidden, p.source_url, p.checked_on, p.notes, c.website, c.check_urls from public.competitor_plans p join public.competitors c on c.id=p.competitor_id where left(c.id::text,8)='da91c9a7' and p.superseded_at is null) x));
+
+-- 3.2 · read-only
+select json_build_object(
+ 'live', (select count(*) from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+ 'list', (select string_agg(country_code,' ' order by country_code) from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+ 'shown_ne_marked', (select count(*) from public.comparison_publish p where p.auto_live and jsonb_array_length(p.shown) <> (select count(*) from public.comparison_entries e where e.country_code=p.country_code and e.auto_verified_at is not null)),
+ 'ae', (select auto_publish::text||'/'||auto_live::text from public.comparison_publish where country_code='AE'),
+ 'jp', (select row_to_json(x) from (select auto_publish, auto_live, admin_off, jsonb_array_length(shown) n from public.comparison_publish where country_code='JP') x));
+
+-- 3.3 · read-only
+select column_name, data_type from information_schema.columns where table_schema='public' and table_name='competitor_check_runs' order by ordinal_position;
+
+-- 3.4 · read-only
+with a as (select c.id, c.name, c.website, coalesce(array_length(c.check_urls,1),0) nurls, c.next_check_at, c.last_checked_at::date last_d,
+   (c.website is null or c.website = '') and coalesce(array_length(c.check_urls,1),0) = 0 never
+  from public.competitors c where c.lifecycle='active'),
+live as (select country_code, shown from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+sh as (select (x->>'competitorId')::uuid cid, string_agg(l.country_code, ' ' order by l.country_code) ccs from live l, jsonb_array_elements(l.shown) x group by 1)
+select json_build_object(
+ 'active', (select count(*) from a),
+ 'never_checkable', (select json_agg(json_build_object('name',a.name,'shown',sh.ccs) order by a.name) from a left join sh on sh.cid=a.id where a.never),
+ 'null_next', (select count(*) from a where next_check_at is null and not never),
+ 'never_checked', (select count(*) from a where last_d is null and not never),
+ 'never_checked_next_after_90d', (select count(*) from a where last_d is null and not never and next_check_at > current_date + 90),
+ 'within_90_of_last', (select count(*) from a where last_d is not null and next_check_at is not null and next_check_at - last_d <= 90 and not never),
+ 'over_90_of_last', (select json_agg(json_build_object('name',name,'last',last_d,'next',next_check_at,'gap',next_check_at-last_d) order by next_check_at-last_d desc) from a where last_d is not null and next_check_at is not null and next_check_at - last_d > 90 and not never),
+ 'overdue_now', (select json_agg(name||' '||next_check_at) from a where next_check_at < current_date and not never),
+ 'per_day_max_jan_mar', (select json_build_object('max', max(n), 'days_at_max', string_agg(d::text, ' ') filter (where n = mx)) from (select next_check_at d, count(*) n, max(count(*)) over () mx from a where not never and next_check_at between '2027-01-04' and '2027-03-31' group by 1) z),
+ 'app_store_only', (select json_agg(name) from a where not never and coalesce(website,'') !~* '^https?://(?!apps\.apple\.com|play\.google\.com)' and not exists (select 1 from public.competitors c2, unnest(c2.check_urls) u where c2.id=a.id and u !~* '^https?://(apps\.apple\.com|play\.google\.com)'))
+) r;
+
+-- 3.5 · read-only
+select next_check_at d, count(*) n from public.competitors where lifecycle='active' and next_check_at between '2027-01-04' and '2027-03-31' group by 1 having count(*) > 4 order by 1;
+
+-- 3.6 · read-only
+select mode, count(*) runs, sum(competitors_checked) checked, round(sum(cost_usd),3) usd, round(sum(cost_usd)/nullif(sum(competitors_checked),0),4) per_check, min(started_at)::date first, max(started_at)::date last,
+ round(percentile_cont(0.5) within group (order by cost_usd/nullif(competitors_checked,0))::numeric,4) median_per_check_run
+from public.competitor_check_runs where competitors_checked > 0 and cost_usd is not null group by 1 order by 1;
+
+-- 3.7 · read-only
+with live as (select country_code, shown from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false))
+select json_agg(json_build_object('cc',cc,'s',shown,'ft',ft,'n',n) order by cc) from (
+select l.country_code cc, string_agg(c.name||' ['||coalesce(c.focus,'-')||']', ' · ' order by ord) shown, count(*) filter (where c.focus='food_truck') ft, count(*) n
+from live l cross join lateral jsonb_array_elements(l.shown) with ordinality x(e, ord) join public.competitors c on c.id=(x.e->>'competitorId')::uuid group by 1) z;
+
+-- 3.8 · read-only
+with live as (select country_code, shown from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+sh as (select (x->>'competitorId')::uuid cid, l.country_code from live l, jsonb_array_elements(l.shown) x),
+mk as (select competitor_id cid, country_code from public.comparison_entries where auto_verified_at is not null)
+select json_agg(json_build_object('p',left(c.id::text,8),'n',c.name,'w',c.website,'shown',(select string_agg(country_code,' ' order by country_code) from sh where cid=c.id),'marked_only',(select string_agg(country_code,' ' order by country_code) from mk where cid=c.id and country_code not in (select country_code from sh where cid=c.id))) order by c.name)
+from public.competitors c where c.focus='food_truck' and c.id in (select cid from sh union select cid from mk);
+
+-- 3.9 · read-only
+with live as (select country_code, shown from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+sh as (select (x->>'competitorId')::uuid cid, l.country_code from live l, jsonb_array_elements(l.shown) x)
+select json_agg(json_build_object('cc',cc,'n',name,'fresh',fresh) order by cc, name) from (
+select p.country_code cc, c.name, bool_or(p.checked_on + 120 >= current_date) fresh from public.competitor_plans p join public.competitors c on c.id=p.competitor_id join live l on l.country_code=p.country_code
+where c.focus='food_truck' and c.lifecycle='active' and p.superseded_at is null and p.status='counted' and not p.unclear and not p.price_hidden and p.monthly_minor is not null
+  and not exists (select 1 from sh where sh.cid=c.id and sh.country_code=p.country_code) group by 1,2) z;
+
+-- 3.10 · read-only
+select c.name, p.country_code, p.plan_name, p.currency, p.source_url, c.website, c.check_urls, p.checked_on, p.auto_verified_at is not null marked,
+ exists (select 1 from public.comparison_entries e where e.competitor_id=c.id and e.country_code=p.country_code) has_entry, left(c.notes,160) cnotes
+from public.competitor_plans p join public.competitors c on c.id=p.competitor_id
+where c.name in ('Eventifood','Hatches Up','Menuthere','Vev') and p.country_code in ('GB','DE','NL') and p.superseded_at is null and p.status='counted' and not p.unclear;
