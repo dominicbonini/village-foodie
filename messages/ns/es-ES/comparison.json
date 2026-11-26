@@ -60,14 +60,9 @@
     "ours": "HatchGrab encaja contigo si…",
     "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora de recogida, no quieres que tu cocina se colapse y no quieres permanencia.",
     "oursNot": "HatchGrab no encaja contigo si…",
-    "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un TPV certificado según la normativa fiscal, todo de un mismo proveedor.",
     "appClause": "O si necesitas la app de cocina en iPad o Android en {country}: allí todavía no está en las tiendas de apps.",
-    "tills": "TPV y datáfonos",
     "marketplaces": "Plataformas de reparto",
-    "rival": "{name} encaja si…",
-    "tillsBody": "Los TPV cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. Un sistema de pedidos funciona junto a un TPV; no lo sustituye.",
-    "tillsBodyNamed": "Los TPV cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un TPV; no lo sustituye.",
-    "marketplacesBody": "Las plataformas de reparto traen clientes nuevos, pero se quedan una comisión de cada pedido. Uber Eats indica un 14 % para recogida y un 30 % para entrega con repartidores de Uber en Alemania. Wolt dice en su propia web que cobra comisión, pero no da las tarifas. No hemos podido comprobar las tarifas de Lieferando. Esa comisión también se aplica a los clientes habituales que te hacen pedidos anticipados."
+    "rival": "{name} encaja si…"
   },
   "groups": {
     "food_truck": "Sistema de pedidos para food trucks",

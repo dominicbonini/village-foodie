@@ -60,14 +60,9 @@
     "ours": "Bagay sa iyo ang HatchGrab kung …",
     "oursBody": "nagtitinda ka sa iba’t ibang lugar, gusto mo ng pre-order na may oras ng pick-up, ayaw mong ma-overload ang kusina mo, at ayaw mo ng kontrata.",
     "oursNot": "Hindi bagay sa iyo ang HatchGrab kung …",
-    "oursNotBody": "gusto mong magbayad ang customers mo gamit ang PayPal o Klarna, o gusto mo ng certified POS na may TSE mula sa iisang supplier.",
     "appClause": "O kung kailangan mo ang kitchen app sa iPad o Android sa {country}: wala pa ito sa stores doon.",
-    "tills": "POS at card reader",
     "marketplaces": "Delivery platforms",
-    "rival": "Bagay ang {name} kung …",
-    "tillsBody": "Tumatanggap ng bayad sa truck ang POS at sakop nito ang TSE requirement. Kasabay ng POS gumagana ang ordering system; hindi nito pinapalitan ang POS.",
-    "tillsBodyNamed": "Tumatanggap ng bayad sa truck ang POS at sakop nito ang TSE requirement. {count, plural, one {Nasa table sa itaas din ang {names}.} other {Nasa table sa itaas din ang {names}.}} Kasabay ng POS gumagana ang ordering system; hindi nito pinapalitan ang POS.",
-    "marketplacesBody": "Nagdadala ng bagong customers ang delivery platforms pero may commission sila sa bawat order. Ayon sa Uber Eats, 14% para sa pick-up at 30% para sa delivery ng Uber couriers sa Germany. Sinasabi ng Wolt sa sarili nitong website na naniningil ito ng commission pero walang rates na binigay. Hindi namin ma-check ang rates ng Lieferando. May commission din iyan sa mga suki na nagpe-pre-order sa iyo."
+    "rival": "Bagay ang {name} kung …"
   },
   "groups": {
     "food_truck": "Food truck ordering system",

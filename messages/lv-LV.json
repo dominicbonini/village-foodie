@@ -6692,14 +6692,9 @@
       "ours": "HatchGrab jums der, ja …",
       "oursBody": "jūs tirgojaties mainīgās vietās, vēlaties iepriekšējus pasūtījumus ar saņemšanas laiku, nevēlaties pārslogot virtuvi un nevēlaties līgumu.",
       "oursNot": "HatchGrab jums neder, ja …",
-      "oursNotBody": "jūsu klientiem jāvar maksāt ar PayPal vai Klarna vai jūs vēlaties no viena piegādātāja arī sertificētu kases sistēmu, kas atbilst valsts nodokļu prasībām.",
       "appClause": "Vai arī, ja jums vajag virtuves lietotni iPad vai Android ierīcēm ({country}): tur tā vēl nav pieejama lietotņu veikalos.",
-      "tills": "Kases sistēmas un maksājumu termināļi",
       "marketplaces": "Piegādes platformas",
-      "rival": "{name} der, ja …",
-      "tillsBody": "Kases sistēmas pieņem maksājumus pie busiņa un atbilst valsts nodokļu prasībām darījumu reģistrēšanai. Pasūtījumu sistēma darbojas kopā ar kases sistēmu, nevis to aizstāj.",
-      "tillsBodyNamed": "Kases sistēmas pieņem maksājumus pie busiņa un atbilst valsts nodokļu prasībām darījumu reģistrēšanai. Tabulā augstāk {count, plural, zero {ir arī} one {ir arī} other {ir arī}} {names}. Pasūtījumu sistēma darbojas kopā ar kases sistēmu, nevis to aizstāj.",
-      "marketplacesBody": "Piegādes platformas piesaista jaunus klientus, bet par katru pasūtījumu iekasē komisiju. Uber Eats Vācijā norāda 14% par pašizņemšanu un 30% par piegādi ar Uber kurjeriem. Wolt savā tīmekļa vietnē norāda, ka iekasē komisiju, bet likmes nenorāda. Lieferando likmes mēs nevarējām pārbaudīt. Šī komisija attiecas arī uz pastāvīgajiem klientiem, kas pie jums pasūta iepriekš."
+      "rival": "{name} der, ja …"
     },
     "groups": {
       "food_truck": "Food truck pasūtījumu sistēma",

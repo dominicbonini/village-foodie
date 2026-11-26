@@ -6761,14 +6761,9 @@
       "ours": "HatchGrab size uygun, eğer …",
       "oursBody": "değişen konumlarda satış yapıyorsanız, teslim alma saatli ön sipariş istiyorsanız, mutfağınızın aşırı yüklenmesini istemiyorsanız ve sözleşmeye bağlanmak istemiyorsanız.",
       "oursNot": "HatchGrab size uygun değil, eğer …",
-      "oursNotBody": "müşterilerinizin PayPal veya Klarna ile ödeyebilmesi gerekiyorsa ya da her şeyi tek bir tedarikçiden, mevzuata uygun onaylı bir yazarkasayla birlikte istiyorsanız.",
       "appClause": "Ya da {country} pazarında mutfak uygulamasına iPad veya Android’de ihtiyacınız varsa: orada henüz mağazalarda yok.",
-      "tills": "Adisyon sistemleri ve POS cihazları",
       "marketplaces": "Yemek teslimat platformları",
-      "rival": "{name} uygun, eğer …",
-      "tillsBody": "Adisyon sistemleri ödemeyi food truck’ta alır ve satış kaydına ilişkin yasal gereklilikleri karşılar. Sipariş sistemi bir adisyon sisteminin yanında çalışır; onun yerini almaz.",
-      "tillsBodyNamed": "Adisyon sistemleri ödemeyi food truck’ta alır ve satış kaydına ilişkin yasal gereklilikleri karşılar. Yukarıdaki tabloda {count, plural, one {şu sistem} other {şu sistemler}} de yer alıyor: {names}. Sipariş sistemi bir adisyon sisteminin yanında çalışır; onun yerini almaz.",
-      "marketplacesBody": "Yemek teslimat platformları yeni müşteri getirir ama her siparişten komisyon alır. Uber Eats, Almanya’da gel al siparişleri için %14, Uber kuryeleriyle teslimat için %30 komisyon belirtiyor. Wolt kendi web sitesinde komisyon aldığını söylüyor ama oran vermiyor. Lieferando’nun oranlarını kontrol edemedik. Bu komisyon, sizden ön sipariş veren düzenli müşterileriniz için de geçerlidir."
+      "rival": "{name} uygun, eğer …"
     },
     "groups": {
       "food_truck": "Food truck sipariş sistemi",

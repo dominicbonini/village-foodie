@@ -60,14 +60,9 @@
     "ours": "HatchGrab passer til dig, hvis …",
     "oursBody": "du holder forskellige steder, vil have forudbestillinger med afhentningstid, ikke vil have dit køkken overbelastet og ikke vil være bundet af en kontrakt.",
     "oursNot": "HatchGrab passer ikke til dig, hvis …",
-    "oursNotBody": "dine kunder skal kunne betale med PayPal eller Klarna, eller hvis du vil have et certificeret kassesystem, der opfylder skattereglerne, fra én og samme leverandør.",
     "appClause": "Eller hvis du har brug for køkkenappen på iPad eller Android i {country}: Den er ikke i app-butikkerne der endnu.",
-    "tills": "Kassesystemer og kortterminaler",
     "marketplaces": "Leveringsplatforme",
-    "rival": "{name} passer, hvis …",
-    "tillsBody": "Kassesystemer tager imod betaling ved foodtrucken og opfylder kravet om en certificeret kasse efter skattereglerne. Et bestillingssystem fungerer side om side med kassesystemet; det erstatter det ikke.",
-    "tillsBodyNamed": "Kassesystemer tager imod betaling ved foodtrucken og opfylder kravet om en certificeret kasse efter skattereglerne. {names} {count, plural, one {står} other {står}} også i tabellen ovenfor. Et bestillingssystem fungerer side om side med kassesystemet; det erstatter det ikke.",
-    "marketplacesBody": "Leveringsplatforme giver nye kunder, men tager kommission af hver bestilling. Uber Eats oplyser 14 % ved afhentning og 30 % ved levering med Ubers bude i Tyskland. Wolt skriver på sin egen hjemmeside, at de tager kommission, men oplyser ingen satser. Vi kunne ikke tjekke Lieferandos satser. Kommissionen gælder også for faste kunder, der forudbestiller hos dig."
+    "rival": "{name} passer, hvis …"
   },
   "groups": {
     "food_truck": "Bestillingssystem til foodtrucks",

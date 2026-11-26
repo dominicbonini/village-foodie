@@ -60,14 +60,9 @@
     "ours": "HatchGrab fa per te se…",
     "oursBody": "lavori in postazioni che cambiano, vuoi preordini con orario di ritiro, non vuoi che la cucina venga sommersa e non vuoi un contratto.",
     "oursNot": "HatchGrab non fa per te se…",
-    "oursNotBody": "i tuoi clienti devono poter pagare con PayPal o Klarna, oppure vuoi una cassa certificata secondo le norme fiscali, tutto da un unico fornitore.",
     "appClause": "Oppure se ti serve l’app cucina su iPad o Android in {country}: lì non è ancora negli store.",
-    "tills": "Casse e POS",
     "marketplaces": "Piattaforme di consegna",
-    "rival": "{name} fa per te se…",
-    "tillsBody": "Le casse incassano al food truck e soddisfano l’obbligo di una cassa certificata secondo le norme fiscali. Un sistema di ordini lavora insieme alla cassa; non la sostituisce.",
-    "tillsBodyNamed": "Le casse incassano al food truck e soddisfano l’obbligo di una cassa certificata secondo le norme fiscali. {names} {count, plural, one {è} many {sono} other {sono}} anche nella tabella qui sopra. Un sistema di ordini lavora insieme alla cassa; non la sostituisce.",
-    "marketplacesBody": "Le piattaforme di consegna portano nuovi clienti, ma trattengono una commissione su ogni ordine. Uber Eats indica il 14% per il ritiro e il 30% per la consegna con i corrieri di Uber in Germania. Wolt dichiara sul proprio sito di applicare una commissione, ma non ne indica le percentuali. Non abbiamo potuto verificare le percentuali di Lieferando. Quella commissione si applica anche ai clienti abituali che ordinano da te in anticipo."
+    "rival": "{name} fa per te se…"
   },
   "groups": {
     "food_truck": "Sistema di ordini per food truck",

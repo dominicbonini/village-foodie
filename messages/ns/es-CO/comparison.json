@@ -15,12 +15,7 @@
   },
   "fit": {
     "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora para recoger, no quieres que tu cocina se sature y no quieres cláusula de permanencia.",
-    "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
-    "tills": "Sistemas de caja y datáfonos",
-    "marketplaces": "Apps de domicilios",
-    "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja registradora certificada. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
-    "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja registradora certificada. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
-    "marketplacesBody": "Las apps de domicilios traen clientes nuevos, pero se quedan con una comisión de cada pedido. Uber Eats indica un 14 % para recoger y un 30 % para domicilios con domiciliarios de Uber en Alemania. Wolt dice en su propio sitio web que cobra comisión, pero no da las tarifas. No pudimos comprobar las tarifas de Lieferando. Esa comisión también se aplica a los clientes frecuentes que te hacen pedidos anticipados."
+    "marketplaces": "Apps de domicilios"
   },
   "groups": {
     "pos": "Sistema de caja"

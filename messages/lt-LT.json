@@ -6692,14 +6692,9 @@
       "ours": "HatchGrab jums tinka, jei …",
       "oursBody": "prekiaujate kintančiose vietose, norite išankstinių užsakymų su atsiėmimo laiku, nenorite perkrauti virtuvės ir nenorite sutarties.",
       "oursNot": "HatchGrab jums netinka, jei …",
-      "oursNotBody": "jūsų klientai turėtų mokėti PayPal ar Klarna arba norite iš vieno tiekėjo gauti ir sertifikuotą kasą, atitinkančią šalies mokesčių reikalavimus.",
       "appClause": "Arba jei jums reikia virtuvės programėlės iPad ar Android įrenginiams ({country}): ten jos dar nėra programėlių parduotuvėse.",
-      "tills": "Kasos ir mokėjimo terminalai",
       "marketplaces": "Pristatymo platformos",
-      "rival": "{name} tinka, jei …",
-      "tillsBody": "Kasos priima mokėjimus prie furgono ir atitinka šalies mokesčių reikalavimus pardavimams registruoti. Užsakymų sistema veikia kartu su kasa, o ne ją pakeičia.",
-      "tillsBodyNamed": "Kasos priima mokėjimus prie furgono ir atitinka šalies mokesčių reikalavimus pardavimams registruoti. {names} {count, plural, one {taip pat yra} few {taip pat yra} many {taip pat yra} other {taip pat yra}} lentelėje aukščiau. Užsakymų sistema veikia kartu su kasa, o ne ją pakeičia.",
-      "marketplacesBody": "Pristatymo platformos atveda naujų klientų, bet už kiekvieną užsakymą ima komisinius. Uber Eats Vokietijoje nurodo 14 % už atsiėmimą ir 30 % už pristatymą Uber kurjeriais. Wolt savo svetainėje teigia imanti komisinius, bet tarifų nenurodo. Lieferando tarifų patikrinti nepavyko. Šie komisiniai taikomi ir nuolatiniams klientams, kurie pas jus užsisako iš anksto."
+      "rival": "{name} tinka, jei …"
     },
     "groups": {
       "food_truck": "Food truck užsakymų sistema",

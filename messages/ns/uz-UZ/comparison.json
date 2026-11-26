@@ -60,14 +60,9 @@
     "ours": "HatchGrab sizga mos, agar …",
     "oursBody": "turli joylarda savdo qilsangiz, olib ketish vaqti bilan oldindan buyurtma olishni istasangiz, oshxonangiz haddan tashqari yuklanishini xohlamasangiz va shartnoma tuzishni istamasangiz.",
     "oursNot": "HatchGrab sizga mos emas, agar …",
-    "oursNotBody": "mijozlaringiz PayPal yoki Klarna orqali toʻlashi kerak boʻlsa yoki bitta yetkazib beruvchidan TSE moduli bilan sertifikatlangan kassa istasangiz.",
     "appClause": "Yoki sizga {country} hududida iPad yoki Android uchun oshxona ilovasi kerak boʻlsa: u yerda u hali ilova doʻkonlarida yoʻq.",
-    "tills": "Kassalar va toʻlov terminallari",
     "marketplaces": "Yetkazib berish platformalari",
-    "rival": "{name} mos keladi, agar …",
-    "tillsBody": "Kassalar fudtrakda toʻlov qabul qiladi va TSE talabini bajaradi. Buyurtma tizimi kassa bilan birga ishlaydi, uning oʻrnini bosmaydi.",
-    "tillsBodyNamed": "Kassalar fudtrakda toʻlov qabul qiladi va TSE talabini bajaradi. {names} {count, plural, one {ham yuqoridagi jadvalda bor} other {ham yuqoridagi jadvalda bor}}. Buyurtma tizimi kassa bilan birga ishlaydi, uning oʻrnini bosmaydi.",
-    "marketplacesBody": "Yetkazib berish platformalari yangi mijozlar olib keladi, lekin har bir buyurtmadan komissiya oladi. Uber Eats Germaniyada oʻzi olib ketish uchun 14% va Uber kuryerlari orqali yetkazib berish uchun 30% komissiyani koʻrsatadi. Wolt oʻz saytida komissiya olishini aytadi, lekin stavkalarini koʻrsatmaydi. Lieferando stavkalarini tekshira olmadik. Bu komissiya sizga oldindan buyurtma beradigan doimiy mijozlarga ham tegishli."
+    "rival": "{name} mos keladi, agar …"
   },
   "groups": {
     "food_truck": "Fudtrak buyurtma tizimi",

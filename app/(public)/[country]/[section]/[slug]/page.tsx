@@ -279,16 +279,19 @@ export default async function ComparisonPage({ params, searchParams }: { params:
               <p data-vat>{v.vat}</p>
             </section>
 
-            {/* 6 · fit */}
-            <section aria-labelledby="passt">
-              <h2 id="passt">{t('fit.title')}</h2>
-              <div className="cmp-fit">
-                <div><h3>{v.fit.ours}</h3><p>{v.fit.oursBody}</p></div>
-                <div><h3>{v.fit.oursNot}</h3><p>{v.fit.oursNotBody}</p></div>
-                {v.fit.rivals.map(f => <div key={f.name}><h3>{f.name}{f.unverified && !v.publicView && <> {badge}</>}</h3><p>{f.text}</p></div>)}
-                {v.fit.cards.map(f => <div key={f.title} className="cmp-card"><h3>{f.title}</h3><p>{f.body}</p></div>)}
-              </div>
-            </section>
+            {/* 6 · fit — compare-suits-fix-2 (Dominic's mockup, 26 Nov 2026): two cards side by side ("suits you if" ✓, "may not suit you
+                if" ⓘ), each a short list, the competitors' own "fits if" lines, then "Delivery apps" below. None at all when hidden. */}
+            {v.fit && (
+              <section aria-labelledby="passt" data-fit>
+                <h2 id="passt">{t('fit.title')}</h2>
+                <div className="cmp-fit">
+                  <div data-fit="suits"><h3><span className="cmp-fit-ic cmp-v-yes" aria-hidden="true">✓</span>{v.fit.ours}</h3><ul>{v.fit.suits.map(l => <li key={l}>{l}</li>)}</ul></div>
+                  <div data-fit="not"><h3><span className="cmp-fit-ic cmp-fit-ic-info" aria-hidden="true">ⓘ</span>{v.fit.mayNot}</h3><ul>{v.fit.notSuits.map(l => <li key={l}>{l}</li>)}</ul></div>
+                  {v.fit.rivals.map(f => <div key={f.name}><h3>{f.name}{f.unverified && !v.publicView && <> {badge}</>}</h3><p>{f.text}</p></div>)}
+                  <div className="cmp-card cmp-fit-wide" data-fit="delivery"><h3>{v.fit.delivery.title}</h3><p>{v.fit.delivery.body}</p></div>
+                </div>
+              </section>
+            )}
 
             {/* 7 · FAQ */}
             <section aria-labelledby="faq" data-faq>

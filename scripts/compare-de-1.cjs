@@ -137,7 +137,9 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
   t('flags off, public: "✗ Nein", "nicht in Deutschland" behind the ⓘ (🔁 re-pinned 8 Nov 2026, compare-ux-1: verdict + ⓘ)', /iPad-App ✗ Nein ⓘ nicht in Deutschland/.test(ipadCell(live.html)), ipadCell(live.html))
   t('flags off, admin view: the admin wording', /Flag noch aus/.test(ipadCell(adAdmin.html)), ipadCell(adAdmin.html))
   const appsOn = await page({ status: 'live', apps: true })
-  t('flags on: "Ja", and the "passt nicht" box drops the app clause', /^iPad-App ✓ Ja/.test(ipadCell(appsOn.html).trim()) && !/in den Stores/.test(text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(appsOn.html) || [''])[0])) && /in den Stores/.test(text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(live.html) || [''])[0])), ipadCell(appsOn.html))
+  // ⚠️ RE-PINNED (compare-suits-fix-2, Dominic 26 Nov 2026): the "passt nicht" box and its app clause are gone — DE's guide is hidden
+  // (a non-English country: comparison_country_copy.fit_off, or no row) until a native speaker has checked new wording.
+  t('flags on: "Ja"; and DE shows no guide at all (no "passt nicht" box, no app clause), flags on or off', /^iPad-App ✓ Ja/.test(ipadCell(appsOn.html).trim()) && !/class="cmp-fit"/.test(appsOn.html) && !/class="cmp-fit"/.test(live.html) && !/in den Stores/.test(text(live.html)), ipadCell(appsOn.html))
   t('checklist: the apps item follows the flags', /data-check="apps" data-ok="no"/.test(adAdmin.html) && /data-check="apps" data-ok="yes"/.test((await page({ status: 'admin', apps: true, admin: true })).html))
 
   // ── 5 · a price change propagates ──
@@ -243,17 +245,16 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
     // banner's "Nicht auf der Seite" line.
     t('…an admin sees it: badged with its group among the four, or named in the banner as not shown', (/data-tool="Testkasse Q"/.test(adm.html) && groupOf(adm.html, 'Testkasse Q') === 'Kassensystem')
       || /data-not-shown[^>]*>[^<]*Testkasse Q \(nach den ersten vier\)/.test(adm.html))
-    const card = html => text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(html) || [''])[0])
-    t('the tills card names the verified POS players in this country and says they are in the table — no fixed example names (SumUp, orderbird …)',
-      /Testkasse P und Testkasse R stehen auch in der Tabelle oben/.test(card(pub.html)) && !/orderbird|ready2order|SumUp|Zettle/.test(card(pub.html)), card(pub.html))
-    t('…never the unverified one, in either view', !/Testkasse Q/.test(card(pub.html)) && !/Testkasse Q stehen|Testkasse Q steht/.test(card(adm.html)) && /Testkasse P und Testkasse R stehen/.test(card(adm.html)))
-    t('…and with no verified POS player, the card names none', !/auch in der Tabelle oben/.test(card(live.html)) && /Kassensysteme kassieren am Fenster und decken die TSE-Pflicht ab\. Ein Bestellsystem ergänzt die Kasse/.test(card(live.html)), card(live.html))
-    const one = await page({ status: 'live', tables: { ...tables, comparison_entries: tables.comparison_entries.filter(e => e.id !== 'e6') } })
-    t('…one name: "Testkasse P steht auch in der Tabelle oben"', /Testkasse P steht auch in der Tabelle oben/.test(card(one.html)), card(one.html))
+    // ⚠️ RE-PINNED (compare-suits-fix-2, Dominic 26 Nov 2026): the tills card is removed everywhere (never tills or card machines on the
+    // pages), and DE's guide is hidden — so no POS player is named in any guide, verified or not.
+    t('no tills card and no guide on DE: no POS player named outside the table (public and admin)', !/class="cmp-fit"/.test(pub.html) && !/class="cmp-fit"/.test(adm.html)
+      && !/stehen auch in der Tabelle oben|steht auch in der Tabelle oben|Kassensysteme kassieren am Fenster|TSE-Pflicht/.test(text(pub.html) + text(adm.html)))
+    t('…never the unverified one anywhere public', !/Testkasse Q/.test(text(pub.html)))
     const ldAll = JSON.stringify(ld(pub.html))
     t('still no Product, Review, Rating or AggregateRating markup', !/"@type":"(Product|Review|Rating|AggregateRating)"/.test(ldAll))
     t('English base labels exist (en-GB): Food truck ordering system / Ordering system / Till system', (() => { const en = JSON.parse(read('messages/en-GB.json')); const g = (en.comparison || {}).groups
-      return g && g.food_truck === 'Food truck ordering system' && g.nearest_local === 'Ordering system' && g.pos === 'Till system' && /\{names\}/.test(en.comparison.fit.tillsBodyNamed) })())
+      // ⚠️ RE-PINNED (compare-suits-fix-2): fit.tillsBodyNamed is gone from every locale (the tills card is removed).
+      return g && g.food_truck === 'Food truck ordering system' && g.nearest_local === 'Ordering system' && g.pos === 'Till system' && !('tillsBodyNamed' in en.comparison.fit) })())
     t('the migration (NOT RUN) adds focus pos, not_in_countries, deep_checked_in, the outcomes and comparison_entries.group_label', (() => { const m = read('supabase/migrations/20261046_global_players_1.sql')
       return /'pop_up', 'pos'/.test(m) && /not_in_countries text\[\]/.test(m) && /deep_checked_in\s+jsonb/.test(m) && /'in_country', 'not_in_country'/.test(m) && /add column if not exists group_label text/.test(m) })())
   }

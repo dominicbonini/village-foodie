@@ -6692,14 +6692,9 @@
       "ours": "HatchGrab se vám hodí, pokud …",
       "oursBody": "prodáváte na měnících se stanovištích, chcete předobjednávky s časem vyzvednutí, nechcete přetěžovat kuchyni a nechcete se vázat smlouvou.",
       "oursNot": "HatchGrab se vám nehodí, pokud …",
-      "oursNotBody": "mají zákazníci platit přes PayPal nebo Klarna, nebo chcete od jednoho dodavatele certifikovanou pokladnu, která splňuje daňové předpisy.",
       "appClause": "Nebo pokud potřebujete kuchyňskou aplikaci pro iPad nebo Android v této zemi ({country}): v obchodech tam zatím není.",
-      "tills": "Pokladny a platební terminály",
       "marketplaces": "Rozvozové platformy",
-      "rival": "{name} se hodí, pokud …",
-      "tillsBody": "Pokladny přijímají platby u food trucku a splňují daňové předpisy pro zaznamenávání prodejů. Objednávkový systém funguje vedle pokladny; nenahrazuje ji.",
-      "tillsBodyNamed": "Pokladny přijímají platby u food trucku a splňují daňové předpisy pro zaznamenávání prodejů. {names} {count, plural, one {je} few {jsou} many {jsou} other {jsou}} také v tabulce výše. Objednávkový systém funguje vedle pokladny; nenahrazuje ji.",
-      "marketplacesBody": "Rozvozové platformy přivádějí nové zákazníky, ale z každé objednávky si berou provizi. Uber Eats uvádí pro Německo 14 % při osobním vyzvednutí a 30 % při doručení kurýry Uberu. Wolt na svém webu uvádí, že si provizi účtuje, ale sazby neuvádí. Sazby Lieferando jsme ověřit nemohli. Tato provize se týká i stálých zákazníků, kteří si u vás objednávají předem."
+      "rival": "{name} se hodí, pokud …"
     },
     "groups": {
       "food_truck": "Objednávkový systém pro food trucky",

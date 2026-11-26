@@ -93,6 +93,13 @@
 .hg-landing .cmp-fit > div { border: 1px solid var(--line); border-radius: 14px; padding: 1rem 1.1rem; background: #fff; }
 .hg-landing .cmp-fit p { margin-top: .2rem; }
 .hg-landing .cmp-fit .cmp-card { background: #F6F8FB; }
+/* compare-suits-fix-2: the guide's two lists side by side (stacked on a phone by the grid), the delivery card across the row below. */
+.hg-landing .cmp-fit { grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
+.hg-landing .cmp-fit ul { margin: .35rem 0 0; padding-left: 1.1rem; list-style: disc; }
+.hg-landing .cmp-fit li { margin-top: .25rem; line-height: 1.45; }
+.hg-landing .cmp-fit-ic { display: inline-block; margin-right: .4rem; font-weight: 700; }
+.hg-landing .cmp-fit-ic-info { color: var(--ink-soft); font-weight: 400; }
+.hg-landing .cmp-fit .cmp-fit-wide { grid-column: 1 / -1; }
 
 .hg-landing .cmp-faq { border-top: 1px solid var(--line); padding: .8rem 0; }
 .hg-landing .cmp-faq summary { cursor: pointer; font-weight: 600; color: var(--head, #16314F); }

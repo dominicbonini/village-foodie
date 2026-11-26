@@ -6664,14 +6664,9 @@
       "ours": "O HatchGrab combina com você se …",
       "oursBody": "você trabalha em pontos que mudam, quer pedidos antecipados com horário de retirada, não quer a cozinha sobrecarregada e não quer contrato.",
       "oursNot": "O HatchGrab não combina com você se …",
-      "oursNotBody": "seus clientes precisam pagar com PayPal ou Klarna, ou se você quer um caixa certificado que atenda às regras fiscais do país, tudo do mesmo fornecedor.",
       "appClause": "Ou se você precisa do app da cozinha no iPad ou Android no {country}: ele ainda não está nas lojas de apps de lá.",
-      "tills": "PDVs e maquininhas",
       "marketplaces": "Plataformas de delivery",
-      "rival": "{name} combina se …",
-      "tillsBody": "Os PDVs recebem o pagamento no food truck e atendem às regras fiscais do país para caixas certificados. Um sistema de pedidos funciona junto com o PDV; não o substitui.",
-      "tillsBodyNamed": "Os PDVs recebem o pagamento no food truck e atendem às regras fiscais do país para caixas certificados. {names} também {count, plural, one {está} many {estão} other {estão}} na tabela acima. Um sistema de pedidos funciona junto com o PDV; não o substitui.",
-      "marketplacesBody": "As plataformas de delivery trazem novos clientes, mas cobram comissão em cada pedido. O Uber Eats informa 14% para retirada e 30% para entrega por entregadores da Uber na Alemanha. O Wolt diz no próprio site que cobra comissão, mas não informa as taxas. Não conseguimos verificar as taxas do Lieferando. Essa comissão vale também para os clientes fiéis que fazem pedidos antecipados com você."
+      "rival": "{name} combina se …"
     },
     "groups": {
       "food_truck": "Sistema de pedidos para food truck",

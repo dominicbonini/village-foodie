@@ -60,14 +60,9 @@
     "ours": "HatchGrab pasuje do ciebie, jeśli …",
     "oursBody": "pracujesz w zmieniających się lokalizacjach, chcesz przyjmować zamówienia z wyprzedzeniem z godziną odbioru, nie chcesz przeciążać kuchni i nie chcesz wiązać się umową.",
     "oursNot": "HatchGrab nie pasuje do ciebie, jeśli …",
-    "oursNotBody": "twoi klienci mają płacić przez PayPal lub Klarna albo chcesz mieć od jednego dostawcy certyfikowaną kasę spełniającą wymogi przepisów podatkowych.",
     "appClause": "Albo jeśli potrzebujesz aplikacji kuchennej na iPad lub Android w tym kraju ({country}): nie ma jej tam jeszcze w sklepach.",
-    "tills": "Kasy i terminale płatnicze",
     "marketplaces": "Platformy dostaw",
-    "rival": "{name} pasuje, jeśli …",
-    "tillsBody": "Kasy przyjmują płatności przy food trucku i spełniają wymogi przepisów podatkowych dotyczących rejestrowania sprzedaży. System zamówień działa obok kasy; nie zastępuje jej.",
-    "tillsBodyNamed": "Kasy przyjmują płatności przy food trucku i spełniają wymogi przepisów podatkowych dotyczących rejestrowania sprzedaży. {names} {count, plural, one {również jest} few {również są} many {również są} other {również są}} w tabeli powyżej. System zamówień działa obok kasy; nie zastępuje jej.",
-    "marketplacesBody": "Platformy dostaw przyprowadzają nowych klientów, ale pobierają prowizję od każdego zamówienia. Uber Eats podaje dla Niemiec 14% przy odbiorze osobistym i 30% przy dostawie przez kurierów Ubera. Wolt informuje na swojej stronie, że pobiera prowizję, ale nie podaje stawek. Stawek Lieferando nie udało nam się sprawdzić. Ta prowizja dotyczy także stałych klientów, którzy zamawiają u ciebie z wyprzedzeniem."
+    "rival": "{name} pasuje, jeśli …"
   },
   "groups": {
     "food_truck": "System zamówień dla food trucków",

@@ -6761,14 +6761,9 @@
       "ours": "HatchGrab sizə uyğundur, əgər …",
       "oursBody": "dəyişən məkanlarda satış edirsinizsə, götürmə vaxtı ilə əvvəlcədən sifariş istəyirsinizsə, mətbəxinizin həddən artıq yüklənməsini istəmirsinizsə və müqavilə bağlamaq istəmirsinizsə.",
       "oursNot": "HatchGrab sizə uyğun deyil, əgər …",
-      "oursNotBody": "müştəriləriniz PayPal və ya Klarna ilə ödəməlidirsə, yaxud bir təchizatçıdan TSE ilə sertifikatlı kassa istəyirsinizsə.",
       "appClause": "Yaxud iPad və ya Android üçün mətbəx tətbiqi {country} üçün lazımdırsa: o, oradakı mağazalarda hələ yoxdur.",
-      "tills": "Kassalar və POS-terminallar",
       "marketplaces": "Çatdırılma platformaları",
-      "rival": "{name} uyğundur, əgər …",
-      "tillsBody": "Kassalar ödənişi food truck-da qəbul edir və TSE tələbini təmin edir. Sifariş sistemi kassa ilə yanaşı işləyir, onu əvəz etmir.",
-      "tillsBodyNamed": "Kassalar ödənişi food truck-da qəbul edir və TSE tələbini təmin edir. {count, plural, one {Bu kassa da yuxarıdakı cədvəldədir} other {Bu kassalar da yuxarıdakı cədvəldədir}}: {names}. Sifariş sistemi kassa ilə yanaşı işləyir, onu əvəz etmir.",
-      "marketplacesBody": "Çatdırılma platformaları yeni müştərilər gətirir, lakin hər sifarişdən komissiya alır. Uber Eats Almaniyada özün götür sifarişləri üçün 14%, Uber kuryerləri ilə çatdırılma üçün 30% göstərir. Wolt öz saytında komissiya aldığını bildirir, lakin tarifləri vermir. Lieferando-nun tariflərini yoxlaya bilmədik. Bu komissiya sizdən əvvəlcədən sifariş edən daimi müştərilərə də aiddir."
+      "rival": "{name} uyğundur, əgər …"
     },
     "groups": {
       "food_truck": "Food truck sifariş sistemi",

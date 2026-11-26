@@ -149,9 +149,11 @@ const unique = rows => new Set(rows.map(r => r.id ?? r.key)).size === rows.lengt
   t('no ".limit(5000)" (a limit above the cap is still capped)', !/\.limit\(5000\)/.test(src))
 
   head('4 · scope: only the store changed in lib/, app/ and components/ since BASE')
-  const changed = execSync(`git diff --name-only ${BASE} -- lib app components`, { cwd: REPO, encoding: 'utf8' }).split('\n').filter(Boolean)
+  // ⚠️ RE-PINNED (compare-suits-fix-2, 26 Nov 2026): compare-calc-fix-1's own code commit (e9626ca8), not the working tree — the guide's
+  // comparison changes are compare-suits-fix-2's, on purpose.
+  const changed = execSync(`git diff --name-only ${BASE} e9626ca8 -- lib app components`, { cwd: REPO, encoding: 'utf8' }).split('\n').filter(Boolean)
   t(`changed since ${BASE}: ${STORE} only`, changed.length === 1 && changed[0] === STORE, changed)
-  const d = execSync(`git diff ${BASE} -- ${STORE}`, { cwd: REPO, encoding: 'utf8' })
+  const d = execSync(`git diff ${BASE} e9626ca8 -- ${STORE}`, { cwd: REPO, encoding: 'utf8' })
   t('the column lists (COLUMNS, VALUE_COLUMNS, ENTRY_COLUMNS_*) are unchanged — only how rows are fetched', !/^[-+].*(VALUE_COLUMNS =|ENTRY_COLUMNS_BASE =|ENTRY_COLUMNS_AUTO =|FEATURE_COLUMNS =)/m.test(d))
 
   console.log(`\n${fail ? '🔴' : '✓'} compare-calc-fix-1: ${pass} passed, ${fail} failed`)

@@ -6692,14 +6692,9 @@
       "ours": "HatchGrab sobib sulle, kui …",
       "oursBody": "müüd vahetuvates kohtades, tahad ettetellimusi kättesaamise ajaga, ei taha oma kööki üle koormata ega soovi lepingut.",
       "oursNot": "HatchGrab ei sobi sulle, kui …",
-      "oursNotBody": "sinu kliendid peaksid saama maksta PayPali või Klarnaga või tahad ühelt tarnijalt ka sertifitseeritud kassat, mis vastab riigi maksunõuetele.",
       "appClause": "Või kui vajad köögirakendust iPadis või Androidis: {country} rakenduste poodides seda veel pole.",
-      "tills": "Kassad ja makseterminalid",
       "marketplaces": "Kojuveoplatvormid",
-      "rival": "{name} sobib, kui …",
-      "tillsBody": "Kassad võtavad makse vastu toiduauto juures ja täidavad riigi maksunõuded müügi registreerimisele. Tellimissüsteem töötab koos kassaga, see ei asenda seda.",
-      "tillsBodyNamed": "Kassad võtavad makse vastu toiduauto juures ja täidavad riigi maksunõuded müügi registreerimisele. {names} {count, plural, one {on} other {on}} ka ülaltoodud tabelis. Tellimissüsteem töötab koos kassaga, see ei asenda seda.",
-      "marketplacesBody": "Kojuveoplatvormid toovad uusi kliente, kuid võtavad igalt tellimuselt vahendustasu. Uber Eats märgib Saksamaa kohta 14% ise järele tulles ja 30% Uberi kulleritega kojuveol. Wolt ütleb oma veebisaidil, et võtab vahendustasu, kuid määrasid ei avalda. Lieferando määrasid ei õnnestunud meil kontrollida. See vahendustasu kehtib ka püsiklientidele, kes sinu juures ette tellivad."
+      "rival": "{name} sobib, kui …"
     },
     "groups": {
       "food_truck": "Toiduauto tellimissüsteem",

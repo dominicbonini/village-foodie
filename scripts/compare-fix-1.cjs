@@ -266,7 +266,9 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     && L.isAccountError('400 ... You have reached your specified workspace API usage limits. You will regain access on 2026-12-01 at 00:00 UTC.')
     && !L.isAccountError('record_findings was malformed twice') && !L.isAccountError('the page timed out'))
   t('…and the checker\'s failure count uses that rule (scripts/competitor-check/main.ts)', /f\.kind !== 'incomplete' && !isAccountError\(f\.error\)/.test(read('scripts/competitor-check/main.ts')))
-  t('the page code (lib/comparison.ts) is unchanged — it shows what the stored marks say', execSync('git diff --name-only 2f0e763a -- lib/comparison.ts lib/comparison-flags.ts lib/comparison-selection.ts', { cwd: REPO }).toString().trim() === '')
+  // ⚠️ RE-PINNED (compare-suits-fix-2, 26 Nov 2026): compare-suits-fix-2 changes lib/comparison.ts on purpose (the guide), so this checks
+  // what compare-fix-1 and the work up to compare-calc-fix-1 (a7f405eb) left — not the working tree.
+  t('the page code (lib/comparison.ts) is unchanged — it shows what the stored marks say', execSync('git diff --name-only 2f0e763a a7f405eb -- lib/comparison.ts lib/comparison-flags.ts lib/comparison-selection.ts', { cwd: REPO }).toString().trim() === '')
 
   console.log(`\n${fail ? '🔴' : '✅'} compare-fix-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)

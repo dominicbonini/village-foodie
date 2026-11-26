@@ -6664,14 +6664,9 @@
       "ours": "HatchGrab 適合你，如果……",
       "oursBody": "你在不同地點開檔，想接受附取餐時間的預先落單，不想廚房應接不暇，也不想簽合約。",
       "oursNot": "HatchGrab 不適合你，如果……",
-      "oursNotBody": "你想客人用 PayPal 或 Klarna 付款，或想由同一供應商提供符合當地稅務規定的認證收銀機。",
       "appClause": "又或者你需要在{country}使用 iPad 或 Android 版廚房應用程式：當地的應用程式商店暫時未有上架。",
-      "tills": "收銀系統及信用卡機",
       "marketplaces": "外賣平台",
-      "rival": "{name} 適合你，如果……",
-      "tillsBody": "收銀系統負責在美食車前收款，並符合稅務規定對收銀機的要求。落單系統與收銀系統配合使用，但不能取代收銀系統。",
-      "tillsBodyNamed": "收銀系統負責在美食車前收款，並符合稅務規定對收銀機的要求。{names}{count, plural, other {亦}}列於上表。落單系統與收銀系統配合使用，但不能取代收銀系統。",
-      "marketplacesBody": "外賣平台可以帶來新客人，但每張訂單都會抽佣金。Uber Eats 列明在德國自取收 14%，由 Uber 速遞員送遞收 30%。Wolt 在自己網站上表示會收取佣金，但沒有列出佣金率。我們未能查核 Lieferando 的佣金率。即使是向你預先落單的熟客，這些佣金同樣照收。"
+      "rival": "{name} 適合你，如果……"
     },
     "groups": {
       "food_truck": "美食車落單系統",

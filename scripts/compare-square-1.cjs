@@ -98,7 +98,9 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   const uiFiles = execSync("git ls-files 'app/**/*.tsx' 'components/**/*.tsx' 'app/**/*.ts'", { cwd: REPO }).toString().split('\n').filter(Boolean)
   const readers = uiFiles.filter(f => /foodTruckClass|food_truck_class/.test(read(f)))
   t('no page, Admin screen or UI file reads the class (the Admin pricing page output is unchanged)', readers.length === 0, readers)
-  const changed = execSync(`git diff --name-only ${BASE} -- app components`, { cwd: REPO }).toString().trim()
+  // ⚠️ RE-PINNED (compare-suits-fix-2, 26 Nov 2026): compare-square-1's own commits only (BASE → c2387f92, its report) — the guide's page
+  // change is compare-suits-fix-2's, on purpose.
+  const changed = execSync(`git diff --name-only ${BASE} c2387f92 -- app components`, { cwd: REPO }).toString().trim()
   t('no file under app/ or components/ changed since the base commit', changed === '', changed)
 
   console.log(`\n${fail ? '🔴' : '✓'} compare-square-1: ${pass} passed, ${fail} failed`)

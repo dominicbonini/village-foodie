@@ -60,14 +60,9 @@
     "ours": "HatchGrab passt, wenn …",
     "oursBody": "Sie an wechselnden Standorten stehen, Vorbestellungen mit Abholzeit annehmen wollen, Ihre Küche nicht überlasten möchten und keine Vertragsbindung wollen.",
     "oursNot": "HatchGrab passt nicht, wenn …",
-    "oursNotBody": "Ihre Gäste mit PayPal oder Klarna zahlen sollen oder Sie eine zertifizierte Kasse mit TSE aus einer Hand suchen.",
     "appClause": "Oder wenn Sie die Küchen-App auf dem iPad oder auf Android in {country} brauchen: Sie ist dort noch nicht in den Stores.",
-    "tills": "Kassensysteme und Kartenleser",
     "marketplaces": "Lieferplattformen",
-    "rival": "{name} passt, wenn …",
-    "tillsBody": "Kassensysteme kassieren am Fenster und decken die TSE-Pflicht ab. Ein Bestellsystem ergänzt die Kasse, es ersetzt sie nicht.",
-    "tillsBodyNamed": "Kassensysteme kassieren am Fenster und decken die TSE-Pflicht ab. {names} {count, plural, one {steht} other {stehen}} auch in der Tabelle oben. Ein Bestellsystem ergänzt die Kasse, es ersetzt sie nicht.",
-    "marketplacesBody": "Lieferplattformen bringen neue Gäste, nehmen aber auf jede Bestellung Provision. Uber Eats nennt für Deutschland 14 % bei Abholung und 30 % bei Lieferung durch Uber-Kuriere. Wolt erhebt laut eigener Website eine Provision, nennt aber keine Sätze. Die Sätze von Lieferando konnten wir nicht prüfen. Auch für Stammgäste, die bei Ihnen vorbestellen, fällt diese Provision an."
+    "rival": "{name} passt, wenn …"
   },
   "groups": {
     "food_truck": "Bestellsystem für Foodtrucks",

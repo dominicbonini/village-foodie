@@ -222,9 +222,6 @@
         "explain": "The vendor provides a card terminal for payments at the truck."
       }
     },
-    "fit": {
-      "tills": "POS systems and card terminals"
-    },
     "faq": {
       "whatA": "An ordering system takes orders online before customers reach the truck: they choose dishes and a pickup time, pay online or at pickup, and the order appears in your kitchen. A POS or card terminal takes payment at the truck. The two complement each other."
     }

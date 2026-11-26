@@ -6692,14 +6692,9 @@
       "ours": "HatchGrab sopii sinulle, jos …",
       "oursBody": "myyt vaihtuvilla paikoilla, haluat ennakkotilauksia noutoajalla, et halua keittiösi ruuhkautuvan etkä halua sopimusta.",
       "oursNot": "HatchGrab ei sovi sinulle, jos …",
-      "oursNotBody": "asiakkaidesi pitää voida maksaa PayPalilla tai Klarnalla tai haluat samalta toimittajalta sertifioidun kassajärjestelmän, joka täyttää verosäännöt.",
       "appClause": "Tai jos tarvitset keittiösovelluksen iPadille tai Androidille ({country}): se ei ole vielä siellä sovelluskaupoissa.",
-      "tills": "Kassajärjestelmät ja maksupäätteet",
       "marketplaces": "Ruokalähettipalvelut",
-      "rival": "{name} sopii, jos …",
-      "tillsBody": "Kassajärjestelmät ottavat maksut vastaan ruokarekalla ja täyttävät verosääntöjen vaatimukset sertifioidusta kassasta. Tilausjärjestelmä toimii kassan rinnalla; se ei korvaa sitä.",
-      "tillsBodyNamed": "Kassajärjestelmät ottavat maksut vastaan ruokarekalla ja täyttävät verosääntöjen vaatimukset sertifioidusta kassasta. {names} {count, plural, one {on} other {ovat}} myös yllä olevassa taulukossa. Tilausjärjestelmä toimii kassan rinnalla; se ei korvaa sitä.",
-      "marketplacesBody": "Ruokalähettipalvelut tuovat uusia asiakkaita, mutta ottavat provision jokaisesta tilauksesta. Uber Eats ilmoittaa Saksassa 14 % noudolle ja 30 % Uberin lähettien toimittamille tilauksille. Wolt kertoo omalla verkkosivustollaan veloittavansa provision, mutta ei kerro prosentteja. Lieferandon hintoja emme pystyneet tarkistamaan. Provisio koskee myös kanta-asiakkaita, jotka tilaavat sinulta etukäteen."
+      "rival": "{name} sopii, jos …"
     },
     "groups": {
       "food_truck": "Ruokarekan tilausjärjestelmä",

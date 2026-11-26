@@ -60,14 +60,9 @@
     "ours": "HatchGrab ju përshtatet nëse …",
     "oursBody": "punoni në vende që ndryshojnë, doni porosi paraprake me orë marrjeje, nuk doni që kuzhina juaj të mbingarkohet dhe nuk doni kontratë.",
     "oursNot": "HatchGrab nuk ju përshtatet nëse …",
-    "oursNotBody": "klientët tuaj duhet të paguajnë me PayPal ose Klarna, ose doni një arkë të certifikuar me TSE nga një furnizues i vetëm.",
     "appClause": "Ose nëse ju duhet aplikacioni i kuzhinës në iPad ose Android ({country}): atje ende nuk është në dyqanet e aplikacioneve.",
-    "tills": "Sisteme arke dhe terminale POS",
     "marketplaces": "Platformat e dorëzimit",
-    "rival": "{name} ju përshtatet nëse …",
-    "tillsBody": "Sistemet e arkës marrin pagesën te food truck-u dhe plotësojnë kërkesën për TSE. Një sistem porosish punon krahas arkës; nuk e zëvendëson.",
-    "tillsBodyNamed": "Sistemet e arkës marrin pagesën te food truck-u dhe plotësojnë kërkesën për TSE. {names} {count, plural, one {është} other {janë}} gjithashtu në tabelën më sipër. Një sistem porosish punon krahas arkës; nuk e zëvendëson.",
-    "marketplacesBody": "Platformat e dorëzimit sjellin klientë të rinj, por marrin komision për çdo porosi. Uber Eats deklaron 14% për marrjen dhe 30% për dorëzimin me korrierët e Uber në Gjermani. Wolt thotë në faqen e vet të internetit se merr komision, por nuk jep norma. Nuk arritëm të verifikonim normat e Lieferando. Ai komision vlen edhe për klientët e rregullt që porosisin paraprakisht te ju."
+    "rival": "{name} ju përshtatet nëse …"
   },
   "groups": {
     "food_truck": "Sistem porosish për food truck",

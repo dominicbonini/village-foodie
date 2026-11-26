@@ -174,11 +174,7 @@
       "about": "Sistemas de pedidos en línea para food trucks"
     },
     "fit": {
-      "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora para recoger, no quieres que tu cocina se sature y no quieres atarte a un plazo mínimo.",
-      "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
-      "tills": "Sistemas de caja y POS",
-      "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja registradora certificada. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
-      "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja registradora certificada. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye."
+      "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora para recoger, no quieres que tu cocina se sature y no quieres atarte a un plazo mínimo."
     },
     "groups": {
       "pos": "Sistema de caja"

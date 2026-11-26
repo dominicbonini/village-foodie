@@ -171,9 +171,6 @@
       "description": "Sistemas de pedidos para food trucks: hora para recoger, capacidad de cocina, agenda, comisiones y plazos, revisados en el sitio de cada proveedor.",
       "about": "Sistemas de pedidos en línea para food trucks"
     },
-    "fit": {
-      "tills": "Puntos de venta y datáfonos"
-    },
     "faq": {
       "whatA": "Un sistema de pedidos recibe pedidos online antes de que los clientes lleguen al food truck: eligen los platillos y una hora para recoger, pagan online o al recoger, y el pedido aparece en tu cocina. Un punto de venta o un datáfono cobra en el food truck. Las dos cosas se complementan.",
       "termQ": "¿Hay un plazo mínimo de contrato?",

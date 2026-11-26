@@ -60,14 +60,9 @@
     "ours": "HatchGrab vi se potrivește dacă …",
     "oursBody": "vindeți în locații care se schimbă, vreți precomenzi cu ora de ridicare, nu vreți ca bucătăria să fie copleșită și nu vreți contract.",
     "oursNot": "HatchGrab nu vi se potrivește dacă …",
-    "oursNotBody": "clienții dumneavoastră trebuie să poată plăti cu PayPal sau Klarna ori doriți de la un singur furnizor o casă de marcat certificată conform regulilor fiscale.",
     "appClause": "Sau dacă aveți nevoie de aplicația de bucătărie pe iPad sau Android în {country}: acolo nu este încă în magazinele de aplicații.",
-    "tills": "Case de marcat și terminale de plată",
     "marketplaces": "Platforme de livrare",
-    "rival": "{name} se potrivește dacă …",
-    "tillsBody": "Casele de marcat încasează plata la food truck și respectă cerințele fiscale pentru casele de marcat certificate. Un sistem de comenzi funcționează alături de casa de marcat; nu o înlocuiește.",
-    "tillsBodyNamed": "Casele de marcat încasează plata la food truck și respectă cerințele fiscale pentru casele de marcat certificate. {names} {count, plural, one {apare} few {apar} other {apar}} și în tabelul de mai sus. Un sistem de comenzi funcționează alături de casa de marcat; nu o înlocuiește.",
-    "marketplacesBody": "Platformele de livrare aduc clienți noi, dar iau comision la fiecare comandă. Uber Eats indică pentru Germania 14% la ridicare și 30% la livrarea prin curierii Uber. Wolt spune pe propriul site că percepe comision, dar nu indică procentele. Nu am putut verifica procentele Lieferando. Comisionul se aplică și clienților fideli care comandă în avans la dumneavoastră."
+    "rival": "{name} se potrivește dacă …"
   },
   "groups": {
     "food_truck": "Sistem de comenzi pentru food truck",

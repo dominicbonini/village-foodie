@@ -15,12 +15,7 @@
   },
   "fit": {
     "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora para recoger, no quieres que tu cocina se sature y no quieres plazos forzosos.",
-    "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un punto de venta certificado según la normativa fiscal, todo de un mismo proveedor.",
-    "tills": "Puntos de venta y terminales",
-    "marketplaces": "Plataformas de entrega a domicilio",
-    "tillsBody": "Los puntos de venta cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. Un sistema de pedidos funciona junto a un punto de venta; no lo sustituye.",
-    "tillsBodyNamed": "Los puntos de venta cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un punto de venta; no lo sustituye.",
-    "marketplacesBody": "Las plataformas de entrega a domicilio traen clientes nuevos, pero se quedan con una comisión de cada pedido. Uber Eats indica un 14 % para recoger y un 30 % para entrega con repartidores de Uber en Alemania. Wolt dice en su propio sitio web que cobra comisión, pero no da las tarifas. No pudimos comprobar las tarifas de Lieferando. Esa comisión también se aplica a los clientes frecuentes que te hacen pedidos anticipados."
+    "marketplaces": "Plataformas de entrega a domicilio"
   },
   "groups": {
     "pos": "Punto de venta"

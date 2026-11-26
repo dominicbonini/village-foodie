@@ -60,14 +60,9 @@
     "ours": "A HatchGrab Önnek való, ha …",
     "oursBody": "változó helyszíneken árul, átvételi idős előrendelést szeretne, nem akarja túlterhelni a konyháját, és nem szeretne szerződést.",
     "oursNot": "A HatchGrab nem Önnek való, ha …",
-    "oursNotBody": "a vásárlóinak PayPal vagy Klarna használatával kell fizetniük, vagy egyetlen szolgáltatótól szeretne az adóügyi előírásoknak megfelelő, tanúsított pénztárgépet.",
     "appClause": "Vagy ha a konyhai alkalmazásra iPaden vagy Androidon van szüksége ebben az országban ({country}): ott még nem érhető el az áruházakban.",
-    "tills": "Kasszák és kártyaterminálok",
     "marketplaces": "Ételkiszállító platformok",
-    "rival": "{name} akkor illik Önhöz, ha …",
-    "tillsBody": "A kasszák a food trucknál veszik fel a fizetést, és megfelelnek az eladások rögzítésére vonatkozó adóügyi előírásoknak. A rendelési rendszer a kassza mellett működik, nem helyettesíti azt.",
-    "tillsBodyNamed": "A kasszák a food trucknál veszik fel a fizetést, és megfelelnek az eladások rögzítésére vonatkozó adóügyi előírásoknak. {names} {count, plural, one {szintén szerepel} other {szintén szerepelnek}} a fenti táblázatban. A rendelési rendszer a kassza mellett működik, nem helyettesíti azt.",
-    "marketplacesBody": "Az ételkiszállító platformok új vásárlókat hoznak, de minden rendelés után jutalékot vonnak le. Az Uber Eats Németországra 14% jutalékot ad meg személyes átvételnél és 30%-ot az Uber futárai általi kiszállításnál. A Wolt a saját weboldalán azt írja, hogy jutalékot számít fel, de mértéket nem közöl. A Lieferando jutalékait nem tudtuk ellenőrizni. Ez a jutalék azokra a törzsvásárlókra is vonatkozik, akik Önnél előre rendelnek."
+    "rival": "{name} akkor illik Önhöz, ha …"
   },
   "groups": {
     "food_truck": "Food truck rendelési rendszer",

@@ -21,7 +21,7 @@ import '@/lib/i18n/catalog/comparisonSuits'   // compare-suits-1: "Which suits y
 import { COUNTRY_PATH_SEGMENTS, HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/marketing-country'
 import { servicePricingStore } from '@/lib/admin/pricing-check-store'
 import { competitorOut, planOut, entryOut } from '@/lib/admin/pricing-check-actions'
-import { buildComparison, type ComparisonFlags, type ComparisonInput, type ComparisonT } from '@/lib/comparison'
+import { buildComparison, type ComparisonFlags, type ComparisonInput, type ComparisonT, type CountryCopy } from '@/lib/comparison'
 import { comparisonFlags, comparisonFlagsOf } from '@/lib/comparison-flags'
 import { NO_COMPARISON_PAGE } from '@/lib/comparison-types'
 export { comparisonFlags, comparisonFlagsOf, clearComparisonCache } from '@/lib/comparison-flags'
@@ -108,20 +108,36 @@ async function comparisonData(code: string): Promise<{ competitors: Competitor[]
   }
 }
 
+/** compare-suits-fix-2 (20261148): the country's guide words — public.comparison_country_copy (RLS on, no policies; service role).
+ *  Never throws: no row, no table yet (before 20261148) or a failed read is null, and the guide then follows the defaults (shown in an
+ *  English locale with no apps named, hidden in every other language). */
+async function countryCopy(code: string): Promise<CountryCopy | null> {
+  try {
+    const db = (await import('@/lib/supabase')).supabase
+    const { data, error } = await db.from('comparison_country_copy').select('fit_off, delivery_apps, pay_methods_missing, collect_word').eq('country_code', code).maybeSingle()
+    if (error) { if (!/does not exist|schema cache|42P01|PGRST205/i.test(`${error.code ?? ''} ${error.message}`)) console.error('[comparison] the guide words could not be read:', error.message); return null }
+    if (!data) return null
+    const r = data as Record<string, unknown>
+    const apps = Array.isArray(r.delivery_apps) ? (r.delivery_apps as unknown[]).filter((a): a is string => typeof a === 'string') : null
+    const word = r.collect_word === 'collection' || r.collect_word === 'pickup' ? r.collect_word : null
+    return { fitOff: r.fit_off === true, deliveryApps: apps, payMethodsMissing: typeof r.pay_methods_missing === 'string' ? r.pay_methods_missing : null, collectWord: word }
+  } catch (e) { console.error('[comparison] the guide words could not be read:', e instanceof Error ? e.message : e); return null }
+}
+
 /** Everything lib/comparison.ts needs for one country, or null when the country has no comparison address. */
 export async function comparisonPage(code: string, flags?: ComparisonFlags): Promise<ComparisonInput | null> {
   const key = code.toUpperCase()
   const settings = await getCountrySettings(key)
   const path = comparisonPath(key, settings.locale)
   if (!path) return null
-  const [catalog, data, f] = await Promise.all([getPlanCatalog(), comparisonData(key), flags ? Promise.resolve(flags) : comparisonFlagsOf(key)])
+  const [catalog, data, f, copy] = await Promise.all([getPlanCatalog(), comparisonData(key), flags ? Promise.resolve(flags) : comparisonFlagsOf(key), countryCopy(key)])
   const page = HATCHGRAB_ORIGIN + path
   let countryName = settings.name
   countryName = regionNameIn(settings.locale, key) ?? settings.name   // world-countries-5: Serbian in Latin script (lib/region-name.ts)
   // compare-languages-1: the English copy always says "in {country}" / "for {country}" — the two countries English names with "the".
   if (/^en(-|$)/i.test(settings.locale) && (key === 'GB' || key === 'US')) countryName = `the ${countryName}`
   return {
-    settings, countryName, catalog: localizePlans(catalog, settings.locale), flags: f, ...data,
+    settings, countryName, catalog: localizePlans(catalog, settings.locale), flags: f, ...data, copy,
     charges: countryCharges(settings),
     urls: {
       page, home: HATCHGRAB_ORIGIN + countryPagePath(key, 'landing'), features: HATCHGRAB_ORIGIN + countryPagePath(key, 'features'),

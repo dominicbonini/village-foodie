@@ -60,14 +60,9 @@
     "ours": "HatchGrab passar dig om …",
     "oursBody": "du står på olika platser, vill ta emot förbeställningar med upphämtningstid, inte vill att köket blir överbelastat och inte vill ha någon bindningstid.",
     "oursNot": "HatchGrab passar dig inte om …",
-    "oursNotBody": "dina kunder ska kunna betala med PayPal eller Klarna, eller om du vill ha ett certifierat kassasystem som uppfyller skattereglerna från en och samma leverantör.",
     "appClause": "Eller om du behöver köksappen på iPad eller Android i {country}: den finns inte i appbutikerna där än.",
-    "tills": "Kassasystem och kortterminaler",
     "marketplaces": "Leveransplattformar",
-    "rival": "{name} passar om …",
-    "tillsBody": "Kassasystem tar betalt vid foodtrucken och uppfyller kraven på en certifierad kassa enligt skattereglerna. Ett beställningssystem fungerar vid sidan av kassasystemet; det ersätter det inte.",
-    "tillsBodyNamed": "Kassasystem tar betalt vid foodtrucken och uppfyller kraven på en certifierad kassa enligt skattereglerna. {names} {count, plural, one {finns} other {finns}} också i tabellen ovan. Ett beställningssystem fungerar vid sidan av kassasystemet; det ersätter det inte.",
-    "marketplacesBody": "Leveransplattformar ger nya kunder men tar provision på varje beställning. Uber Eats anger 14 % för avhämtning och 30 % för leverans med Ubers bud i Tyskland. Wolt uppger på sin egen webbplats att de tar provision men anger inga nivåer. Vi kunde inte kontrollera Lieferandos avgifter. Provisionen gäller även stamkunder som förbeställer hos dig."
+    "rival": "{name} passar om …"
   },
   "groups": {
     "food_truck": "Beställningssystem för foodtruckar",

@@ -60,14 +60,32 @@
     "ours": "HatchGrab suits you if …",
     "oursBody": "you trade at changing locations, want pre-orders with a collection time, don't want your kitchen overloaded, and don't want a contract.",
     "oursNot": "HatchGrab doesn't suit you if …",
-    "oursNotBody": "your customers should pay with PayPal or Klarna, or you want a certified till with a TSE from one supplier.",
     "appClause": "Or if you need the kitchen app on iPad or Android in {country}: it isn't in the stores there yet.",
-    "tills": "Tills and card machines",
     "marketplaces": "Delivery platforms",
     "rival": "{name} fits if …",
-    "tillsBody": "Tills take payment at the truck and cover the TSE requirement. An ordering system works alongside a till; it does not replace it.",
-    "tillsBodyNamed": "Tills take payment at the truck and cover the TSE requirement. {names} {count, plural, one {is} other {are}} also in the table above. An ordering system works alongside a till; it does not replace it.",
-    "marketplacesBody": "Delivery platforms bring new customers but take commission on every order. Uber Eats states 14% for collection and 30% for delivery by Uber couriers in Germany. Wolt says on its own website that it charges commission but gives no rates. We could not check Lieferando’s rates. That commission applies to regulars who pre-order with you, too."
+    "mayNot": "HatchGrab may not suit you if …",
+    "suits": {
+      "places": "you trade in different places during the week",
+      "ahead": "you want customers to order ahead and choose a {collect} time",
+      "limit": "you want to limit how many orders come in at once, so your kitchen keeps up",
+      "contract": "you don't want to sign a contract."
+    },
+    "notSuit": {
+      "delivery": "you want to deliver to customers' homes: HatchGrab is for {collect} only.",
+      "payOnline": "you want customers to pay with {methods}: HatchGrab takes card, Apple Pay and Google Pay online, or customers pay when they {collectVerb}.",
+      "payAtTruck": "you want customers to pay online when they order: in {country} they pay when they {collectVerb}."
+    },
+    "collect": {
+      "collection": "collection",
+      "pickup": "pickup"
+    },
+    "collectVerb": {
+      "collection": "collect",
+      "pickup": "pick up"
+    },
+    "deliveryTitle": "Delivery apps",
+    "deliveryNamed": "Apps like {apps} can bring you new customers, but they take a cut of every order, including from regulars who could simply order ahead with you.",
+    "deliveryNone": "Delivery apps can bring you new customers, but they take a cut of every order, including from regulars who could simply order ahead with you."
   },
   "groups": {
     "food_truck": "Food truck ordering system",

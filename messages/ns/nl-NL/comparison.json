@@ -60,14 +60,9 @@
     "ours": "HatchGrab past bij je als …",
     "oursBody": "je op wisselende standplaatsen staat, vooraf bestellen met een afhaaltijd wilt, je keuken niet wilt overbelasten en geen contract wilt.",
     "oursNot": "HatchGrab past niet bij je als …",
-    "oursNotBody": "je klanten met PayPal of Klarna moeten kunnen betalen, of als je een gecertificeerde kassa wilt die aan de fiscale regels van het land voldoet, alles bij één leverancier.",
     "appClause": "Of als je de keukenapp op iPad of Android in {country} nodig hebt: die staat daar nog niet in de stores.",
-    "tills": "Kassasystemen en pinapparaten",
     "marketplaces": "Bezorgplatforms",
-    "rival": "{name} past als …",
-    "tillsBody": "Kassasystemen rekenen af bij de truck en voldoen aan de fiscale regels van het land voor gecertificeerde kassa’s. Een bestelsysteem werkt naast een kassa; het vervangt die niet.",
-    "tillsBodyNamed": "Kassasystemen rekenen af bij de truck en voldoen aan de fiscale regels van het land voor gecertificeerde kassa’s. {names} {count, plural, one {staat} other {staan}} ook in de tabel hierboven. Een bestelsysteem werkt naast een kassa; het vervangt die niet.",
-    "marketplacesBody": "Bezorgplatforms brengen nieuwe klanten, maar rekenen commissie op elke bestelling. Uber Eats noemt voor Duitsland 14% bij afhalen en 30% bij bezorging door koeriers van Uber. Wolt zegt op de eigen website dat het commissie rekent, maar noemt geen tarieven. De tarieven van Lieferando konden we niet controleren. Die commissie geldt ook voor vaste klanten die bij jou vooraf bestellen."
+    "rival": "{name} past als …"
   },
   "groups": {
     "food_truck": "Bestelsysteem voor foodtrucks",

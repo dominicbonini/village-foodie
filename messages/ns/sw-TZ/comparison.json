@@ -60,14 +60,9 @@
     "ours": "HatchGrab inakufaa ikiwa …",
     "oursBody": "unauza katika maeneo yanayobadilika, unataka oda ya mapema yenye muda wa kuchukua oda, hutaki jiko lako lizidiwe, na hutaki mkataba.",
     "oursNot": "HatchGrab haikufai ikiwa …",
-    "oursNotBody": "wateja wako wanapaswa kulipa kwa PayPal au Klarna, au unataka POS iliyothibitishwa yenye TSE kutoka kwa msambazaji mmoja.",
     "appClause": "Au ikiwa unahitaji programu ya jikoni kwenye iPad au Android nchini {country}: bado haipo kwenye maduka ya programu huko.",
-    "tills": "POS na mashine za kadi",
     "marketplaces": "Majukwaa ya kusafirisha chakula",
-    "rival": "Chagua {name} ikiwa …",
-    "tillsBody": "POS hupokea malipo kwenye food truck na hutimiza sharti la TSE. Mfumo wa oda hufanya kazi sambamba na POS; hauchukui nafasi yake.",
-    "tillsBodyNamed": "POS hupokea malipo kwenye food truck na hutimiza sharti la TSE. {count, plural, one {Jedwali lililo hapo juu pia lina {names}.} other {Jedwali lililo hapo juu pia lina {names}.}} Mfumo wa oda hufanya kazi sambamba na POS; hauchukui nafasi yake.",
-    "marketplacesBody": "Majukwaa ya kusafirisha chakula huleta wateja wapya lakini hutoza kamisheni kwa kila oda. Uber Eats inataja 14% kwa kuchukua oda na 30% kwa kusafirisha kupitia wasafirishaji wa Uber nchini Ujerumani. Wolt inasema kwenye tovuti yake kuwa inatoza kamisheni lakini haitaji viwango. Hatukuweza kuhakiki viwango vya Lieferando. Kamisheni hiyo inahusu pia wateja wa kudumu wanaoagiza mapema kwako."
+    "rival": "Chagua {name} ikiwa …"
   },
   "groups": {
     "food_truck": "Mfumo wa oda kwa food truck",

@@ -26,7 +26,7 @@
 //
 // ⛔ No Product, Review, Rating or AggregateRating in the JSON-LD: this page compares tools, it does not rate them.
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { planMoneyFormatOf } from '@/lib/country-settings-types'
+import { planMoneyFormatOf, offersOnlineCardPayments } from '@/lib/country-settings-types'
 import { feeLabel, formatAmount, formatWholeAmount, pctLabel, type MoneyFormat } from '@/lib/money-format'
 import { formatYmd } from '@/lib/time-utils'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
@@ -76,6 +76,23 @@ export interface ComparisonInput {
   featureChecks?: FeatureCheckRow[]
   pendingFindings?: { competitorId: string; featureKey: string; countryCode: string | null }[]
   benchmarks?: Benchmark[]
+  /** compare-suits-fix-2 (20261148): the country's guide words (public.comparison_country_copy), or null when it has no row. */
+  copy?: CountryCopy | null
+}
+
+/** compare-suits-fix-2 (Dominic, 26 Nov 2026; docs/compare-suits-fix-2-report.md): the per-country words of "Which system suits whom?".
+ *  fitOff hides the guide (every non-English country until a native speaker has checked its words); deliveryApps are named in the
+ *  "Delivery apps" card (no rates anywhere); payMethodsMissing fills the online-payment line; collectWord is collection or pickup. */
+export interface CountryCopy { fitOff: boolean; deliveryApps: string[] | null; payMethodsMissing: string | null; collectWord: 'collection' | 'pickup' | null }
+
+/** compare-suits-fix-2: the guide as the page, its .md twin and the checklist use it — null when hidden (fit_off, or a non-English
+ *  country with no row). Two lists, then the competitors' own "fits if …" lines (choose_when), then the "Delivery apps" card. No
+ *  tills or card machines anywhere (Dominic's rule). */
+export interface Fit {
+  ours: string; suits: string[]
+  mayNot: string; notSuits: string[]
+  rivals: { name: string; text: string; unverified: boolean }[]
+  delivery: { title: string; body: string }
 }
 
 export interface ViewOptions {
@@ -137,7 +154,8 @@ export interface ComparisonView {
   costs: CostLine[]
   cardFee: string
   vat: string
-  fit: { ours: string; oursBody: string; oursNot: string; oursNotBody: string; rivals: { name: string; text: string; unverified: boolean }[]; cards: { title: string; body: string }[] }
+  /** compare-suits-fix-2: null = no guide on this page (and none in the .md twin). */
+  fit: Fit | null
   faq: { q: string; a: string }[]
   trialMonths: number | null
   checklist: ChecklistItem[]
@@ -179,6 +197,30 @@ export const PLACEHOLDER = /\[\s*(?:…|\.\.\.)[^\]]*\]/
 const day = (iso: string | null | undefined) => (iso ? iso.slice(0, 10) : null)
 const maxDate = (ds: (string | null | undefined)[]) => ds.filter((d): d is string => !!d).sort().pop() ?? null
 const minDate = (ds: (string | null | undefined)[]) => ds.filter((d): d is string => !!d).sort()[0] ?? null
+
+/** compare-suits-fix-2: the guide for one country, or null when it is hidden — pure (the page, the .md twin and
+ *  scripts/compare-suits-fix-2.cjs all use it). */
+export function buildFit(o: { settings: Pick<CountrySettings, 'locale' | 'paymentModel'>; country: string; copy: CountryCopy | null; rivals: Fit['rivals'] }, t: ComparisonT): Fit | null {
+  const { settings, country, copy } = o
+  const fitShown = copy ? !copy.fitOff : /^en(-|$)/i.test(settings.locale)
+  if (!fitShown) return null
+  const word = copy?.collectWord ?? (settings.locale === 'en-US' ? 'pickup' : 'collection')
+  const collect = t(`fit.collect.${word}`), collectVerb = t(`fit.collectVerb.${word}`)
+  const apps = (copy?.deliveryApps ?? []).map(a => a.trim()).filter(Boolean)
+  return {
+    ours: t('fit.ours'),
+    suits: [t('fit.suits.places'), t('fit.suits.ahead', { collect }), t('fit.suits.limit'), t('fit.suits.contract')],
+    mayNot: t('fit.mayNot'),
+    // The payment line follows the one answer to "can a truck here take online card payments?" (country_billing.payment_model).
+    notSuits: [t('fit.notSuit.delivery', { collect }), offersOnlineCardPayments(settings)
+      ? t('fit.notSuit.payOnline', { methods: copy?.payMethodsMissing?.trim() || 'PayPal', collectVerb })
+      : t('fit.notSuit.payAtTruck', { country, collectVerb })],
+    rivals: o.rivals,
+    delivery: { title: t('fit.deliveryTitle'), body: apps.length
+      ? t('fit.deliveryNamed', { apps: new Intl.ListFormat(settings.locale, { style: 'long', type: 'conjunction' }).format(apps) })
+      : t('fit.deliveryNone') },
+  }
+}
 
 export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: ViewOptions, st?: SuitsT): ComparisonView {
   const { settings, catalog, flags, urls } = input
@@ -395,22 +437,12 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   const cardFee = t('costs.cardFee', { cardFee: cardFeeOnlineLabel(settings), country })
   const vat = t('costs.vat', { country })
 
-  // ── fit ──
-  // global-players-1: the tills card names the till / POS players that are PUBLIC in this country's table (verified and
-  // counted — never an unverified one, in either view), instead of fixed example names.
-  function tillsBody(): string {
-    const names = columns.filter(c => !c.us && c.verified && compOf.get(c.key)?.focus === 'pos').map(c => c.name)
-    if (!names.length) return t('fit.tillsBody')
-    const list = new Intl.ListFormat(settings.locale, { style: 'long', type: 'conjunction' }).format(names)
-    return t('fit.tillsBodyNamed', { names: list, count: names.length })
-  }
-  const appsMissing = !flags.iosApp || !flags.androidApp
-  const fit = {
-    ours: t('fit.ours'), oursBody: t('fit.oursBody'), oursNot: t('fit.oursNot'),
-    oursNotBody: appsMissing ? `${t('fit.oursNotBody')} ${t('fit.appClause', { country })}` : t('fit.oursNotBody'),
-    rivals: columns.filter(c => !c.us && c.chooseWhen).map(c => ({ name: t('fit.rival', { name: c.name }), text: c.chooseWhen!, unverified: !c.entryVerified })),
-    cards: [{ title: t('fit.tills'), body: tillsBody() }, { title: t('fit.marketplaces'), body: t('fit.marketplacesBody') }],
-  }
+  // ── fit ── compare-suits-fix-2 (Dominic, 26 Nov 2026): the country's own guide. Shown when its comparison_country_copy row says so
+  // (fit_off false); a country with no row shows it only in an English locale. Every word is in comparison.fit (English only: the other
+  // languages are hidden until a native speaker has checked new wording); the country's words come from the row. The old tills and
+  // card machines card, the app clause and Germany's delivery and till facts are gone.
+  const fit = buildFit({ settings, country, copy: input.copy ?? null,
+    rivals: columns.filter(c => !c.us && c.chooseWhen).map(c => ({ name: t('fit.rival', { name: c.name }), text: c.chooseWhen!, unverified: !c.entryVerified })) }, t)
 
   // ── FAQ (the cost answer from plan_prices and the trial from the plans) ──
   const costA = t('faq.costA', { plans: offers.map(ourLine).join('; '), cardFee: cardFeeOnlineLabel(settings) })
@@ -434,7 +466,7 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   // ── the go-live checklist (admins) — every text the page can show is scanned for a placeholder ──
   const texts = [
     ...rows.flatMap(r => [r.label, r.explain, ...r.cells.map(c => c.text)]), ...costs.flatMap(c => c.lines), cardFee, vat,
-    fit.oursBody, fit.oursNotBody, ...fit.rivals.map(r => r.text), ...fit.cards.flatMap(c => [c.title, c.body]),
+    ...(fit ? [...fit.suits, ...fit.notSuits, ...fit.rivals.map(r => r.text), fit.delivery.title, fit.delivery.body] : []),
     ...faq.flatMap(f => [f.q, f.a]), t('meta.title'), t('meta.description'), t('h1'),
   ]
   const checklist: ChecklistItem[] = [
@@ -592,9 +624,12 @@ export function comparisonMarkdown(v: ComparisonView, input: ComparisonInput, t:
     if (c.source) out.push(`  - ${t('costs.source')}: ${c.source}${c.checkedOn ? ` (${t('costs.checked', { date: c.checkedOn })})` : ''}`)
   }
   out.push('', v.cardFee, '', v.vat, '')
-  out.push(`## ${t('fit.title')}`, '', `**${v.fit.ours}** ${v.fit.oursBody}`, '', `**${v.fit.oursNot}** ${v.fit.oursNotBody}`, '')
-  for (const r of v.fit.rivals) out.push(`**${r.name}** ${r.text}`, '')
-  for (const c of v.fit.cards) out.push(`**${c.title}:** ${c.body}`, '')
+  // compare-suits-fix-2: the guide only where the page shows it (never for a fit_off country).
+  if (v.fit) {
+    out.push(`## ${t('fit.title')}`, '', `**${v.fit.ours}**`, '', ...v.fit.suits.map(l => `- ${l}`), '', `**${v.fit.mayNot}**`, '', ...v.fit.notSuits.map(l => `- ${l}`), '')
+    for (const r of v.fit.rivals) out.push(`**${r.name}** ${r.text}`, '')
+    out.push(`**${v.fit.delivery.title}:** ${v.fit.delivery.body}`, '')
+  }
   out.push(`## ${t('faq.title')}`, '')
   for (const f of v.faq) out.push(`### ${f.q}`, '', f.a, '')
   out.push(`## ${t('method.title')}`, '', t('method.checked', { date: v.checkedLabel }), '', t('method.prices'), '', t('method.meaning'), '',

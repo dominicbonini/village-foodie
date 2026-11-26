@@ -60,14 +60,9 @@
     "ours": "HatchGrab vam odgovara ako …",
     "oursBody": "radite na promenljivim lokacijama, želite porudžbine unapred sa vremenom preuzimanja, ne želite da vam kuhinja bude preopterećena i ne želite ugovor.",
     "oursNot": "HatchGrab vam ne odgovara ako …",
-    "oursNotBody": "vaši kupci treba da plaćaju preko servisa PayPal ili Klarna, ili želite sertifikovanu kasu sa TSE od jednog dobavljača.",
     "appClause": "Ili ako vam treba kuhinjska aplikacija na iPad ili Android uređaju ({country}): tamo još nije u prodavnicama aplikacija.",
-    "tills": "Kase i POS terminali",
     "marketplaces": "Platforme za dostavu",
-    "rival": "{name} odgovara ako …",
-    "tillsBody": "Kase naplaćuju kod food trucka i pokrivaju TSE obavezu. Sistem za poručivanje radi uz kasu; ne zamenjuje je.",
-    "tillsBodyNamed": "Kase naplaćuju kod food trucka i pokrivaju TSE obavezu. {names} {count, plural, one {je} few {su} other {su}} takođe u tabeli iznad. Sistem za poručivanje radi uz kasu; ne zamenjuje je.",
-    "marketplacesBody": "Platforme za dostavu donose nove kupce, ali naplaćuju proviziju na svaku porudžbinu. Uber Eats u Nemačkoj navodi 14% za lično preuzimanje i 30% za dostavu preko Uber kurira. Wolt na svom sajtu navodi da naplaćuje proviziju, ali ne objavljuje stope. Stope platforme Lieferando nismo mogli da proverimo. Ta provizija važi i za stalne kupce koji kod vas poručuju unapred."
+    "rival": "{name} odgovara ako …"
   },
   "groups": {
     "food_truck": "Sistem za poručivanje za food truckove",

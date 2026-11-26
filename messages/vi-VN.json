@@ -6649,14 +6649,9 @@
       "ours": "HatchGrab phù hợp với bạn nếu …",
       "oursBody": "bạn bán ở nhiều địa điểm thay đổi, muốn nhận đơn đặt trước theo giờ nhận món, không muốn bếp bị quá tải và không muốn ràng buộc hợp đồng.",
       "oursNot": "HatchGrab không phù hợp với bạn nếu …",
-      "oursNotBody": "khách của bạn cần thanh toán bằng PayPal hoặc Klarna, hoặc bạn muốn một phần mềm bán hàng được chứng nhận theo quy định thuế (như TSE) từ một nhà cung cấp duy nhất.",
       "appClause": "Hoặc nếu bạn cần ứng dụng bếp trên iPad hoặc Android tại {country}: ứng dụng chưa có trên kho ứng dụng ở đó.",
-      "tills": "Phần mềm bán hàng và máy POS",
       "marketplaces": "Nền tảng giao đồ ăn",
-      "rival": "{name} phù hợp nếu …",
-      "tillsBody": "Phần mềm bán hàng nhận thanh toán tại xe và đáp ứng yêu cầu ghi nhận doanh thu theo quy định thuế (như TSE). Phần mềm đặt món chạy song song với phần mềm bán hàng, không thay thế nó.",
-      "tillsBodyNamed": "Phần mềm bán hàng nhận thanh toán tại xe và đáp ứng yêu cầu ghi nhận doanh thu theo quy định thuế (như TSE). {names} {count, plural, one {cũng có} other {cũng có}} trong bảng trên. Phần mềm đặt món chạy song song với phần mềm bán hàng, không thay thế nó.",
-      "marketplacesBody": "Nền tảng giao đồ ăn mang lại khách mới nhưng thu hoa hồng trên mọi đơn. Uber Eats công bố mức 14% cho đơn tự đến lấy và 30% cho đơn do tài xế Uber giao tại Đức. Wolt cho biết trên website của mình là có thu hoa hồng nhưng không nêu mức cụ thể. Chúng tôi không kiểm tra được mức phí của Lieferando. Khoản hoa hồng đó áp dụng cả với khách quen đặt trước với bạn."
+      "rival": "{name} phù hợp nếu …"
     },
     "groups": {
       "food_truck": "Phần mềm đặt món cho food truck",

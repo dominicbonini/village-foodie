@@ -38,7 +38,10 @@ function shape(ast, acc = { args: new Set(), opts: new Set(), tags: new Set() })
 const sig = s => { const a = shape(parse(s, { ignoreTag: false })); return JSON.stringify([[...a.args].sort(), [...a.opts].sort(), [...a.tags].sort()]) }
 
 ;(async () => {
-  const en = Object.fromEntries(leaves(JSON.parse(read('messages/en-GB.json')).comparison))
+  // ⚠️ RE-PINNED (compare-suits-fix-2, Dominic 26 Nov 2026): the new guide's keys are ENGLISH ONLY — every non-English country's guide is
+  // hidden (comparison_country_copy.fit_off) until a native speaker has checked new wording, so no base must carry them yet.
+  const EN_ONLY = /^fit\.(mayNot|suits\.|notSuit\.|collect\.|collectVerb\.|deliveryTitle|deliveryNamed|deliveryNone)/
+  const en = Object.fromEntries(leaves(JSON.parse(read('messages/en-GB.json')).comparison).filter(([k]) => !EN_ONLY.test(k)))
   // ══ 1 · words ══
   head('1 · the words: every language base, whole and well-formed')
   const bad = [], missing = [], noBack = []

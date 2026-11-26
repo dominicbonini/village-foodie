@@ -657,11 +657,7 @@
       "description": "Sistemas de pedidos para food trucks: hora de recojo, capacidad de cocina, agenda, comisiones y plazo de contrato, revisados en la web de cada proveedor."
     },
     "fit": {
-      "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora de recojo, no quieres que tu cocina se sature y no quieres plazos forzosos.",
-      "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o quieres un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
-      "tills": "Sistemas de caja y POS",
-      "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
-      "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de un sistema de caja certificado. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye."
+      "oursBody": "vendes en ubicaciones que cambian, quieres pedidos anticipados con hora de recojo, no quieres que tu cocina se sature y no quieres plazos forzosos."
     },
     "groups": {
       "pos": "Sistema de caja"

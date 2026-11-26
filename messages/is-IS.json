@@ -6761,14 +6761,9 @@
       "ours": "HatchGrab hentar þér ef …",
       "oursBody": "þú selur á breytilegum stöðum, vilt forpantanir með afhendingartíma, vilt ekki að eldhúsið yfirfyllist og vilt ekki binditíma.",
       "oursNot": "HatchGrab hentar þér ekki ef …",
-      "oursNotBody": "viðskiptavinir þínir eiga að geta greitt með PayPal eða Klarna, eða þú vilt vottað afgreiðslukerfi með TSE frá einum birgja.",
       "appClause": "Eða ef þú þarft eldhúsappið á iPad eða Android ({country}): það er ekki enn komið í appverslanirnar þar.",
-      "tills": "Afgreiðslukerfi og posar",
       "marketplaces": "Heimsendingarþjónustur",
-      "rival": "{name} hentar ef …",
-      "tillsBody": "Afgreiðslukerfi taka við greiðslu við vagninn og uppfylla kröfuna um TSE. Pöntunarkerfi vinnur með afgreiðslukerfi; það kemur ekki í staðinn fyrir það.",
-      "tillsBodyNamed": "Afgreiðslukerfi taka við greiðslu við vagninn og uppfylla kröfuna um TSE. {names} {count, plural, one {er} other {eru}} líka í töflunni hér að ofan. Pöntunarkerfi vinnur með afgreiðslukerfi; það kemur ekki í staðinn fyrir það.",
-      "marketplacesBody": "Heimsendingarþjónustur færa þér nýja viðskiptavini en taka þóknun af hverri pöntun. Uber Eats gefur upp 14% fyrir sóttar pantanir og 30% fyrir heimsendingu með sendlum Uber í Þýskalandi. Wolt segir á eigin vefsíðu að það taki þóknun en gefur ekki upp hlutföll. Við gátum ekki kannað gjöld Lieferando. Sú þóknun á líka við um fastakúnna sem forpanta hjá þér."
+      "rival": "{name} hentar ef …"
     },
     "groups": {
       "food_truck": "Pöntunarkerfi fyrir matarvagna",

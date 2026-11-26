@@ -2024,12 +2024,7 @@
       "ours": "HatchGrab encaja con vos si…",
       "oursBody": "vendés en ubicaciones que cambian, querés pedidos anticipados con horario de retiro, no querés que tu cocina se sature y no querés plazos forzosos.",
       "oursNot": "HatchGrab no encaja con vos si…",
-      "oursNotBody": "tus clientes tienen que poder pagar con PayPal o Klarna, o querés un sistema de caja certificado según la normativa fiscal, todo de un mismo proveedor.",
-      "appClause": "O si necesitás la app de cocina en iPad o Android en {country}: allí todavía no está en las tiendas de apps.",
-      "tills": "Sistemas de caja y POS",
-      "tillsBody": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja certificada. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
-      "tillsBodyNamed": "Los sistemas de caja cobran en el food truck y cumplen los requisitos fiscales de una caja certificada. {names} también {count, plural, one {aparece} many {aparecen} other {aparecen}} en la tabla de arriba. Un sistema de pedidos funciona junto a un sistema de caja; no lo sustituye.",
-      "marketplacesBody": "Las plataformas de entrega a domicilio traen clientes nuevos, pero se quedan con una comisión de cada pedido. Uber Eats indica un 14 % para retirar y un 30 % para entrega con repartidores de Uber en Alemania. Wolt dice en su propio sitio web que cobra comisión, pero no da las tarifas. No pudimos comprobar las tarifas de Lieferando. Esa comisión también se aplica a los clientes frecuentes que te hacen pedidos anticipados."
+      "appClause": "O si necesitás la app de cocina en iPad o Android en {country}: allí todavía no está en las tiendas de apps."
     },
     "groups": {
       "pos": "Sistema de caja"

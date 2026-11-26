@@ -6664,14 +6664,9 @@
       "ours": "HatchGrab sesuai untuk anda jika …",
       "oursBody": "anda berniaga di lokasi yang berubah-ubah, mahukan pra-pesanan dengan masa ambil, tidak mahu dapur anda terlebih beban, dan tidak mahu terikat dengan kontrak.",
       "oursNot": "HatchGrab tidak sesuai untuk anda jika …",
-      "oursNotBody": "pelanggan anda perlu membayar dengan PayPal atau Klarna, atau anda mahukan mesin daftar tunai yang diperakui mematuhi peraturan cukai daripada satu pembekal.",
       "appClause": "Atau jika anda memerlukan aplikasi dapur pada iPad atau Android di {country}: ia belum ada di kedai aplikasi di sana.",
-      "tills": "Sistem POS dan terminal kad",
       "marketplaces": "Platform penghantaran",
-      "rival": "{name} sesuai jika …",
-      "tillsBody": "Sistem POS menerima bayaran di food truck dan memenuhi keperluan cukai bagi mesin daftar tunai. Sistem pesanan digunakan bersama sistem POS; ia tidak menggantikannya.",
-      "tillsBodyNamed": "Sistem POS menerima bayaran di food truck dan memenuhi keperluan cukai bagi mesin daftar tunai. {names} {count, plural, other {turut}} ada dalam jadual di atas. Sistem pesanan digunakan bersama sistem POS; ia tidak menggantikannya.",
-      "marketplacesBody": "Platform penghantaran membawa pelanggan baharu tetapi mengambil komisen bagi setiap pesanan. Uber Eats menyatakan 14% untuk ambil sendiri dan 30% untuk penghantaran oleh kurier Uber di Jerman. Wolt menyatakan di laman webnya sendiri bahawa ia mengenakan komisen tetapi tidak memberikan kadarnya. Kami tidak dapat menyemak kadar Lieferando. Komisen itu juga dikenakan pada pelanggan tetap yang membuat pesanan awal dengan anda."
+      "rival": "{name} sesuai jika …"
     },
     "groups": {
       "food_truck": "Sistem pesanan food truck",

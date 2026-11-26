@@ -60,14 +60,9 @@
     "ours": "HatchGrab cocok untuk Anda jika …",
     "oursBody": "Anda berjualan di lokasi yang berpindah-pindah, ingin pre-order dengan waktu pengambilan, tidak ingin dapur kewalahan, dan tidak ingin terikat kontrak.",
     "oursNot": "HatchGrab tidak cocok untuk Anda jika …",
-    "oursNotBody": "pelanggan Anda harus bisa membayar dengan PayPal atau Klarna, atau Anda menginginkan mesin kasir bersertifikat dengan TSE dari satu pemasok.",
     "appClause": "Atau jika Anda membutuhkan aplikasi dapur di iPad atau Android di {country}: aplikasinya belum tersedia di toko aplikasi di sana.",
-    "tills": "Aplikasi kasir dan mesin EDC",
     "marketplaces": "Platform pesan antar",
-    "rival": "{name} cocok jika …",
-    "tillsBody": "Aplikasi kasir menerima pembayaran di truk dan memenuhi kewajiban TSE. Aplikasi pemesanan bekerja berdampingan dengan aplikasi kasir, bukan menggantikannya.",
-    "tillsBodyNamed": "Aplikasi kasir menerima pembayaran di truk dan memenuhi kewajiban TSE. {names} {count, plural, one {juga ada} other {juga ada}} di tabel di atas. Aplikasi pemesanan bekerja berdampingan dengan aplikasi kasir, bukan menggantikannya.",
-    "marketplacesBody": "Platform pesan antar mendatangkan pelanggan baru, tetapi memotong komisi dari setiap pesanan. Uber Eats menyebut 14% untuk ambil sendiri dan 30% untuk pengantaran oleh kurir Uber di Jerman. Wolt menyatakan di situsnya sendiri bahwa mereka mengenakan komisi, tetapi tidak menyebutkan tarifnya. Kami tidak dapat mengecek tarif Lieferando. Komisi itu juga berlaku untuk pelanggan tetap yang pre-order ke Anda."
+    "rival": "{name} cocok jika …"
   },
   "groups": {
     "food_truck": "Aplikasi pemesanan food truck",

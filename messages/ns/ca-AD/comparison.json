@@ -60,14 +60,9 @@
     "ours": "HatchGrab t’encaixa si …",
     "oursBody": "vens en llocs que canvien, vols comandes anticipades amb hora de recollida, no vols que la cuina se’t col·lapsi i no vols cap contracte de permanència.",
     "oursNot": "HatchGrab no t’encaixa si …",
-    "oursNotBody": "els teus clients han de pagar amb PayPal o Klarna, o vols un TPV certificat amb TSE d’un sol proveïdor.",
     "appClause": "O si necessites l’aplicació de cuina per a iPad o Android a {country}: encara no és a les botigues d’aplicacions d’allà.",
-    "tills": "TPV i datàfons",
     "marketplaces": "Plataformes de repartiment",
-    "rival": "{name} encaixa si …",
-    "tillsBody": "Els TPV cobren al food truck i compleixen el requisit de la TSE. Un sistema de comandes funciona al costat d’un TPV; no el substitueix.",
-    "tillsBodyNamed": "Els TPV cobren al food truck i compleixen el requisit de la TSE. {names} també {count, plural, one {és} other {són}} a la taula de dalt. Un sistema de comandes funciona al costat d’un TPV; no el substitueix.",
-    "marketplacesBody": "Les plataformes de repartiment porten clients nous, però cobren comissió per cada comanda. Uber Eats indica un 14 % per a la recollida i un 30 % per al repartiment amb repartidors d’Uber a Alemanya. Wolt diu al seu web que cobra comissió, però no en dona les tarifes. No hem pogut comprovar les tarifes de Lieferando. Aquesta comissió també s’aplica als clients habituals que et fan comandes anticipades."
+    "rival": "{name} encaixa si …"
   },
   "groups": {
     "food_truck": "Sistema de comandes per a food trucks",

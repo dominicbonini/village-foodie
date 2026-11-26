@@ -60,14 +60,9 @@
     "ours": "A HatchGrab é indicada para si se …",
     "oursBody": "trabalha em locais que mudam, quer encomendas antecipadas com hora de levantamento, não quer a cozinha sobrecarregada e não quer contrato.",
     "oursNot": "A HatchGrab não é indicada para si se …",
-    "oursNotBody": "os seus clientes devem pagar com PayPal ou Klarna, ou se procura uma caixa certificada que cumpra as regras fiscais do país, tudo do mesmo fornecedor.",
     "appClause": "Ou se precisa da app da cozinha no iPad ou Android em {country}: ainda não está disponível nas lojas de apps desse país.",
-    "tills": "Sistemas de caixa e terminais de pagamento",
     "marketplaces": "Plataformas de entregas",
-    "rival": "{name} é indicado se …",
-    "tillsBody": "As caixas cobram o pagamento no food truck e cumprem as regras fiscais do país para caixas certificadas. Um sistema de encomendas funciona em conjunto com uma caixa; não a substitui.",
-    "tillsBodyNamed": "As caixas cobram o pagamento no food truck e cumprem as regras fiscais do país para caixas certificadas. {names} também {count, plural, one {consta} many {constam} other {constam}} da tabela acima. Um sistema de encomendas funciona em conjunto com uma caixa; não a substitui.",
-    "marketplacesBody": "As plataformas de entregas trazem novos clientes, mas cobram comissão em cada encomenda. A Uber Eats indica 14% para levantamento e 30% para entregas feitas por estafetas da Uber na Alemanha. A Wolt diz no seu próprio site que cobra comissão, mas não indica valores. Não conseguimos verificar as taxas da Lieferando. Essa comissão aplica-se também aos clientes habituais que lhe fazem encomendas antecipadas."
+    "rival": "{name} é indicado se …"
   },
   "groups": {
     "food_truck": "Sistema de encomendas para food trucks",

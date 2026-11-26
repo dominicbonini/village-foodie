@@ -6761,14 +6761,9 @@
       "ours": "HatchGrab 適合你，如果你……",
       "oursBody": "在不同地點擺攤、想要可選取餐時間的預約點餐、不想讓廚房爆單，也不想綁約。",
       "oursNot": "HatchGrab 不適合你，如果你……",
-      "oursNotBody": "希望顧客用 PayPal 或 Klarna 付款，或想向同一家廠商購買具 TSE 認證的 POS 系統。",
       "appClause": "或者你需要在{country}使用 iPad 或 Android 版廚房 App：目前在當地的商店尚未上架。",
-      "tills": "POS 系統與刷卡機",
       "marketplaces": "外送平台",
-      "rival": "{name} 適合你，如果……",
-      "tillsBody": "POS 系統在餐車現場收款，並符合 TSE 規定。點餐系統與 POS 系統搭配使用，不能取代它。",
-      "tillsBodyNamed": "POS 系統在餐車現場收款，並符合 TSE 規定。{names} {count, plural, one {也列在} other {也都列在}}上方的表格中。點餐系統與 POS 系統搭配使用，不能取代它。",
-      "marketplacesBody": "外送平台能帶來新顧客，但每筆訂單都要抽成。Uber Eats 表示在德國自取抽成 14%、由 Uber 外送員外送抽成 30%。Wolt 在自己的官網表示會收取抽成，但未公布費率。我們無法查證 Lieferando 的費率。向你預約點餐的熟客，也同樣會被抽成。"
+      "rival": "{name} 適合你，如果……"
     },
     "groups": {
       "food_truck": "餐車點餐系統",

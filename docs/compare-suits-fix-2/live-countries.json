@@ -1,0 +1,1163 @@
+{
+ "$comment": "compare-suits-fix-2 (26 Nov 2026): the 96 live comparison countries — locale, name, country_billing.payment_model and the comparison_country_copy row — read with one read-only SELECT (docs/compare-suits-fix-2/sql.txt §3). The harness scripts/compare-suits-fix-2.cjs builds every country's guide from it.",
+ "countries": [
+  {
+   "code": "AD",
+   "locale": "ca-AD",
+   "name": "Andorra",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "AL",
+   "locale": "sq-AL",
+   "name": "Albania",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "AR",
+   "locale": "es-AR",
+   "name": "Argentina",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "AT",
+   "locale": "de-AT",
+   "name": "Austria",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "AU",
+   "locale": "en-AU",
+   "name": "Australia",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal or Afterpay",
+    "collectWord": "pickup"
+   }
+  },
+  {
+   "code": "AX",
+   "locale": "sv-SE",
+   "name": "Åland Islands",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "BA",
+   "locale": "bs-BA",
+   "name": "Bosnia & Herzegovina",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "BD",
+   "locale": "bn-BD",
+   "name": "Bangladesh",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "BE",
+   "locale": "nl-BE",
+   "name": "Belgium",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "BG",
+   "locale": "bg-BG",
+   "name": "Bulgaria",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "BH",
+   "locale": "ar-BH",
+   "name": "Bahrain",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "BL",
+   "locale": "fr-FR",
+   "name": "St. Barthélemy",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "BO",
+   "locale": "es-BO",
+   "name": "Bolivia",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "BR",
+   "locale": "pt-BR",
+   "name": "Brazil",
+   "paymentModel": "billed_online",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "CA",
+   "locale": "en-CA",
+   "name": "Canada",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "CH",
+   "locale": "de-CH",
+   "name": "Switzerland",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "CL",
+   "locale": "es-CL",
+   "name": "Chile",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "CO",
+   "locale": "es-CO",
+   "name": "Colombia",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "CY",
+   "locale": "el-CY",
+   "name": "Cyprus",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "CZ",
+   "locale": "cs-CZ",
+   "name": "Czech Republic",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "DE",
+   "locale": "de-DE",
+   "name": "Germany",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "DK",
+   "locale": "da-DK",
+   "name": "Denmark",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "DO",
+   "locale": "es-DO",
+   "name": "Dominican Republic",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "EC",
+   "locale": "es-EC",
+   "name": "Ecuador",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "EE",
+   "locale": "et-EE",
+   "name": "Estonia",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "EG",
+   "locale": "ar-EG",
+   "name": "Egypt",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "ES",
+   "locale": "es-ES",
+   "name": "Spain",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "FI",
+   "locale": "fi-FI",
+   "name": "Finland",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "FR",
+   "locale": "fr-FR",
+   "name": "France",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "GB",
+   "locale": "en-GB",
+   "name": "United Kingdom",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": [
+     "Deliveroo",
+     "Uber Eats",
+     "Just Eat"
+    ],
+    "payMethodsMissing": "PayPal or Klarna",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "GF",
+   "locale": "fr-FR",
+   "name": "French Guiana",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "GG",
+   "locale": "en-GB",
+   "name": "Guernsey",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "GI",
+   "locale": "en-GI",
+   "name": "Gibraltar",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "GP",
+   "locale": "fr-FR",
+   "name": "Guadeloupe",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "GR",
+   "locale": "el-GR",
+   "name": "Greece",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "GU",
+   "locale": "en-US",
+   "name": "Guam",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "pickup"
+   }
+  },
+  {
+   "code": "HK",
+   "locale": "zh-HK",
+   "name": "Hong Kong",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "HR",
+   "locale": "hr-HR",
+   "name": "Croatia",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "HU",
+   "locale": "hu-HU",
+   "name": "Hungary",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "ID",
+   "locale": "id-ID",
+   "name": "Indonesia",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "IE",
+   "locale": "en-IE",
+   "name": "Ireland",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": [
+     "Deliveroo"
+    ],
+    "payMethodsMissing": "PayPal or Klarna",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "IM",
+   "locale": "en-GB",
+   "name": "Isle of Man",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "IN",
+   "locale": "en-GB",
+   "name": "India",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "IS",
+   "locale": "is-IS",
+   "name": "Iceland",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "IT",
+   "locale": "it-IT",
+   "name": "Italy",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "JE",
+   "locale": "en-GB",
+   "name": "Jersey",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "JM",
+   "locale": "en-JM",
+   "name": "Jamaica",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "JO",
+   "locale": "ar-JO",
+   "name": "Jordan",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "JP",
+   "locale": "ja-JP",
+   "name": "Japan",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "KW",
+   "locale": "ar-KW",
+   "name": "Kuwait",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "KZ",
+   "locale": "kk-KZ",
+   "name": "Kazakhstan",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "LI",
+   "locale": "de-LI",
+   "name": "Liechtenstein",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "LK",
+   "locale": "si-LK",
+   "name": "Sri Lanka",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "LT",
+   "locale": "lt-LT",
+   "name": "Lithuania",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "LU",
+   "locale": "fr-LU",
+   "name": "Luxembourg",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "LV",
+   "locale": "lv-LV",
+   "name": "Latvia",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "MA",
+   "locale": "fr-MA",
+   "name": "Morocco",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "MD",
+   "locale": "ro-RO",
+   "name": "Moldova",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "MF",
+   "locale": "fr-FR",
+   "name": "St. Martin",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "MK",
+   "locale": "mk-MK",
+   "name": "North Macedonia",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "MQ",
+   "locale": "fr-FR",
+   "name": "Martinique",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "MT",
+   "locale": "en-MT",
+   "name": "Malta",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "MV",
+   "locale": "en-GB",
+   "name": "Maldives",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "MY",
+   "locale": "ms-MY",
+   "name": "Malaysia",
+   "paymentModel": "billed_online",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "NG",
+   "locale": "en-NG",
+   "name": "Nigeria",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "NL",
+   "locale": "nl-NL",
+   "name": "Netherlands",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "NO",
+   "locale": "nb-NO",
+   "name": "Norway",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "NZ",
+   "locale": "en-NZ",
+   "name": "New Zealand",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "OM",
+   "locale": "ar-OM",
+   "name": "Oman",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "PA",
+   "locale": "es-PA",
+   "name": "Panama",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "PL",
+   "locale": "pl-PL",
+   "name": "Poland",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "PM",
+   "locale": "fr-FR",
+   "name": "St. Pierre & Miquelon",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "PR",
+   "locale": "es-MX",
+   "name": "Puerto Rico",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "PT",
+   "locale": "pt-PT",
+   "name": "Portugal",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "QA",
+   "locale": "ar-QA",
+   "name": "Qatar",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "RE",
+   "locale": "fr-FR",
+   "name": "Réunion",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "RO",
+   "locale": "ro-RO",
+   "name": "Romania",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "RS",
+   "locale": "sr-RS",
+   "name": "Serbia",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "SA",
+   "locale": "ar-SA",
+   "name": "Saudi Arabia",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "SE",
+   "locale": "sv-SE",
+   "name": "Sweden",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "SG",
+   "locale": "en-SG",
+   "name": "Singapore",
+   "paymentModel": "billed_online",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  },
+  {
+   "code": "SI",
+   "locale": "sl-SI",
+   "name": "Slovenia",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "SK",
+   "locale": "sk-SK",
+   "name": "Slovakia",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "SM",
+   "locale": "it-IT",
+   "name": "San Marino",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "SV",
+   "locale": "es-SV",
+   "name": "El Salvador",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "TH",
+   "locale": "th-TH",
+   "name": "Thailand",
+   "paymentModel": "billed_online",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "TR",
+   "locale": "tr-TR",
+   "name": "Türkiye",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "TW",
+   "locale": "zh-TW",
+   "name": "Taiwan",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "UA",
+   "locale": "uk-UA",
+   "name": "Ukraine",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "US",
+   "locale": "en-US",
+   "name": "United States",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal or Venmo",
+    "collectWord": "pickup"
+   }
+  },
+  {
+   "code": "UY",
+   "locale": "es-UY",
+   "name": "Uruguay",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "UZ",
+   "locale": "uz-UZ",
+   "name": "Uzbekistan",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "VA",
+   "locale": "it-IT",
+   "name": "Vatican City",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "VI",
+   "locale": "en-US",
+   "name": "U.S. Virgin Islands",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "pickup"
+   }
+  },
+  {
+   "code": "YT",
+   "locale": "fr-FR",
+   "name": "Mayotte",
+   "paymentModel": "fee_from_payment",
+   "copy": {
+    "fitOff": true,
+    "deliveryApps": null,
+    "payMethodsMissing": null,
+    "collectWord": null
+   }
+  },
+  {
+   "code": "ZA",
+   "locale": "en-ZA",
+   "name": "South Africa",
+   "paymentModel": "billed_at_truck",
+   "copy": {
+    "fitOff": false,
+    "deliveryApps": null,
+    "payMethodsMissing": "PayPal",
+    "collectWord": "collection"
+   }
+  }
+ ]
+}

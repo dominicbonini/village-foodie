@@ -60,14 +60,9 @@
     "ours": "HatchGrab passer for deg hvis …",
     "oursBody": "du står på skiftende plasser, vil ha forhåndsbestillinger med hentetid, ikke vil at kjøkkenet skal bli overbelastet, og ikke vil ha bindingstid.",
     "oursNot": "HatchGrab passer ikke for deg hvis …",
-    "oursNotBody": "kundene skal kunne betale med PayPal eller Klarna, eller hvis du vil ha et sertifisert kassasystem som oppfyller skattereglene, fra én og samme leverandør.",
     "appClause": "Eller hvis du trenger kjøkkenappen på iPad eller Android i {country}: Den er ikke i appbutikkene der ennå.",
-    "tills": "Kassasystemer og betalingsterminaler",
     "marketplaces": "Leveringsplattformer",
-    "rival": "{name} passer hvis …",
-    "tillsBody": "Kassasystemer tar betalt ved matbilen og oppfyller kravet om en sertifisert kasse etter skattereglene. Et bestillingssystem fungerer side om side med kassasystemet; det erstatter det ikke.",
-    "tillsBodyNamed": "Kassasystemer tar betalt ved matbilen og oppfyller kravet om en sertifisert kasse etter skattereglene. {names} {count, plural, one {står} other {står}} også i tabellen over. Et bestillingssystem fungerer side om side med kassasystemet; det erstatter det ikke.",
-    "marketplacesBody": "Leveringsplattformer gir nye kunder, men tar provisjon på hver bestilling. Uber Eats oppgir 14 % ved henting og 30 % ved levering med Ubers bud i Tyskland. Wolt skriver på sin egen nettside at de tar provisjon, men oppgir ingen satser. Vi fikk ikke sjekket satsene til Lieferando. Provisjonen gjelder også faste kunder som forhåndsbestiller hos deg."
+    "rival": "{name} passer hvis …"
   },
   "groups": {
     "food_truck": "Bestillingssystem for matbiler",
