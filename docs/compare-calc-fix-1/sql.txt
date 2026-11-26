@@ -1,0 +1,87 @@
+-- compare-calc-fix-1 (26 Nov 2026): every SQL statement run, in order. READ = read-only.
+
+-- 1 · READ: the columns the paged reads order by
+select table_name, column_name from information_schema.columns where table_schema='public' and ((table_name='competitor_check_findings' and column_name='id') or (table_name='comparison_features' and column_name='key') or (table_name in ('competitor_plans','country_benchmarks','comparison_entries','competitors','competitor_feature_values') and column_name='id')) order by 1;
+
+-- 2 · READ: What The Truck GB's, Favrit NO's and WEIQ SE's shown plans
+select c.name, c.website, p.id, p.plan_name, p.country_code, p.currency, p.monthly_minor, p.yearly_only, p.card_mode, p.card_bps, p.card_fixed_minor, p.card_rate_assumed, p.truck_fee_bps, p.vat, p.source_url, p.notes from competitor_plans p join competitors c on c.id=p.competitor_id where p.id in (select primary_plan_id from comparison_entries where (country_code='NO' and competitor_id in (select id from competitors where name='Favrit')) or (country_code='SE' and competitor_id in (select id from competitors where name='WEIQ')) or (country_code='GB' and competitor_id='3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93'));
+
+-- 3 · migration 20261147 — pre-flighted (scripts/compare-db-proofs.cjs --preflight, rolled back), committed 2e9e2040, applied (scripts/db-migrate.cjs):
+-- 20261147_compare_calc_fix_1.sql — compare-calc-fix-1 (Dominic, 26 Nov 2026; docs/compare-calc-fix-1-report.md). Competitor plans only:
+--   1 · What The Truck GB's shown plan 8c777139: its 3.95% online fee stored as the card-fee-included rate (card_mode bundled, card_bps 395,
+--       card_fixed_minor 0, truck_fee_bps 0) — before, the 3.95% was a per-order fee with no card rate, so the cost model added Stripe's
+--       rate on top (£74.50 instead of £39.50 on £1,000); and «+ VAT» in its plan NAME (the page shows the name beside the price, never
+--       the note): "What The Truck (online fee + VAT)" — its own page: «The platform fee for online ordering is subject to VAT at 20%.»
+--   2 · Favrit NO 3cc7270e and WEIQ SE 89278321: card_mode 'unknown' — each own price page read once (web.favrit.com/pris,
+--       weiq.tech/pris/) states no card rate for that plan, so "bundled" with no rate is not supported.
+-- PROOF (inside the transaction): an md5 of every competitor_plans row with the five named columns removed is the same before and after,
+-- and an md5 of every OTHER row, whole, is the same — so only those columns of these three rows change.
+-- Guarded; pre-flighted with scripts/compare-db-proofs.cjs --preflight (rolled back).
+begin;
+
+do $$
+begin
+  if (select count(*) from public.competitor_plans where id = '8c777139-ad56-5b20-93c1-b9f44dc8bb1c' and plan_name = 'What The Truck' and country_code = 'GB'
+       and card_mode = 'bundled' and card_bps is null and card_fixed_minor is null and truck_fee_bps = 395 and superseded_at is null and verified_at is null) <> 1 then
+    raise exception 'compare-calc-fix-1: What The Truck''s plan 8c777139 not found as expected'; end if;
+  if (select count(*) from public.competitor_plans where id in ('3cc7270e-848f-5b6d-920b-a89a57001c7f', '89278321-a389-5950-bc09-ae8f12036876')
+       and card_mode = 'bundled' and card_bps is null and superseded_at is null and verified_at is null) <> 2 then
+    raise exception 'compare-calc-fix-1: the Favrit / WEIQ plans not found as expected'; end if;
+  if exists (select 1 from public.competitor_plans where competitor_id = '3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93' and country_code = 'GB'
+       and lower(plan_name) = lower('What The Truck (online fee + VAT)')) then
+    raise exception 'compare-calc-fix-1: a plan named "What The Truck (online fee + VAT)" already exists'; end if;
+end $$;
+
+create temporary table ccf1_before as
+select (select md5(string_agg((to_jsonb(p) - 'card_mode' - 'card_bps' - 'card_fixed_minor' - 'truck_fee_bps' - 'plan_name')::text, '|' order by p.id)) from public.competitor_plans p) as stripped,
+       (select md5(string_agg(to_jsonb(p)::text, '|' order by p.id)) from public.competitor_plans p
+         where p.id not in ('8c777139-ad56-5b20-93c1-b9f44dc8bb1c', '3cc7270e-848f-5b6d-920b-a89a57001c7f', '89278321-a389-5950-bc09-ae8f12036876')) as others,
+       (select count(*) from public.competitor_plans) as n;
+
+update public.competitor_plans
+   set card_mode = 'bundled', card_bps = 395, card_fixed_minor = 0, truck_fee_bps = 0, plan_name = 'What The Truck (online fee + VAT)'
+ where id = '8c777139-ad56-5b20-93c1-b9f44dc8bb1c' and truck_fee_bps = 395 and card_bps is null;
+
+update public.competitor_plans set card_mode = 'unknown'
+ where id in ('3cc7270e-848f-5b6d-920b-a89a57001c7f', '89278321-a389-5950-bc09-ae8f12036876') and card_mode = 'bundled' and card_bps is null;
+
+do $$
+declare b record;
+begin
+  select * into b from ccf1_before;
+  if (select count(*) from public.competitor_plans) <> b.n then raise exception 'compare-calc-fix-1: the plan count changed'; end if;
+  if (select md5(string_agg((to_jsonb(p) - 'card_mode' - 'card_bps' - 'card_fixed_minor' - 'truck_fee_bps' - 'plan_name')::text, '|' order by p.id)) from public.competitor_plans p) <> b.stripped then
+    raise exception 'compare-calc-fix-1: a column other than the five named ones changed'; end if;
+  if (select md5(string_agg(to_jsonb(p)::text, '|' order by p.id)) from public.competitor_plans p
+       where p.id not in ('8c777139-ad56-5b20-93c1-b9f44dc8bb1c', '3cc7270e-848f-5b6d-920b-a89a57001c7f', '89278321-a389-5950-bc09-ae8f12036876')) <> b.others then
+    raise exception 'compare-calc-fix-1: a plan other than the three changed'; end if;
+  if (select count(*) from public.competitor_plans where id = '8c777139-ad56-5b20-93c1-b9f44dc8bb1c' and card_mode = 'bundled' and card_bps = 395
+       and card_fixed_minor = 0 and truck_fee_bps = 0 and plan_name = 'What The Truck (online fee + VAT)') <> 1 then
+    raise exception 'compare-calc-fix-1: What The Truck''s plan not as intended'; end if;
+  if (select count(*) from public.competitor_plans where id in ('3cc7270e-848f-5b6d-920b-a89a57001c7f', '89278321-a389-5950-bc09-ae8f12036876') and card_mode = 'unknown') <> 2 then
+    raise exception 'compare-calc-fix-1: Favrit / WEIQ not as intended'; end if;
+  raise notice 'compare-calc-fix-1: md5 proof passed — stripped %, others %', b.stripped, b.others;
+end $$;
+
+drop table ccf1_before;
+
+commit;
+
+-- 4 · the publish (scripts/comparison-publish/main.ts): dry run (rolled back) — 96 live, no change; then for real — no change; revalidate 200.
+
+-- 5 · READ: verify
+with live as (select * from comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+shown as (select l.country_code cc, (s->>'competitorId')::uuid cid, (s->>'planId')::uuid pid from live l, jsonb_array_elements(l.shown::jsonb) s),
+marked as (select e.country_code cc, e.competitor_id cid from comparison_entries e join live l on l.country_code=e.country_code where e.auto_verified_at is not null and not e.hidden)
+select json_build_object(
+ 'live',(select count(*) from live),
+ 'ae',(select json_build_object('auto_publish',auto_publish,'auto_live',auto_live) from comparison_publish where country_code='AE'),
+ 'shown',(select count(*) from shown),
+ 'shown_not_marked',(select count(*) from shown s where not exists (select 1 from comparison_entries e join competitor_plans p on p.id=e.primary_plan_id where e.country_code=s.cc and e.competitor_id=s.cid and e.auto_verified_at is not null and p.id=s.pid and (p.auto_verified_at is not null or p.verified_at is not null))),
+ 'marked_not_shown',(select count(*) from marked m where not exists (select 1 from shown s where s.cc=m.cc and s.cid=m.cid)),
+ 'wtt',(select row_to_json(x) from (select plan_name, card_mode, card_bps, card_fixed_minor, truck_fee_bps, vat, auto_verified_at is not null marked from competitor_plans where id='8c777139-ad56-5b20-93c1-b9f44dc8bb1c') x),
+ 'fav_weiq',(select json_agg(json_build_object('plan',plan_name,'card_mode',card_mode,'marked',auto_verified_at is not null)) from competitor_plans where id in ('3cc7270e-848f-5b6d-920b-a89a57001c7f','89278321-a389-5950-bc09-ae8f12036876'))
+) r;
+
+-- 6 · READ: PostgREST role settings (is a db_max_rows set in the database?)
+select rolname, rolconfig from pg_roles where rolname in ('authenticator','anon','service_role','authenticated');
