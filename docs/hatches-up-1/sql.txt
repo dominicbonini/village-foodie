@@ -1,0 +1,61 @@
+-- hatches-up-1 (26 Nov 2026): every SQL statement run, in order. Read-only SELECTs are marked READ.
+
+-- 1 · READ: Hatches Up and What The Truck as stored (competitors, competitor_plans, comparison_entries)
+select json_build_object('comp',(select json_agg(row_to_json(c)) from competitors c where id::text like 'fbbf6c37%' or id::text like '3f0b6c2e%'), 'plans',(select json_agg(row_to_json(p)) from competitor_plans p where competitor_id::text like 'fbbf6c37%' or competitor_id::text like '3f0b6c2e%'), 'entries',(select json_agg(row_to_json(e)) from comparison_entries e where competitor_id::text like 'fbbf6c37%' or competitor_id::text like '3f0b6c2e%')) r;
+
+-- 2 · READ: Hatches Up's answers, What The Truck's current answers, the feature keys
+select json_build_object('hu',(select json_agg(json_build_object('k',feature_key,'cc',country_code,'v',value,'q',quote,'src',source_url,'ver',verified_at,'sup',superseded_at)) from competitor_feature_values where competitor_id='fbbf6c37-2dd0-5f11-9e68-a0be5d563629'), 'wtt',(select json_agg(json_build_object('k',feature_key,'v',value,'note',note)) from competitor_feature_values where competitor_id='3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93' and superseded_at is null), 'keys',(select json_agg(distinct feature_key) from competitor_feature_values)) r;
+
+-- 3 · READ: feature flags
+select key, labels->>'en' en, absence_means_no from comparison_features where key in ('preorder','ahead','payattruck','capacity','stock','schedule','private','discovery','notify','reports','monthly','setup','term','cardfee','perorder','domain','social','walkup','kds','tickets','asap','delivery') order by key;
+
+-- 4 · READ: how setup / term / perorder / monthly answers are stored elsewhere
+select feature_key, value, note, count(*) n from competitor_feature_values where superseded_at is null and feature_key in ('setup','term','perorder','monthly') and value<>'unknown' and value<>'not_mentioned' group by 1,2,3 order by n desc limit 30;
+
+-- 5 · the importer (scripts/data-import/main.ts) on data/hatches-up-1/competitors.json: dry run (rolled back), then for real. Its statements:
+--   update competitors set website (empty → https://hatchesup.co.uk); insert 13 competitor_feature_values; supersede the 13 bare 'unknown' ones;
+--   upsert 13 competitor_feature_checks; insert 1 competitor_plans (a8235235); insert 1 data_imports row.
+
+-- 6 · migration 20261146 (pre-flighted with compare-db-proofs --preflight, rolled back; then applied with db-migrate.cjs)
+-- 20261146_hatches_up_1.sql — hatches-up-1 (26 Nov 2026; docs/hatches-up-1-report.md): compare-square-1 step 4 finished with the URL
+-- Dominic sent. data/hatches-up-1/competitors.json (imported) set the website and added the plan and the quoted answers; this does what
+-- the importer can't:
+--   1 · check_urls: its own /vendors/ and /pricing/ pages;
+--   2 · the GB entry's shown plan → the new plan a8235235 (from /pricing/);
+--   3 · the old "Online ordering" plan eec3fac5 (from the manual, no source) superseded — kept as history.
+-- Competitor and comparison tables only. Guarded; pre-flighted with scripts/compare-db-proofs.cjs --preflight (rolled back).
+begin;
+
+do $$
+begin
+  if (select count(*) from public.competitors where id = 'fbbf6c37-2dd0-5f11-9e68-a0be5d563629' and name = 'Hatches Up'
+       and website = 'https://hatchesup.co.uk' and coalesce(cardinality(check_urls), 0) = 0) <> 1 then
+    raise exception 'hatches-up-1: Hatches Up (website set by the import, no check_urls) not found as expected'; end if;
+  if (select count(*) from public.competitor_plans where id = 'a8235235-b166-5552-9d0c-e757f6ba7f3e' and competitor_id = 'fbbf6c37-2dd0-5f11-9e68-a0be5d563629'
+       and country_code = 'GB' and superseded_at is null and source_url = 'https://hatchesup.co.uk/pricing/') <> 1 then
+    raise exception 'hatches-up-1: the imported plan a8235235 not found as expected'; end if;
+  if (select count(*) from public.competitor_plans where id = 'eec3fac5-8dfd-54a6-9b5b-473a9fdeea67' and superseded_at is null and source_url is null) <> 1 then
+    raise exception 'hatches-up-1: the old plan eec3fac5 not found as expected'; end if;
+  if (select count(*) from public.comparison_entries where id = '5a839fb0-eca9-41d6-aabf-986b9b6c1000'
+       and primary_plan_id = 'eec3fac5-8dfd-54a6-9b5b-473a9fdeea67' and verified_at is null) <> 1 then
+    raise exception 'hatches-up-1: the GB entry 5a839fb0 not found as expected'; end if;
+end $$;
+
+update public.competitors
+   set check_urls = array['https://hatchesup.co.uk/vendors/', 'https://hatchesup.co.uk/pricing/'],
+       notes = coalesce(notes || ' · ', '') || 'hatches-up-1 (26 Nov 2026): its own site https://hatchesup.co.uk (URL from Dominic); read /vendors/ and /pricing/'
+ where id = 'fbbf6c37-2dd0-5f11-9e68-a0be5d563629';
+
+update public.comparison_entries set primary_plan_id = 'a8235235-b166-5552-9d0c-e757f6ba7f3e'
+ where id = '5a839fb0-eca9-41d6-aabf-986b9b6c1000' and primary_plan_id = 'eec3fac5-8dfd-54a6-9b5b-473a9fdeea67';
+
+update public.competitor_plans set superseded_at = now()
+ where id = 'eec3fac5-8dfd-54a6-9b5b-473a9fdeea67' and superseded_at is null;
+
+commit;
+
+-- 7 · the publish (scripts/comparison-publish/main.ts): dry run (rolled back), then for real — publish_events +2, the marks (auto_verified_at).
+
+-- 8 · READ: verification
+select json_build_object('gb_entries',(select json_agg(json_build_object('name',c.name,'cls',c.food_truck_class,'auto',e.auto_verified_at is not null,'hidden',e.hidden,'plan',p.plan_name,'m',p.monthly_minor,'card',p.card_bps||'+'||p.card_fixed_minor,'plan_auto',p.auto_verified_at is not null) order by c.name) from comparison_entries e join competitors c on c.id=e.competitor_id left join competitor_plans p on p.id=e.primary_plan_id where e.country_code='GB' and c.name in ('Hatches Up','Eventifood','Ordea','What The Truck','Square')), 'hu',(select json_build_object('website',website,'check_urls',check_urls) from competitors where id='fbbf6c37-2dd0-5f11-9e68-a0be5d563629'), 'hu_plans',(select json_agg(json_build_object('id',left(id::text,8),'name',plan_name,'sup',superseded_at is not null)) from competitor_plans where competitor_id='fbbf6c37-2dd0-5f11-9e68-a0be5d563629'), 'hu_answers_auto',(select count(*) from competitor_feature_values where competitor_id='fbbf6c37-2dd0-5f11-9e68-a0be5d563629' and superseded_at is null and auto_verified_at is not null), 'cs',(select row_to_json(s) from (select * from country_settings where country_code='GB') s)->'comparison_live') r;
+-- ('cs' came back null: country_settings has no comparison_live key; read only, nothing written there.)
