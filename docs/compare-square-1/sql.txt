@@ -1,0 +1,286 @@
+-- docs/compare-square-1/sql.txt — every SQL statement of compare-square-1 (26 November 2026).
+-- 1 · read-only queries (Supabase MCP), in the order run; 2 · the import dry run (rolled back) and the import; 3 · migration 20261145 in full
+-- (pre-flighted with compare-db-proofs --preflight-square, rolled back; applied with scripts/db-migrate.cjs, commit 5135f4e3); 4 · the publish
+-- dry run (rolled back) and the publish — as the entry points logged them ("SQL>" lines, de-duplicated, "-- ×n" = run n times with bound
+-- parameters).
+
+
+-- 1.1 · read-only
+select json_build_object(
+'comps', (select json_agg(json_build_object('id',c.id,'n',c.name,'w',c.website,'u',c.check_urls,'lc',c.lifecycle,'f',c.focus,'cat',c.category,'nic',c.not_in_countries,
+   'plans',(select json_agg(p.country_code||' '||p.plan_name||' '||coalesce(p.monthly_minor::text,'-')||' '||p.currency||' '||p.status||case when p.unclear then ' unclear' else '' end||' bps'||coalesce(p.truck_fee_bps::text,'-')||' '||coalesce(p.source_url,'')) from public.competitor_plans p where p.competitor_id=c.id and p.superseded_at is null),
+   'entries',(select string_agg(e.country_code,' ') from public.comparison_entries e where e.competitor_id=c.id),
+   'answers',(select count(*) from public.competitor_feature_values v where v.competitor_id=c.id and v.superseded_at is null))) from public.competitors c
+  where c.name ilike any (array['%square%','%what the truck%','%whatthetruck%','%hatches%','%eventifood%'])),
+'features', (select json_agg(key||':'||coalesce(tier::text,'')||':'||checked::text order by key) from public.comparison_features));
+
+-- 1.2 · read-only
+select json_agg(json_build_object('k',feature_key,'cc',country_code,'v',value,'n',left(note,120),'q',left(quote,120),'u',source_url) order by feature_key) from public.competitor_feature_values where competitor_id='9acae7b6-2af6-4800-93ee-0be972e22314' and superseded_at is null;
+select json_agg(json_build_object('k',feature_key,'v',value,'n',left(note,160),'q',left(quote,100)) order by feature_key) from public.competitor_feature_values where competitor_id='3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93' and superseded_at is null and feature_key in ('ahead','preorder','cardfee','monthly','perorder');
+
+-- 1.3 · read-only
+select json_agg(json_build_object('k',feature_key,'cc',country_code,'v',value,'n',left(note,120),'q',left(quote,100),'u',source_url) order by feature_key) from public.competitor_feature_values where competitor_id='9acae7b6-2af6-4800-93ee-0be972e22314' and superseded_at is null;
+
+-- 1.4 · read-only
+select json_agg(json_build_object('id',left(id::text,8),'n',plan_name,'cc',country_code,'m',monthly_minor,'tb',truck_fee_bps,'tf',truck_fee_fixed_minor,'cm',card_mode,'cb',card_bps,'cf',card_fixed_minor,'ca',card_rate_assumed,'vat',vat,'yo',yearly_only,'u',unclear,'notes',left(notes,200))) from public.competitor_plans where competitor_id in ('9acae7b6-2af6-4800-93ee-0be972e22314','3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93') and superseded_at is null;
+
+-- 1.5 · read-only
+select json_build_object('cons',(select json_agg(conname||': '||pg_get_constraintdef(oid)) from pg_constraint where conrelid='public.competitor_feature_values'::regclass),
+'percountry',(select count(*) from public.competitor_feature_values where superseded_at is null and country_code is not null),
+'idx',(select json_agg(indexdef) from pg_indexes where tablename='competitor_feature_values'),
+'cols',(select json_agg(column_name||' '||data_type||' '||is_nullable||' '||coalesce(column_default,'')) from information_schema.columns where table_schema='public' and table_name='competitor_feature_values'));
+
+-- 1.6 · read-only
+select feature_key, value, quote, source_url, country_code, verified_at, auto_blocked from public.competitor_feature_values where competitor_id='3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93' and superseded_at is null and feature_key in ('ahead','preorder','cardfee');
+
+-- 1.7 · read-only
+select json_build_object('plans',(select json_agg(json_build_object('c',left(competitor_id::text,8),'cc',country_code,'n',plan_name,'m',monthly_minor,'cur',currency,'st',status,'id',id)) from public.competitor_plans where superseded_at is null and competitor_id in ('9acae7b6-2af6-4800-93ee-0be972e22314','3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93')),
+'entries',(select json_agg(json_build_object('id',id,'cc',country_code,'c',left(competitor_id::text,8),'pp',primary_plan_id)) from public.comparison_entries where competitor_id in ('9acae7b6-2af6-4800-93ee-0be972e22314','3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93')),
+'cs',(select json_agg(country_code||':'||currency||':'||enabled::text) from public.country_settings where country_code in ('US','CA','GB','IE','AU','JP','FR','ES')),
+'pub',(select json_agg(country_code||':'||auto_publish::text||'/'||auto_live::text||'/'||coalesce(admin_off,false)::text) from public.comparison_publish where country_code in ('US','CA','GB','IE','AU','JP','FR','ES')));
+
+-- 1.8 · read-only
+select json_object_agg(country_code, json_build_object('live', auto_live and auto_publish and not coalesce(admin_off,false), 's', (select string_agg(x->>'name', ' · ' order by o) from jsonb_array_elements(shown) with ordinality t(x,o)))) from public.comparison_publish;
+
+-- 1.9 · read-only
+with ceil(cur, mx) as (values ('USD',1500),('EUR',1500),('GBP',1200),('CHF',1400),('CAD',2000),('AUD',2300),('NZD',2500),('SGD',2000),('HKD',12000),('MYR',7000),('THB',55000),('JPY',230000),('KRW',2000000),('TWD',48000),('INR',125000),('IDR',24000000),('BRL',8000),('MXN',27000),('CLP',1400000),('COP',6000000),('PEN',5600),('ARS',1500000),('DKK',11000),('SEK',16000),('NOK',16000),('ISK',210000),('PLN',6000),('CZK',35000),('HUF',550000),('RON',7000),('BGN',2700),('RSD',160000),('TRY',50000),('AED',5500),('SAR',5600),('QAR',5500),('ZAR',27000),('NGN',2400000),('EGP',72000),('ILS',5500),('UAH',62000),('KZT',750000),('GEL',4000),('MAD',15000)),
+x as (select p.monthly_minor / power(10, case when p.currency in ('JPY','KRW','CLP') then 0 when p.currency in ('KWD','BHD','JOD','OMR') then 3 else 2 end) major, ceil.mx from public.competitor_plans p left join ceil on ceil.cur=p.currency where p.superseded_at is null and p.monthly_minor is not null)
+select json_build_object(
+ 'live', (select count(*) from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+ 'list', (select string_agg(country_code,' ' order by country_code) from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+ 'shown_ne_marked', (select count(*) from public.comparison_publish p where p.auto_live and jsonb_array_length(p.shown) <> (select count(*) from public.comparison_entries e where e.country_code=p.country_code and e.auto_verified_at is not null)),
+ 'ae', (select auto_publish::text||'/'||auto_live::text from public.comparison_publish where country_code='AE'),
+ 'over_ceiling', (select count(*) from x where mx is not null and major > mx), 'priced_plans', (select count(*) from x),
+ 'gb', (select string_agg(x->>'name',' · ' order by o) from public.comparison_publish, jsonb_array_elements(shown) with ordinality t(x,o) where country_code='GB'),
+ 'wtt', (select row_to_json(r) from (select plan_name, monthly_minor, currency, truck_fee_bps, card_mode, vat, status, unclear, source_url from public.competitor_plans where id='8c777139-ad56-5b20-93c1-b9f44dc8bb1c') r),
+ 'hatches', (select row_to_json(r) from (select website, check_urls, food_truck_class, (select json_agg(plan_name||' '||monthly_minor||' '||currency||' '||status) from public.competitor_plans p where p.competitor_id=c.id and p.superseded_at is null) plans from public.competitors c where name='Hatches Up') r),
+ 'chuz', (select website||' '||array_to_string(check_urls,',') from public.competitors where left(id::text,8)='da91c9a7'),
+ 'square_shown', (select string_agg(country_code,' ' order by country_code) from public.comparison_publish p where exists (select 1 from jsonb_array_elements(p.shown) x where x->>'name'='Square')),
+ 'classes', (select count(*) filter (where food_truck_class='A')||' A / '||count(*) filter (where food_truck_class='B')||' B' from public.competitors));
+
+-- 2a · import DRY RUN (npx -y -p pg@8.13.1 node scripts/competitor-check/run.mjs scripts/data-import/main.ts --dry-run) — ROLLED BACK
+set statement_timeout = '120s';
+set lock_timeout = '10s';
+-- ×3
+select (select count(*) from public.competitors) … (the comparison tables' row counts — scripts/comparison-db.ts comparisonTally);
+select coalesce(json_agg(x), '[]'::json) as rows from (select file_path, sha256, imported_at, result, counts, message from public.data_imports order by imported_at desc limit 500) x;
+begin;
+select coalesce(json_agg(x), '[]'::json) as rows from (select key, checked, tier, checked_by, scope_by, updated_by from public.comparison_features) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, name, website, lifecycle, added_as_candidate, notes, focus, payment_providers, features_checked_on, not_in_countries, check_failures from public.competitors) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, feature_key, country_code, value, note, quote, source_url, superseded_at, verified_at, auto_blocked from public.competitor_feature_values where superseded_at is null) x;
+insert into public."competitor_feature_values" ("checked_on", "competitor_id", "country_code", "feature_key", "id", "note", "quote", "source_url", "superseded_at", "value", "verified_at", "verified_by") select "checked_on", "competitor_id", "country_code", "feature_key", "id", "note", "quote", "source_url", "superseded_at", "value", "verified_at", "verified_by" from json_populate_recordset(null::public."competitor_feature_values", $1::json)   -- params: json[5 rows]
+update public.competitor_feature_values set superseded_at = $2 where id = any($1::uuid[]) and superseded_at is null   -- params: array[2], string
+update public.competitor_feature_values set superseded_at = null where id = any($1::uuid[]) and superseded_at = $2   -- params: array[5], string
+insert into public."competitor_feature_checks" ("checked_on", "competitor_id", "country_code", "feature_key", "pages_checked", "rejudge") select "checked_on", "competitor_id", "country_code", "feature_key", "pages_checked", "rejudge" from json_populate_recordset(null::public."competitor_feature_checks", $1::json) on conflict ("competitor_id", "feature_key", "country_code") do update set "checked_on" = excluded."checked_on", "pages_checked" = excluded."pages_checked", "rejudge" = excluded."rejudge"   -- params: json[5 rows]
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, country_code, plan_name, superseded_at from public.competitor_plans) x;
+insert into public."competitor_plans" ("card_bps", "card_fixed_minor", "card_mode", "card_rate_assumed", "checked_on", "competitor_id", "country_code", "currency", "customer_fee_bps", "customer_fee_fixed_minor", "id", "included_orders", "monthly_minor", "notes", "order_cap", "overage_fixed_minor", "plan_name", "price_hidden", "second_hand", "setup_minor", "source", "source_url", "status", "truck_fee_bps", "truck_fee_fixed_minor", "unclear", "vat", "verified_at", "verified_by", "yearly_only") select "card_bps", "card_fixed_minor", "card_mode", "card_rate_assumed", "checked_on", "competitor_id", …   -- params: json[16 rows]
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, competitor_id from public.comparison_entries) x;
+insert into public."comparison_entries" ("choose_when", "competitor_id", "country_code", "id", "primary_plan_id", "sort_order", "verified_at", "verified_by") select "choose_when", "competitor_id", "country_code", "id", "primary_plan_id", "sort_order", "verified_at", "verified_by" from json_populate_recordset(null::public."comparison_entries", $1::json)   -- params: json[7 rows]
+rollback;
+
+-- 2b · import, real run — committed
+set statement_timeout = '120s';
+set lock_timeout = '10s';
+-- ×2
+select (select count(*) from public.competitors) … (the comparison tables' row counts — scripts/comparison-db.ts comparisonTally);
+select coalesce(json_agg(x), '[]'::json) as rows from (select file_path, sha256, imported_at, result, counts, message from public.data_imports order by imported_at desc limit 500) x;
+begin;
+select coalesce(json_agg(x), '[]'::json) as rows from (select key, checked, tier, checked_by, scope_by, updated_by from public.comparison_features) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, name, website, lifecycle, added_as_candidate, notes, focus, payment_providers, features_checked_on, not_in_countries, check_failures from public.competitors) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, feature_key, country_code, value, note, quote, source_url, superseded_at, verified_at, auto_blocked from public.competitor_feature_values where superseded_at is null) x;
+insert into public."competitor_feature_values" ("checked_on", "competitor_id", "country_code", "feature_key", "id", "note", "quote", "source_url", "superseded_at", "value", "verified_at", "verified_by") select "checked_on", "competitor_id", "country_code", "feature_key", "id", "note", "quote", "source_url", "superseded_at", "value", "verified_at", "verified_by" from json_populate_recordset(null::public."competitor_feature_values", $1::json)   -- params: json[5 rows]
+update public.competitor_feature_values set superseded_at = $2 where id = any($1::uuid[]) and superseded_at is null   -- params: array[2], string
+update public.competitor_feature_values set superseded_at = null where id = any($1::uuid[]) and superseded_at = $2   -- params: array[5], string
+insert into public."competitor_feature_checks" ("checked_on", "competitor_id", "country_code", "feature_key", "pages_checked", "rejudge") select "checked_on", "competitor_id", "country_code", "feature_key", "pages_checked", "rejudge" from json_populate_recordset(null::public."competitor_feature_checks", $1::json) on conflict ("competitor_id", "feature_key", "country_code") do update set "checked_on" = excluded."checked_on", "pages_checked" = excluded."pages_checked", "rejudge" = excluded."rejudge"   -- params: json[5 rows]
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, country_code, plan_name, superseded_at from public.competitor_plans) x;
+insert into public."competitor_plans" ("card_bps", "card_fixed_minor", "card_mode", "card_rate_assumed", "checked_on", "competitor_id", "country_code", "currency", "customer_fee_bps", "customer_fee_fixed_minor", "id", "included_orders", "monthly_minor", "notes", "order_cap", "overage_fixed_minor", "plan_name", "price_hidden", "second_hand", "setup_minor", "source", "source_url", "status", "truck_fee_bps", "truck_fee_fixed_minor", "unclear", "vat", "verified_at", "verified_by", "yearly_only") select "card_bps", "card_fixed_minor", "card_mode", "card_rate_assumed", "checked_on", "competitor_id", …   -- params: json[16 rows]
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, competitor_id from public.comparison_entries) x;
+insert into public."comparison_entries" ("choose_when", "competitor_id", "country_code", "id", "primary_plan_id", "sort_order", "verified_at", "verified_by") select "choose_when", "competitor_id", "country_code", "id", "primary_plan_id", "sort_order", "verified_at", "verified_by" from json_populate_recordset(null::public."comparison_entries", $1::json)   -- params: json[7 rows]
+insert into public.data_imports (file_path, sha256, imported_at, result, counts, message) values ($1, $2, $3, $4, $5::jsonb, $6)   -- params: string, string, string, string, string, object
+commit;
+
+-- 3 · supabase/migrations/20261145_compare_square_1.sql
+-- 20261145_compare_square_1.sql — compare-square-1 (Dominic's decisions of 26 November 2026; docs/compare-square-1-report.md).
+-- Competitor and comparison tables only. What the importer can't do (data/compare-square-1/competitors.json did the rest):
+--   1 · competitors.food_truck_class (text, null, 'A' or 'B') — foodtruck-audit-1 §2b's classes, plus Eventifood, Hatches Up and
+--       What The Truck as A. The publish step ranks A, then B, then the rest (lib/comparison-publish.ts).
+--   2 · Chuzmonster's website lme.jp (a third-party article site) → order.yapp.li, its own Takeout page («Takeoutは固定料金…»).
+--   3 · What The Truck's cardfee answer: included on its own payment provider (the importer never replaces a quoted answer).
+--   4 · Square's per-country answers in its 8 countries (ahead, monthly, cardfee), from its own country pages read on 26 Nov.
+--   5 · the shown plan of Square AU (its new Square Online Free) and of What The Truck GB (its new plan).
+-- Guarded; pre-flighted with scripts/compare-db-proofs.cjs --preflight-square (rolled back).
+begin;
+
+alter table public.competitors add column food_truck_class text null check (food_truck_class in ('A', 'B'));
+comment on column public.competitors.food_truck_class is 'compare-square-1: A built for food-truck vendors, B a general tool that sells to them (foodtruck-audit-1 §2b); null not classed';
+
+create temporary table cs1_class (prefix text, name text, cls text);
+insert into cs1_class values
+  ('640ecd44','Beau Camion','A'), ('a207b996','Eatch','A'), ('598df7ba','Food Pronto','A'), ('18f621da','Food Truck Pub','A'), ('10aba63d','Goodfynd','A'),
+  ('2f51f8db','HungryTrucks','A'), ('647a5e78','Moonrise','A'), ('11e41caa','Nomad (nomadcaisse.fr)','A'), ('6dc60fd2','Ordea','A'), ('0947b3fc','Place à emporter','A'),
+  ('a36488cf','Truckly','A'), ('ccd6121e','Where''s The Foodtruck','A'), ('e6a09d6e','モバレジ (Mobaregi, EDDYS FACTORY)','A'), ('6afa79bc','Eventifood','A'),
+  ('fbbf6c37','Hatches Up','A'), ('3f0b6c2e','What The Truck','A'),
+  ('a9825e32','4SaleFood','B'), ('d06ae0d2','Click & Collection','B'), ('ece796a2','Digitale Menukaart','B'), ('b94c7a14','DISH','B'), ('662c9884','Foodticket','B'),
+  ('d03a6e1f','FoxiFood','B'), ('fbfecac2','Frivo','B'), ('7e12931c','Fudo','B'), ('a59dfb20','gastro25','B'), ('abd86253','GastroDok','B'), ('b32f19c9','Grafterr','B'),
+  ('5c901b17','iShopo','B'), ('2a0e471f','Jitmeal','B'), ('79fcc90d','Liefersoft','B'), ('b70bbf5e','MenuForma','B'), ('aed7bf67','Order Tiger','B'), ('1cccb6df','Orderly','B'),
+  ('000f94fa','Payli','B'), ('c71ae83d','Perkss','B'), ('0802a7c8','Poster','B'), ('3cc2b17f','Qrder','B'), ('53395fcb','QRM.hu','B'), ('b6a1a595','Qromo','B'),
+  ('6fa20b90','Rent-a-Shop','B'), ('7734b770','Restomax','B'), ('841dfd9e','Restora POS','B'), ('d41b0ca7','SmakSpace','B'), ('9c855eec','Software Food Good','B'),
+  ('c4972b72','StandMágus / OnlineMágus','B'), ('5f28f634','Tilby','B'), ('cff055db','VexMenu','B'), ('462996c6','WEIQ','B'), ('8c7188e7','Y wait','B'), ('aebf5a80','Yoveletta','B');
+
+do $$
+declare bad int;
+begin
+  select count(*) into bad from cs1_class k where (select count(*) from public.competitors c where left(c.id::text, 8) = k.prefix and c.name = k.name) <> 1;
+  if bad > 0 then raise exception 'compare-square-1: % class rows do not match exactly one competitor by id prefix and name', bad; end if;
+  if (select count(*) from cs1_class) <> 50 then raise exception 'compare-square-1: expected 50 class rows'; end if;
+end $$;
+
+update public.competitors c set food_truck_class = k.cls from cs1_class k where left(c.id::text, 8) = k.prefix and c.name = k.name;
+
+-- 2 · Chuzmonster's own site
+do $$
+begin
+  if (select count(*) from public.competitors where left(id::text, 8) = 'da91c9a7' and website = 'https://lme.jp') <> 1 then
+    raise exception 'compare-square-1: Chuzmonster (website lme.jp) not found as expected'; end if;
+end $$;
+update public.competitors
+   set website = 'https://order.yapp.li', check_urls = array['https://order.yapp.li/takeout'],
+       notes = coalesce(notes || ' · ', '') || 'website corrected (compare-square-1, 26 Nov): lme.jp is a third-party article site; its own page is https://order.yapp.li/takeout («Takeoutは固定料金なので、モバイルオーダーの売上が増えても料金は一切変わりません。»)'
+ where left(id::text, 8) = 'da91c9a7' and website = 'https://lme.jp';
+
+-- 3 · What The Truck's cardfee (every country; it sells in GB only)
+do $$
+begin
+  if (select count(*) from public.competitor_feature_values where competitor_id = '3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93' and feature_key = 'cardfee'
+       and country_code is null and superseded_at is null and verified_at is null) <> 1 then
+    raise exception 'compare-square-1: What The Truck''s current cardfee answer not found as expected'; end if;
+end $$;
+update public.competitor_feature_values set superseded_at = now()
+ where competitor_id = '3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93' and feature_key = 'cardfee' and country_code is null and superseded_at is null;
+insert into public.competitor_feature_values (competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on)
+values ('3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93', 'cardfee', null, 'yes',
+  'included on its own payment provider (card fees are on it, from the first month); its terms §6 say other providers'' fees «are set by them» (https://whatthetruck.ai/terms)',
+  '100% of every sale paid with a UK personal card is yours, with nothing deducted. … The offer for free in-person card rates for the first month is subject to the use of our card terminal and payment provider.',
+  'https://whatthetruck.ai/pricing', '2026-11-26');
+
+-- 4 · Square's per-country answers (its own country pages, 26 Nov): ahead (Square Online pickup), monthly, cardfee (online · in person)
+create temporary table cs1_sq (cc text, k text, v text, note text, quote text, url text);
+insert into cs1_sq values
+  ('US','ahead','partial','Square Online: customers order online and pick up; a chosen time is not stated for the Free plan','Pickup, local delivery, and shipping','https://squareup.com/us/en/online-store/plans'),
+  ('CA','ahead','partial','Square Online: customers order online and pick up; a chosen time is not stated for the Free plan','Offer in-person and curbside pickup, global shipping and delivery by your own staff.','https://squareup.com/ca/en/online-store/plans'),
+  ('GB','ahead','partial','Square Online: customers order online and collect; a chosen time is not stated for the Free plan','Offer click and collect, global shipping and delivery by your own staff.','https://squareup.com/gb/en/online-store/plans'),
+  ('IE','ahead','partial','Square Online: customers order online and collect; a chosen time is not stated for the Free plan','Offer click and collect, global shipping and delivery by your own staff.','https://squareup.com/ie/en/online-store/plans'),
+  ('AU','ahead','partial','Square Online: customers order online and pick up; a chosen time is not stated for the Free plan','Offer in-person and kerbside pickup, global shipping and delivery by your own staff.','https://squareup.com/au/en/online-store/plans'),
+  ('JP','ahead','partial','Square Online: customers order online and collect in store; a chosen time is not stated for the Free plan','店舗での受け取り、デリバリー','https://squareup.com/jp/ja/online-store/plans'),
+  ('FR','ahead','partial','Square Online: customers order online and collect; a chosen time is not stated for the Free plan','Retrait, livraison locale et expédition','https://squareup.com/fr/fr/online-store/plans'),
+  ('ES','ahead','partial','Square Online: customers order online and collect; a chosen time is not stated for the Free plan','Opciones de recogida, entrega a domicilio o envío de pedidos','https://squareup.com/es/es/online-store/plans'),
+  ('US','monthly','yes','Square Free $0 a month; Square Plus $49 a month per location (billing period not stated)','$0/mo. | per location','https://squareup.com/us/en/online-store/plans'),
+  ('CA','monthly','yes','Free $0; Plus $36 a month billed annually','$0 | No monthly fees','https://squareup.com/ca/en/online-store/plans'),
+  ('GB','monthly','yes','Free £0; Plus £20 a month billed annually','£0 | No monthly fees','https://squareup.com/gb/en/online-store/plans'),
+  ('IE','monthly','yes','Free €0; Plus €25 a month billed annually','€0 | No monthly fees','https://squareup.com/ie/en/online-store/plans'),
+  ('AU','monthly','yes','Free $0; Plus $36 a month billed annually','$0 | No monthly fees','https://squareup.com/au/en/online-store/plans'),
+  ('JP','monthly','yes','フリー ¥0; プラス ¥3,780 a month billed monthly (¥3,375 billed yearly)','¥0 | 月額固定費なし','https://squareup.com/jp/ja/online-store/plans'),
+  ('FR','monthly','yes','Gratuit 0 €; Plus 25 € HT a month billed annually','0 € | Pas de frais mensuels','https://squareup.com/fr/fr/online-store/plans'),
+  ('ES','monthly','yes','Gratuito 0 €; Plus 25 € + IVA a month billed annually','0 € | Sin cuotas mensuales','https://squareup.com/es/es/online-store/plans'),
+  ('US','cardfee','yes','Square''s own processing: online 3.3% + 30¢, in person 2.6% + 15¢ (Square Free; Square Plus 2.9% + 30¢ / 2.5% + 15¢)','Tap, dip, or swipe | 2.6% + 15¢ | Online | 3.3% + 30¢','https://squareup.com/us/en/online-store/plans'),
+  ('CA','cardfee','yes','Square''s own processing: online 2.8% + $0.30, in person 2.5% (credit cards)','2.5% per transaction* | Card not present | … 2.8% + 30¢ per transaction*','https://squareup.com/ca/en/pricing'),
+  ('GB','cardfee','yes','Square''s own processing: online 1.4% + 25p (UK cards), in person 1.75% (UK cards)','1.75% for transactions with UK cards · 1.4% + 25p per UK card','https://squareup.com/gb/en/pricing'),
+  ('IE','cardfee','yes','Square''s own processing: online 1.4% + 25c + VAT, in person 1.75% + VAT (EU + EEA cards)','1.75% + VAT per transaction with EU + EEA cards · 1.4% + 25c + VAT per transaction with EU + EEA cards','https://squareup.com/ie/en/pricing'),
+  ('AU','cardfee','yes','Square''s own processing: online 2.2%, in person 1.6%','1.6% per in-person transaction · 2.2% per transaction','https://squareup.com/au/en/pricing'),
+  ('JP','cardfee','yes','Square''s own processing: online 3.6%, in person 2.5% (under ¥30m a year, major card brands)','対面決済手数料: 2.5%* · オンライン 3.6%','https://squareup.com/jp/ja/pricing'),
+  ('FR','cardfee','yes','Square''s own processing: online 1,4 % + 0,25 €, in person from 1,65 % (EU + EEA cards)','Frais de traitement à partir de 1,65 % par transaction avec des cartes en provenance de l’UE et de l’EEE · 1,4 % + 0,25 €','https://squareup.com/fr/fr/pricing'),
+  ('ES','cardfee','yes','Square''s own processing: online 1,4 % + 0,25 €, in person 1,25 % + 0,05 € (EU + EEA cards)','1,25 % + 0,05 € Comisión por transacción con tarjeta de la UE y del EEE · 1,4 % + 0,25 €','https://squareup.com/es/es/pricing');
+
+do $$
+begin
+  if (select count(*) from cs1_sq) <> 24 then raise exception 'compare-square-1: expected 24 Square answers'; end if;
+  if exists (select 1 from public.competitor_feature_values v join cs1_sq s on s.cc = v.country_code and s.k = v.feature_key
+             where v.competitor_id = '9acae7b6-2af6-4800-93ee-0be972e22314' and v.superseded_at is null) then
+    raise exception 'compare-square-1: Square already has a per-country answer for one of these'; end if;
+end $$;
+insert into public.competitor_feature_values (competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on)
+select '9acae7b6-2af6-4800-93ee-0be972e22314', k, cc, v, note, quote, url, '2026-11-26' from cs1_sq;
+
+-- 5 · the shown plans
+do $$
+begin
+  if (select count(*) from public.competitor_plans where id in ('9da9b9d8-029c-512e-b2ef-38305fcceae7', '8c777139-ad56-5b20-93c1-b9f44dc8bb1c') and superseded_at is null) <> 2 then
+    raise exception 'compare-square-1: the imported plans (Square AU Free, What The Truck GB) are not there — run the import first'; end if;
+end $$;
+update public.comparison_entries set primary_plan_id = '9da9b9d8-029c-512e-b2ef-38305fcceae7' where id = '5b395f46-11d1-5ee1-b1e5-b1e8b55bb176' and primary_plan_id = '838091e0-5442-55e8-931b-2c7fd03ceb24';
+update public.comparison_entries set primary_plan_id = '8c777139-ad56-5b20-93c1-b9f44dc8bb1c' where id = 'ac889d5d-eda0-4fa6-a1e1-f1f190b5ca77' and primary_plan_id = 'b7e41d58-2c9f-4e06-8a3d-91c5f0e2b647';
+
+do $$
+begin
+  if (select count(*) from public.competitors where food_truck_class = 'A') <> 16 or (select count(*) from public.competitors where food_truck_class = 'B') <> 34 then
+    raise exception 'compare-square-1: the classes were not all written'; end if;
+  if (select count(*) from public.comparison_entries where (id = '5b395f46-11d1-5ee1-b1e5-b1e8b55bb176' and primary_plan_id = '9da9b9d8-029c-512e-b2ef-38305fcceae7')
+       or (id = 'ac889d5d-eda0-4fa6-a1e1-f1f190b5ca77' and primary_plan_id = '8c777139-ad56-5b20-93c1-b9f44dc8bb1c')) <> 2 then
+    raise exception 'compare-square-1: the two entries'' plans were not set'; end if;
+  if (select count(*) from public.competitors where left(id::text, 8) = 'da91c9a7' and website = 'https://order.yapp.li') <> 1 then
+    raise exception 'compare-square-1: Chuzmonster''s website not set'; end if;
+end $$;
+
+drop table cs1_class;
+drop table cs1_sq;
+
+commit;
+
+
+-- 4a · publish DRY RUN (… scripts/comparison-publish/main.ts --dry-run) — ROLLED BACK
+set statement_timeout = '120s';
+set lock_timeout = '10s';
+-- ×3
+select (select count(*) from public.competitors) … (the comparison tables' row counts — scripts/comparison-db.ts comparisonTally);
+begin;
+select coalesce(json_agg(x), '[]'::json) as rows from (select country_code, currency, locale, enabled, comparison_status from public.country_settings) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.comparison_publish) x;
+-- ×2
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at, group_label, pinned, hidden, auto_verified_at, auto_blocked from public.comparison_entries order by sort_order) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, name, website, focus, payment_providers, features_checked_on, features_verified_at, notes, lifecycle, added_as_candidate, check_urls, check_interval_days, next_check_at, last_checked_at, deep_checked_at, check_requested_at, category, category_by, check_failures, check_urls_by, not_in_countries, food_truck_class, updated_at from public.competitors order by name) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, country_code, plan_name, currency, price_hidden, monthly_minor, yearly_only, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, card_rate_assumed, order_cap, included_orders, overage_fixed_minor, vat, status, unclear, second_hand, source, source_url, checked_on, verified_at, verified_by, notes, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_plans order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, currency, meal_minor, meal_source_label, meal_source_url, meal_source_ok, order_multiplier, eur_rate, eur_rate_date, card_bps, card_fixed_minor, planned_pro_minor, planned_pro_included_minor, planned_unlimited_minor, notes, checked_on, superseded_at, created_at from public.country_benchmarks order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, checked_on, pages_checked from public.competitor_feature_checks where pages_checked is not null order by competitor_id, feature_key, country_code) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_feature_values where superseded_at is null order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, country_code, plan_id, found, created_at from public.competitor_check_findings where field = 'monthly_price' and second_check = 'confirmed' and quote_in_page = true and review_status <> 'rejected' order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.competitor_check_findings where review_status = 'pending' order by id) x;
+-- ×209
+insert into public."comparison_publish" ("auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+insert into public."comparison_publish" ("auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "auto_publish" = excluded."auto_publish", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+update public."comparison_entries" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[9], string
+update public."comparison_entries" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[7], object
+update public.comparison_entries set primary_plan_id = $2 where id = $1   -- params: string, string
+update public."competitor_plans" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[10], string
+update public."competitor_plans" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[8], object
+update public."competitor_feature_values" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[30], string
+insert into public."comparison_publish_events" ("at", "competitor_id", "country_code", "detail", "kind") select "at", "competitor_id", "country_code", "detail", "kind" from json_populate_recordset(null::public."comparison_publish_events", $1::json)   -- params: json[39 rows]
+rollback;
+
+-- 4b · publish, real run — committed (live 74 → 96)
+set statement_timeout = '120s';
+set lock_timeout = '10s';
+-- ×3
+select (select count(*) from public.competitors) … (the comparison tables' row counts — scripts/comparison-db.ts comparisonTally);
+begin;
+select coalesce(json_agg(x), '[]'::json) as rows from (select country_code, currency, locale, enabled, comparison_status from public.country_settings) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.comparison_publish) x;
+-- ×2
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at, group_label, pinned, hidden, auto_verified_at, auto_blocked from public.comparison_entries order by sort_order) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, name, website, focus, payment_providers, features_checked_on, features_verified_at, notes, lifecycle, added_as_candidate, check_urls, check_interval_days, next_check_at, last_checked_at, deep_checked_at, check_requested_at, category, category_by, check_failures, check_urls_by, not_in_countries, food_truck_class, updated_at from public.competitors order by name) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, country_code, plan_name, currency, price_hidden, monthly_minor, yearly_only, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, card_rate_assumed, order_cap, included_orders, overage_fixed_minor, vat, status, unclear, second_hand, source, source_url, checked_on, verified_at, verified_by, notes, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_plans order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, currency, meal_minor, meal_source_label, meal_source_url, meal_source_ok, order_multiplier, eur_rate, eur_rate_date, card_bps, card_fixed_minor, planned_pro_minor, planned_pro_included_minor, planned_unlimited_minor, notes, checked_on, superseded_at, created_at from public.country_benchmarks order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, checked_on, pages_checked from public.competitor_feature_checks where pages_checked is not null order by competitor_id, feature_key, country_code) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_feature_values where superseded_at is null order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, country_code, plan_id, found, created_at from public.competitor_check_findings where field = 'monthly_price' and second_check = 'confirmed' and quote_in_page = true and review_status <> 'rejected' order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.competitor_check_findings where review_status = 'pending' order by id) x;
+-- ×209
+insert into public."comparison_publish" ("auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+insert into public."comparison_publish" ("auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "auto_publish" = excluded."auto_publish", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+update public."comparison_entries" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[9], string
+update public."comparison_entries" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[7], object
+update public.comparison_entries set primary_plan_id = $2 where id = $1   -- params: string, string
+update public."competitor_plans" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[10], string
+update public."competitor_plans" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[8], object
+update public."competitor_feature_values" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[30], string
+insert into public."comparison_publish_events" ("at", "competitor_id", "country_code", "detail", "kind") select "at", "competitor_id", "country_code", "detail", "kind" from json_populate_recordset(null::public."comparison_publish_events", $1::json)   -- params: json[39 rows]
+commit;
