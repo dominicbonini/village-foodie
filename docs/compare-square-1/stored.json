@@ -1,0 +1,14 @@
+{
+ "$comment": "Read once with a read-only SELECT on 26 Nov 2026 (docs/compare-square-1/sql.txt): the current plans and entries of Square and What The Truck.",
+ "competitors": { "9acae7b6": "9acae7b6-2af6-4800-93ee-0be972e22314", "3f0b6c2e": "3f0b6c2e-8d4a-4b7e-9a51-6e2f1d0c7a93" },
+ "plans": [
+  { "c": "9acae7b6", "cc": "AU", "n": "Square for Restaurants Plus", "m": 12900, "cur": "AUD", "id": "40be1644-2ab0-530f-a6c5-eb8400f3ad29" },
+  { "c": "9acae7b6", "cc": "AU", "n": "Square Online Plus", "m": 4000, "cur": "AUD", "id": "494baccd-3ff2-5b57-abde-eb5786d0d402" },
+  { "c": "9acae7b6", "cc": "AU", "n": "Square for Restaurants Free", "m": 0, "cur": "AUD", "id": "838091e0-5442-55e8-931b-2c7fd03ceb24" },
+  { "c": "3f0b6c2e", "cc": "GB", "n": "No monthly fee (fee per payment)", "m": 0, "cur": "GBP", "id": "b7e41d58-2c9f-4e06-8a3d-91c5f0e2b647" }
+ ],
+ "entries": [
+  { "id": "5b395f46-11d1-5ee1-b1e5-b1e8b55bb176", "cc": "AU", "c": "9acae7b6", "pp": "838091e0-5442-55e8-931b-2c7fd03ceb24" },
+  { "id": "ac889d5d-eda0-4fa6-a1e1-f1f190b5ca77", "cc": "GB", "c": "3f0b6c2e", "pp": "b7e41d58-2c9f-4e06-8a3d-91c5f0e2b647" }
+ ]
+}

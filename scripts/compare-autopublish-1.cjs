@@ -187,7 +187,8 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   t('…the same state again → no change events and the pages are NOT told', again.told === 0 && !again.m.events.length, again.m.events)
   const failing = await run({ ...baseRows(), publish: [...a.m.T.comparison_publish.values()], entries: [...a.m.T.comparison_entries.values()], plans: [...a.m.T.competitor_plans.values()],
     competitors: [...a.m.T.competitors.values()].map(c => (c.id === C1 ? { ...c, check_failures: 2 } : c)) }, [])
-  t('…a take-down (two failed checks) unpublishes C1, takes GB off (1 left) and tells the pages', failing.m.events.some(e => e.kind === 'taken_down' && e.competitor_id === C1) && failing.m.events.some(e => e.kind === 'country_not_live') && failing.told === 1
+  // compare-square-1 (Dominic, 26 Nov): live needs 1 — with 1 left GB stays live.
+  t('…a take-down (two failed checks) unpublishes C1, GB stays live on the 1 left (compare-square-1) and the pages are told', failing.m.events.some(e => e.kind === 'taken_down' && e.competitor_id === C1) && !failing.m.events.some(e => e.kind === 'country_not_live') && failing.m.T.comparison_publish.get('GB').auto_live === true && failing.told === 1
     && !failing.m.T.comparison_entries.get('e1').auto_verified_at)
   const fx = await run({ ...baseRows(), publish: [{ country_code: 'GB', auto_publish: true, auto_live: true, admin_off: true, shown: [] }, baseRows().publish[1]] }, [])
   t('Admin\'s Off: the evaluation says not live', !fx.r.verdicts.find(v => v.code === 'GB').live && fx.m.T.comparison_publish.get('GB').auto_live === false)

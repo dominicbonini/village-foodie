@@ -103,6 +103,8 @@ const COMPETITOR: Record<keyof Competitor, Def> = {
   checkFailures: { col: 'check_failures', kind: 'int0' }, checkUrlsBy: { col: 'check_urls_by', kind: { oneOf: ['auto', 'admin'], nullable: true } },
   // compare-fix-1: read with the suits columns (tolerantly), for the publish step's "not sold here".
   notInCountries: { col: 'not_in_countries', kind: 'textArray' },
+  // compare-square-1: the food-truck class (A / B / null), read for the publish step's ranking only.
+  foodTruckClass: { col: 'food_truck_class', kind: { oneOf: ['A', 'B'], nullable: true } },
 }
 const PLAN: Record<keyof CompetitorPlan, Def> = {
   id: { col: 'id', kind: 'text' }, competitorId: { col: 'competitor_id', kind: 'text' },

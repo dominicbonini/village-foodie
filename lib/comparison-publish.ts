@@ -32,7 +32,7 @@
 import { PLAN_FIELDS, hostOf } from '@/lib/competitor-check/model'
 import { planColsOf } from '@/lib/admin/competitor-check-actions'
 import { isCountedCompetitor, type Competitor, type CompetitorPlan, type ComparisonEntry } from '@/lib/pricing-check'
-import { selectShown, isCategory, type SelectionCandidate } from '@/lib/comparison-selection'
+import { selectShown, isCategory, MAX_SHOWN, type SelectionCandidate } from '@/lib/comparison-selection'
 import { passesEvidence, type FeatureValueRow } from '@/lib/comparison-features'
 
 type Row = Record<string, unknown>
@@ -286,6 +286,11 @@ export function planVerdict(p: CompetitorPlan | null, c: Competitor, x: Pick<Cou
 export const FOOD_TRUCK_FOCUS = new Set(['food_truck', 'street_food_markets', 'pop_up'])
 /** A generic web shop (not a food-ordering product): counts only as the single fallback, beside one eligible food-truck or restaurant tool. */
 export const GENERIC_SHOP_DOMAINS = ['sumup.com']
+/** compare-square-1 (Dominic, 26 Nov): wherever Square is eligible and priced it is always shown, in the 4th (last) slot — it pushes out
+ *  the lowest-ranked tool when four others would show. Admin's hide still wins. */
+export const ALWAYS_SHOWN_DOMAINS = ['squareup.com']
+/** compare-square-1 (Dominic, 26 Nov): a country is live with at least ONE eligible priced competitor (was 2). */
+export const MIN_SHOWN = 1
 /** Never counted (Dominic, 24 Nov): a booking tool, not a food-ordering platform. */
 export const EXCLUDED_DOMAINS = ['anolla.com']
 const onDomain = (c: Pick<Competitor, 'website'>, domains: readonly string[]) => { const h = hostOf(c.website); return !!h && domains.some(d => h === d || h.endsWith(`.${d}`)) }
@@ -309,11 +314,18 @@ export function eligibleOf(c: Competitor, values: readonly FeatureValueRow[], co
  *   • PRICE: planVerdict — the entry's plan, or else the competitor's best qualifying plan in the country (one check is enough);
  *   • PREFERENCE: food-truck tools first (up to four); restaurant and pos tools only to MAKE UP 2; a generic shop (SumUp) only as the
  *     single fallback beside one eligible food-truck or restaurant tool; Anolla never;
- *   • LIVE: at least 2 shown (at most 4), a page, auto-publish on, Admin not off, never AE. Features may be "not stated". */
+ *   • LIVE: at least 2 shown (at most 4), a page, auto-publish on, Admin not off, never AE. Features may be "not stated".
+ *  compare-square-1 (Dominic, 26 Nov):
+ *   • LIVE with at least MIN_SHOWN (1) shown;
+ *   • the food-truck tools (a food-truck focus, or a food-truck class) ranked class A, then class B, then unclassed — each group in the
+ *     usual selection order;
+ *   • Square (ALWAYS_SHOWN_DOMAINS), when publishable and not hidden, always shown in the last of the four slots; it counts towards
+ *     the 2 that restaurant tools make up and towards the single-fallback test for the generic shop. */
 export function evaluateCountry(x: CountryInput): CountryVerdict {
   const comps = new Map(x.competitors.map(c => [c.id, c]))
   const verdicts: CompetitorVerdict[] = []
-  const pools = { ft: [] as SelectionCandidate<CompetitorVerdict>[], other: [] as SelectionCandidate<CompetitorVerdict>[], shop: [] as SelectionCandidate<CompetitorVerdict>[] }
+  const pools = { ftA: [] as SelectionCandidate<CompetitorVerdict>[], ftB: [] as SelectionCandidate<CompetitorVerdict>[], ft: [] as SelectionCandidate<CompetitorVerdict>[],
+    other: [] as SelectionCandidate<CompetitorVerdict>[], shop: [] as SelectionCandidate<CompetitorVerdict>[], always: [] as SelectionCandidate<CompetitorVerdict>[] }
   const entries = x.entries.filter(e => e.countryCode === x.code)
   for (const e of entries) {
     const c = comps.get(e.competitorId)
@@ -341,28 +353,41 @@ export function evaluateCountry(x: CountryInput): CountryVerdict {
     const cand: SelectionCandidate<CompetitorVerdict> = { entry: v, name: c.name, pinned: e.pinned === true, hidden: e.hidden === true, sortOrder: e.sortOrder,
       category: isCategory(c.category) ? c.category : null, pricingVerified: true, verifiedFeatures }
     if (onDomain(c, GENERIC_SHOP_DOMAINS)) pools.shop.push(cand)
+    else if (onDomain(c, ALWAYS_SHOWN_DOMAINS)) pools.always.push(cand)
+    else if (c.foodTruckClass === 'A') pools.ftA.push(cand)
+    else if (c.foodTruckClass === 'B') pools.ftB.push(cand)
     else if (FOOD_TRUCK_FOCUS.has(String(c.focus))) pools.ft.push(cand)
     else pools.other.push(cand)
   }
-  // Food-truck tools first (up to four); others only to make up 2; the generic shop only as the single fallback beside one other.
-  const ftSel = selectShown(pools.ft)
-  const shownCands = [...ftSel.shown]
-  const notShown: { candidate: SelectionCandidate<CompetitorVerdict>; why: string }[] = ftSel.notShown.map(n => ({ candidate: n.candidate, why: n.reason === 'hidden' ? 'hidden by Admin' : 'beyond the four shown' }))
-  const otherSel = selectShown(pools.other, Math.max(0, 2 - shownCands.length))
+  // compare-square-1: Square's slot is kept first (the last of the four), when it is publishable and Admin hasn't hidden it.
+  const alwaysSel = selectShown(pools.always, 1)
+  const squareSlots = alwaysSel.shown.length
+  // Food-truck tools first (class A, then B, then unclassed; up to four less Square's slot); others only to make up 2; the generic shop
+  // only as the single fallback beside one other.
+  const shownCands: SelectionCandidate<CompetitorVerdict>[] = []
+  const notShown: { candidate: SelectionCandidate<CompetitorVerdict>; why: string }[] = []
+  for (const group of [pools.ftA, pools.ftB, pools.ft]) {
+    const sel = selectShown(group, Math.max(0, MAX_SHOWN - squareSlots - shownCands.length))
+    shownCands.push(...sel.shown)
+    notShown.push(...sel.notShown.map(n => ({ candidate: n.candidate, why: n.reason === 'hidden' ? 'hidden by Admin' : squareSlots ? 'beyond the four shown (Square takes the fourth slot)' : 'beyond the four shown' })))
+  }
+  const otherSel = selectShown(pools.other, Math.max(0, 2 - shownCands.length - squareSlots))
   shownCands.push(...otherSel.shown)
   notShown.push(...otherSel.notShown.map(n => ({ candidate: n.candidate, why: n.reason === 'hidden' ? 'hidden by Admin' : 'not needed: food-truck tools come first; others only make up 2' })))
-  const shopAllowed = shownCands.length === 1
+  const shopAllowed = shownCands.length + squareSlots === 1
   const shopSel = selectShown(pools.shop, shopAllowed ? 1 : 0)
   shownCands.push(...shopSel.shown)
   notShown.push(...shopSel.notShown.map(n => ({ candidate: n.candidate, why: n.reason === 'hidden' ? 'hidden by Admin' : 'a generic web shop counts only as the single fallback beside one eligible food-truck or restaurant tool' })))
+  shownCands.push(...alwaysSel.shown)
+  notShown.push(...alwaysSel.notShown.map(n => ({ candidate: n.candidate, why: 'hidden by Admin' })))
   const shown = shownCands.map(s => ({ competitorId: s.entry.competitorId, name: s.entry.name }))
   for (const n of notShown) n.candidate.entry.reason = `${n.candidate.entry.reason}; ${n.why}`
-  const live = !NEVER_AUTO.has(x.code) && x.hasPage && x.autoPublish && !x.adminOff && shown.length >= 2
+  const live = !NEVER_AUTO.has(x.code) && x.hasPage && x.autoPublish && !x.adminOff && shown.length >= MIN_SHOWN
   const reason = NEVER_AUTO.has(x.code) ? 'never auto-published'
     : !x.hasPage ? 'its language has no comparison page yet'
     : !x.autoPublish ? 'auto-publish is off'
     : x.adminOff ? 'Admin set the country off'
-    : shown.length >= 2 ? `${shown.length} competitors shown` : `only ${shown.length} eligible competitor${shown.length === 1 ? '' : 's'} with a price (2 needed)`
+    : shown.length >= MIN_SHOWN ? `${shown.length} competitor${shown.length === 1 ? '' : 's'} shown` : `no eligible competitor with a price (${MIN_SHOWN} needed)`
   return { code: x.code, live, reason, shown, competitors: verdicts }
 }
 

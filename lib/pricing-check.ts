@@ -59,6 +59,9 @@ export interface Competitor {
   checkUrlsBy?: 'auto' | 'admin' | null
   /** compare-fix-1: the countries it is NOT sold in (global-players-1's not_in_countries) — never shown on those pages. */
   notInCountries?: string[]
+  /** compare-square-1 (20261145): the food-truck class from foodtruck-audit-1 — 'A' built for food trucks, 'B' a general tool that
+   *  sells to them, null not classed. The publish step ranks A, then B, then the rest. Absent before 20261145: null. */
+  foodTruckClass?: 'A' | 'B' | null
 }
 
 /** competitor-check-1: whether a competitor is counted and shown anywhere in Pricing check (and the comparison pages).

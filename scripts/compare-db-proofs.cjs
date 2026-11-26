@@ -122,6 +122,41 @@ async function preflightGeneral(file) {
   ok('inside: competitors, plans, entries and answers counts unchanged (it only updates rows)', inside.competitors === before.competitors && inside.plans === before.plans && inside.entries === before.entries && inside.current_answers === before.current_answers, { before, inside })
   ok('after the ROLLBACK: every count and checksum exactly as before', JSON.stringify(after) === JSON.stringify(before), { before, after })
 }
+/** compare-square-1: migration 20261145 (the food-truck class column and values, two website fixes, What The Truck's cardfee answer,
+ *  Square's per-country answers, two entries' plans), inside ONE transaction that ROLLBACKs. Before / inside / after: the counts of
+ *  competitors, plans and entries (unchanged), the current answers (+24 exactly: 8 countries × 3 for Square; What The Truck's cardfee
+ *  replaced, net 0), the classes (A 16, B 34 inside; the column absent before and after), and a checksum of every plan (unchanged). */
+async function squareState(c, tag) {
+  const has = (await q(c, tag, `select count(*)::int n from information_schema.columns where table_schema = 'public' and table_name = 'competitors' and column_name = 'food_truck_class'`)).rows[0].n === 1
+  const r = await q(c, tag, `select (select count(*) from public.competitors)::int competitors, (select count(*) from public.competitor_plans)::int plans,
+     (select count(*) from public.comparison_entries)::int entries, (select count(*) from public.competitor_feature_values where superseded_at is null)::int current_answers,
+     (select md5(string_agg(to_jsonb(p)::text, '|' order by p.id)) from public.competitor_plans p) plans_md5,
+     ${has ? `(select count(*) from public.competitors where food_truck_class = 'A')::int` : 'null::int'} class_a,
+     ${has ? `(select count(*) from public.competitors where food_truck_class = 'B')::int` : 'null::int'} class_b`)
+  const row = { ...r.rows[0], has_column: has }
+  say(`  state ${tag}: ${JSON.stringify(row)}`)
+  return row
+}
+async function preflightSquare(file) {
+  const rel = path.relative(REPO, path.resolve(REPO, file))
+  if (!/^supabase\/migrations\/[^/]+\.sql$/.test(rel)) die('the pre-flight takes one supabase/migrations/*.sql file')
+  const body = fs.readFileSync(path.join(REPO, rel), 'utf8').replace(/^\s*begin\s*;\s*$/gim, '').replace(/^\s*commit\s*;\s*$/gim, '')
+  if (/\bcommit\b/i.test(body.replace(/--[^\n]*/g, ''))) die('the migration still contains a COMMIT after stripping — refusing')
+  if (/\b(trucks|orders|plan_prices|plan_features|country_settings)\b|pizzeria-gusto/i.test(body.replace(/--[^\n]*/g, ''))) die('this pre-flight is for competitor data only')
+  say(`\n══ before (read-only, rolled back)`)
+  const before = await inRollback('before', async c => { await q(c, 'before', 'set transaction read only'); return squareState(c, 'before') })
+  say(`\n══ the migration inside ONE transaction that ROLLBACKs (${rel})`)
+  const inside = await inRollback('preflight', async c => { await q(c, 'preflight', body); return squareState(c, 'inside') })
+  say(`\n══ after the rollback (read-only)`)
+  const after = await inRollback('after', async c => { await q(c, 'after', 'set transaction read only'); return squareState(c, 'after') })
+  say(`\n══ checks`)
+  ok('inside: the migration ran, its own guards passed', !!inside)
+  ok('inside: competitors, plans and entries counts unchanged', inside.competitors === before.competitors && inside.plans === before.plans && inside.entries === before.entries)
+  ok('inside: every plan row unchanged (md5 of every column)', inside.plans_md5 === before.plans_md5)
+  ok('inside: current answers +24 exactly (Square 8 × 3; What The Truck\'s cardfee replaced)', inside.current_answers === before.current_answers + 24, { before: before.current_answers, inside: inside.current_answers })
+  ok('inside: food_truck_class added — A 16, B 34', inside.has_column && inside.class_a === 16 && inside.class_b === 34, inside)
+  ok('after the ROLLBACK: everything exactly as before (no column)', JSON.stringify(after) === JSON.stringify(before) && !after.has_column, { before, after })
+}
 /** checker-prep-1: the Competitor check's two database-only migrations (settings; the next_check_at stagger), inside ONE transaction that
  *  ROLLBACKs — the settings row, the competitors' request / due-date counts, a checksum of every OTHER competitors column, and the counts
  *  of plans, entries and answers, before / inside / after. Everything outside settings and those two columns must be unchanged inside. */
@@ -170,6 +205,7 @@ async function repairCheck() {
   else if (args[0] === '--repair-check') await repairCheck()
   else if (args[0] === '--preflight' && args[1]) await preflightGeneral(args[1])
   else if (args[0] === '--preflight-checker' && args[1]) await preflightChecker(args[1])
+  else if (args[0] === '--preflight-square' && args[1]) await preflightSquare(args[1])
   else die('usage: --preflight-repair <migration.sql> | --repair-check | --preflight <competitor-data migration.sql> | --preflight-checker <competitor-check migration.sql>')
   say(failed ? `\n🔴 compare-db-proofs: ${failed} check(s) failed` : '\n✓ compare-db-proofs: every check passed — nothing was committed')
   process.exit(failed ? 1 : 0)
