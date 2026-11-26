@@ -1,0 +1,144 @@
+{
+ "$comment": "hatches-up-1 (26 Nov 2026): Hatches Up from its own /vendors/ and /pricing/ pages, read one request at a time (docs/hatches-up-1-report.md; built by docs/hatches-up-1/build.cjs). check_urls, the GB entry's plan and the old plan's supersede are migration 20261146.",
+ "id": "hatches-up-1",
+ "checked_on": "2026-11-26",
+ "competitors": [
+  {
+   "id": "fbbf6c37-2dd0-5f11-9e68-a0be5d563629",
+   "name": "Hatches Up",
+   "website": "https://hatchesup.co.uk",
+   "focus": "food_truck",
+   "check_urls": [
+    "https://hatchesup.co.uk/vendors/",
+    "https://hatchesup.co.uk/pricing/"
+   ],
+   "answers": [
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Accept online orders in advance & get money in the bank before service even starts.",
+     "source_url": "https://hatchesup.co.uk/vendors/",
+     "note": "collection slots: «Capacity management with collection slots» (the Unlock orders & payments tier)"
+    },
+    {
+     "key": "capacity",
+     "value": "yes",
+     "quote": "Capacity management with collection slots",
+     "source_url": "https://hatchesup.co.uk/vendors/"
+    },
+    {
+     "key": "payattruck",
+     "value": "yes",
+     "quote": "Take walk-up orders and payments with our PoS, accept online pre-orders, or let customers order ahead and pay when they collect.",
+     "source_url": "https://hatchesup.co.uk/vendors/",
+     "note": "customers can order ahead and pay when they collect"
+    },
+    {
+     "key": "schedule",
+     "value": "yes",
+     "quote": "Multi-pitch & location calendar",
+     "source_url": "https://hatchesup.co.uk/vendors/"
+    },
+    {
+     "key": "discovery",
+     "value": "yes",
+     "quote": "Inclusion in the discovery app & map",
+     "source_url": "https://hatchesup.co.uk/vendors/",
+     "note": "the free Street Food Discovery tier"
+    },
+    {
+     "key": "private",
+     "value": "partial",
+     "quote": "Private & public event management",
+     "source_url": "https://hatchesup.co.uk/vendors/",
+     "note": "events; requests to book the truck not stated"
+    },
+    {
+     "key": "stock",
+     "value": "partial",
+     "quote": "Stock management",
+     "source_url": "https://hatchesup.co.uk/vendors/",
+     "note": "named in the paid tier; sold-out and per-event limits not described"
+    },
+    {
+     "key": "reports",
+     "value": "yes",
+     "quote": "Financial reporting",
+     "source_url": "https://hatchesup.co.uk/vendors/",
+     "note": "also «Data analytics»"
+    },
+    {
+     "key": "domain",
+     "value": "partial",
+     "quote": "Customisable webpage with logo & photos",
+     "source_url": "https://hatchesup.co.uk/vendors/",
+     "note": "own page on hatchesup.app; own web address not stated"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Free to join. No monthly fee, no set-up costs, no tie-ins.",
+     "source_url": "https://hatchesup.co.uk/vendors/",
+     "note": "£0 a month"
+    },
+    {
+     "key": "setup",
+     "value": "no",
+     "quote": "No minimum term or monthly payment, and no set-up costs.",
+     "source_url": "https://hatchesup.co.uk/pricing/",
+     "note": "no set-up costs"
+    },
+    {
+     "key": "term",
+     "value": "no",
+     "quote": "No minimum term or monthly payment, and no set-up costs.",
+     "source_url": "https://hatchesup.co.uk/pricing/",
+     "note": "no minimum term"
+    },
+    {
+     "key": "cardfee",
+     "value": "yes",
+     "quote": "You only pay card processing when you take payments: 1.5% + 10p in person, and 4.5% + 20p for online orders.",
+     "source_url": "https://hatchesup.co.uk/vendors/",
+     "note": "included: 1.5% + 10p in person, 4.5% + 20p online; the processor is not named"
+    }
+   ]
+  }
+ ],
+ "plans": [
+  {
+   "id": "a8235235-b166-5552-9d0c-e757f6ba7f3e",
+   "competitor_id": "fbbf6c37-2dd0-5f11-9e68-a0be5d563629",
+   "country_code": "GB",
+   "plan_name": "Unlock orders & payments",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "bundled",
+   "card_bps": 450,
+   "card_fixed_minor": 20,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://hatchesup.co.uk/pricing/",
+   "checked_on": "2026-11-26",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "hatches-up-1, 26 Nov 2026, its own /pricing/ and /vendors/ pages: two tiers — \"Street Food Discovery\" \"£0\" (the discovery app and map, no ordering) and \"Unlock orders & payments\" (\"Accept in-person PoS and online pre-orders and payments.\"), its price not shown as a figure. Terms: \"No minimum term or monthly payment, and no set-up costs.\"; FAQ: \"You only pay card processing when you take payments: 1.5% + 10p in person, and 4.5% + 20p for online orders.\" Stored as £0 a month with the online rate (4.5% + 20p) as its bundled card fee; in person 1.5% + 10p. No per-order commission stated. VAT not stated; the payment processor not named."
+  }
+ ],
+ "entries": []
+}

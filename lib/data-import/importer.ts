@@ -39,6 +39,8 @@ export const DATA_FILES = [
   // compare-territories-1 (25 Nov 2026): the neighbouring-market rule extended to 15 territories (docs/compare-territories-1/build.cjs).
   { path: 'data/compare-territories-1/competitors.json', label: 'Comparison territories 1 (25 Nov)', kind: 'research' },
   { path: 'data/compare-square-1/competitors.json', label: 'Square and What The Truck (26 Nov)', kind: 'research' },
+  // hatches-up-1 (26 Nov 2026): Hatches Up from its own /vendors/ and /pricing/ pages (docs/hatches-up-1/build.cjs).
+  { path: 'data/hatches-up-1/competitors.json', label: 'Hatches Up (26 Nov)', kind: 'research' },
 ] as const
 export type DataFile = (typeof DATA_FILES)[number]
 
