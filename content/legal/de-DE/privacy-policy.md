@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Datenschutzerklärung
 
 **Zuletzt aktualisiert:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Wir setzen eine kleine Zahl von Dienstleistern ein, die Daten jeweils nur nach u
 | Apple und Google | Zustellung von Push-Benachrichtigungen an Ihr Gerät | Vereinigte Staaten |
 | Meta (WhatsApp) | Übermittlung von WhatsApp-Nachrichten zwischen Ihren Kunden und Ihrer geschäftlichen Nummer | Vereinigte Staaten |
 | Stripe | Entgegennahme von Zahlungen Ihrer Kunden und Weiterleitung an Sie | Vereinigte Staaten |
+| Anthropic (Claude) | Übersetzung der Nachrichten, die Sie uns senden, und Hilfe beim Entwerfen unserer Antworten | Vereinigte Staaten |
+| Namecheap | Unsere E-Mail-Postfächer | Vereinigte Staaten |
 
 Wir können Daten außerdem offenlegen, wenn wir gesetzlich dazu verpflichtet sind oder um Rechtsansprüche geltend zu machen oder abzuwehren.
 
 **Wir verkaufen keine personenbezogenen Daten und geben sie nicht zu Werbezwecken weiter.**
 
-**Internationale Übermittlungen.** Ihre Kontodaten und Bestelldaten werden im Vereinigten Königreich gespeichert und verarbeitet. Einiges wird außerhalb davon abgewickelt: das Auslesen von Speisekarten und die automatischen WhatsApp-Antworten, die einen Dienst von Google in den Vereinigten Staaten nutzen; die Zustellung von WhatsApp-Nachrichten, die von Meta in den Vereinigten Staaten abgewickelt wird; Zahlungen, die von Stripe in den Vereinigten Staaten abgewickelt werden; und Push-Benachrichtigungen, die von Apple und Google in den Vereinigten Staaten zugestellt werden. Wenn Daten das Vereinigte Königreich verlassen, ist die Übermittlung durch Angemessenheitsvorschriften des Vereinigten Königreichs (UK adequacy regulations) oder durch das International Data Transfer Agreement (internationale Datenübermittlungsvereinbarung) bzw. das Addendum abgedeckt und, soweit das Recht Ihres Landes es verlangt, durch eine von diesem Recht anerkannte Garantie. Sie können von uns Einzelheiten zu den jeweils geltenden Garantien verlangen.
+**Internationale Übermittlungen.** Ihre Kontodaten und Bestelldaten werden im Vereinigten Königreich gespeichert und verarbeitet. Einiges wird außerhalb davon abgewickelt: das Auslesen von Speisekarten und die automatischen WhatsApp-Antworten, die einen Dienst von Google in den Vereinigten Staaten nutzen; die Zustellung von WhatsApp-Nachrichten, die von Meta in den Vereinigten Staaten abgewickelt wird; Zahlungen, die von Stripe in den Vereinigten Staaten abgewickelt werden; Push-Benachrichtigungen, die von Apple und Google in den Vereinigten Staaten zugestellt werden; die Übersetzung von Nachrichten und das Entwerfen von Antworten, die Anthropic in den Vereinigten Staaten nutzen; und unsere E-Mail-Postfächer, die von Namecheap in den Vereinigten Staaten bereitgestellt werden. Wenn Daten das Vereinigte Königreich verlassen, ist die Übermittlung durch Angemessenheitsvorschriften des Vereinigten Königreichs (UK adequacy regulations) oder durch das International Data Transfer Agreement (internationale Datenübermittlungsvereinbarung) bzw. das Addendum abgedeckt und, soweit das Recht Ihres Landes es verlangt, durch eine von diesem Recht anerkannte Garantie. Sie können von uns Einzelheiten zu den jeweils geltenden Garantien verlangen.
 
 Wenn unser Dienst wächst, können wir weitere Anbieter hinzufügen, darunter einen SMS-Anbieter. Wir aktualisieren diese Liste, bevor sie mit der Verarbeitung Ihrer Daten beginnen.
 

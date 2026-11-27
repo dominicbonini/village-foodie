@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Kebijakan Privasi
 
 **Terakhir diperbarui:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Kami menggunakan sejumlah kecil penyedia layanan, yang masing-masing memproses d
 | Apple dan Google | Mengirimkan notifikasi push ke perangkat Anda | Amerika Serikat |
 | Meta (WhatsApp) | Menyampaikan pesan WhatsApp antara pelanggan Anda dan nomor usaha Anda | Amerika Serikat |
 | Stripe | Menerima pembayaran dari pelanggan Anda dan meneruskannya kepada Anda | Amerika Serikat |
+| Anthropic (Claude) | Menerjemahkan pesan yang Anda kirim kepada kami dan membantu menyusun draf balasan kami | Amerika Serikat |
+| Namecheap | Kotak surat email kami | Amerika Serikat |
 
 Kami juga dapat mengungkapkan data jika diwajibkan oleh hukum, atau untuk menetapkan atau membela tuntutan hukum.
 
 **Kami tidak menjual data pribadi, dan kami tidak membagikannya untuk keperluan iklan.**
 
-**Transfer internasional.** Data akun dan data pesanan Anda disimpan dan diproses di Britania Raya (United Kingdom). Beberapa hal ditangani di luar Britania Raya: ekstraksi menu dan balasan otomatis WhatsApp, yang menggunakan layanan Google di Amerika Serikat; pengiriman pesan WhatsApp, yang ditangani oleh Meta di Amerika Serikat; pembayaran, yang ditangani oleh Stripe di Amerika Serikat; dan notifikasi push, yang dikirimkan oleh Apple dan Google di Amerika Serikat. Jika data keluar dari Britania Raya, transfer tersebut dilindungi oleh regulasi kecukupan (adequacy regulations) Britania Raya atau oleh International Data Transfer Agreement (Perjanjian Transfer Data Internasional) atau Addendum, dan, apabila diwajibkan oleh hukum negara Anda, oleh pelindungan yang diakui oleh hukum tersebut. Anda dapat meminta kepada kami rincian pelindungan yang berlaku.
+**Transfer internasional.** Data akun dan data pesanan Anda disimpan dan diproses di Britania Raya (United Kingdom). Beberapa hal ditangani di luar Britania Raya: ekstraksi menu dan balasan otomatis WhatsApp, yang menggunakan layanan Google di Amerika Serikat; pengiriman pesan WhatsApp, yang ditangani oleh Meta di Amerika Serikat; pembayaran, yang ditangani oleh Stripe di Amerika Serikat; notifikasi push, yang dikirimkan oleh Apple dan Google di Amerika Serikat; penerjemahan pesan dan penyusunan draf balasan, yang menggunakan Anthropic di Amerika Serikat; dan kotak surat email kami, yang di-hosting oleh Namecheap di Amerika Serikat. Jika data keluar dari Britania Raya, transfer tersebut dilindungi oleh regulasi kecukupan (adequacy regulations) Britania Raya atau oleh International Data Transfer Agreement (Perjanjian Transfer Data Internasional) atau Addendum, dan, apabila diwajibkan oleh hukum negara Anda, oleh pelindungan yang diakui oleh hukum tersebut. Anda dapat meminta kepada kami rincian pelindungan yang berlaku.
 
 Seiring berkembangnya layanan kami, kami dapat menambahkan penyedia, termasuk penyedia SMS. Kami akan memperbarui daftar ini sebelum mereka mulai memproses data Anda.
 

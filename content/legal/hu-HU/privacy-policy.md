@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Adatvédelmi tájékoztató
 
 **Utolsó frissítés:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Néhány szolgáltatót veszünk igénybe, amelyek mindegyike kizárólag a mi u
 | Apple and Google | Push-értesítések kézbesítése az Ön eszközére | Egyesült Államok |
 | Meta (WhatsApp) | WhatsApp-üzenetek továbbítása a vásárlói és az Ön üzleti telefonszáma között | Egyesült Államok |
 | Stripe | A vásárlóitól érkező fizetések beszedése és továbbítása Önnek | Egyesült Államok |
+| Anthropic (Claude) | Az Ön által nekünk küldött üzenetek fordítása és segítség a válaszaink megfogalmazásában | Egyesült Államok |
+| Namecheap | E-mail-postafiókjaink | Egyesült Államok |
 
 Adatokat akkor is közölhetünk, ha erre jogszabály kötelez minket, vagy jogi igények megállapítása vagy megvédése érdekében.
 
 **Személyes adatokat nem adunk el, és hirdetési célból nem osztunk meg.**
 
-**Nemzetközi adattovábbítás.** Fiókadatait és rendelési adatait az Egyesült Királyságban tároljuk és kezeljük. Egyes műveletek azon kívül történnek: az étlapok kiolvasása és a WhatsApp automatikus válaszok, amelyek egy egyesült államokbeli Google-szolgáltatást használnak; a WhatsApp-üzenetek kézbesítése, amelyet a Meta végez az Egyesült Államokban; a fizetések, amelyeket a Stripe kezel az Egyesült Államokban; valamint a push-értesítések, amelyeket az Apple és a Google kézbesít az Egyesült Államokban. Ahol adatok hagyják el az Egyesült Királyságot, a továbbításra az Egyesült Királyság megfelelőségi szabályai (UK adequacy regulations), illetve az International Data Transfer Agreement (nemzetközi adattovábbítási megállapodás) vagy az Addendum, valamint – ahol az Ön országának joga ezt előírja – egy e jog által elismert garancia vonatkozik. Kérésére tájékoztatjuk az alkalmazandó garanciákról.
+**Nemzetközi adattovábbítás.** Fiókadatait és rendelési adatait az Egyesült Királyságban tároljuk és kezeljük. Egyes műveletek azon kívül történnek: az étlapok kiolvasása és a WhatsApp automatikus válaszok, amelyek egy egyesült államokbeli Google-szolgáltatást használnak; a WhatsApp-üzenetek kézbesítése, amelyet a Meta végez az Egyesült Államokban; a fizetések, amelyeket a Stripe kezel az Egyesült Államokban; a push-értesítések, amelyeket az Apple és a Google kézbesít az Egyesült Államokban; az üzenetek fordítása és a válaszok megfogalmazása, amelyek egy egyesült államokbeli Anthropic-szolgáltatást használnak; valamint e-mail-postafiókjaink, amelyeket a Namecheap üzemeltet az Egyesült Államokban. Ahol adatok hagyják el az Egyesült Királyságot, a továbbításra az Egyesült Királyság megfelelőségi szabályai (UK adequacy regulations), illetve az International Data Transfer Agreement (nemzetközi adattovábbítási megállapodás) vagy az Addendum, valamint – ahol az Ön országának joga ezt előírja – egy e jog által elismert garancia vonatkozik. Kérésére tájékoztatjuk az alkalmazandó garanciákról.
 
 Szolgáltatásunk bővülésével újabb szolgáltatókat vehetünk igénybe, köztük SMS-szolgáltatót is. Ezt a listát még azelőtt frissítjük, hogy az új szolgáltatók megkezdenék az Ön adatainak kezelését.
 

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Persónuverndarstefna
 
 **Síðast uppfært:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Við notum fáa þjónustuveitendur og vinnur hver þeirra upplýsingar eingöng
 | Apple og Google | Afhending tilkynninga í tækið þitt | Bandaríkin |
 | Meta (WhatsApp) | Flutningur WhatsApp-skilaboða milli viðskiptavina þinna og símanúmers fyrirtækisins | Bandaríkin |
 | Stripe | Tekur við greiðslum frá viðskiptavinum þínum og greiðir þær áfram til þín | Bandaríkin |
+| Anthropic (Claude) | Þýðir skilaboð sem þú sendir okkur og hjálpar við að semja drög að svörum okkar | Bandaríkin |
+| Namecheap | Tölvupósthólfin okkar | Bandaríkin |
 
 Við kunnum einnig að veita upplýsingar þegar okkur ber skylda til þess samkvæmt lögum, eða til að stofna til, hafa uppi eða verja réttarkröfur.
 
 **Við seljum ekki persónuupplýsingar og deilum þeim ekki í auglýsingaskyni.**
 
-**Flutningur milli landa.** Upplýsingar um aðgang þinn og pantanir eru geymdar og unnar í Bretlandi. Sumt er meðhöndlað utan þess: lestur matseðla og sjálfvirk svör á WhatsApp, sem nota þjónustu Google í Bandaríkjunum; afhending WhatsApp-skilaboða, sem Meta annast í Bandaríkjunum; greiðslur, sem Stripe annast í Bandaríkjunum; og tilkynningar, sem Apple og Google afhenda í Bandaríkjunum. Þegar upplýsingar fara frá Bretlandi byggist flutningurinn á breskum reglum um fullnægjandi vernd (UK adequacy regulations) eða á International Data Transfer Agreement eða Addendum og, þar sem lög lands þíns krefjast þess, á verndarráðstöfun sem þau lög viðurkenna. Þú getur óskað eftir upplýsingum frá okkur um þær verndarráðstafanir sem eiga við.
+**Flutningur milli landa.** Upplýsingar um aðgang þinn og pantanir eru geymdar og unnar í Bretlandi. Sumt er meðhöndlað utan þess: lestur matseðla og sjálfvirk svör á WhatsApp, sem nota þjónustu Google í Bandaríkjunum; afhending WhatsApp-skilaboða, sem Meta annast í Bandaríkjunum; greiðslur, sem Stripe annast í Bandaríkjunum; tilkynningar, sem Apple og Google afhenda í Bandaríkjunum; þýðing skilaboða og gerð draga að svörum, sem nota Anthropic í Bandaríkjunum; og tölvupósthólfin okkar, sem Namecheap hýsir í Bandaríkjunum. Þegar upplýsingar fara frá Bretlandi byggist flutningurinn á breskum reglum um fullnægjandi vernd (UK adequacy regulations) eða á International Data Transfer Agreement eða Addendum og, þar sem lög lands þíns krefjast þess, á verndarráðstöfun sem þau lög viðurkenna. Þú getur óskað eftir upplýsingum frá okkur um þær verndarráðstafanir sem eiga við.
 
 Eftir því sem þjónusta okkar vex kunnum við að bæta við veitendum, þar á meðal SMS-veitanda. Við munum uppfæra þennan lista áður en þeir hefja vinnslu upplýsinga þinna.
 

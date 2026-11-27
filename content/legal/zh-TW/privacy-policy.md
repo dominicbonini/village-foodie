@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # 隱私權政策
 
 **最後更新:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Demo 到期時，本公司會刪除你的 Demo 電子郵件地址、菜單檔案
 | Apple 及 Google | 將推播通知傳送至你的裝置 | 美國 |
 | Meta（WhatsApp） | 在你的顧客與你的營業號碼之間傳遞 WhatsApp 訊息 | 美國 |
 | Stripe | 向你的顧客收款並轉交給你 | 美國 |
+| Anthropic (Claude) | 翻譯你傳送給本公司的訊息，並協助草擬本公司的回覆 | 美國 |
+| Namecheap | 本公司的電子郵件信箱 | 美國 |
 
 本公司亦可能於法律要求時，或為確立或防禦法律上之請求，揭露資料。
 
 **本公司不會出售個人資料，亦不會為廣告目的分享個人資料。**
 
-**國際傳輸。** 你的帳號資料及訂單資料均在英國儲存及處理。部分事項於英國境外處理：菜單擷取及 WhatsApp 自動回覆，使用位於美國的 Google 服務；WhatsApp 訊息傳遞，由位於美國的 Meta 處理；付款，由位於美國的 Stripe 處理；推播通知，由位於美國的 Apple 及 Google 傳送。資料傳輸至英國境外時，該傳輸受英國適足性規則（UK adequacy regulations），或國際資料傳輸協議（International Data Transfer Agreement）或其增補條款（Addendum）所涵蓋；你所在國家的法律有此要求時，並受該法律所認可的保護措施所涵蓋。你可要求本公司提供所適用保護措施的詳細資訊。
+**國際傳輸。** 你的帳號資料及訂單資料均在英國儲存及處理。部分事項於英國境外處理：菜單擷取及 WhatsApp 自動回覆，使用位於美國的 Google 服務；WhatsApp 訊息傳遞，由位於美國的 Meta 處理；付款，由位於美國的 Stripe 處理；推播通知，由位於美國的 Apple 及 Google 傳送；訊息翻譯及回覆草擬，使用位於美國的 Anthropic；以及本公司的電子郵件信箱，由位於美國的 Namecheap 代管。資料傳輸至英國境外時，該傳輸受英國適足性規則（UK adequacy regulations），或國際資料傳輸協議（International Data Transfer Agreement）或其增補條款（Addendum）所涵蓋；你所在國家的法律有此要求時，並受該法律所認可的保護措施所涵蓋。你可要求本公司提供所適用保護措施的詳細資訊。
 
 隨著本公司服務成長，本公司可能新增提供者，包括簡訊服務提供者。本公司將於其開始處理你的資料前更新本清單。
 

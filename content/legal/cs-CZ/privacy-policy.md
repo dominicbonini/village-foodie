@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Zásady ochrany osobních údajů
 
 **Poslední aktualizace:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Využíváme malý počet poskytovatelů služeb, z nichž každý zpracovává 
 | Apple and Google | Doručování nabízených oznámení do vašeho zařízení | Spojené státy |
 | Meta (WhatsApp) | Přenos zpráv WhatsApp mezi vašimi zákazníky a vaším firemním číslem | Spojené státy |
 | Stripe | Přijímání plateb od vašich zákazníků a jejich předávání vám | Spojené státy |
+| Anthropic (Claude) | Překlad zpráv, které nám posíláte, a pomoc s přípravou našich odpovědí | Spojené státy |
+| Namecheap | Naše e-mailové schránky | Spojené státy |
 
 Údaje můžeme také zpřístupnit, pokud nám to ukládá zákon, nebo za účelem určení či obhajoby právních nároků.
 
 **Osobní údaje neprodáváme a nesdílíme je pro reklamní účely.**
 
-**Mezinárodní předávání.** Údaje vašeho účtu a údaje o objednávkách jsou uloženy a zpracovávány ve Spojeném království. Některé věci se zpracovávají mimo něj: vytahování obsahu jídelních lístků a automatické odpovědi na WhatsAppu, které využívají službu Google ve Spojených státech; doručování zpráv WhatsApp, které zajišťuje Meta ve Spojených státech; platby, které zpracovává Stripe ve Spojených státech; a nabízená oznámení, která doručují Apple a Google ve Spojených státech. Pokud údaje opouštějí Spojené království, vztahují se na předání britské předpisy o odpovídající ochraně (UK adequacy regulations) nebo International Data Transfer Agreement či Addendum (mezinárodní smlouva o předávání údajů nebo dodatek), a pokud to vyžaduje právo vaší země, také záruka, kterou toto právo uznává. Můžete nás požádat o podrobnosti o zárukách, které se uplatní.
+**Mezinárodní předávání.** Údaje vašeho účtu a údaje o objednávkách jsou uloženy a zpracovávány ve Spojeném království. Některé věci se zpracovávají mimo něj: vytahování obsahu jídelních lístků a automatické odpovědi na WhatsAppu, které využívají službu Google ve Spojených státech; doručování zpráv WhatsApp, které zajišťuje Meta ve Spojených státech; platby, které zpracovává Stripe ve Spojených státech; nabízená oznámení, která doručují Apple a Google ve Spojených státech; překlad zpráv a příprava odpovědí, které využívají Anthropic ve Spojených státech; a naše e-mailové schránky, které hostuje Namecheap ve Spojených státech. Pokud údaje opouštějí Spojené království, vztahují se na předání britské předpisy o odpovídající ochraně (UK adequacy regulations) nebo International Data Transfer Agreement či Addendum (mezinárodní smlouva o předávání údajů nebo dodatek), a pokud to vyžaduje právo vaší země, také záruka, kterou toto právo uznává. Můžete nás požádat o podrobnosti o zárukách, které se uplatní.
 
 S růstem naší služby můžeme přidat další poskytovatele, včetně poskytovatele SMS. Tento seznam aktualizujeme dříve, než začnou vaše údaje zpracovávat.
 

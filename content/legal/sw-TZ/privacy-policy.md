@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Sera ya Faragha
 
 **Ilisasishwa mwisho:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Tunatumia idadi ndogo ya watoa huduma, na kila mmoja wao huchakata data kwa mael
 | Apple na Google | Kufikisha arifa (push notifications) kwenye kifaa chako | Marekani |
 | Meta (WhatsApp) | Kubeba ujumbe wa WhatsApp kati ya wateja wako na namba ya simu ya biashara yako | Marekani |
 | Stripe | Kupokea malipo kutoka kwa wateja wako na kuyapitisha kwako | Marekani |
+| Anthropic (Claude) | Kutafsiri ujumbe unaotutumia na kusaidia kuandaa rasimu za majibu yetu | Marekani |
+| Namecheap | Masanduku yetu ya barua pepe | Marekani |
 
 Tunaweza pia kufichua data pale tunapolazimika kisheria, au ili kuthibitisha au kutetea madai ya kisheria.
 
 **Hatuuzi taarifa binafsi, na hatuzishiriki kwa ajili ya matangazo.**
 
-**Uhamishaji wa data kimataifa.** Data za akaunti yako na data za oda zinahifadhiwa na kuchakatwa nchini Uingereza. Baadhi ya mambo yanashughulikiwa nje yake: kutoa yaliyomo kwenye menyu na majibu ya kiotomatiki ya WhatsApp, ambayo yanatumia huduma ya Google nchini Marekani; kufikisha ujumbe wa WhatsApp, kunakoshughulikiwa na Meta nchini Marekani; malipo, yanayoshughulikiwa na Stripe nchini Marekani; na arifa (push notifications), zinazofikishwa na Apple na Google nchini Marekani. Pale data zinapotoka nje ya Uingereza, uhamishaji unalindwa na kanuni za utoshelevu za Uingereza (UK adequacy regulations) au na Mkataba wa Kimataifa wa Uhamishaji wa Data (International Data Transfer Agreement) au Nyongeza yake (Addendum), na, pale sheria ya nchi yako inapotaka hivyo, na kinga inayotambuliwa na sheria hiyo. Unaweza kutuomba maelezo ya kinga zinazohusika.
+**Uhamishaji wa data kimataifa.** Data za akaunti yako na data za oda zinahifadhiwa na kuchakatwa nchini Uingereza. Baadhi ya mambo yanashughulikiwa nje yake: kutoa yaliyomo kwenye menyu na majibu ya kiotomatiki ya WhatsApp, ambayo yanatumia huduma ya Google nchini Marekani; kufikisha ujumbe wa WhatsApp, kunakoshughulikiwa na Meta nchini Marekani; malipo, yanayoshughulikiwa na Stripe nchini Marekani; arifa (push notifications), zinazofikishwa na Apple na Google nchini Marekani; kutafsiri ujumbe na kuandaa rasimu za majibu, kunakotumia Anthropic nchini Marekani; na masanduku yetu ya barua pepe, yanayohifadhiwa na Namecheap nchini Marekani. Pale data zinapotoka nje ya Uingereza, uhamishaji unalindwa na kanuni za utoshelevu za Uingereza (UK adequacy regulations) au na Mkataba wa Kimataifa wa Uhamishaji wa Data (International Data Transfer Agreement) au Nyongeza yake (Addendum), na, pale sheria ya nchi yako inapotaka hivyo, na kinga inayotambuliwa na sheria hiyo. Unaweza kutuomba maelezo ya kinga zinazohusika.
 
 Huduma yetu inapokua tunaweza kuongeza watoa huduma, akiwemo mtoa huduma wa SMS. Tutasasisha orodha hii kabla hawajaanza kuchakata data zako.
 

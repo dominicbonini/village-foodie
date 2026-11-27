@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Zásady ochrany osobných údajov
 
 **Naposledy aktualizované:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Využívame malý počet poskytovateľov služieb, z ktorých každý spracúva 
 | Apple a Google | Doručovanie push notifikácií do vášho zariadenia | Spojené štáty |
 | Meta (WhatsApp) | Prenos správ WhatsApp medzi vašimi zákazníkmi a firemným číslom vášho podniku | Spojené štáty |
 | Stripe | Prijímanie platieb od vašich zákazníkov a ich odovzdávanie vám | Spojené štáty |
+| Anthropic (Claude) | Preklad správ, ktoré nám posielate, a pomoc pri príprave našich odpovedí | Spojené štáty |
+| Namecheap | Naše e-mailové schránky | Spojené štáty |
 
 Údaje môžeme sprístupniť aj vtedy, ak nám to ukladá zákon, alebo na preukázanie či obhajobu právnych nárokov.
 
 **Osobné údaje nepredávame a nezdieľame ich na reklamné účely.**
 
-**Medzinárodné prenosy.** Údaje vášho účtu a údaje o objednávkach sa ukladajú a spracúvajú v Spojenom kráľovstve. Niektoré činnosti sa vykonávajú mimo neho: extrakcia jedálnych lístkov a automatické odpovede WhatsApp, ktoré využívajú službu Google v Spojených štátoch; doručovanie správ WhatsApp, ktoré zabezpečuje Meta v Spojených štátoch; platby, ktoré spracúva Stripe v Spojených štátoch; a push notifikácie, ktoré doručujú Apple a Google v Spojených štátoch. Ak údaje opúšťajú Spojené kráľovstvo, prenos je pokrytý predpismi Spojeného kráľovstva o primeranosti alebo medzinárodnou dohodou o prenose údajov (International Data Transfer Agreement) alebo dodatkom (Addendum), a ak to vyžaduje právo vašej krajiny, aj zárukou, ktorú toto právo uznáva. Môžete nás požiadať o podrobnosti o zárukách, ktoré sa uplatňujú.
+**Medzinárodné prenosy.** Údaje vášho účtu a údaje o objednávkach sa ukladajú a spracúvajú v Spojenom kráľovstve. Niektoré činnosti sa vykonávajú mimo neho: extrakcia jedálnych lístkov a automatické odpovede WhatsApp, ktoré využívajú službu Google v Spojených štátoch; doručovanie správ WhatsApp, ktoré zabezpečuje Meta v Spojených štátoch; platby, ktoré spracúva Stripe v Spojených štátoch; push notifikácie, ktoré doručujú Apple a Google v Spojených štátoch; preklad správ a príprava odpovedí, ktoré využívajú Anthropic v Spojených štátoch; a naše e-mailové schránky, ktoré hosťuje Namecheap v Spojených štátoch. Ak údaje opúšťajú Spojené kráľovstvo, prenos je pokrytý predpismi Spojeného kráľovstva o primeranosti alebo medzinárodnou dohodou o prenose údajov (International Data Transfer Agreement) alebo dodatkom (Addendum), a ak to vyžaduje právo vašej krajiny, aj zárukou, ktorú toto právo uznáva. Môžete nás požiadať o podrobnosti o zárukách, ktoré sa uplatňujú.
 
 S rastom našej služby môžeme pridať ďalších poskytovateľov vrátane poskytovateľa SMS. Tento zoznam aktualizujeme skôr, než začnú vaše údaje spracúvať.
 

@@ -1,0 +1,786 @@
+{
+ "content/legal/am-ET/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# የግላዊነት ፖሊሲ",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# የግላዊነት ፖሊሲ"
+  ],
+  [
+   "| Stripe | ከደንበኞችዎ ክፍያ መቀበልና ለእርስዎ ማስተላለፍ | ዩናይትድ ስቴትስ |\n| Anthropic (Claude) | የሚልኩልንን መልዕክቶች መተርጎምና ምላሾቻችንን ለማርቀቅ ማገዝ | ዩናይትድ ስቴትስ |\n| Namecheap | የኢሜይል ሳጥኖቻችን | ዩናይትድ ስቴትስ |\n",
+   "| Stripe | ከደንበኞችዎ ክፍያ መቀበልና ለእርስዎ ማስተላለፍ | ዩናይትድ ስቴትስ |\n"
+  ],
+  [
+   "\n**ዓለም አቀፍ ዝውውሮች።** የአካውንትዎ መረጃና የትዕዛዝ መረጃ የሚቀመጠውና የሚቀናበረው በዩናይትድ ኪንግደም ነው። አንዳንድ ነገሮች ከዚያ ውጭ ይስተናገዳሉ፦ በዩናይትድ ስቴትስ የሚገኝ የGoogle አገልግሎት የሚጠቀሙት የሜኑ ይዘት ማውጣትና የWhatsApp ራስ-ሰር ምላሾች፤ በዩናይትድ ስቴትስ በMeta የሚስተናገደው የWhatsApp መልዕክት ማድረስ፤ በዩናይትድ ስቴትስ በStripe የሚስተናገዱ ክፍያዎች፤ በዩናይትድ ስቴትስ በApple እና በGoogle የሚደርሱ የpush ማሳወቂያዎች፤ በዩናይትድ ስቴትስ Anthropicን የሚጠቀሙት የመልዕክት ትርጉምና የምላሽ ማርቀቅ፤ እንዲሁም በዩናይትድ ስቴትስ Namecheap የሚያስተናግዳቸው የኢሜይል ሳጥኖቻችን። መረጃ ከዩኬ ሲወጣ፣ ዝውውሩ በዩኬ የብቃት ደንቦች (adequacy regulations) ወይም በዓለም አቀፍ የመረጃ ዝውውር ስምምነት (International Data Transfer Agreement) ወይም ተጨማሪ ሰነድ (Addendum)፣ እንዲሁም የአገርዎ ሕግ በሚጠይቅበት ቦታ ያ ሕግ በሚቀበለው ጥበቃ የተሸፈነ ነው። ተፈጻሚ ስለሚሆኑት ጥበቃዎች ዝርዝር እንድንሰጥዎ መጠየቅ ይችላሉ።\n",
+   "\n**ዓለም አቀፍ ዝውውሮች።** የአካውንትዎ መረጃና የትዕዛዝ መረጃ የሚቀመጠውና የሚቀናበረው በዩናይትድ ኪንግደም ነው። አንዳንድ ነገሮች ከዚያ ውጭ ይስተናገዳሉ፦ በዩናይትድ ስቴትስ የሚገኝ የGoogle አገልግሎት የሚጠቀሙት የሜኑ ይዘት ማውጣትና የWhatsApp ራስ-ሰር ምላሾች፤ በዩናይትድ ስቴትስ በMeta የሚስተናገደው የWhatsApp መልዕክት ማድረስ፤ በዩናይትድ ስቴትስ በStripe የሚስተናገዱ ክፍያዎች፤ እንዲሁም በዩናይትድ ስቴትስ በApple እና በGoogle የሚደርሱ የpush ማሳወቂያዎች። መረጃ ከዩኬ ሲወጣ፣ ዝውውሩ በዩኬ የብቃት ደንቦች (adequacy regulations) ወይም በዓለም አቀፍ የመረጃ ዝውውር ስምምነት (International Data Transfer Agreement) ወይም ተጨማሪ ሰነድ (Addendum)፣ እንዲሁም የአገርዎ ሕግ በሚጠይቅበት ቦታ ያ ሕግ በሚቀበለው ጥበቃ የተሸፈነ ነው። ተፈጻሚ ስለሚሆኑት ጥበቃዎች ዝርዝር እንድንሰጥዎ መጠየቅ ይችላሉ።\n"
+  ]
+ ],
+ "content/legal/ar-AE/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# سياسة الخصوصية",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# سياسة الخصوصية"
+  ],
+  [
+   "| Stripe | تحصيل المدفوعات من عملائك وتحويلها إليك | الولايات المتحدة |\n| Anthropic (Claude) | ترجمة الرسائل التي ترسلها إلينا والمساعدة في صياغة ردودنا | الولايات المتحدة |\n| Namecheap | صناديق بريدنا الإلكتروني | الولايات المتحدة |\n",
+   "| Stripe | تحصيل المدفوعات من عملائك وتحويلها إليك | الولايات المتحدة |\n"
+  ],
+  [
+   "\n**عمليات النقل الدولية.** تُخزَّن بيانات حسابك وبيانات طلباتك وتُعالَج في المملكة المتحدة. ويتم التعامل مع بعض الأمور خارجها: استخراج قوائم الطعام والردود التلقائية على WhatsApp، وهما يستخدمان خدمة من Google في الولايات المتحدة؛ وتوصيل رسائل WhatsApp، وتتولاه Meta في الولايات المتحدة؛ والمدفوعات، وتتولاها Stripe في الولايات المتحدة؛ والإشعارات الفورية، وتتولى Apple وGoogle توصيلها في الولايات المتحدة؛ وترجمة الرسائل وصياغة الردود، وهما تستخدمان Anthropic في الولايات المتحدة؛ وصناديق بريدنا الإلكتروني، وتستضيفها Namecheap في الولايات المتحدة. وحيثما تغادر البيانات المملكة المتحدة، يكون النقل مشمولًا بلوائح الكفاية في المملكة المتحدة أو باتفاقية نقل البيانات الدولية (International Data Transfer Agreement) أو بالملحق (Addendum)، وكذلك، حيثما يقتضي قانون دولتك ذلك، بضمانة يعترف بها ذلك القانون. ويمكنك أن تطلب منا تفاصيل الضمانات المطبّقة.\n",
+   "\n**عمليات النقل الدولية.** تُخزَّن بيانات حسابك وبيانات طلباتك وتُعالَج في المملكة المتحدة. ويتم التعامل مع بعض الأمور خارجها: استخراج قوائم الطعام والردود التلقائية على WhatsApp، وهما يستخدمان خدمة من Google في الولايات المتحدة؛ وتوصيل رسائل WhatsApp، وتتولاه Meta في الولايات المتحدة؛ والمدفوعات، وتتولاها Stripe في الولايات المتحدة؛ والإشعارات الفورية، وتتولى Apple وGoogle توصيلها في الولايات المتحدة. وحيثما تغادر البيانات المملكة المتحدة، يكون النقل مشمولًا بلوائح الكفاية في المملكة المتحدة أو باتفاقية نقل البيانات الدولية (International Data Transfer Agreement) أو بالملحق (Addendum)، وكذلك، حيثما يقتضي قانون دولتك ذلك، بضمانة يعترف بها ذلك القانون. ويمكنك أن تطلب منا تفاصيل الضمانات المطبّقة.\n"
+  ]
+ ],
+ "content/legal/az-AZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Məxfilik siyasəti",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Məxfilik siyasəti"
+  ],
+  [
+   "| Stripe | Müştərilərinizdən ödənişlərin qəbulu və sizə ötürülməsi | Amerika Birləşmiş Ştatları |\n| Anthropic (Claude) | Bizə göndərdiyiniz mesajların tərcüməsi və cavablarımızın hazırlanmasına kömək | Amerika Birləşmiş Ştatları |\n| Namecheap | E-poçt qutularımız | Amerika Birləşmiş Ştatları |\n",
+   "| Stripe | Müştərilərinizdən ödənişlərin qəbulu və sizə ötürülməsi | Amerika Birləşmiş Ştatları |\n"
+  ],
+  [
+   "\n**Beynəlxalq ötürmələr.** Hesab məlumatlarınız və sifariş məlumatlarınız Birləşmiş Krallıqda saxlanılır və emal olunur. Bəzi işlər onun xaricində görülür: Amerika Birləşmiş Ştatlarındakı Google xidmətindən istifadə edən menyu çıxarılması və WhatsApp avtomatik cavabları; Amerika Birləşmiş Ştatlarında Meta tərəfindən həyata keçirilən WhatsApp mesajlarının çatdırılması; Amerika Birləşmiş Ştatlarında Stripe tərəfindən həyata keçirilən ödənişlər; Amerika Birləşmiş Ştatlarında Apple və Google tərəfindən çatdırılan push-bildirişlər; Amerika Birləşmiş Ştatlarındakı Anthropic xidmətindən istifadə edən mesaj tərcüməsi və cavabların hazırlanması; və Amerika Birləşmiş Ştatlarında Namecheap tərəfindən yerləşdirilən e-poçt qutularımız. Məlumatlar Birləşmiş Krallıqdan çıxdıqda, ötürmə Birləşmiş Krallığın adekvatlıq qaydaları və ya Beynəlxalq Məlumat Ötürmə Müqaviləsi (International Data Transfer Agreement) və ya Əlavə (Addendum) ilə, ölkənizin qanunvericiliyi tələb etdikdə isə həmin qanunvericiliyin tanıdığı təminatla da əhatə olunur. Hansı təminatların tətbiq olunduğu barədə bizdən ətraflı məlumat istəyə bilərsiniz.\n",
+   "\n**Beynəlxalq ötürmələr.** Hesab məlumatlarınız və sifariş məlumatlarınız Birləşmiş Krallıqda saxlanılır və emal olunur. Bəzi işlər onun xaricində görülür: Amerika Birləşmiş Ştatlarındakı Google xidmətindən istifadə edən menyu çıxarılması və WhatsApp avtomatik cavabları; Amerika Birləşmiş Ştatlarında Meta tərəfindən həyata keçirilən WhatsApp mesajlarının çatdırılması; Amerika Birləşmiş Ştatlarında Stripe tərəfindən həyata keçirilən ödənişlər; və Amerika Birləşmiş Ştatlarında Apple və Google tərəfindən çatdırılan push-bildirişlər. Məlumatlar Birləşmiş Krallıqdan çıxdıqda, ötürmə Birləşmiş Krallığın adekvatlıq qaydaları və ya Beynəlxalq Məlumat Ötürmə Müqaviləsi (International Data Transfer Agreement) və ya Əlavə (Addendum) ilə, ölkənizin qanunvericiliyi tələb etdikdə isə həmin qanunvericiliyin tanıdığı təminatla da əhatə olunur. Hansı təminatların tətbiq olunduğu barədə bizdən ətraflı məlumat istəyə bilərsiniz.\n"
+  ]
+ ],
+ "content/legal/bg-BG/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Политика за поверителност",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Политика за поверителност"
+  ],
+  [
+   "| Stripe | Приемане на плащания от Вашите клиенти и превеждането им към Вас | Съединени американски щати |\n| Anthropic (Claude) | Превод на съобщенията, които ни изпращате, и помощ при изготвянето на нашите отговори | Съединени американски щати |\n| Namecheap | Нашите имейл пощенски кутии | Съединени американски щати |\n",
+   "| Stripe | Приемане на плащания от Вашите клиенти и превеждането им към Вас | Съединени американски щати |\n"
+  ],
+  [
+   "\n**Международно предаване на данни.** Данните от Вашия акаунт и данните за поръчките се съхраняват и обработват в Обединеното кралство. Някои неща се обработват извън него: извличането на менюта и автоматичните отговори в WhatsApp, които използват услуга на Google в Съединените американски щати; доставянето на съобщения в WhatsApp, което се извършва от Meta в Съединените американски щати; плащанията, които се обработват от Stripe в Съединените американски щати; известията, които се доставят от Apple и Google в Съединените американски щати; преводът на съобщения и изготвянето на отговори, които използват Anthropic в Съединените американски щати; и нашите имейл пощенски кутии, които се хостват от Namecheap в Съединените американски щати. Когато данни напускат Обединеното кралство, предаването е обхванато от регламентите на Обединеното кралство относно адекватното ниво на защита или от International Data Transfer Agreement (Споразумението за международно предаване на данни) или Addendum (Допълнението), и, когато правото на Вашата държава го изисква, от гаранция, която това право признава. Можете да ни поискате подробности за гаранциите, които се прилагат.\n",
+   "\n**Международно предаване на данни.** Данните от Вашия акаунт и данните за поръчките се съхраняват и обработват в Обединеното кралство. Някои неща се обработват извън него: извличането на менюта и автоматичните отговори в WhatsApp, които използват услуга на Google в Съединените американски щати; доставянето на съобщения в WhatsApp, което се извършва от Meta в Съединените американски щати; плащанията, които се обработват от Stripe в Съединените американски щати; и известията, които се доставят от Apple и Google в Съединените американски щати. Когато данни напускат Обединеното кралство, предаването е обхванато от регламентите на Обединеното кралство относно адекватното ниво на защита или от International Data Transfer Agreement (Споразумението за международно предаване на данни) или Addendum (Допълнението), и, когато правото на Вашата държава го изисква, от гаранция, която това право признава. Можете да ни поискате подробности за гаранциите, които се прилагат.\n"
+  ]
+ ],
+ "content/legal/bn-BD/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# প্রাইভেসি পলিসি",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# প্রাইভেসি পলিসি"
+  ],
+  [
+   "| Stripe | আপনার গ্রাহকদের কাছ থেকে পেমেন্ট নিয়ে আপনার কাছে পৌঁছে দেওয়া | যুক্তরাষ্ট্র |\n| Anthropic (Claude) | আপনি আমাদের যে মেসেজ পাঠান তা অনুবাদ করা ও আমাদের উত্তরের খসড়া তৈরিতে সাহায্য করা | যুক্তরাষ্ট্র |\n| Namecheap | আমাদের ইমেইল মেইলবক্স | যুক্তরাষ্ট্র |\n",
+   "| Stripe | আপনার গ্রাহকদের কাছ থেকে পেমেন্ট নিয়ে আপনার কাছে পৌঁছে দেওয়া | যুক্তরাষ্ট্র |\n"
+  ],
+  [
+   "\n**আন্তর্জাতিক স্থানান্তর।** আপনার অ্যাকাউন্টের তথ্য ও অর্ডারের তথ্য যুক্তরাজ্যে সংরক্ষিত ও প্রসেস করা হয়। কিছু কাজ এর বাইরে হয়: মেনু থেকে তথ্য বের করা ও WhatsApp-এর স্বয়ংক্রিয় উত্তর, যেগুলোতে যুক্তরাষ্ট্রে Google-এর একটি সেবা ব্যবহার হয়; WhatsApp মেসেজ পৌঁছে দেওয়া, যা যুক্তরাষ্ট্রে Meta সামলায়; পেমেন্ট, যা যুক্তরাষ্ট্রে Stripe সামলায়; পুশ নোটিফিকেশন, যা যুক্তরাষ্ট্রে Apple ও Google পৌঁছে দেয়; মেসেজ অনুবাদ ও উত্তরের খসড়া তৈরি, যেগুলোতে যুক্তরাষ্ট্রে Anthropic ব্যবহার হয়; এবং আমাদের ইমেইল মেইলবক্স, যা যুক্তরাষ্ট্রে Namecheap হোস্ট করে। যেখানে তথ্য UK-এর বাইরে যায়, সেখানে স্থানান্তরটি UK-এর পর্যাপ্ততা (adequacy) বিধিমালা, অথবা International Data Transfer Agreement বা Addendum-এর আওতায় হয়, এবং যেখানে আপনার দেশের আইন তা দাবি করে, সেখানে সেই আইন-স্বীকৃত একটি সুরক্ষাব্যবস্থার আওতায়ও হয়। প্রযোজ্য সুরক্ষাব্যবস্থার বিস্তারিত আপনি আমাদের কাছে চাইতে পারেন।\n",
+   "\n**আন্তর্জাতিক স্থানান্তর।** আপনার অ্যাকাউন্টের তথ্য ও অর্ডারের তথ্য যুক্তরাজ্যে সংরক্ষিত ও প্রসেস করা হয়। কিছু কাজ এর বাইরে হয়: মেনু থেকে তথ্য বের করা ও WhatsApp-এর স্বয়ংক্রিয় উত্তর, যেগুলোতে যুক্তরাষ্ট্রে Google-এর একটি সেবা ব্যবহার হয়; WhatsApp মেসেজ পৌঁছে দেওয়া, যা যুক্তরাষ্ট্রে Meta সামলায়; পেমেন্ট, যা যুক্তরাষ্ট্রে Stripe সামলায়; এবং পুশ নোটিফিকেশন, যা যুক্তরাষ্ট্রে Apple ও Google পৌঁছে দেয়। যেখানে তথ্য UK-এর বাইরে যায়, সেখানে স্থানান্তরটি UK-এর পর্যাপ্ততা (adequacy) বিধিমালা, অথবা International Data Transfer Agreement বা Addendum-এর আওতায় হয়, এবং যেখানে আপনার দেশের আইন তা দাবি করে, সেখানে সেই আইন-স্বীকৃত একটি সুরক্ষাব্যবস্থার আওতায়ও হয়। প্রযোজ্য সুরক্ষাব্যবস্থার বিস্তারিত আপনি আমাদের কাছে চাইতে পারেন।\n"
+  ]
+ ],
+ "content/legal/bs-BA/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Politika privatnosti",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Politika privatnosti"
+  ],
+  [
+   "| Stripe | Primanje plaćanja od vaših kupaca i njihovo prosljeđivanje vama | Sjedinjene Američke Države |\n| Anthropic (Claude) | Prevođenje poruka koje nam šaljete i pomoć pri sastavljanju naših odgovora | Sjedinjene Američke Države |\n| Namecheap | Naši sandučići e-pošte | Sjedinjene Američke Države |\n",
+   "| Stripe | Primanje plaćanja od vaših kupaca i njihovo prosljeđivanje vama | Sjedinjene Američke Države |\n"
+  ],
+  [
+   "\n**Međunarodni prenosi.** Podaci vašeg računa i podaci o narudžbama čuvaju se i obrađuju u Ujedinjenom Kraljevstvu. Neke stvari se obrađuju izvan njega: izdvajanje menija i automatski odgovori na WhatsAppu, koji koriste Googleovu uslugu u Sjedinjenim Američkim Državama; dostava WhatsApp poruka, kojom upravlja Meta u Sjedinjenim Američkim Državama; plaćanja, kojima upravlja Stripe u Sjedinjenim Američkim Državama; push obavještenja, koja dostavljaju Apple i Google u Sjedinjenim Američkim Državama; prevođenje poruka i sastavljanje odgovora, koja koriste Anthropic u Sjedinjenim Američkim Državama; i naši sandučići e-pošte, koje hostuje Namecheap u Sjedinjenim Američkim Državama. Kada podaci napuste Ujedinjeno Kraljevstvo, prenos je obuhvaćen britanskim propisima o adekvatnosti (UK adequacy regulations) ili Međunarodnim sporazumom o prenosu podataka (International Data Transfer Agreement) ili Dodatkom (Addendum), a kada to zahtijeva pravo vaše države, i zaštitnom mjerom koju to pravo priznaje. Možete nas pitati za pojedinosti o zaštitnim mjerama koje se primjenjuju.\n",
+   "\n**Međunarodni prenosi.** Podaci vašeg računa i podaci o narudžbama čuvaju se i obrađuju u Ujedinjenom Kraljevstvu. Neke stvari se obrađuju izvan njega: izdvajanje menija i automatski odgovori na WhatsAppu, koji koriste Googleovu uslugu u Sjedinjenim Američkim Državama; dostava WhatsApp poruka, kojom upravlja Meta u Sjedinjenim Američkim Državama; plaćanja, kojima upravlja Stripe u Sjedinjenim Američkim Državama; i push obavještenja, koja dostavljaju Apple i Google u Sjedinjenim Američkim Državama. Kada podaci napuste Ujedinjeno Kraljevstvo, prenos je obuhvaćen britanskim propisima o adekvatnosti (UK adequacy regulations) ili Međunarodnim sporazumom o prenosu podataka (International Data Transfer Agreement) ili Dodatkom (Addendum), a kada to zahtijeva pravo vaše države, i zaštitnom mjerom koju to pravo priznaje. Možete nas pitati za pojedinosti o zaštitnim mjerama koje se primjenjuju.\n"
+  ]
+ ],
+ "content/legal/ca-AD/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Política de privadesa",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Política de privadesa"
+  ],
+  [
+   "| Stripe | Cobrar els pagaments dels teus clients i transferir-te’ls | Estats Units |\n| Anthropic (Claude) | Traduir els missatges que ens envies i ajudar a redactar les nostres respostes | Estats Units |\n| Namecheap | Les nostres bústies de correu electrònic | Estats Units |\n",
+   "| Stripe | Cobrar els pagaments dels teus clients i transferir-te’ls | Estats Units |\n"
+  ],
+  [
+   "\n**Transferències internacionals.** Les dades del teu compte i de les comandes es desen i es tracten al Regne Unit. Algunes coses es gestionen fora del Regne Unit: l’extracció de cartes i les respostes automàtiques de WhatsApp, que utilitzen un servei de Google als Estats Units; el lliurament de missatges de WhatsApp, que gestiona Meta als Estats Units; els pagaments, que gestiona Stripe als Estats Units; les notificacions push, que lliuren Apple i Google als Estats Units; la traducció de missatges i la redacció de respostes, que utilitzen Anthropic als Estats Units; i les nostres bústies de correu electrònic, que allotja Namecheap als Estats Units. Quan les dades surten del Regne Unit, la transferència està coberta per les normes d’adequació del Regne Unit o per l’International Data Transfer Agreement o l’Addendum i, quan la llei del teu país ho exigeix, per una garantia que aquesta llei reconeix. Ens pots demanar els detalls de les garanties que s’hi apliquen.\n",
+   "\n**Transferències internacionals.** Les dades del teu compte i de les comandes es desen i es tracten al Regne Unit. Algunes coses es gestionen fora del Regne Unit: l’extracció de cartes i les respostes automàtiques de WhatsApp, que utilitzen un servei de Google als Estats Units; el lliurament de missatges de WhatsApp, que gestiona Meta als Estats Units; els pagaments, que gestiona Stripe als Estats Units; i les notificacions push, que lliuren Apple i Google als Estats Units. Quan les dades surten del Regne Unit, la transferència està coberta per les normes d’adequació del Regne Unit o per l’International Data Transfer Agreement o l’Addendum i, quan la llei del teu país ho exigeix, per una garantia que aquesta llei reconeix. Ens pots demanar els detalls de les garanties que s’hi apliquen.\n"
+  ]
+ ],
+ "content/legal/cs-CZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Zásady ochrany osobních údajů",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Zásady ochrany osobních údajů"
+  ],
+  [
+   "| Stripe | Přijímání plateb od vašich zákazníků a jejich předávání vám | Spojené státy |\n| Anthropic (Claude) | Překlad zpráv, které nám posíláte, a pomoc s přípravou našich odpovědí | Spojené státy |\n| Namecheap | Naše e-mailové schránky | Spojené státy |\n",
+   "| Stripe | Přijímání plateb od vašich zákazníků a jejich předávání vám | Spojené státy |\n"
+  ],
+  [
+   "\n**Mezinárodní předávání.** Údaje vašeho účtu a údaje o objednávkách jsou uloženy a zpracovávány ve Spojeném království. Některé věci se zpracovávají mimo něj: vytahování obsahu jídelních lístků a automatické odpovědi na WhatsAppu, které využívají službu Google ve Spojených státech; doručování zpráv WhatsApp, které zajišťuje Meta ve Spojených státech; platby, které zpracovává Stripe ve Spojených státech; nabízená oznámení, která doručují Apple a Google ve Spojených státech; překlad zpráv a příprava odpovědí, které využívají Anthropic ve Spojených státech; a naše e-mailové schránky, které hostuje Namecheap ve Spojených státech. Pokud údaje opouštějí Spojené království, vztahují se na předání britské předpisy o odpovídající ochraně (UK adequacy regulations) nebo International Data Transfer Agreement či Addendum (mezinárodní smlouva o předávání údajů nebo dodatek), a pokud to vyžaduje právo vaší země, také záruka, kterou toto právo uznává. Můžete nás požádat o podrobnosti o zárukách, které se uplatní.\n",
+   "\n**Mezinárodní předávání.** Údaje vašeho účtu a údaje o objednávkách jsou uloženy a zpracovávány ve Spojeném království. Některé věci se zpracovávají mimo něj: vytahování obsahu jídelních lístků a automatické odpovědi na WhatsAppu, které využívají službu Google ve Spojených státech; doručování zpráv WhatsApp, které zajišťuje Meta ve Spojených státech; platby, které zpracovává Stripe ve Spojených státech; a nabízená oznámení, která doručují Apple a Google ve Spojených státech. Pokud údaje opouštějí Spojené království, vztahují se na předání britské předpisy o odpovídající ochraně (UK adequacy regulations) nebo International Data Transfer Agreement či Addendum (mezinárodní smlouva o předávání údajů nebo dodatek), a pokud to vyžaduje právo vaší země, také záruka, kterou toto právo uznává. Můžete nás požádat o podrobnosti o zárukách, které se uplatní.\n"
+  ]
+ ],
+ "content/legal/da-DK/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Privatlivspolitik",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Privatlivspolitik"
+  ],
+  [
+   "| Stripe | Modtagelse af betalinger fra dine kunder og videregivelse af dem til dig | USA |\n| Anthropic (Claude) | Oversættelse af beskeder, du sender os, og hjælp til at skrive udkast til vores svar | USA |\n| Namecheap | Vores e-mailpostkasser | USA |\n",
+   "| Stripe | Modtagelse af betalinger fra dine kunder og videregivelse af dem til dig | USA |\n"
+  ],
+  [
+   "\n**Internationale overførsler.** Dine kontooplysninger og bestillingsoplysninger opbevares og behandles i Storbritannien. Visse ting håndteres uden for landet: udtrækning af menukort og automatiske WhatsApp-svar, som bruger en Google-tjeneste i USA; levering af WhatsApp-beskeder, som håndteres af Meta i USA; betalinger, som håndteres af Stripe i USA; pushnotifikationer, som leveres af Apple og Google i USA; oversættelse af beskeder og udarbejdelse af udkast til svar, som bruger Anthropic i USA; og vores e-mailpostkasser, som hostes af Namecheap i USA. Hvor oplysninger forlader Storbritannien, er overførslen omfattet af britiske tilstrækkelighedsregler (UK adequacy regulations) eller af International Data Transfer Agreement eller Addendum og, hvor lovgivningen i dit land kræver det, af en garanti, som denne lovgivning anerkender. Du kan bede os om nærmere oplysninger om de garantier, der gælder.\n",
+   "\n**Internationale overførsler.** Dine kontooplysninger og bestillingsoplysninger opbevares og behandles i Storbritannien. Visse ting håndteres uden for landet: udtrækning af menukort og automatiske WhatsApp-svar, som bruger en Google-tjeneste i USA; levering af WhatsApp-beskeder, som håndteres af Meta i USA; betalinger, som håndteres af Stripe i USA; og pushnotifikationer, som leveres af Apple og Google i USA. Hvor oplysninger forlader Storbritannien, er overførslen omfattet af britiske tilstrækkelighedsregler (UK adequacy regulations) eller af International Data Transfer Agreement eller Addendum og, hvor lovgivningen i dit land kræver det, af en garanti, som denne lovgivning anerkender. Du kan bede os om nærmere oplysninger om de garantier, der gælder.\n"
+  ]
+ ],
+ "content/legal/de-DE/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Datenschutzerklärung",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Datenschutzerklärung"
+  ],
+  [
+   "| Stripe | Entgegennahme von Zahlungen Ihrer Kunden und Weiterleitung an Sie | Vereinigte Staaten |\n| Anthropic (Claude) | Übersetzung der Nachrichten, die Sie uns senden, und Hilfe beim Entwerfen unserer Antworten | Vereinigte Staaten |\n| Namecheap | Unsere E-Mail-Postfächer | Vereinigte Staaten |\n",
+   "| Stripe | Entgegennahme von Zahlungen Ihrer Kunden und Weiterleitung an Sie | Vereinigte Staaten |\n"
+  ],
+  [
+   "\n**Internationale Übermittlungen.** Ihre Kontodaten und Bestelldaten werden im Vereinigten Königreich gespeichert und verarbeitet. Einiges wird außerhalb davon abgewickelt: das Auslesen von Speisekarten und die automatischen WhatsApp-Antworten, die einen Dienst von Google in den Vereinigten Staaten nutzen; die Zustellung von WhatsApp-Nachrichten, die von Meta in den Vereinigten Staaten abgewickelt wird; Zahlungen, die von Stripe in den Vereinigten Staaten abgewickelt werden; Push-Benachrichtigungen, die von Apple und Google in den Vereinigten Staaten zugestellt werden; die Übersetzung von Nachrichten und das Entwerfen von Antworten, die Anthropic in den Vereinigten Staaten nutzen; und unsere E-Mail-Postfächer, die von Namecheap in den Vereinigten Staaten bereitgestellt werden. Wenn Daten das Vereinigte Königreich verlassen, ist die Übermittlung durch Angemessenheitsvorschriften des Vereinigten Königreichs (UK adequacy regulations) oder durch das International Data Transfer Agreement (internationale Datenübermittlungsvereinbarung) bzw. das Addendum abgedeckt und, soweit das Recht Ihres Landes es verlangt, durch eine von diesem Recht anerkannte Garantie. Sie können von uns Einzelheiten zu den jeweils geltenden Garantien verlangen.\n",
+   "\n**Internationale Übermittlungen.** Ihre Kontodaten und Bestelldaten werden im Vereinigten Königreich gespeichert und verarbeitet. Einiges wird außerhalb davon abgewickelt: das Auslesen von Speisekarten und die automatischen WhatsApp-Antworten, die einen Dienst von Google in den Vereinigten Staaten nutzen; die Zustellung von WhatsApp-Nachrichten, die von Meta in den Vereinigten Staaten abgewickelt wird; Zahlungen, die von Stripe in den Vereinigten Staaten abgewickelt werden; und Push-Benachrichtigungen, die von Apple und Google in den Vereinigten Staaten zugestellt werden. Wenn Daten das Vereinigte Königreich verlassen, ist die Übermittlung durch Angemessenheitsvorschriften des Vereinigten Königreichs (UK adequacy regulations) oder durch das International Data Transfer Agreement (internationale Datenübermittlungsvereinbarung) bzw. das Addendum abgedeckt und, soweit das Recht Ihres Landes es verlangt, durch eine von diesem Recht anerkannte Garantie. Sie können von uns Einzelheiten zu den jeweils geltenden Garantien verlangen.\n"
+  ]
+ ],
+ "content/legal/el-GR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Πολιτική απορρήτου",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Πολιτική απορρήτου"
+  ],
+  [
+   "| Stripe | Είσπραξη πληρωμών από τους πελάτες σας και απόδοσή τους σε εσάς | Ηνωμένες Πολιτείες |\n| Anthropic (Claude) | Μετάφραση των μηνυμάτων που μας στέλνετε και βοήθεια στη σύνταξη των απαντήσεών μας | Ηνωμένες Πολιτείες |\n| Namecheap | Οι γραμματοθυρίδες email μας | Ηνωμένες Πολιτείες |\n",
+   "| Stripe | Είσπραξη πληρωμών από τους πελάτες σας και απόδοσή τους σε εσάς | Ηνωμένες Πολιτείες |\n"
+  ],
+  [
+   "\n**Διεθνείς διαβιβάσεις.** Τα δεδομένα του λογαριασμού σας και τα δεδομένα των παραγγελιών αποθηκεύονται και υποβάλλονται σε επεξεργασία στο Ηνωμένο Βασίλειο. Ορισμένες εργασίες γίνονται εκτός αυτού: η εξαγωγή καταλόγων και οι αυτόματες απαντήσεις στο WhatsApp, που χρησιμοποιούν μια υπηρεσία της Google στις Ηνωμένες Πολιτείες· η παράδοση μηνυμάτων WhatsApp, την οποία χειρίζεται η Meta στις Ηνωμένες Πολιτείες· οι πληρωμές, τις οποίες χειρίζεται η Stripe στις Ηνωμένες Πολιτείες· οι ειδοποιήσεις push, τις οποίες παραδίδουν η Apple και η Google στις Ηνωμένες Πολιτείες· η μετάφραση μηνυμάτων και η σύνταξη απαντήσεων, που χρησιμοποιούν την Anthropic στις Ηνωμένες Πολιτείες· και οι γραμματοθυρίδες email μας, τις οποίες φιλοξενεί η Namecheap στις Ηνωμένες Πολιτείες. Όταν δεδομένα εξέρχονται από το Ηνωμένο Βασίλειο, η διαβίβαση καλύπτεται από τους κανονισμούς επάρκειας του Ηνωμένου Βασιλείου ή από το International Data Transfer Agreement (Συμφωνία Διεθνούς Διαβίβασης Δεδομένων) ή το Addendum (Προσάρτημα) και, όπου το απαιτεί το δίκαιο της χώρας σας, από εγγύηση που αναγνωρίζει το δίκαιο αυτό. Μπορείτε να μας ζητήσετε λεπτομέρειες για τις εγγυήσεις που ισχύουν.\n",
+   "\n**Διεθνείς διαβιβάσεις.** Τα δεδομένα του λογαριασμού σας και τα δεδομένα των παραγγελιών αποθηκεύονται και υποβάλλονται σε επεξεργασία στο Ηνωμένο Βασίλειο. Ορισμένες εργασίες γίνονται εκτός αυτού: η εξαγωγή καταλόγων και οι αυτόματες απαντήσεις στο WhatsApp, που χρησιμοποιούν μια υπηρεσία της Google στις Ηνωμένες Πολιτείες· η παράδοση μηνυμάτων WhatsApp, την οποία χειρίζεται η Meta στις Ηνωμένες Πολιτείες· οι πληρωμές, τις οποίες χειρίζεται η Stripe στις Ηνωμένες Πολιτείες· και οι ειδοποιήσεις push, τις οποίες παραδίδουν η Apple και η Google στις Ηνωμένες Πολιτείες. Όταν δεδομένα εξέρχονται από το Ηνωμένο Βασίλειο, η διαβίβαση καλύπτεται από τους κανονισμούς επάρκειας του Ηνωμένου Βασιλείου ή από το International Data Transfer Agreement (Συμφωνία Διεθνούς Διαβίβασης Δεδομένων) ή το Addendum (Προσάρτημα) και, όπου το απαιτεί το δίκαιο της χώρας σας, από εγγύηση που αναγνωρίζει το δίκαιο αυτό. Μπορείτε να μας ζητήσετε λεπτομέρειες για τις εγγυήσεις που ισχύουν.\n"
+  ]
+ ],
+ "content/legal/es-ES/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Política de privacidad",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Política de privacidad"
+  ],
+  [
+   "| Stripe | Cobro de los pagos de sus clientes y transferencia de estos a usted | Estados Unidos |\n| Anthropic (Claude) | Traducción de los mensajes que nos envía y ayuda en la redacción de nuestras respuestas | Estados Unidos |\n| Namecheap | Nuestros buzones de correo electrónico | Estados Unidos |\n",
+   "| Stripe | Cobro de los pagos de sus clientes y transferencia de estos a usted | Estados Unidos |\n"
+  ],
+  [
+   "\n**Transferencias internacionales.** Los datos de su cuenta y los datos de los pedidos se almacenan y se tratan en el Reino Unido. Algunas operaciones se realizan fuera de él: la extracción de cartas y las respuestas automáticas de WhatsApp, que utilizan un servicio de Google en Estados Unidos; la entrega de mensajes de WhatsApp, que realiza Meta en Estados Unidos; los pagos, que gestiona Stripe en Estados Unidos; las notificaciones push, que entregan Apple y Google en Estados Unidos; la traducción de mensajes y la redacción de respuestas, que utilizan Anthropic en Estados Unidos; y nuestros buzones de correo electrónico, que aloja Namecheap en Estados Unidos. Cuando los datos salen del Reino Unido, la transferencia está amparada por la normativa de adecuación del Reino Unido o por el International Data Transfer Agreement (Acuerdo Internacional de Transferencia de Datos) o el Addendum (Adenda) y, cuando la legislación de su país lo exija, por una garantía reconocida por dicha legislación. Puede solicitarnos información sobre las garantías aplicables.\n",
+   "\n**Transferencias internacionales.** Los datos de su cuenta y los datos de los pedidos se almacenan y se tratan en el Reino Unido. Algunas operaciones se realizan fuera de él: la extracción de cartas y las respuestas automáticas de WhatsApp, que utilizan un servicio de Google en Estados Unidos; la entrega de mensajes de WhatsApp, que realiza Meta en Estados Unidos; los pagos, que gestiona Stripe en Estados Unidos; y las notificaciones push, que entregan Apple y Google en Estados Unidos. Cuando los datos salen del Reino Unido, la transferencia está amparada por la normativa de adecuación del Reino Unido o por el International Data Transfer Agreement (Acuerdo Internacional de Transferencia de Datos) o el Addendum (Adenda) y, cuando la legislación de su país lo exija, por una garantía reconocida por dicha legislación. Puede solicitarnos información sobre las garantías aplicables.\n"
+  ]
+ ],
+ "content/legal/et-EE/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Privaatsuspoliitika",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Privaatsuspoliitika"
+  ],
+  [
+   "| Stripe | Teie klientidelt maksete vastuvõtmine ja nende teile edasikandmine | Ameerika Ühendriigid |\n| Anthropic (Claude) | Teie meile saadetud sõnumite tõlkimine ja abi meie vastuste koostamisel | Ameerika Ühendriigid |\n| Namecheap | Meie e-postkastid | Ameerika Ühendriigid |\n",
+   "| Stripe | Teie klientidelt maksete vastuvõtmine ja nende teile edasikandmine | Ameerika Ühendriigid |\n"
+  ],
+  [
+   "\n**Rahvusvahelised edastamised.** Teie kontoandmeid ja tellimuste andmeid säilitatakse ja töödeldakse Ühendkuningriigis. Mõnda toimingut tehakse väljaspool seda: menüüde väljalugemine ja WhatsAppi automaatsed vastused, mis kasutavad Google’i teenust Ameerika Ühendriikides; WhatsAppi sõnumite edastamine, mida teeb Meta Ameerika Ühendriikides; maksed, mida töötleb Stripe Ameerika Ühendriikides; tõuketeavitused, mida edastavad Apple ja Google Ameerika Ühendriikides; sõnumite tõlkimine ja vastuste koostamine, mis kasutavad Anthropicu teenust Ameerika Ühendriikides; ning meie e-postkastid, mida majutab Namecheap Ameerika Ühendriikides. Kui andmed lahkuvad Ühendkuningriigist, on edastamine kaetud Ühendkuningriigi piisavusotsustega (UK adequacy regulations) või dokumendiga International Data Transfer Agreement (rahvusvahelise andmeedastuse leping) või Addendum (lisa) ning, kui teie riigi õigus seda nõuab, kaitsemeetmega, mida see õigus tunnustab. Võite küsida meilt teavet kohaldatavate kaitsemeetmete kohta.\n",
+   "\n**Rahvusvahelised edastamised.** Teie kontoandmeid ja tellimuste andmeid säilitatakse ja töödeldakse Ühendkuningriigis. Mõnda toimingut tehakse väljaspool seda: menüüde väljalugemine ja WhatsAppi automaatsed vastused, mis kasutavad Google’i teenust Ameerika Ühendriikides; WhatsAppi sõnumite edastamine, mida teeb Meta Ameerika Ühendriikides; maksed, mida töötleb Stripe Ameerika Ühendriikides; ning tõuketeavitused, mida edastavad Apple ja Google Ameerika Ühendriikides. Kui andmed lahkuvad Ühendkuningriigist, on edastamine kaetud Ühendkuningriigi piisavusotsustega (UK adequacy regulations) või dokumendiga International Data Transfer Agreement (rahvusvahelise andmeedastuse leping) või Addendum (lisa) ning, kui teie riigi õigus seda nõuab, kaitsemeetmega, mida see õigus tunnustab. Võite küsida meilt teavet kohaldatavate kaitsemeetmete kohta.\n"
+  ]
+ ],
+ "content/legal/fi-FI/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Tietosuojaseloste",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Tietosuojaseloste"
+  ],
+  [
+   "| Stripe | Maksujen vastaanottaminen asiakkailtasi ja niiden tilittäminen sinulle | Yhdysvallat |\n| Anthropic (Claude) | Meille lähettämiesi viestien kääntäminen ja apu vastaustemme luonnostelussa | Yhdysvallat |\n| Namecheap | Sähköpostilaatikkomme | Yhdysvallat |\n",
+   "| Stripe | Maksujen vastaanottaminen asiakkailtasi ja niiden tilittäminen sinulle | Yhdysvallat |\n"
+  ],
+  [
+   "\n**Kansainväliset siirrot.** Tilitietojasi ja tilaustietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Osa käsittelystä tapahtuu sen ulkopuolella: ruokalistojen tietojen poiminta ja WhatsAppin automaattiset vastaukset, joissa käytetään Googlen palvelua Yhdysvalloissa; WhatsApp-viestien toimittaminen, jonka hoitaa Meta Yhdysvalloissa; maksut, jotka hoitaa Stripe Yhdysvalloissa; push-ilmoitukset, jotka toimittavat Apple ja Google Yhdysvalloissa; viestien kääntäminen ja vastausten luonnostelu, joissa käytetään Anthropicia Yhdysvalloissa; sekä sähköpostilaatikkomme, joita Namecheap ylläpitää Yhdysvalloissa. Kun tietoja siirretään Yhdistyneen kuningaskunnan ulkopuolelle, siirto perustuu Yhdistyneen kuningaskunnan tietosuojan riittävyyttä koskeviin säännöksiin (UK adequacy regulations) tai International Data Transfer Agreement -sopimukseen tai Addendum-lisäykseen (kansainvälistä tiedonsiirtoa koskeva sopimus tai lisäys) sekä, jos maasi lainsäädäntö sitä edellyttää, kyseisen lainsäädännön tunnustamaan suojatoimeen. Voit pyytää meiltä tietoja sovellettavista suojatoimista.\n",
+   "\n**Kansainväliset siirrot.** Tilitietojasi ja tilaustietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Osa käsittelystä tapahtuu sen ulkopuolella: ruokalistojen tietojen poiminta ja WhatsAppin automaattiset vastaukset, joissa käytetään Googlen palvelua Yhdysvalloissa; WhatsApp-viestien toimittaminen, jonka hoitaa Meta Yhdysvalloissa; maksut, jotka hoitaa Stripe Yhdysvalloissa; sekä push-ilmoitukset, jotka toimittavat Apple ja Google Yhdysvalloissa. Kun tietoja siirretään Yhdistyneen kuningaskunnan ulkopuolelle, siirto perustuu Yhdistyneen kuningaskunnan tietosuojan riittävyyttä koskeviin säännöksiin (UK adequacy regulations) tai International Data Transfer Agreement -sopimukseen tai Addendum-lisäykseen (kansainvälistä tiedonsiirtoa koskeva sopimus tai lisäys) sekä, jos maasi lainsäädäntö sitä edellyttää, kyseisen lainsäädännön tunnustamaan suojatoimeen. Voit pyytää meiltä tietoja sovellettavista suojatoimista.\n"
+  ]
+ ],
+ "content/legal/fr-FR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Politique de confidentialité",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Politique de confidentialité"
+  ],
+  [
+   "| Stripe | Encaissement des paiements de vos clients et reversement de ceux-ci à vous | États-Unis |\n| Anthropic (Claude) | Traduction des messages que vous nous envoyez et aide à la rédaction de nos réponses | États-Unis |\n| Namecheap | Nos boîtes aux lettres électroniques | États-Unis |\n",
+   "| Stripe | Encaissement des paiements de vos clients et reversement de ceux-ci à vous | États-Unis |\n"
+  ],
+  [
+   "\n**Transferts internationaux.** Les données de votre compte et de vos commandes sont stockées et traitées au Royaume-Uni. Certains traitements ont lieu en dehors de celui-ci : l’extraction des cartes et les réponses automatiques WhatsApp, qui utilisent un service de Google aux États-Unis ; l’acheminement des messages WhatsApp, assuré par Meta aux États-Unis ; les paiements, traités par Stripe aux États-Unis ; les notifications push, acheminées par Apple et Google aux États-Unis ; la traduction des messages et l’aide à la rédaction des réponses, qui utilisent Anthropic aux États-Unis ; et nos boîtes aux lettres électroniques, hébergées par Namecheap aux États-Unis. Lorsque des données quittent le Royaume-Uni, le transfert est couvert par les UK adequacy regulations (réglementations britanniques d’adéquation) ou par l’International Data Transfer Agreement ou l’Addendum et, lorsque le droit de votre pays l’exige, par une garantie reconnue par ce droit. Vous pouvez nous demander le détail des garanties applicables.\n",
+   "\n**Transferts internationaux.** Les données de votre compte et de vos commandes sont stockées et traitées au Royaume-Uni. Certains traitements ont lieu en dehors de celui-ci : l’extraction des cartes et les réponses automatiques WhatsApp, qui utilisent un service de Google aux États-Unis ; l’acheminement des messages WhatsApp, assuré par Meta aux États-Unis ; les paiements, traités par Stripe aux États-Unis ; et les notifications push, acheminées par Apple et Google aux États-Unis. Lorsque des données quittent le Royaume-Uni, le transfert est couvert par les UK adequacy regulations (réglementations britanniques d’adéquation) ou par l’International Data Transfer Agreement ou l’Addendum et, lorsque le droit de votre pays l’exige, par une garantie reconnue par ce droit. Vous pouvez nous demander le détail des garanties applicables.\n"
+  ]
+ ],
+ "content/legal/he-IL/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# מדיניות פרטיות",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# מדיניות פרטיות"
+  ],
+  [
+   "| Stripe | גביית תשלומים מהלקוחות שלכם והעברתם אליכם | ארצות הברית |\n| Anthropic (Claude) | תרגום ההודעות שאתם שולחים אלינו וסיוע בניסוח התשובות שלנו | ארצות הברית |\n| Namecheap | תיבות הדואר האלקטרוני שלנו | ארצות הברית |\n",
+   "| Stripe | גביית תשלומים מהלקוחות שלכם והעברתם אליכם | ארצות הברית |\n"
+  ],
+  [
+   "\n**העברות בין-לאומיות.** מידע החשבון ומידע ההזמנות שלכם נשמרים ומעובדים בממלכה המאוחדת. חלק מהפעולות מבוצעות מחוץ לה: חילוץ תפריטים ותשובות אוטומטיות ב-WhatsApp, המשתמשים בשירות של Google בארצות הברית; העברת הודעות WhatsApp, המטופלת על ידי Meta בארצות הברית; תשלומים, המטופלים על ידי Stripe בארצות הברית; התראות פוש, המועברות על ידי Apple ו-Google בארצות הברית; תרגום הודעות וניסוח תשובות, המשתמשים ב-Anthropic בארצות הברית; ותיבות הדואר האלקטרוני שלנו, המאוחסנות אצל Namecheap בארצות הברית. כאשר מידע יוצא מהממלכה המאוחדת, ההעברה מכוסה בתקנות ההלימות (adequacy regulations) של הממלכה המאוחדת או בהסכם העברת המידע הבין-לאומי (International Data Transfer Agreement) או בתוספת (Addendum), וכן, מקום שבו הדין של המדינה שלכם מחייב זאת, באמצעי הגנה שאותו דין מכיר בו. תוכלו לבקש מאיתנו פרטים על אמצעי ההגנה החלים.\n",
+   "\n**העברות בין-לאומיות.** מידע החשבון ומידע ההזמנות שלכם נשמרים ומעובדים בממלכה המאוחדת. חלק מהפעולות מבוצעות מחוץ לה: חילוץ תפריטים ותשובות אוטומטיות ב-WhatsApp, המשתמשים בשירות של Google בארצות הברית; העברת הודעות WhatsApp, המטופלת על ידי Meta בארצות הברית; תשלומים, המטופלים על ידי Stripe בארצות הברית; והתראות פוש, המועברות על ידי Apple ו-Google בארצות הברית. כאשר מידע יוצא מהממלכה המאוחדת, ההעברה מכוסה בתקנות ההלימות (adequacy regulations) של הממלכה המאוחדת או בהסכם העברת המידע הבין-לאומי (International Data Transfer Agreement) או בתוספת (Addendum), וכן, מקום שבו הדין של המדינה שלכם מחייב זאת, באמצעי הגנה שאותו דין מכיר בו. תוכלו לבקש מאיתנו פרטים על אמצעי ההגנה החלים.\n"
+  ]
+ ],
+ "content/legal/hr-HR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Pravila o privatnosti",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Pravila o privatnosti"
+  ],
+  [
+   "| Stripe | Primanje plaćanja od vaših kupaca i prosljeđivanje tih iznosa vama | Sjedinjene Američke Države |\n| Anthropic (Claude) | Prevođenje poruka koje nam šaljete i pomoć pri sastavljanju naših odgovora | Sjedinjene Američke Države |\n| Namecheap | Naši sandučići e-pošte | Sjedinjene Američke Države |\n",
+   "| Stripe | Primanje plaćanja od vaših kupaca i prosljeđivanje tih iznosa vama | Sjedinjene Američke Države |\n"
+  ],
+  [
+   "\n**Međunarodni prijenosi.** Podaci vašeg računa i podaci o narudžbama pohranjuju se i obrađuju u Ujedinjenoj Kraljevini. Neke se stvari obavljaju izvan nje: izdvajanje sadržaja jelovnika i automatski odgovori na WhatsAppu, za koje se upotrebljava Googleova usluga u Sjedinjenim Američkim Državama; dostava WhatsApp poruka, koju obavlja Meta u Sjedinjenim Američkim Državama; plaćanja, koja obavlja Stripe u Sjedinjenim Američkim Državama; push obavijesti, koje dostavljaju Apple i Google u Sjedinjenim Američkim Državama; prevođenje poruka i sastavljanje odgovora, za koje se upotrebljava Anthropic u Sjedinjenim Američkim Državama; i naši sandučići e-pošte, koje hostira Namecheap u Sjedinjenim Američkim Državama. Kada podaci napuštaju Ujedinjenu Kraljevinu, prijenos je obuhvaćen propisima Ujedinjene Kraljevine o primjerenosti (UK adequacy regulations) ili ugovorom International Data Transfer Agreement ili dodatkom Addendum, a kada to zahtijeva pravo vaše zemlje, i zaštitnom mjerom koju to pravo priznaje. Možete nas zatražiti pojedinosti o zaštitnim mjerama koje se primjenjuju.\n",
+   "\n**Međunarodni prijenosi.** Podaci vašeg računa i podaci o narudžbama pohranjuju se i obrađuju u Ujedinjenoj Kraljevini. Neke se stvari obavljaju izvan nje: izdvajanje sadržaja jelovnika i automatski odgovori na WhatsAppu, za koje se upotrebljava Googleova usluga u Sjedinjenim Američkim Državama; dostava WhatsApp poruka, koju obavlja Meta u Sjedinjenim Američkim Državama; plaćanja, koja obavlja Stripe u Sjedinjenim Američkim Državama; i push obavijesti, koje dostavljaju Apple i Google u Sjedinjenim Američkim Državama. Kada podaci napuštaju Ujedinjenu Kraljevinu, prijenos je obuhvaćen propisima Ujedinjene Kraljevine o primjerenosti (UK adequacy regulations) ili ugovorom International Data Transfer Agreement ili dodatkom Addendum, a kada to zahtijeva pravo vaše zemlje, i zaštitnom mjerom koju to pravo priznaje. Možete nas zatražiti pojedinosti o zaštitnim mjerama koje se primjenjuju.\n"
+  ]
+ ],
+ "content/legal/hu-HU/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Adatvédelmi tájékoztató",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Adatvédelmi tájékoztató"
+  ],
+  [
+   "| Stripe | A vásárlóitól érkező fizetések beszedése és továbbítása Önnek | Egyesült Államok |\n| Anthropic (Claude) | Az Ön által nekünk küldött üzenetek fordítása és segítség a válaszaink megfogalmazásában | Egyesült Államok |\n| Namecheap | E-mail-postafiókjaink | Egyesült Államok |\n",
+   "| Stripe | A vásárlóitól érkező fizetések beszedése és továbbítása Önnek | Egyesült Államok |\n"
+  ],
+  [
+   "\n**Nemzetközi adattovábbítás.** Fiókadatait és rendelési adatait az Egyesült Királyságban tároljuk és kezeljük. Egyes műveletek azon kívül történnek: az étlapok kiolvasása és a WhatsApp automatikus válaszok, amelyek egy egyesült államokbeli Google-szolgáltatást használnak; a WhatsApp-üzenetek kézbesítése, amelyet a Meta végez az Egyesült Államokban; a fizetések, amelyeket a Stripe kezel az Egyesült Államokban; a push-értesítések, amelyeket az Apple és a Google kézbesít az Egyesült Államokban; az üzenetek fordítása és a válaszok megfogalmazása, amelyek egy egyesült államokbeli Anthropic-szolgáltatást használnak; valamint e-mail-postafiókjaink, amelyeket a Namecheap üzemeltet az Egyesült Államokban. Ahol adatok hagyják el az Egyesült Királyságot, a továbbításra az Egyesült Királyság megfelelőségi szabályai (UK adequacy regulations), illetve az International Data Transfer Agreement (nemzetközi adattovábbítási megállapodás) vagy az Addendum, valamint – ahol az Ön országának joga ezt előírja – egy e jog által elismert garancia vonatkozik. Kérésére tájékoztatjuk az alkalmazandó garanciákról.\n",
+   "\n**Nemzetközi adattovábbítás.** Fiókadatait és rendelési adatait az Egyesült Királyságban tároljuk és kezeljük. Egyes műveletek azon kívül történnek: az étlapok kiolvasása és a WhatsApp automatikus válaszok, amelyek egy egyesült államokbeli Google-szolgáltatást használnak; a WhatsApp-üzenetek kézbesítése, amelyet a Meta végez az Egyesült Államokban; a fizetések, amelyeket a Stripe kezel az Egyesült Államokban; valamint a push-értesítések, amelyeket az Apple és a Google kézbesít az Egyesült Államokban. Ahol adatok hagyják el az Egyesült Királyságot, a továbbításra az Egyesült Királyság megfelelőségi szabályai (UK adequacy regulations), illetve az International Data Transfer Agreement (nemzetközi adattovábbítási megállapodás) vagy az Addendum, valamint – ahol az Ön országának joga ezt előírja – egy e jog által elismert garancia vonatkozik. Kérésére tájékoztatjuk az alkalmazandó garanciákról.\n"
+  ]
+ ],
+ "content/legal/hy-AM/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Գաղտնիության քաղաքականություն",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Գաղտնիության քաղաքականություն"
+  ],
+  [
+   "| Stripe | Ձեր հաճախորդներից վճարումների ընդունում և դրանց փոխանցում ձեզ | Ամերիկայի Միացյալ Նահանգներ |\n| Anthropic (Claude) | Ձեր կողմից մեզ ուղարկված հաղորդագրությունների թարգմանություն և օգնություն մեր պատասխանների նախագծման մեջ | Ամերիկայի Միացյալ Նահանգներ |\n| Namecheap | Մեր էլփոստի արկղերը | Ամերիկայի Միացյալ Նահանգներ |\n",
+   "| Stripe | Ձեր հաճախորդներից վճարումների ընդունում և դրանց փոխանցում ձեզ | Ամերիկայի Միացյալ Նահանգներ |\n"
+  ],
+  [
+   "\n**Միջազգային փոխանցումներ։** Ձեր հաշվի տվյալները և պատվերների տվյալները պահվում և մշակվում են Միացյալ Թագավորությունում։ Որոշ բաներ մշակվում են դրանից դուրս՝ ճաշացանկի բովանդակության դուրսբերումը և WhatsApp-ի ավտոմատ պատասխանները, որոնք օգտագործում են Google-ի ծառայություն Միացյալ Նահանգներում, WhatsApp հաղորդագրությունների առաքումը, որն իրականացնում է Meta-ն Միացյալ Նահանգներում, վճարումները, որոնք մշակում է Stripe-ը Միացյալ Նահանգներում, push ծանուցումները, որոնք առաքում են Apple-ը և Google-ը Միացյալ Նահանգներում, հաղորդագրությունների թարգմանությունը և պատասխանների նախագծումը, որոնք օգտագործում են Anthropic-ը Միացյալ Նահանգներում, և մեր էլփոստի արկղերը, որոնք հյուրընկալում է Namecheap-ը Միացյալ Նահանգներում։ Երբ տվյալները դուրս են գալիս Միացյալ Թագավորությունից, փոխանցումը ծածկված է Միացյալ Թագավորության համարժեքության կանոնակարգերով կամ Տվյալների միջազգային փոխանցման համաձայնագրով (International Data Transfer Agreement) կամ Հավելվածով (Addendum), իսկ երբ դա պահանջում է ձեր երկրի օրենսդրությունը՝ նաև այդ օրենսդրությամբ ճանաչված երաշխիքով։ Դուք կարող եք մեզնից խնդրել կիրառվող երաշխիքների մանրամասները։\n",
+   "\n**Միջազգային փոխանցումներ։** Ձեր հաշվի տվյալները և պատվերների տվյալները պահվում և մշակվում են Միացյալ Թագավորությունում։ Որոշ բաներ մշակվում են դրանից դուրս՝ ճաշացանկի բովանդակության դուրսբերումը և WhatsApp-ի ավտոմատ պատասխանները, որոնք օգտագործում են Google-ի ծառայություն Միացյալ Նահանգներում, WhatsApp հաղորդագրությունների առաքումը, որն իրականացնում է Meta-ն Միացյալ Նահանգներում, վճարումները, որոնք մշակում է Stripe-ը Միացյալ Նահանգներում, և push ծանուցումները, որոնք առաքում են Apple-ը և Google-ը Միացյալ Նահանգներում։ Երբ տվյալները դուրս են գալիս Միացյալ Թագավորությունից, փոխանցումը ծածկված է Միացյալ Թագավորության համարժեքության կանոնակարգերով կամ Տվյալների միջազգային փոխանցման համաձայնագրով (International Data Transfer Agreement) կամ Հավելվածով (Addendum), իսկ երբ դա պահանջում է ձեր երկրի օրենսդրությունը՝ նաև այդ օրենսդրությամբ ճանաչված երաշխիքով։ Դուք կարող եք մեզնից խնդրել կիրառվող երաշխիքների մանրամասները։\n"
+  ]
+ ],
+ "content/legal/id-ID/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Kebijakan Privasi",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Kebijakan Privasi"
+  ],
+  [
+   "| Stripe | Menerima pembayaran dari pelanggan Anda dan meneruskannya kepada Anda | Amerika Serikat |\n| Anthropic (Claude) | Menerjemahkan pesan yang Anda kirim kepada kami dan membantu menyusun draf balasan kami | Amerika Serikat |\n| Namecheap | Kotak surat email kami | Amerika Serikat |\n",
+   "| Stripe | Menerima pembayaran dari pelanggan Anda dan meneruskannya kepada Anda | Amerika Serikat |\n"
+  ],
+  [
+   "\n**Transfer internasional.** Data akun dan data pesanan Anda disimpan dan diproses di Britania Raya (United Kingdom). Beberapa hal ditangani di luar Britania Raya: ekstraksi menu dan balasan otomatis WhatsApp, yang menggunakan layanan Google di Amerika Serikat; pengiriman pesan WhatsApp, yang ditangani oleh Meta di Amerika Serikat; pembayaran, yang ditangani oleh Stripe di Amerika Serikat; notifikasi push, yang dikirimkan oleh Apple dan Google di Amerika Serikat; penerjemahan pesan dan penyusunan draf balasan, yang menggunakan Anthropic di Amerika Serikat; dan kotak surat email kami, yang di-hosting oleh Namecheap di Amerika Serikat. Jika data keluar dari Britania Raya, transfer tersebut dilindungi oleh regulasi kecukupan (adequacy regulations) Britania Raya atau oleh International Data Transfer Agreement (Perjanjian Transfer Data Internasional) atau Addendum, dan, apabila diwajibkan oleh hukum negara Anda, oleh pelindungan yang diakui oleh hukum tersebut. Anda dapat meminta kepada kami rincian pelindungan yang berlaku.\n",
+   "\n**Transfer internasional.** Data akun dan data pesanan Anda disimpan dan diproses di Britania Raya (United Kingdom). Beberapa hal ditangani di luar Britania Raya: ekstraksi menu dan balasan otomatis WhatsApp, yang menggunakan layanan Google di Amerika Serikat; pengiriman pesan WhatsApp, yang ditangani oleh Meta di Amerika Serikat; pembayaran, yang ditangani oleh Stripe di Amerika Serikat; dan notifikasi push, yang dikirimkan oleh Apple dan Google di Amerika Serikat. Jika data keluar dari Britania Raya, transfer tersebut dilindungi oleh regulasi kecukupan (adequacy regulations) Britania Raya atau oleh International Data Transfer Agreement (Perjanjian Transfer Data Internasional) atau Addendum, dan, apabila diwajibkan oleh hukum negara Anda, oleh pelindungan yang diakui oleh hukum tersebut. Anda dapat meminta kepada kami rincian pelindungan yang berlaku.\n"
+  ]
+ ],
+ "content/legal/is-IS/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Persónuverndarstefna",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Persónuverndarstefna"
+  ],
+  [
+   "| Stripe | Tekur við greiðslum frá viðskiptavinum þínum og greiðir þær áfram til þín | Bandaríkin |\n| Anthropic (Claude) | Þýðir skilaboð sem þú sendir okkur og hjálpar við að semja drög að svörum okkar | Bandaríkin |\n| Namecheap | Tölvupósthólfin okkar | Bandaríkin |\n",
+   "| Stripe | Tekur við greiðslum frá viðskiptavinum þínum og greiðir þær áfram til þín | Bandaríkin |\n"
+  ],
+  [
+   "\n**Flutningur milli landa.** Upplýsingar um aðgang þinn og pantanir eru geymdar og unnar í Bretlandi. Sumt er meðhöndlað utan þess: lestur matseðla og sjálfvirk svör á WhatsApp, sem nota þjónustu Google í Bandaríkjunum; afhending WhatsApp-skilaboða, sem Meta annast í Bandaríkjunum; greiðslur, sem Stripe annast í Bandaríkjunum; tilkynningar, sem Apple og Google afhenda í Bandaríkjunum; þýðing skilaboða og gerð draga að svörum, sem nota Anthropic í Bandaríkjunum; og tölvupósthólfin okkar, sem Namecheap hýsir í Bandaríkjunum. Þegar upplýsingar fara frá Bretlandi byggist flutningurinn á breskum reglum um fullnægjandi vernd (UK adequacy regulations) eða á International Data Transfer Agreement eða Addendum og, þar sem lög lands þíns krefjast þess, á verndarráðstöfun sem þau lög viðurkenna. Þú getur óskað eftir upplýsingum frá okkur um þær verndarráðstafanir sem eiga við.\n",
+   "\n**Flutningur milli landa.** Upplýsingar um aðgang þinn og pantanir eru geymdar og unnar í Bretlandi. Sumt er meðhöndlað utan þess: lestur matseðla og sjálfvirk svör á WhatsApp, sem nota þjónustu Google í Bandaríkjunum; afhending WhatsApp-skilaboða, sem Meta annast í Bandaríkjunum; greiðslur, sem Stripe annast í Bandaríkjunum; og tilkynningar, sem Apple og Google afhenda í Bandaríkjunum. Þegar upplýsingar fara frá Bretlandi byggist flutningurinn á breskum reglum um fullnægjandi vernd (UK adequacy regulations) eða á International Data Transfer Agreement eða Addendum og, þar sem lög lands þíns krefjast þess, á verndarráðstöfun sem þau lög viðurkenna. Þú getur óskað eftir upplýsingum frá okkur um þær verndarráðstafanir sem eiga við.\n"
+  ]
+ ],
+ "content/legal/it-IT/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Informativa sulla privacy",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Informativa sulla privacy"
+  ],
+  [
+   "| Stripe | Riscossione dei pagamenti dai Suoi clienti e loro trasferimento a Lei | Stati Uniti |\n| Anthropic (Claude) | Traduzione dei messaggi che Lei ci invia e aiuto nella stesura delle nostre risposte | Stati Uniti |\n| Namecheap | Le nostre caselle di posta elettronica | Stati Uniti |\n",
+   "| Stripe | Riscossione dei pagamenti dai Suoi clienti e loro trasferimento a Lei | Stati Uniti |\n"
+  ],
+  [
+   "\n**Trasferimenti internazionali.** I dati del Suo account e i dati degli ordini sono conservati e trattati nel Regno Unito. Alcune attività sono svolte al di fuori di esso: l'estrazione dei menu e le risposte automatiche su WhatsApp, che utilizzano un servizio di Google negli Stati Uniti; il recapito dei messaggi WhatsApp, gestito da Meta negli Stati Uniti; i pagamenti, gestiti da Stripe negli Stati Uniti; le notifiche push, recapitate da Apple e Google negli Stati Uniti; la traduzione dei messaggi e la stesura delle risposte, che utilizzano Anthropic negli Stati Uniti; e le nostre caselle di posta elettronica, ospitate da Namecheap negli Stati Uniti. Quando i dati lasciano il Regno Unito, il trasferimento è coperto dai regolamenti di adeguatezza del Regno Unito oppure dall'International Data Transfer Agreement o dall'Addendum e, laddove la legge del Suo Paese lo richieda, da una garanzia riconosciuta da tale legge. Può chiederci i dettagli delle garanzie applicabili.\n",
+   "\n**Trasferimenti internazionali.** I dati del Suo account e i dati degli ordini sono conservati e trattati nel Regno Unito. Alcune attività sono svolte al di fuori di esso: l'estrazione dei menu e le risposte automatiche su WhatsApp, che utilizzano un servizio di Google negli Stati Uniti; il recapito dei messaggi WhatsApp, gestito da Meta negli Stati Uniti; i pagamenti, gestiti da Stripe negli Stati Uniti; e le notifiche push, recapitate da Apple e Google negli Stati Uniti. Quando i dati lasciano il Regno Unito, il trasferimento è coperto dai regolamenti di adeguatezza del Regno Unito oppure dall'International Data Transfer Agreement o dall'Addendum e, laddove la legge del Suo Paese lo richieda, da una garanzia riconosciuta da tale legge. Può chiederci i dettagli delle garanzie applicabili.\n"
+  ]
+ ],
+ "content/legal/ja-JP/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# プライバシーポリシー",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# プライバシーポリシー"
+  ],
+  [
+   "| Stripe | お客様の顧客からの支払いの受領およびお客様への送金 | 米国 |\n| Anthropic (Claude) | お客様から当社に送られたメッセージの翻訳および当社の返信の下書き作成の支援 | 米国 |\n| Namecheap | 当社のメールボックス | 米国 |\n",
+   "| Stripe | お客様の顧客からの支払いの受領およびお客様への送金 | 米国 |\n"
+  ],
+  [
+   "\n**国際移転。** お客様のアカウントデータおよび注文データは、英国において保存および処理されます。一部の処理は英国外で行われます。メニューの抽出およびWhatsAppの自動返信は米国のGoogleのサービスを利用し、WhatsAppメッセージの配信は米国のMetaが、支払いは米国のStripeが取り扱い、プッシュ通知は米国のAppleおよびGoogleが配信し、メッセージの翻訳および返信の下書き作成は米国のAnthropicを利用し、当社のメールボックスは米国のNamecheapがホストしています。データが英国外に移転される場合、その移転は、英国の十分性規則（UK adequacy regulations）、または国際データ移転契約（International Data Transfer Agreement）もしくは補遺（Addendum）の対象となり、さらにお客様の国の法律が求める場合には、当該法律が認める保護措置の対象となります。お客様は、適用される保護措置の詳細を当社に請求することができます。\n",
+   "\n**国際移転。** お客様のアカウントデータおよび注文データは、英国において保存および処理されます。一部の処理は英国外で行われます。メニューの抽出およびWhatsAppの自動返信は米国のGoogleのサービスを利用し、WhatsAppメッセージの配信は米国のMetaが、支払いは米国のStripeが取り扱い、プッシュ通知は米国のAppleおよびGoogleが配信します。データが英国外に移転される場合、その移転は、英国の十分性規則（UK adequacy regulations）、または国際データ移転契約（International Data Transfer Agreement）もしくは補遺（Addendum）の対象となり、さらにお客様の国の法律が求める場合には、当該法律が認める保護措置の対象となります。お客様は、適用される保護措置の詳細を当社に請求することができます。\n"
+  ]
+ ],
+ "content/legal/ka-GE/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# კონფიდენციალურობის პოლიტიკა",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# კონფიდენციალურობის პოლიტიკა"
+  ],
+  [
+   "| Stripe | თქვენი მომხმარებლებისგან გადახდების მიღება და თქვენთვის გადმორიცხვა | ამერიკის შეერთებული შტატები |\n| Anthropic (Claude) | თქვენ მიერ ჩვენთვის გამოგზავნილი შეტყობინებების თარგმნა და ჩვენი პასუხების მომზადებაში დახმარება | ამერიკის შეერთებული შტატები |\n| Namecheap | ჩვენი ელფოსტის ყუთები | ამერიკის შეერთებული შტატები |\n",
+   "| Stripe | თქვენი მომხმარებლებისგან გადახდების მიღება და თქვენთვის გადმორიცხვა | ამერიკის შეერთებული შტატები |\n"
+  ],
+  [
+   "\n**საერთაშორისო გადაცემა.** თქვენი ანგარიშის მონაცემები და შეკვეთების მონაცემები ინახება და მუშავდება გაერთიანებულ სამეფოში. ზოგი რამ მის ფარგლებს გარეთ მუშავდება: მენიუს ამოღება და WhatsApp-ის ავტომატური პასუხები, რომლებიც Google-ის სერვისს იყენებს ამერიკის შეერთებულ შტატებში; WhatsApp-შეტყობინებების მიწოდება, რომელსაც Meta ახორციელებს ამერიკის შეერთებულ შტატებში; გადახდები, რომლებსაც Stripe ამუშავებს ამერიკის შეერთებულ შტატებში; push-შეტყობინებები, რომლებსაც Apple და Google აწვდიან ამერიკის შეერთებულ შტატებში; შეტყობინებების თარგმნა და პასუხების მომზადება, რომლებიც Anthropic-ს იყენებს ამერიკის შეერთებულ შტატებში; და ჩვენი ელფოსტის ყუთები, რომლებსაც Namecheap მასპინძლობს ამერიკის შეერთებულ შტატებში. როცა მონაცემები გაერთიანებულ სამეფოს ტოვებს, გადაცემა დაფარულია გაერთიანებული სამეფოს ადეკვატურობის რეგულაციებით ან მონაცემთა საერთაშორისო გადაცემის შეთანხმებით (International Data Transfer Agreement) ან დანართით (Addendum), ხოლო როცა ამას თქვენი ქვეყნის კანონმდებლობა მოითხოვს, ასევე ისეთი გარანტიით, რომელსაც ეს კანონმდებლობა აღიარებს. შეგიძლიათ გვთხოვოთ ინფორმაცია მოქმედი გარანტიების შესახებ.\n",
+   "\n**საერთაშორისო გადაცემა.** თქვენი ანგარიშის მონაცემები და შეკვეთების მონაცემები ინახება და მუშავდება გაერთიანებულ სამეფოში. ზოგი რამ მის ფარგლებს გარეთ მუშავდება: მენიუს ამოღება და WhatsApp-ის ავტომატური პასუხები, რომლებიც Google-ის სერვისს იყენებს ამერიკის შეერთებულ შტატებში; WhatsApp-შეტყობინებების მიწოდება, რომელსაც Meta ახორციელებს ამერიკის შეერთებულ შტატებში; გადახდები, რომლებსაც Stripe ამუშავებს ამერიკის შეერთებულ შტატებში; და push-შეტყობინებები, რომლებსაც Apple და Google აწვდიან ამერიკის შეერთებულ შტატებში. როცა მონაცემები გაერთიანებულ სამეფოს ტოვებს, გადაცემა დაფარულია გაერთიანებული სამეფოს ადეკვატურობის რეგულაციებით ან მონაცემთა საერთაშორისო გადაცემის შეთანხმებით (International Data Transfer Agreement) ან დანართით (Addendum), ხოლო როცა ამას თქვენი ქვეყნის კანონმდებლობა მოითხოვს, ასევე ისეთი გარანტიით, რომელსაც ეს კანონმდებლობა აღიარებს. შეგიძლიათ გვთხოვოთ ინფორმაცია მოქმედი გარანტიების შესახებ.\n"
+  ]
+ ],
+ "content/legal/kk-KZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Құпиялылық саясаты",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Құпиялылық саясаты"
+  ],
+  [
+   "| Stripe | Клиенттеріңізден төлемдерді қабылдау және оларды сізге аудару | АҚШ |\n| Anthropic (Claude) | Бізге жіберген хабарламаларыңызды аудару және жауаптарымыздың жобасын дайындауға көмектесу | АҚШ |\n| Namecheap | Біздің электрондық пошта жәшіктеріміз | АҚШ |\n",
+   "| Stripe | Клиенттеріңізден төлемдерді қабылдау және оларды сізге аудару | АҚШ |\n"
+  ],
+  [
+   "\n**Деректерді халықаралық беру.** Аккаунтыңыздың деректері мен тапсырыс деректері Ұлыбританияда сақталады және өңделеді. Өңдеудің бір бөлігі оның шегінен тыс жүреді: АҚШ-тағы Google қызметін пайдаланатын мәзірді алу және WhatsApp-тағы автоматты жауаптар; АҚШ-тағы Meta орындайтын WhatsApp хабарламаларын жеткізу; АҚШ-тағы Stripe өңдейтін төлемдер; АҚШ-тағы Apple мен Google жеткізетін push-хабарландырулар; АҚШ-тағы Anthropic-ті пайдаланатын хабарламаларды аудару және жауаптардың жобасын дайындау; және АҚШ-тағы Namecheap орналастыратын біздің электрондық пошта жәшіктеріміз. Деректер Ұлыбританиядан шыққанда, беру Ұлыбританияның қорғаудың тиісті деңгейі туралы ережелеріне немесе Деректерді халықаралық беру туралы келісімге (International Data Transfer Agreement) немесе Қосымшаға (Addendum), ал еліңіздің заңнамасы талап еткен жағдайда, сол заңнама мойындайтын кепілдікке де бағынады. Қолданылатын кепілдіктер туралы мәліметтерді бізден сұрай аласыз.\n",
+   "\n**Деректерді халықаралық беру.** Аккаунтыңыздың деректері мен тапсырыс деректері Ұлыбританияда сақталады және өңделеді. Өңдеудің бір бөлігі оның шегінен тыс жүреді: АҚШ-тағы Google қызметін пайдаланатын мәзірді алу және WhatsApp-тағы автоматты жауаптар; АҚШ-тағы Meta орындайтын WhatsApp хабарламаларын жеткізу; АҚШ-тағы Stripe өңдейтін төлемдер; және АҚШ-тағы Apple мен Google жеткізетін push-хабарландырулар. Деректер Ұлыбританиядан шыққанда, беру Ұлыбританияның қорғаудың тиісті деңгейі туралы ережелеріне немесе Деректерді халықаралық беру туралы келісімге (International Data Transfer Agreement) немесе Қосымшаға (Addendum), ал еліңіздің заңнамасы талап еткен жағдайда, сол заңнама мойындайтын кепілдікке де бағынады. Қолданылатын кепілдіктер туралы мәліметтерді бізден сұрай аласыз.\n"
+  ]
+ ],
+ "content/legal/km-KH/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# គោលការណ៍ឯកជនភាព",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# គោលការណ៍ឯកជនភាព"
+  ],
+  [
+   "| Stripe | ការទទួលការបង់ប្រាក់ពីអតិថិជនរបស់អ្នក ហើយបញ្ជូនបន្តទៅអ្នក | សហរដ្ឋអាមេរិក |\n| Anthropic (Claude) | ការបកប្រែសារដែលអ្នកផ្ញើមកយើង និងការជួយព្រាងចម្លើយតបរបស់យើង | សហរដ្ឋអាមេរិក |\n| Namecheap | ប្រអប់សំបុត្រអ៊ីមែលរបស់យើង | សហរដ្ឋអាមេរិក |\n",
+   "| Stripe | ការទទួលការបង់ប្រាក់ពីអតិថិជនរបស់អ្នក ហើយបញ្ជូនបន្តទៅអ្នក | សហរដ្ឋអាមេរិក |\n"
+  ],
+  [
+   "\n**ការផ្ទេរទិន្នន័យអន្តរជាតិ។** ទិន្នន័យគណនី និងទិន្នន័យការបញ្ជាទិញរបស់អ្នកត្រូវបានរក្សាទុក និងដំណើរការនៅចក្រភពអង់គ្លេស។ រឿងខ្លះត្រូវបានដោះស្រាយនៅក្រៅចក្រភពអង់គ្លេស៖ ការទាញយកខ្លឹមសារម៉ឺនុយ និងការឆ្លើយតបស្វ័យប្រវត្តិតាម WhatsApp ដែលប្រើសេវារបស់ Google នៅសហរដ្ឋអាមេរិក ការបញ្ជូនសារ WhatsApp ដែលដោះស្រាយដោយ Meta នៅសហរដ្ឋអាមេរិក ការបង់ប្រាក់ ដែលដោះស្រាយដោយ Stripe នៅសហរដ្ឋអាមេរិក ការជូនដំណឹង (push notification) ដែលបញ្ជូនដោយ Apple និង Google នៅសហរដ្ឋអាមេរិក ការបកប្រែសារ និងការព្រាងចម្លើយតប ដែលប្រើ Anthropic នៅសហរដ្ឋអាមេរិក និងប្រអប់សំបុត្រអ៊ីមែលរបស់យើង ដែល Namecheap ជាអ្នកផ្តល់សេវាផ្ទុកនៅសហរដ្ឋអាមេរិក។ នៅពេលទិន្នន័យចាកចេញពីចក្រភពអង់គ្លេស ការផ្ទេរនោះត្រូវបានគ្របដណ្តប់ដោយបទប្បញ្ញត្តិស្តីពីភាពគ្រប់គ្រាន់ (adequacy regulations) របស់ចក្រភពអង់គ្លេស ឬដោយកិច្ចព្រមព្រៀងផ្ទេរទិន្នន័យអន្តរជាតិ (International Data Transfer Agreement) ឬឧបសម្ព័ន្ធ (Addendum) ហើយនៅពេលដែលច្បាប់នៃប្រទេសរបស់អ្នកតម្រូវ ក៏ត្រូវបានគ្របដណ្តប់ដោយការការពារដែលច្បាប់នោះទទួលស្គាល់ផងដែរ។ អ្នកអាចសុំព័ត៌មានលម្អិតពីយើងអំពីការការពារដែលអនុវត្ត។\n",
+   "\n**ការផ្ទេរទិន្នន័យអន្តរជាតិ។** ទិន្នន័យគណនី និងទិន្នន័យការបញ្ជាទិញរបស់អ្នកត្រូវបានរក្សាទុក និងដំណើរការនៅចក្រភពអង់គ្លេស។ រឿងខ្លះត្រូវបានដោះស្រាយនៅក្រៅចក្រភពអង់គ្លេស៖ ការទាញយកខ្លឹមសារម៉ឺនុយ និងការឆ្លើយតបស្វ័យប្រវត្តិតាម WhatsApp ដែលប្រើសេវារបស់ Google នៅសហរដ្ឋអាមេរិក ការបញ្ជូនសារ WhatsApp ដែលដោះស្រាយដោយ Meta នៅសហរដ្ឋអាមេរិក ការបង់ប្រាក់ ដែលដោះស្រាយដោយ Stripe នៅសហរដ្ឋអាមេរិក និងការជូនដំណឹង (push notification) ដែលបញ្ជូនដោយ Apple និង Google នៅសហរដ្ឋអាមេរិក។ នៅពេលទិន្នន័យចាកចេញពីចក្រភពអង់គ្លេស ការផ្ទេរនោះត្រូវបានគ្របដណ្តប់ដោយបទប្បញ្ញត្តិស្តីពីភាពគ្រប់គ្រាន់ (adequacy regulations) របស់ចក្រភពអង់គ្លេស ឬដោយកិច្ចព្រមព្រៀងផ្ទេរទិន្នន័យអន្តរជាតិ (International Data Transfer Agreement) ឬឧបសម្ព័ន្ធ (Addendum) ហើយនៅពេលដែលច្បាប់នៃប្រទេសរបស់អ្នកតម្រូវ ក៏ត្រូវបានគ្របដណ្តប់ដោយការការពារដែលច្បាប់នោះទទួលស្គាល់ផងដែរ។ អ្នកអាចសុំព័ត៌មានលម្អិតពីយើងអំពីការការពារដែលអនុវត្ត។\n"
+  ]
+ ],
+ "content/legal/ko-KR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# 개인정보 처리방침",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# 개인정보 처리방침"
+  ],
+  [
+   "| Stripe | 귀하의 고객으로부터 결제를 받아 귀하에게 전달 | 미국 |\n| Anthropic (Claude) | 귀하가 당사에 보내는 메시지 번역 및 당사 답장 초안 작성 지원 | 미국 |\n| Namecheap | 당사의 이메일 사서함 | 미국 |\n",
+   "| Stripe | 귀하의 고객으로부터 결제를 받아 귀하에게 전달 | 미국 |\n"
+  ],
+  [
+   "\n**국외 이전.** 귀하의 계정 정보와 주문 정보는 영국에서 저장되고 처리됩니다. 일부 업무는 영국 외에서 처리됩니다. 메뉴 추출과 WhatsApp 자동 응답은 미국에 있는 Google 서비스를 이용하고, WhatsApp 메시지 전달은 미국의 Meta가, 결제는 미국의 Stripe가 처리하며, 푸시 알림은 미국의 Apple과 Google이 전달하고, 메시지 번역과 답장 초안 작성에는 미국의 Anthropic을 이용하며, 당사의 이메일 사서함은 미국의 Namecheap이 호스팅합니다. 정보가 영국 밖으로 이전되는 경우, 그 이전은 영국 적정성 규정(UK adequacy regulations) 또는 국제 데이터 이전 계약(International Data Transfer Agreement)이나 부속서(Addendum)의 적용을 받으며, 귀하 국가의 법률이 요구하는 경우에는 해당 법률이 인정하는 보호조치의 적용도 받습니다. 귀하는 적용되는 보호조치의 세부 내용을 당사에 요청할 수 있습니다.\n",
+   "\n**국외 이전.** 귀하의 계정 정보와 주문 정보는 영국에서 저장되고 처리됩니다. 일부 업무는 영국 외에서 처리됩니다. 메뉴 추출과 WhatsApp 자동 응답은 미국에 있는 Google 서비스를 이용하고, WhatsApp 메시지 전달은 미국의 Meta가, 결제는 미국의 Stripe가 처리하며, 푸시 알림은 미국의 Apple과 Google이 전달합니다. 정보가 영국 밖으로 이전되는 경우, 그 이전은 영국 적정성 규정(UK adequacy regulations) 또는 국제 데이터 이전 계약(International Data Transfer Agreement)이나 부속서(Addendum)의 적용을 받으며, 귀하 국가의 법률이 요구하는 경우에는 해당 법률이 인정하는 보호조치의 적용도 받습니다. 귀하는 적용되는 보호조치의 세부 내용을 당사에 요청할 수 있습니다.\n"
+  ]
+ ],
+ "content/legal/lo-LA/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ"
+  ],
+  [
+   "| Stripe | ການຮັບເງິນຈາກລູກຄ້າຂອງທ່ານ ແລະ ສົ່ງຕໍ່ໃຫ້ທ່ານ | ສະຫະລັດອາເມລິກາ |\n| Anthropic (Claude) | ການແປຂໍ້ຄວາມທີ່ທ່ານສົ່ງຫາພວກເຮົາ ແລະ ການຊ່ວຍຮ່າງຄຳຕອບຂອງພວກເຮົາ | ສະຫະລັດອາເມລິກາ |\n| Namecheap | ກ່ອງອີເມວຂອງພວກເຮົາ | ສະຫະລັດອາເມລິກາ |\n",
+   "| Stripe | ການຮັບເງິນຈາກລູກຄ້າຂອງທ່ານ ແລະ ສົ່ງຕໍ່ໃຫ້ທ່ານ | ສະຫະລັດອາເມລິກາ |\n"
+  ],
+  [
+   "\n**ການໂອນຂໍ້ມູນລະຫວ່າງປະເທດ.** ຂໍ້ມູນບັນຊີ ແລະ ຂໍ້ມູນລາຍການສັ່ງຊື້ຂອງທ່ານຖືກເກັບ ແລະ ປະມວນຜົນໃນສະຫະລາຊະອານາຈັກ. ບາງຢ່າງຖືກຈັດການຢູ່ນອກສະຫະລາຊະອານາຈັກ: ການດຶງຂໍ້ມູນເມນູ ແລະ ການຕອບກັບອັດຕະໂນມັດທາງ WhatsApp ເຊິ່ງໃຊ້ບໍລິການຂອງ Google ໃນສະຫະລັດອາເມລິກາ, ການສົ່ງຂໍ້ຄວາມ WhatsApp ເຊິ່ງ Meta ເປັນຜູ້ຈັດການໃນສະຫະລັດອາເມລິກາ, ການຈ່າຍເງິນ ເຊິ່ງ Stripe ເປັນຜູ້ຈັດການໃນສະຫະລັດອາເມລິກາ, ການແຈ້ງເຕືອນ (push notification) ເຊິ່ງ Apple ແລະ Google ເປັນຜູ້ສົ່ງໃນສະຫະລັດອາເມລິກາ, ການແປຂໍ້ຄວາມ ແລະ ການຮ່າງຄຳຕອບ ເຊິ່ງໃຊ້ Anthropic ໃນສະຫະລັດອາເມລິກາ ແລະ ກ່ອງອີເມວຂອງພວກເຮົາ ເຊິ່ງ Namecheap ເປັນຜູ້ໃຫ້ບໍລິການໃນສະຫະລັດອາເມລິກາ. ໃນກໍລະນີທີ່ຂໍ້ມູນອອກຈາກສະຫະລາຊະອານາຈັກ ການໂອນນັ້ນຈະຖືກຄຸ້ມຄອງໂດຍລະບຽບການວ່າດ້ວຍຄວາມພຽງພໍ (adequacy regulations) ຂອງສະຫະລາຊະອານາຈັກ ຫຼື ໂດຍຂໍ້ຕົກລົງການໂອນຂໍ້ມູນລະຫວ່າງປະເທດ (International Data Transfer Agreement) ຫຼື ເອກະສານຊ້ອນທ້າຍ (Addendum) ແລະ ໃນກໍລະນີທີ່ກົດໝາຍຂອງປະເທດຂອງທ່ານກຳນົດ ກໍຈະຖືກຄຸ້ມຄອງໂດຍມາດຕະການປ້ອງກັນທີ່ກົດໝາຍນັ້ນຮັບຮູ້ເຊັ່ນກັນ. ທ່ານສາມາດຂໍລາຍລະອຽດຂອງມາດຕະການປ້ອງກັນທີ່ນຳໃຊ້ຈາກພວກເຮົາໄດ້.\n",
+   "\n**ການໂອນຂໍ້ມູນລະຫວ່າງປະເທດ.** ຂໍ້ມູນບັນຊີ ແລະ ຂໍ້ມູນລາຍການສັ່ງຊື້ຂອງທ່ານຖືກເກັບ ແລະ ປະມວນຜົນໃນສະຫະລາຊະອານາຈັກ. ບາງຢ່າງຖືກຈັດການຢູ່ນອກສະຫະລາຊະອານາຈັກ: ການດຶງຂໍ້ມູນເມນູ ແລະ ການຕອບກັບອັດຕະໂນມັດທາງ WhatsApp ເຊິ່ງໃຊ້ບໍລິການຂອງ Google ໃນສະຫະລັດອາເມລິກາ, ການສົ່ງຂໍ້ຄວາມ WhatsApp ເຊິ່ງ Meta ເປັນຜູ້ຈັດການໃນສະຫະລັດອາເມລິກາ, ການຈ່າຍເງິນ ເຊິ່ງ Stripe ເປັນຜູ້ຈັດການໃນສະຫະລັດອາເມລິກາ ແລະ ການແຈ້ງເຕືອນ (push notification) ເຊິ່ງ Apple ແລະ Google ເປັນຜູ້ສົ່ງໃນສະຫະລັດອາເມລິກາ. ໃນກໍລະນີທີ່ຂໍ້ມູນອອກຈາກສະຫະລາຊະອານາຈັກ ການໂອນນັ້ນຈະຖືກຄຸ້ມຄອງໂດຍລະບຽບການວ່າດ້ວຍຄວາມພຽງພໍ (adequacy regulations) ຂອງສະຫະລາຊະອານາຈັກ ຫຼື ໂດຍຂໍ້ຕົກລົງການໂອນຂໍ້ມູນລະຫວ່າງປະເທດ (International Data Transfer Agreement) ຫຼື ເອກະສານຊ້ອນທ້າຍ (Addendum) ແລະ ໃນກໍລະນີທີ່ກົດໝາຍຂອງປະເທດຂອງທ່ານກຳນົດ ກໍຈະຖືກຄຸ້ມຄອງໂດຍມາດຕະການປ້ອງກັນທີ່ກົດໝາຍນັ້ນຮັບຮູ້ເຊັ່ນກັນ. ທ່ານສາມາດຂໍລາຍລະອຽດຂອງມາດຕະການປ້ອງກັນທີ່ນຳໃຊ້ຈາກພວກເຮົາໄດ້.\n"
+  ]
+ ],
+ "content/legal/lt-LT/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Privatumo politika",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Privatumo politika"
+  ],
+  [
+   "| Stripe | Mokėjimų iš jūsų klientų priėmimas ir jų pervedimas jums | Jungtinės Amerikos Valstijos |\n| Anthropic (Claude) | Jūsų mums siunčiamų žinučių vertimas ir pagalba rengiant mūsų atsakymų juodraščius | Jungtinės Amerikos Valstijos |\n| Namecheap | Mūsų el. pašto dėžutės | Jungtinės Amerikos Valstijos |\n",
+   "| Stripe | Mokėjimų iš jūsų klientų priėmimas ir jų pervedimas jums | Jungtinės Amerikos Valstijos |\n"
+  ],
+  [
+   "\n**Tarptautiniai perdavimai.** Jūsų paskyros duomenys ir užsakymų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje. Kai kurie dalykai tvarkomi už jos ribų: meniu nuskaitymas ir WhatsApp automatiniai atsakymai, kuriems naudojama Google paslauga Jungtinėse Amerikos Valstijose; WhatsApp žinučių pristatymas, kurį atlieka Meta Jungtinėse Amerikos Valstijose; mokėjimai, kuriuos tvarko Stripe Jungtinėse Amerikos Valstijose; tiesioginiai pranešimai, kuriuos pristato Apple ir Google Jungtinėse Amerikos Valstijose; žinučių vertimas ir atsakymų rengimas, kuriems naudojama Anthropic Jungtinėse Amerikos Valstijose; ir mūsų el. pašto dėžutės, kurias talpina Namecheap Jungtinėse Amerikos Valstijose. Kai duomenys perduodami už JK ribų, perdavimui taikomi JK tinkamumo reglamentai (UK adequacy regulations) arba International Data Transfer Agreement (Tarptautinio duomenų perdavimo sutartis) ar Addendum (Priedas), o kai to reikalauja jūsų šalies teisė, – ir tos teisės pripažįstama apsaugos priemonė. Galite paprašyti mūsų informacijos apie taikomas apsaugos priemones.\n",
+   "\n**Tarptautiniai perdavimai.** Jūsų paskyros duomenys ir užsakymų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje. Kai kurie dalykai tvarkomi už jos ribų: meniu nuskaitymas ir WhatsApp automatiniai atsakymai, kuriems naudojama Google paslauga Jungtinėse Amerikos Valstijose; WhatsApp žinučių pristatymas, kurį atlieka Meta Jungtinėse Amerikos Valstijose; mokėjimai, kuriuos tvarko Stripe Jungtinėse Amerikos Valstijose; ir tiesioginiai pranešimai, kuriuos pristato Apple ir Google Jungtinėse Amerikos Valstijose. Kai duomenys perduodami už JK ribų, perdavimui taikomi JK tinkamumo reglamentai (UK adequacy regulations) arba International Data Transfer Agreement (Tarptautinio duomenų perdavimo sutartis) ar Addendum (Priedas), o kai to reikalauja jūsų šalies teisė, – ir tos teisės pripažįstama apsaugos priemonė. Galite paprašyti mūsų informacijos apie taikomas apsaugos priemones.\n"
+  ]
+ ],
+ "content/legal/lv-LV/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Privātuma politika",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Privātuma politika"
+  ],
+  [
+   "| Stripe | Maksājumu pieņemšana no jūsu klientiem un to nodošana jums | Amerikas Savienotās Valstis |\n| Anthropic (Claude) | Jūsu mums sūtīto ziņojumu tulkošana un palīdzība mūsu atbilžu sagatavošanā | Amerikas Savienotās Valstis |\n| Namecheap | Mūsu e-pasta pastkastes | Amerikas Savienotās Valstis |\n",
+   "| Stripe | Maksājumu pieņemšana no jūsu klientiem un to nodošana jums | Amerikas Savienotās Valstis |\n"
+  ],
+  [
+   "\n**Starptautiska nosūtīšana.** Jūsu konta dati un pasūtījumu dati tiek glabāti un apstrādāti Apvienotajā Karalistē. Dažas darbības tiek veiktas ārpus tās: ēdienkaršu satura iegūšana un WhatsApp automātiskās atbildes, kurās tiek izmantots Google pakalpojums Amerikas Savienotajās Valstīs; WhatsApp ziņojumu piegāde, ko veic Meta Amerikas Savienotajās Valstīs; maksājumi, ko apstrādā Stripe Amerikas Savienotajās Valstīs; pašpiegādes paziņojumi, ko piegādā Apple un Google Amerikas Savienotajās Valstīs; ziņojumu tulkošana un atbilžu sagatavošana, kurās tiek izmantots Anthropic Amerikas Savienotajās Valstīs; un mūsu e-pasta pastkastes, ko uztur Namecheap Amerikas Savienotajās Valstīs. Ja dati tiek nosūtīti ārpus Apvienotās Karalistes, nosūtīšanu aptver Apvienotās Karalistes noteikumi par aizsardzības līmeņa pietiekamību vai International Data Transfer Agreement (Starptautiskās datu nosūtīšanas līgums) vai Addendum (papildinājums), un, ja to prasa jūsu valsts tiesību akti, arī garantija, ko atzīst šie tiesību akti. Jūs varat lūgt mums sniegt informāciju par piemērojamajām garantijām.\n",
+   "\n**Starptautiska nosūtīšana.** Jūsu konta dati un pasūtījumu dati tiek glabāti un apstrādāti Apvienotajā Karalistē. Dažas darbības tiek veiktas ārpus tās: ēdienkaršu satura iegūšana un WhatsApp automātiskās atbildes, kurās tiek izmantots Google pakalpojums Amerikas Savienotajās Valstīs; WhatsApp ziņojumu piegāde, ko veic Meta Amerikas Savienotajās Valstīs; maksājumi, ko apstrādā Stripe Amerikas Savienotajās Valstīs; un pašpiegādes paziņojumi, ko piegādā Apple un Google Amerikas Savienotajās Valstīs. Ja dati tiek nosūtīti ārpus Apvienotās Karalistes, nosūtīšanu aptver Apvienotās Karalistes noteikumi par aizsardzības līmeņa pietiekamību vai International Data Transfer Agreement (Starptautiskās datu nosūtīšanas līgums) vai Addendum (papildinājums), un, ja to prasa jūsu valsts tiesību akti, arī garantija, ko atzīst šie tiesību akti. Jūs varat lūgt mums sniegt informāciju par piemērojamajām garantijām.\n"
+  ]
+ ],
+ "content/legal/mk-MK/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Политика за приватност",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Политика за приватност"
+  ],
+  [
+   "| Stripe | Примање плаќања од вашите клиенти и нивно проследување до вас | Соединети Американски Држави |\n| Anthropic (Claude) | Преведување на пораките што ни ги испраќате и помош при составувањето на нашите одговори | Соединети Американски Држави |\n| Namecheap | Нашите поштенски сандачиња за е-пошта | Соединети Американски Држави |\n",
+   "| Stripe | Примање плаќања од вашите клиенти и нивно проследување до вас | Соединети Американски Држави |\n"
+  ],
+  [
+   "\n**Меѓународни преноси.** Податоците од вашата сметка и од нарачките се чуваат и обработуваат во Обединетото Кралство. Некои работи се обработуваат надвор од него: извлекувањето на менијата и автоматските одговори на WhatsApp, кои користат услуга на Google во Соединетите Американски Држави; доставувањето пораки на WhatsApp, со кое управува Meta во Соединетите Американски Држави; плаќањата, со кои управува Stripe во Соединетите Американски Држави; push-известувањата, кои ги доставуваат Apple и Google во Соединетите Американски Држави; преведувањето пораки и составувањето одговори, кои користат Anthropic во Соединетите Американски Држави; и нашите поштенски сандачиња за е-пошта, кои ги хостира Namecheap во Соединетите Американски Држави. Кога податоците излегуваат од Обединетото Кралство, преносот е опфатен со прописите за адекватност на Обединетото Кралство или со Договорот за меѓународен пренос на податоци (International Data Transfer Agreement) или Додатокот (Addendum), и, кога тоа го бара правото на вашата држава, со заштитна мерка што ја признава тоа право. Можете да побарате од нас детали за заштитните мерки што важат.\n",
+   "\n**Меѓународни преноси.** Податоците од вашата сметка и од нарачките се чуваат и обработуваат во Обединетото Кралство. Некои работи се обработуваат надвор од него: извлекувањето на менијата и автоматските одговори на WhatsApp, кои користат услуга на Google во Соединетите Американски Држави; доставувањето пораки на WhatsApp, со кое управува Meta во Соединетите Американски Држави; плаќањата, со кои управува Stripe во Соединетите Американски Држави; и push-известувањата, кои ги доставуваат Apple и Google во Соединетите Американски Држави. Кога податоците излегуваат од Обединетото Кралство, преносот е опфатен со прописите за адекватност на Обединетото Кралство или со Договорот за меѓународен пренос на податоци (International Data Transfer Agreement) или Додатокот (Addendum), и, кога тоа го бара правото на вашата држава, со заштитна мерка што ја признава тоа право. Можете да побарате од нас детали за заштитните мерки што важат.\n"
+  ]
+ ],
+ "content/legal/mn-MN/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Нууцлалын бодлого",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Нууцлалын бодлого"
+  ],
+  [
+   "| Stripe | Таны үйлчлүүлэгчдээс төлбөр авч, танд шилжүүлэх | Америкийн Нэгдсэн Улс |\n| Anthropic (Claude) | Таны бидэнд илгээсэн мессежийг орчуулах, бидний хариултын төслийг бэлтгэхэд туслах | Америкийн Нэгдсэн Улс |\n| Namecheap | Бидний имэйлийн хайрцаг | Америкийн Нэгдсэн Улс |\n",
+   "| Stripe | Таны үйлчлүүлэгчдээс төлбөр авч, танд шилжүүлэх | Америкийн Нэгдсэн Улс |\n"
+  ],
+  [
+   "\n**Олон улсын шилжүүлэг.** Таны бүртгэлийн мэдээлэл болон захиалгын мэдээллийг Их Британид хадгалж, боловсруулдаг. Зарим зүйлийг түүний гадна гүйцэтгэдэг: цэс уншиж гаргах болон WhatsApp-ын автомат хариулт — Америкийн Нэгдсэн Улс дахь Google-ийн үйлчилгээг ашигладаг; WhatsApp мессеж хүргэлт — Америкийн Нэгдсэн Улс дахь Meta гүйцэтгэдэг; төлбөр — Америкийн Нэгдсэн Улс дахь Stripe гүйцэтгэдэг; push мэдэгдэл — Америкийн Нэгдсэн Улс дахь Apple болон Google хүргэдэг; мессеж орчуулах болон хариултын төсөл бэлтгэх — Америкийн Нэгдсэн Улс дахь Anthropic-ийг ашигладаг; бидний имэйлийн хайрцаг — Америкийн Нэгдсэн Улс дахь Namecheap байршуулдаг. Мэдээлэл Их Британиас гарах тохиолдолд шилжүүлэг нь Их Британийн хангалттай түвшний (adequacy) журам, эсвэл Олон улсын мэдээлэл шилжүүлэх гэрээ (International Data Transfer Agreement) буюу Нэмэлт хавсралт (Addendum)-аар, мөн таны улсын хууль шаардсан тохиолдолд тухайн хуулийн хүлээн зөвшөөрсөн хамгаалалтын арга хэмжээгээр хамгаалагдана. Та үйлчилж буй хамгаалалтын арга хэмжээний дэлгэрэнгүйг биднээс асууж болно.\n",
+   "\n**Олон улсын шилжүүлэг.** Таны бүртгэлийн мэдээлэл болон захиалгын мэдээллийг Их Британид хадгалж, боловсруулдаг. Зарим зүйлийг түүний гадна гүйцэтгэдэг: цэс уншиж гаргах болон WhatsApp-ын автомат хариулт — Америкийн Нэгдсэн Улс дахь Google-ийн үйлчилгээг ашигладаг; WhatsApp мессеж хүргэлт — Америкийн Нэгдсэн Улс дахь Meta гүйцэтгэдэг; төлбөр — Америкийн Нэгдсэн Улс дахь Stripe гүйцэтгэдэг; push мэдэгдэл — Америкийн Нэгдсэн Улс дахь Apple болон Google хүргэдэг. Мэдээлэл Их Британиас гарах тохиолдолд шилжүүлэг нь Их Британийн хангалттай түвшний (adequacy) журам, эсвэл Олон улсын мэдээлэл шилжүүлэх гэрээ (International Data Transfer Agreement) буюу Нэмэлт хавсралт (Addendum)-аар, мөн таны улсын хууль шаардсан тохиолдолд тухайн хуулийн хүлээн зөвшөөрсөн хамгаалалтын арга хэмжээгээр хамгаалагдана. Та үйлчилж буй хамгаалалтын арга хэмжээний дэлгэрэнгүйг биднээс асууж болно.\n"
+  ]
+ ],
+ "content/legal/ms-MY/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Dasar Privasi",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Dasar Privasi"
+  ],
+  [
+   "| Stripe | Menerima pembayaran daripada pelanggan anda dan menyerahkannya kepada anda | Amerika Syarikat |\n| Anthropic (Claude) | Menterjemah mesej yang anda hantar kepada kami dan membantu merangka balasan kami | Amerika Syarikat |\n| Namecheap | Peti mel e-mel kami | Amerika Syarikat |\n",
+   "| Stripe | Menerima pembayaran daripada pelanggan anda dan menyerahkannya kepada anda | Amerika Syarikat |\n"
+  ],
+  [
+   "\n**Pemindahan antarabangsa.** Data akaun dan data pesanan anda disimpan dan diproses di United Kingdom. Sesetengah perkara dikendalikan di luarnya: pengekstrakan menu dan balasan automatik WhatsApp, yang menggunakan perkhidmatan Google di Amerika Syarikat; penghantaran mesej WhatsApp, yang dikendalikan oleh Meta di Amerika Syarikat; pembayaran, yang dikendalikan oleh Stripe di Amerika Syarikat; pemberitahuan tolak, yang disampaikan oleh Apple dan Google di Amerika Syarikat; terjemahan mesej dan perangkaan balasan, yang menggunakan Anthropic di Amerika Syarikat; dan peti mel e-mel kami, yang dihoskan oleh Namecheap di Amerika Syarikat. Apabila data meninggalkan UK, pemindahan itu dilindungi oleh peraturan kecukupan UK atau oleh International Data Transfer Agreement (Perjanjian Pemindahan Data Antarabangsa) atau Addendum, dan, apabila dikehendaki oleh undang-undang negara anda, oleh perlindungan yang diiktiraf oleh undang-undang itu. Anda boleh meminta daripada kami butiran perlindungan yang terpakai.\n",
+   "\n**Pemindahan antarabangsa.** Data akaun dan data pesanan anda disimpan dan diproses di United Kingdom. Sesetengah perkara dikendalikan di luarnya: pengekstrakan menu dan balasan automatik WhatsApp, yang menggunakan perkhidmatan Google di Amerika Syarikat; penghantaran mesej WhatsApp, yang dikendalikan oleh Meta di Amerika Syarikat; pembayaran, yang dikendalikan oleh Stripe di Amerika Syarikat; dan pemberitahuan tolak, yang disampaikan oleh Apple dan Google di Amerika Syarikat. Apabila data meninggalkan UK, pemindahan itu dilindungi oleh peraturan kecukupan UK atau oleh International Data Transfer Agreement (Perjanjian Pemindahan Data Antarabangsa) atau Addendum, dan, apabila dikehendaki oleh undang-undang negara anda, oleh perlindungan yang diiktiraf oleh undang-undang itu. Anda boleh meminta daripada kami butiran perlindungan yang terpakai.\n"
+  ]
+ ],
+ "content/legal/nb-NO/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Personvernerklæring",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Personvernerklæring"
+  ],
+  [
+   "| Stripe | Ta imot betalinger fra kundene dine og overføre dem til deg | USA |\n| Anthropic (Claude) | Oversette meldinger du sender oss og hjelpe til med å lage utkast til svarene våre | USA |\n| Namecheap | E-postkassene våre | USA |\n",
+   "| Stripe | Ta imot betalinger fra kundene dine og overføre dem til deg | USA |\n"
+  ],
+  [
+   "\n**Internasjonale overføringer.** Kontoopplysningene og bestillingsopplysningene dine lagres og behandles i Storbritannia. Noe håndteres utenfor Storbritannia: uthenting av menyer og automatiske WhatsApp-svar, som bruker en Google-tjeneste i USA; levering av WhatsApp-meldinger, som håndteres av Meta i USA; betalinger, som håndteres av Stripe i USA; push-varsler, som leveres av Apple og Google i USA; oversettelse av meldinger og utkast til svar, som bruker Anthropic i USA; og e-postkassene våre, som driftes av Namecheap i USA. Der opplysninger forlater Storbritannia, er overføringen dekket av britiske adekvansbestemmelser (UK adequacy regulations) eller av International Data Transfer Agreement eller Addendum (britisk avtale om, eller tillegg for, internasjonal dataoverføring) og, der lovgivningen i landet ditt krever det, av en garanti som den lovgivningen anerkjenner. Du kan be oss om nærmere opplysninger om garantiene som gjelder.\n",
+   "\n**Internasjonale overføringer.** Kontoopplysningene og bestillingsopplysningene dine lagres og behandles i Storbritannia. Noe håndteres utenfor Storbritannia: uthenting av menyer og automatiske WhatsApp-svar, som bruker en Google-tjeneste i USA; levering av WhatsApp-meldinger, som håndteres av Meta i USA; betalinger, som håndteres av Stripe i USA; og push-varsler, som leveres av Apple og Google i USA. Der opplysninger forlater Storbritannia, er overføringen dekket av britiske adekvansbestemmelser (UK adequacy regulations) eller av International Data Transfer Agreement eller Addendum (britisk avtale om, eller tillegg for, internasjonal dataoverføring) og, der lovgivningen i landet ditt krever det, av en garanti som den lovgivningen anerkjenner. Du kan be oss om nærmere opplysninger om garantiene som gjelder.\n"
+  ]
+ ],
+ "content/legal/ne-NP/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# गोपनीयता नीति",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# गोपनीयता नीति"
+  ],
+  [
+   "| Stripe | तपाईंका ग्राहकबाट भुक्तानी लिएर तपाईंलाई पठाउने | संयुक्त राज्य अमेरिका |\n| Anthropic (Claude) | तपाईंले हामीलाई पठाउनुभएका सन्देशहरू अनुवाद गर्ने र हाम्रा जवाफहरूको मस्यौदा तयार गर्न सहयोग गर्ने | संयुक्त राज्य अमेरिका |\n| Namecheap | हाम्रा इमेल मेलबक्सहरू | संयुक्त राज्य अमेरिका |\n",
+   "| Stripe | तपाईंका ग्राहकबाट भुक्तानी लिएर तपाईंलाई पठाउने | संयुक्त राज्य अमेरिका |\n"
+  ],
+  [
+   "\n**अन्तर्राष्ट्रिय स्थानान्तरण।** तपाईंको खाताको डेटा र अर्डरको डेटा बेलायतमा भण्डारण र प्रशोधन गरिन्छ। केही कुरा बेलायतबाहिर सम्हालिन्छन्: मेनुबाट सामग्री निकाल्ने काम र WhatsApp का स्वचालित जवाफहरू, जसले संयुक्त राज्य अमेरिकामा रहेको Google को सेवा प्रयोग गर्छन्; WhatsApp सन्देश पुर्‍याउने काम, जुन संयुक्त राज्य अमेरिकामा Meta ले सम्हाल्छ; भुक्तानीहरू, जुन संयुक्त राज्य अमेरिकामा Stripe ले सम्हाल्छ; पुस नोटिफिकेसनहरू, जुन संयुक्त राज्य अमेरिकामा Apple र Google ले पुर्‍याउँछन्; सन्देश अनुवाद र जवाफको मस्यौदा तयारी, जसले संयुक्त राज्य अमेरिकामा Anthropic प्रयोग गर्छन्; र हाम्रा इमेल मेलबक्सहरू, जुन संयुक्त राज्य अमेरिकामा Namecheap ले होस्ट गर्छ। डेटा बेलायतबाहिर जाँदा, त्यो स्थानान्तरण बेलायतका पर्याप्तता नियमहरू (UK adequacy regulations) वा अन्तर्राष्ट्रिय डेटा स्थानान्तरण सम्झौता (International Data Transfer Agreement) वा परिशिष्ट (Addendum) अन्तर्गत पर्छ, र तपाईंको देशको कानुनले आवश्यक पारेको अवस्थामा, त्यो कानुनले मान्यता दिएको सुरक्षा उपायअन्तर्गत पनि पर्छ। लागू हुने सुरक्षा उपायहरूको विवरण तपाईं हामीसँग माग्न सक्नुहुन्छ।\n",
+   "\n**अन्तर्राष्ट्रिय स्थानान्तरण।** तपाईंको खाताको डेटा र अर्डरको डेटा बेलायतमा भण्डारण र प्रशोधन गरिन्छ। केही कुरा बेलायतबाहिर सम्हालिन्छन्: मेनुबाट सामग्री निकाल्ने काम र WhatsApp का स्वचालित जवाफहरू, जसले संयुक्त राज्य अमेरिकामा रहेको Google को सेवा प्रयोग गर्छन्; WhatsApp सन्देश पुर्‍याउने काम, जुन संयुक्त राज्य अमेरिकामा Meta ले सम्हाल्छ; भुक्तानीहरू, जुन संयुक्त राज्य अमेरिकामा Stripe ले सम्हाल्छ; र पुस नोटिफिकेसनहरू, जुन संयुक्त राज्य अमेरिकामा Apple र Google ले पुर्‍याउँछन्। डेटा बेलायतबाहिर जाँदा, त्यो स्थानान्तरण बेलायतका पर्याप्तता नियमहरू (UK adequacy regulations) वा अन्तर्राष्ट्रिय डेटा स्थानान्तरण सम्झौता (International Data Transfer Agreement) वा परिशिष्ट (Addendum) अन्तर्गत पर्छ, र तपाईंको देशको कानुनले आवश्यक पारेको अवस्थामा, त्यो कानुनले मान्यता दिएको सुरक्षा उपायअन्तर्गत पनि पर्छ। लागू हुने सुरक्षा उपायहरूको विवरण तपाईं हामीसँग माग्न सक्नुहुन्छ।\n"
+  ]
+ ],
+ "content/legal/nl-NL/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Privacybeleid",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Privacybeleid"
+  ],
+  [
+   "| Stripe | Innen van betalingen van uw klanten en deze aan u doorbetalen | Verenigde Staten |\n| Anthropic (Claude) | Vertalen van berichten die u ons stuurt en helpen bij het opstellen van onze antwoorden | Verenigde Staten |\n| Namecheap | Onze e-mailpostvakken | Verenigde Staten |\n",
+   "| Stripe | Innen van betalingen van uw klanten en deze aan u doorbetalen | Verenigde Staten |\n"
+  ],
+  [
+   "\n**Internationale doorgiften.** Uw accountgegevens en bestelgegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. Sommige zaken worden daarbuiten afgehandeld: het uitlezen van menu's en de automatische WhatsApp-antwoorden, waarvoor een dienst van Google in de Verenigde Staten wordt gebruikt; de bezorging van WhatsApp-berichten, die wordt afgehandeld door Meta in de Verenigde Staten; betalingen, die worden afgehandeld door Stripe in de Verenigde Staten; pushmeldingen, die worden bezorgd door Apple en Google in de Verenigde Staten; het vertalen van berichten en het opstellen van antwoorden, waarvoor Anthropic in de Verenigde Staten wordt gebruikt; en onze e-mailpostvakken, die worden gehost door Namecheap in de Verenigde Staten. Waar gegevens het VK verlaten, valt de doorgifte onder de UK adequacy regulations (Britse adequaatheidsregelgeving) of onder de International Data Transfer Agreement of het Addendum, en, waar het recht van uw land dat vereist, onder een waarborg die dat recht erkent. U kunt ons vragen naar de details van de waarborgen die van toepassing zijn.\n",
+   "\n**Internationale doorgiften.** Uw accountgegevens en bestelgegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. Sommige zaken worden daarbuiten afgehandeld: het uitlezen van menu's en de automatische WhatsApp-antwoorden, waarvoor een dienst van Google in de Verenigde Staten wordt gebruikt; de bezorging van WhatsApp-berichten, die wordt afgehandeld door Meta in de Verenigde Staten; betalingen, die worden afgehandeld door Stripe in de Verenigde Staten; en pushmeldingen, die worden bezorgd door Apple en Google in de Verenigde Staten. Waar gegevens het VK verlaten, valt de doorgifte onder de UK adequacy regulations (Britse adequaatheidsregelgeving) of onder de International Data Transfer Agreement of het Addendum, en, waar het recht van uw land dat vereist, onder een waarborg die dat recht erkent. U kunt ons vragen naar de details van de waarborgen die van toepassing zijn.\n"
+  ]
+ ],
+ "content/legal/pl-PL/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Polityka prywatności",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Polityka prywatności"
+  ],
+  [
+   "| Stripe | Przyjmowanie płatności od Państwa klientów i przekazywanie ich Państwu | Stany Zjednoczone |\n| Anthropic (Claude) | Tłumaczenie wiadomości, które Państwo do nas wysyłają, i pomoc w przygotowywaniu naszych odpowiedzi | Stany Zjednoczone |\n| Namecheap | Nasze skrzynki pocztowe | Stany Zjednoczone |\n",
+   "| Stripe | Przyjmowanie płatności od Państwa klientów i przekazywanie ich Państwu | Stany Zjednoczone |\n"
+  ],
+  [
+   "\n**Przekazywanie danych za granicę.** Dane Państwa konta i dane zamówień są przechowywane i przetwarzane w Wielkiej Brytanii. Niektóre czynności odbywają się poza nią: odczytywanie menu i automatyczne odpowiedzi w WhatsApp, które korzystają z usługi Google w Stanach Zjednoczonych; doręczanie wiadomości WhatsApp, którym zajmuje się Meta w Stanach Zjednoczonych; płatności, którymi zajmuje się Stripe w Stanach Zjednoczonych; powiadomienia push, które dostarczają Apple i Google w Stanach Zjednoczonych; tłumaczenie wiadomości i przygotowywanie odpowiedzi, które korzystają z Anthropic w Stanach Zjednoczonych; oraz nasze skrzynki pocztowe, które utrzymuje Namecheap w Stanach Zjednoczonych. Gdy dane opuszczają Wielką Brytanię, przekazanie jest objęte brytyjskimi przepisami stwierdzającymi odpowiedni stopień ochrony (UK adequacy regulations) albo umową International Data Transfer Agreement lub Addendum, a jeżeli wymaga tego prawo Państwa kraju, także zabezpieczeniem uznawanym przez to prawo. Mogą Państwo poprosić nas o szczegółowe informacje o zabezpieczeniach, które mają zastosowanie.\n",
+   "\n**Przekazywanie danych za granicę.** Dane Państwa konta i dane zamówień są przechowywane i przetwarzane w Wielkiej Brytanii. Niektóre czynności odbywają się poza nią: odczytywanie menu i automatyczne odpowiedzi w WhatsApp, które korzystają z usługi Google w Stanach Zjednoczonych; doręczanie wiadomości WhatsApp, którym zajmuje się Meta w Stanach Zjednoczonych; płatności, którymi zajmuje się Stripe w Stanach Zjednoczonych; oraz powiadomienia push, które dostarczają Apple i Google w Stanach Zjednoczonych. Gdy dane opuszczają Wielką Brytanię, przekazanie jest objęte brytyjskimi przepisami stwierdzającymi odpowiedni stopień ochrony (UK adequacy regulations) albo umową International Data Transfer Agreement lub Addendum, a jeżeli wymaga tego prawo Państwa kraju, także zabezpieczeniem uznawanym przez to prawo. Mogą Państwo poprosić nas o szczegółowe informacje o zabezpieczeniach, które mają zastosowanie.\n"
+  ]
+ ],
+ "content/legal/privacy-policy.md": [
+  [
+   "\n**Last updated:** 27 November 2026\n",
+   "\n**Last updated:** 25 November 2026\n"
+  ],
+  [
+   "| Stripe | Taking payments from your customers and passing them on to you | United States |\n| Anthropic (Claude) | Translating messages you send us and helping draft our replies | United States |\n| Namecheap | Our email mailboxes | United States |\n",
+   "| Stripe | Taking payments from your customers and passing them on to you | United States |\n"
+  ],
+  [
+   "\n**International transfers.** Your account data and order data are stored and processed in the United Kingdom. Some things are handled outside it: menu extraction and WhatsApp automatic replies, which use a Google service in the United States; WhatsApp message delivery, which is handled by Meta in the United States; payments, which are handled by Stripe in the United States; push notifications, which are delivered by Apple and Google in the United States; message translation and reply drafting, which use Anthropic in the United States; and our email mailboxes, which Namecheap hosts in the United States. Where data leaves the UK, the transfer is covered by UK adequacy regulations or by the International Data Transfer Agreement or Addendum, and, where the law of your country requires it, by a safeguard that law recognises. You can ask us for details of the safeguards that apply.\n",
+   "\n**International transfers.** Your account data and order data are stored and processed in the United Kingdom. Some things are handled outside it: menu extraction and WhatsApp automatic replies, which use a Google service in the United States; WhatsApp message delivery, which is handled by Meta in the United States; payments, which are handled by Stripe in the United States; and push notifications, which are delivered by Apple and Google in the United States. Where data leaves the UK, the transfer is covered by UK adequacy regulations or by the International Data Transfer Agreement or Addendum, and, where the law of your country requires it, by a safeguard that law recognises. You can ask us for details of the safeguards that apply.\n"
+  ]
+ ],
+ "content/legal/pt-BR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Política de Privacidade",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Política de Privacidade"
+  ],
+  [
+   "| Stripe | Recebimento de pagamentos dos seus clientes e repasse desses pagamentos a você | Estados Unidos |\n| Anthropic (Claude) | Tradução das mensagens que você nos envia e ajuda na redação das nossas respostas | Estados Unidos |\n| Namecheap | Nossas caixas de e-mail | Estados Unidos |\n",
+   "| Stripe | Recebimento de pagamentos dos seus clientes e repasse desses pagamentos a você | Estados Unidos |\n"
+  ],
+  [
+   "\n**Transferências internacionais.** Os dados da sua conta e os dados dos pedidos são armazenados e tratados no Reino Unido. Algumas atividades são realizadas fora dele: a extração de cardápios e as respostas automáticas do WhatsApp, que utilizam um serviço do Google nos Estados Unidos; a entrega de mensagens do WhatsApp, feita pela Meta nos Estados Unidos; os pagamentos, processados pela Stripe nos Estados Unidos; as notificações push, entregues pela Apple e pelo Google nos Estados Unidos; a tradução de mensagens e a redação de respostas, que utilizam a Anthropic nos Estados Unidos; e nossas caixas de e-mail, hospedadas pela Namecheap nos Estados Unidos. Quando os dados saem do Reino Unido, a transferência é amparada pelos regulamentos de adequação do Reino Unido ou pelo International Data Transfer Agreement (Acordo Internacional de Transferência de Dados) ou pelo Addendum (Adendo) e, quando a lei do seu país o exigir, por uma garantia reconhecida por essa lei. Você pode nos pedir detalhes sobre as garantias aplicáveis.\n",
+   "\n**Transferências internacionais.** Os dados da sua conta e os dados dos pedidos são armazenados e tratados no Reino Unido. Algumas atividades são realizadas fora dele: a extração de cardápios e as respostas automáticas do WhatsApp, que utilizam um serviço do Google nos Estados Unidos; a entrega de mensagens do WhatsApp, feita pela Meta nos Estados Unidos; os pagamentos, processados pela Stripe nos Estados Unidos; e as notificações push, entregues pela Apple e pelo Google nos Estados Unidos. Quando os dados saem do Reino Unido, a transferência é amparada pelos regulamentos de adequação do Reino Unido ou pelo International Data Transfer Agreement (Acordo Internacional de Transferência de Dados) ou pelo Addendum (Adendo) e, quando a lei do seu país o exigir, por uma garantia reconhecida por essa lei. Você pode nos pedir detalhes sobre as garantias aplicáveis.\n"
+  ]
+ ],
+ "content/legal/pt-PT/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Política de Privacidade",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Política de Privacidade"
+  ],
+  [
+   "| Stripe | Receber pagamentos dos seus clientes e transferi-los para si | Estados Unidos |\n| Anthropic (Claude) | Traduzir as mensagens que nos envia e ajudar a redigir as nossas respostas | Estados Unidos |\n| Namecheap | As nossas caixas de correio eletrónico | Estados Unidos |\n",
+   "| Stripe | Receber pagamentos dos seus clientes e transferi-los para si | Estados Unidos |\n"
+  ],
+  [
+   "\n**Transferências internacionais.** Os dados da sua conta e os dados das encomendas são guardados e tratados no Reino Unido. Algumas operações são realizadas fora do Reino Unido: a extração de ementas e as respostas automáticas do WhatsApp, que utilizam um serviço da Google nos Estados Unidos; a entrega de mensagens de WhatsApp, que é feita pela Meta nos Estados Unidos; os pagamentos, que são tratados pela Stripe nos Estados Unidos; as notificações push, que são entregues pela Apple e pela Google nos Estados Unidos; a tradução de mensagens e a redação de respostas, que utilizam a Anthropic nos Estados Unidos; e as nossas caixas de correio eletrónico, que são alojadas pela Namecheap nos Estados Unidos. Quando os dados saem do Reino Unido, a transferência está abrangida por regulamentos de adequação do Reino Unido ou pelo International Data Transfer Agreement (Acordo Internacional de Transferência de Dados) ou pelo Addendum (Adenda) e, quando a lei do seu país o exija, por uma garantia reconhecida por essa lei. Pode pedir-nos informações sobre as garantias aplicáveis.\n",
+   "\n**Transferências internacionais.** Os dados da sua conta e os dados das encomendas são guardados e tratados no Reino Unido. Algumas operações são realizadas fora do Reino Unido: a extração de ementas e as respostas automáticas do WhatsApp, que utilizam um serviço da Google nos Estados Unidos; a entrega de mensagens de WhatsApp, que é feita pela Meta nos Estados Unidos; os pagamentos, que são tratados pela Stripe nos Estados Unidos; e as notificações push, que são entregues pela Apple e pela Google nos Estados Unidos. Quando os dados saem do Reino Unido, a transferência está abrangida por regulamentos de adequação do Reino Unido ou pelo International Data Transfer Agreement (Acordo Internacional de Transferência de Dados) ou pelo Addendum (Adenda) e, quando a lei do seu país o exija, por uma garantia reconhecida por essa lei. Pode pedir-nos informações sobre as garantias aplicáveis.\n"
+  ]
+ ],
+ "content/legal/ro-RO/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Politica de confidențialitate",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Politica de confidențialitate"
+  ],
+  [
+   "| Stripe | Încasarea plăților de la clienții dumneavoastră și transferarea acestora către dumneavoastră | Statele Unite |\n| Anthropic (Claude) | Traducerea mesajelor pe care ni le trimiteți și ajutor la redactarea răspunsurilor noastre | Statele Unite |\n| Namecheap | Căsuțele noastre de e-mail | Statele Unite |\n",
+   "| Stripe | Încasarea plăților de la clienții dumneavoastră și transferarea acestora către dumneavoastră | Statele Unite |\n"
+  ],
+  [
+   "\n**Transferuri internaționale.** Datele contului și datele comenzilor dumneavoastră sunt stocate și prelucrate în Regatul Unit. Unele operațiuni sunt efectuate în afara acestuia: extragerea meniurilor și răspunsurile automate pe WhatsApp, care utilizează un serviciu Google din Statele Unite; livrarea mesajelor WhatsApp, care este efectuată de Meta în Statele Unite; plățile, care sunt gestionate de Stripe în Statele Unite; notificările push, care sunt livrate de Apple și Google în Statele Unite; traducerea mesajelor și redactarea răspunsurilor, care utilizează Anthropic în Statele Unite; și căsuțele noastre de e-mail, găzduite de Namecheap în Statele Unite. Atunci când datele părăsesc Regatul Unit, transferul este acoperit de reglementările britanice privind caracterul adecvat (UK adequacy regulations) sau de International Data Transfer Agreement ori de Addendum și, acolo unde legea din țara dumneavoastră impune acest lucru, de o garanție recunoscută de legea respectivă. Ne puteți cere detalii despre garanțiile aplicabile.\n",
+   "\n**Transferuri internaționale.** Datele contului și datele comenzilor dumneavoastră sunt stocate și prelucrate în Regatul Unit. Unele operațiuni sunt efectuate în afara acestuia: extragerea meniurilor și răspunsurile automate pe WhatsApp, care utilizează un serviciu Google din Statele Unite; livrarea mesajelor WhatsApp, care este efectuată de Meta în Statele Unite; plățile, care sunt gestionate de Stripe în Statele Unite; și notificările push, care sunt livrate de Apple și Google în Statele Unite. Atunci când datele părăsesc Regatul Unit, transferul este acoperit de reglementările britanice privind caracterul adecvat (UK adequacy regulations) sau de International Data Transfer Agreement ori de Addendum și, acolo unde legea din țara dumneavoastră impune acest lucru, de o garanție recunoscută de legea respectivă. Ne puteți cere detalii despre garanțiile aplicabile.\n"
+  ]
+ ],
+ "content/legal/ru-KZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Политика конфиденциальности",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Политика конфиденциальности"
+  ],
+  [
+   "| Stripe | Приём платежей от Ваших клиентов и перечисление их Вам | США |\n| Anthropic (Claude) | Перевод сообщений, которые Вы нам отправляете, и помощь в подготовке наших ответов | США |\n| Namecheap | Наши почтовые ящики | США |\n",
+   "| Stripe | Приём платежей от Ваших клиентов и перечисление их Вам | США |\n"
+  ],
+  [
+   "\n**Международная передача данных.** Данные Вашего аккаунта и данные заказов хранятся и обрабатываются в Великобритании. Часть обработки происходит за её пределами: извлечение меню и автоматические ответы в WhatsApp, которые используют сервис Google в США; доставка сообщений WhatsApp, которую выполняет Meta в США; платежи, которые обрабатывает Stripe в США; push-уведомления, которые доставляют Apple и Google в США; перевод сообщений и подготовка ответов, для которых используется Anthropic в США; и наши почтовые ящики, которые размещает Namecheap в США. Когда данные покидают Великобританию, передача подпадает под положения Великобритании о достаточном уровне защиты или под Соглашение о международной передаче данных (International Data Transfer Agreement) или Дополнение (Addendum), а если этого требует законодательство Вашей страны, — также под гарантию, которую признаёт это законодательство. Вы можете запросить у нас сведения о применяемых гарантиях.\n",
+   "\n**Международная передача данных.** Данные Вашего аккаунта и данные заказов хранятся и обрабатываются в Великобритании. Часть обработки происходит за её пределами: извлечение меню и автоматические ответы в WhatsApp, которые используют сервис Google в США; доставка сообщений WhatsApp, которую выполняет Meta в США; платежи, которые обрабатывает Stripe в США; и push-уведомления, которые доставляют Apple и Google в США. Когда данные покидают Великобританию, передача подпадает под положения Великобритании о достаточном уровне защиты или под Соглашение о международной передаче данных (International Data Transfer Agreement) или Дополнение (Addendum), а если этого требует законодательство Вашей страны, — также под гарантию, которую признаёт это законодательство. Вы можете запросить у нас сведения о применяемых гарантиях.\n"
+  ]
+ ],
+ "content/legal/si-LK/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# පෞද්ගලිකත්ව ප්‍රතිපත්තිය",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# පෞද්ගලිකත්ව ප්‍රතිපත්තිය"
+  ],
+  [
+   "| Stripe | ඔබේ පාරිභෝගිකයන්ගෙන් ගෙවීම් ලබාගෙන ඒවා ඔබට ලබා දීම | එක්සත් ජනපදය |\n| Anthropic (Claude) | ඔබ අපට එවන පණිවිඩ පරිවර්තනය කිරීම සහ අපගේ පිළිතුරු කෙටුම්පත් කිරීමට උදව් කිරීම | එක්සත් ජනපදය |\n| Namecheap | අපගේ ඊමේල් තැපැල් පෙට්ටි | එක්සත් ජනපදය |\n",
+   "| Stripe | ඔබේ පාරිභෝගිකයන්ගෙන් ගෙවීම් ලබාගෙන ඒවා ඔබට ලබා දීම | එක්සත් ජනපදය |\n"
+  ],
+  [
+   "\n**ජාත්‍යන්තර මාරු කිරීම්.** ඔබේ ගිණුම් දත්ත සහ ඇණවුම් දත්ත ගබඩා කර සකසනු ලබන්නේ එක්සත් රාජධානියේ ය. සමහර දේ එයින් පිටත හසුරුවනු ලැබේ: එක්සත් ජනපදයේ Google සේවාවක් භාවිත කරන මෙනු උපුටා ගැනීම සහ WhatsApp ස්වයංක්‍රීය පිළිතුරු; එක්සත් ජනපදයේ Meta විසින් හසුරුවන WhatsApp පණිවිඩ බෙදා හැරීම; එක්සත් ජනපදයේ Stripe විසින් හසුරුවන ගෙවීම්; එක්සත් ජනපදයේ Apple සහ Google විසින් ලබා දෙන push දැනුම්දීම්; එක්සත් ජනපදයේ Anthropic භාවිත කරන පණිවිඩ පරිවර්තනය සහ පිළිතුරු කෙටුම්පත් කිරීම; සහ එක්සත් ජනපදයේ Namecheap විසින් සත්කාරකත්වය සපයන අපගේ ඊමේල් තැපැල් පෙට්ටි. දත්ත එක්සත් රාජධානියෙන් පිටතට යන තැන්වල, එම මාරු කිරීම එක්සත් රාජධානියේ ප්‍රමාණවත්භාවය පිළිබඳ රෙගුලාසි (UK adequacy regulations) මගින්, හෝ ජාත්‍යන්තර දත්ත මාරු ගිවිසුම (International Data Transfer Agreement) හෝ ඇමුණුම (Addendum) මගින්, සහ ඔබේ රටේ නීතිය එය අවශ්‍ය කරන තැන්වල, එම නීතිය පිළිගන්නා ආරක්ෂණයක් මගින් ද ආවරණය වේ. අදාළ ආරක්ෂණ පිළිබඳ විස්තර ඔබට අපෙන් ඉල්ලිය හැක.\n",
+   "\n**ජාත්‍යන්තර මාරු කිරීම්.** ඔබේ ගිණුම් දත්ත සහ ඇණවුම් දත්ත ගබඩා කර සකසනු ලබන්නේ එක්සත් රාජධානියේ ය. සමහර දේ එයින් පිටත හසුරුවනු ලැබේ: එක්සත් ජනපදයේ Google සේවාවක් භාවිත කරන මෙනු උපුටා ගැනීම සහ WhatsApp ස්වයංක්‍රීය පිළිතුරු; එක්සත් ජනපදයේ Meta විසින් හසුරුවන WhatsApp පණිවිඩ බෙදා හැරීම; එක්සත් ජනපදයේ Stripe විසින් හසුරුවන ගෙවීම්; සහ එක්සත් ජනපදයේ Apple සහ Google විසින් ලබා දෙන push දැනුම්දීම්. දත්ත එක්සත් රාජධානියෙන් පිටතට යන තැන්වල, එම මාරු කිරීම එක්සත් රාජධානියේ ප්‍රමාණවත්භාවය පිළිබඳ රෙගුලාසි (UK adequacy regulations) මගින්, හෝ ජාත්‍යන්තර දත්ත මාරු ගිවිසුම (International Data Transfer Agreement) හෝ ඇමුණුම (Addendum) මගින්, සහ ඔබේ රටේ නීතිය එය අවශ්‍ය කරන තැන්වල, එම නීතිය පිළිගන්නා ආරක්ෂණයක් මගින් ද ආවරණය වේ. අදාළ ආරක්ෂණ පිළිබඳ විස්තර ඔබට අපෙන් ඉල්ලිය හැක.\n"
+  ]
+ ],
+ "content/legal/sk-SK/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Zásady ochrany osobných údajov",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Zásady ochrany osobných údajov"
+  ],
+  [
+   "| Stripe | Prijímanie platieb od vašich zákazníkov a ich odovzdávanie vám | Spojené štáty |\n| Anthropic (Claude) | Preklad správ, ktoré nám posielate, a pomoc pri príprave našich odpovedí | Spojené štáty |\n| Namecheap | Naše e-mailové schránky | Spojené štáty |\n",
+   "| Stripe | Prijímanie platieb od vašich zákazníkov a ich odovzdávanie vám | Spojené štáty |\n"
+  ],
+  [
+   "\n**Medzinárodné prenosy.** Údaje vášho účtu a údaje o objednávkach sa ukladajú a spracúvajú v Spojenom kráľovstve. Niektoré činnosti sa vykonávajú mimo neho: extrakcia jedálnych lístkov a automatické odpovede WhatsApp, ktoré využívajú službu Google v Spojených štátoch; doručovanie správ WhatsApp, ktoré zabezpečuje Meta v Spojených štátoch; platby, ktoré spracúva Stripe v Spojených štátoch; push notifikácie, ktoré doručujú Apple a Google v Spojených štátoch; preklad správ a príprava odpovedí, ktoré využívajú Anthropic v Spojených štátoch; a naše e-mailové schránky, ktoré hosťuje Namecheap v Spojených štátoch. Ak údaje opúšťajú Spojené kráľovstvo, prenos je pokrytý predpismi Spojeného kráľovstva o primeranosti alebo medzinárodnou dohodou o prenose údajov (International Data Transfer Agreement) alebo dodatkom (Addendum), a ak to vyžaduje právo vašej krajiny, aj zárukou, ktorú toto právo uznáva. Môžete nás požiadať o podrobnosti o zárukách, ktoré sa uplatňujú.\n",
+   "\n**Medzinárodné prenosy.** Údaje vášho účtu a údaje o objednávkach sa ukladajú a spracúvajú v Spojenom kráľovstve. Niektoré činnosti sa vykonávajú mimo neho: extrakcia jedálnych lístkov a automatické odpovede WhatsApp, ktoré využívajú službu Google v Spojených štátoch; doručovanie správ WhatsApp, ktoré zabezpečuje Meta v Spojených štátoch; platby, ktoré spracúva Stripe v Spojených štátoch; a push notifikácie, ktoré doručujú Apple a Google v Spojených štátoch. Ak údaje opúšťajú Spojené kráľovstvo, prenos je pokrytý predpismi Spojeného kráľovstva o primeranosti alebo medzinárodnou dohodou o prenose údajov (International Data Transfer Agreement) alebo dodatkom (Addendum), a ak to vyžaduje právo vašej krajiny, aj zárukou, ktorú toto právo uznáva. Môžete nás požiadať o podrobnosti o zárukách, ktoré sa uplatňujú.\n"
+  ]
+ ],
+ "content/legal/sl-SI/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Politika zasebnosti",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Politika zasebnosti"
+  ],
+  [
+   "| Stripe | Sprejemanje plačil vaših strank in njihovo posredovanje vam | Združene države Amerike |\n| Anthropic (Claude) | Prevajanje sporočil, ki nam jih pošljete, in pomoč pri pripravi naših odgovorov | Združene države Amerike |\n| Namecheap | Naši e-poštni predali | Združene države Amerike |\n",
+   "| Stripe | Sprejemanje plačil vaših strank in njihovo posredovanje vam | Združene države Amerike |\n"
+  ],
+  [
+   "\n**Mednarodni prenosi.** Podatki vašega računa in podatki o naročilih se shranjujejo in obdelujejo v Združenem kraljestvu. Nekatere stvari se obdelujejo zunaj njega: izluščanje jedilnikov in samodejni odgovori WhatsApp, ki uporabljajo Googlovo storitev v Združenih državah Amerike; dostava sporočil WhatsApp, ki jo izvaja Meta v Združenih državah Amerike; plačila, ki jih izvaja Stripe v Združenih državah Amerike; potisna obvestila, ki jih dostavljata Apple in Google v Združenih državah Amerike; prevajanje sporočil in priprava odgovorov, ki uporabljata Anthropic v Združenih državah Amerike; in naši e-poštni predali, ki jih gosti Namecheap v Združenih državah Amerike. Kadar podatki zapustijo Združeno kraljestvo, je prenos zajet v predpisih Združenega kraljestva o ustreznosti ali v International Data Transfer Agreement (sporazum o mednarodnem prenosu podatkov) ali Addendum (dodatek), kadar pa to zahteva pravo vaše države, tudi z zaščitnim ukrepom, ki ga to pravo priznava. Za podrobnosti o zaščitnih ukrepih, ki se uporabljajo, nas lahko vprašate.\n",
+   "\n**Mednarodni prenosi.** Podatki vašega računa in podatki o naročilih se shranjujejo in obdelujejo v Združenem kraljestvu. Nekatere stvari se obdelujejo zunaj njega: izluščanje jedilnikov in samodejni odgovori WhatsApp, ki uporabljajo Googlovo storitev v Združenih državah Amerike; dostava sporočil WhatsApp, ki jo izvaja Meta v Združenih državah Amerike; plačila, ki jih izvaja Stripe v Združenih državah Amerike; in potisna obvestila, ki jih dostavljata Apple in Google v Združenih državah Amerike. Kadar podatki zapustijo Združeno kraljestvo, je prenos zajet v predpisih Združenega kraljestva o ustreznosti ali v International Data Transfer Agreement (sporazum o mednarodnem prenosu podatkov) ali Addendum (dodatek), kadar pa to zahteva pravo vaše države, tudi z zaščitnim ukrepom, ki ga to pravo priznava. Za podrobnosti o zaščitnih ukrepih, ki se uporabljajo, nas lahko vprašate.\n"
+  ]
+ ],
+ "content/legal/sq-AL/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Politika e privatësisë",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Politika e privatësisë"
+  ],
+  [
+   "| Stripe | Marrja e pagesave nga klientët tuaj dhe kalimi i tyre te ju | Shtetet e Bashkuara |\n| Anthropic (Claude) | Përkthimi i mesazheve që na dërgoni dhe ndihma në hartimin e përgjigjeve tona | Shtetet e Bashkuara |\n| Namecheap | Kutitë tona postare të email-it | Shtetet e Bashkuara |\n",
+   "| Stripe | Marrja e pagesave nga klientët tuaj dhe kalimi i tyre te ju | Shtetet e Bashkuara |\n"
+  ],
+  [
+   "\n**Transferimet ndërkombëtare.** Të dhënat e llogarisë suaj dhe të dhënat e porosive ruhen dhe përpunohen në Mbretërinë e Bashkuar. Disa gjëra trajtohen jashtë saj: nxjerrja e menusë dhe përgjigjet automatike në WhatsApp, që përdorin një shërbim të Google në Shtetet e Bashkuara; dërgimi i mesazheve në WhatsApp, që trajtohet nga Meta në Shtetet e Bashkuara; pagesat, që trajtohen nga Stripe në Shtetet e Bashkuara; njoftimet push, që dërgohen nga Apple dhe Google në Shtetet e Bashkuara; përkthimi i mesazheve dhe hartimi i përgjigjeve, që përdorin Anthropic në Shtetet e Bashkuara; dhe kutitë tona postare të email-it, që strehohen nga Namecheap në Shtetet e Bashkuara. Kur të dhënat dalin nga Mbretëria e Bashkuar, transferimi mbulohet nga rregulloret e përshtatshmërisë të Mbretërisë së Bashkuar ose nga Marrëveshja Ndërkombëtare e Transferimit të të Dhënave (International Data Transfer Agreement) ose Shtojca (Addendum) dhe, kur e kërkon ligji i shtetit tuaj, nga një masë mbrojtëse që e njeh ai ligj. Mund të na kërkoni hollësi për masat mbrojtëse që zbatohen.\n",
+   "\n**Transferimet ndërkombëtare.** Të dhënat e llogarisë suaj dhe të dhënat e porosive ruhen dhe përpunohen në Mbretërinë e Bashkuar. Disa gjëra trajtohen jashtë saj: nxjerrja e menusë dhe përgjigjet automatike në WhatsApp, që përdorin një shërbim të Google në Shtetet e Bashkuara; dërgimi i mesazheve në WhatsApp, që trajtohet nga Meta në Shtetet e Bashkuara; pagesat, që trajtohen nga Stripe në Shtetet e Bashkuara; dhe njoftimet push, që dërgohen nga Apple dhe Google në Shtetet e Bashkuara. Kur të dhënat dalin nga Mbretëria e Bashkuar, transferimi mbulohet nga rregulloret e përshtatshmërisë të Mbretërisë së Bashkuar ose nga Marrëveshja Ndërkombëtare e Transferimit të të Dhënave (International Data Transfer Agreement) ose Shtojca (Addendum) dhe, kur e kërkon ligji i shtetit tuaj, nga një masë mbrojtëse që e njeh ai ligj. Mund të na kërkoni hollësi për masat mbrojtëse që zbatohen.\n"
+  ]
+ ],
+ "content/legal/sr-RS/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Politika privatnosti",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Politika privatnosti"
+  ],
+  [
+   "| Stripe | Naplata plaćanja od vaših kupaca i njihovo prosleđivanje vama | Sjedinjene Američke Države |\n| Anthropic (Claude) | Prevođenje poruka koje nam šaljete i pomoć pri sastavljanju naših odgovora | Sjedinjene Američke Države |\n| Namecheap | Naši sandučići e-pošte | Sjedinjene Američke Države |\n",
+   "| Stripe | Naplata plaćanja od vaših kupaca i njihovo prosleđivanje vama | Sjedinjene Američke Države |\n"
+  ],
+  [
+   "\n**Međunarodni prenos.** Podaci o vašem nalogu i podaci o porudžbinama čuvaju se i obrađuju u Ujedinjenom Kraljevstvu. Neke radnje se obavljaju van njega: izdvajanje sadržaja menija i automatski odgovori na WhatsApp-u, za koje se koristi Google-ova usluga u Sjedinjenim Američkim Državama; dostava WhatsApp poruka, koju obavlja Meta u Sjedinjenim Američkim Državama; plaćanja, koja obavlja Stripe u Sjedinjenim Američkim Državama; push obaveštenja, koja dostavljaju Apple i Google u Sjedinjenim Američkim Državama; prevođenje poruka i sastavljanje odgovora, za koje se koristi Anthropic u Sjedinjenim Američkim Državama; i naši sandučići e-pošte, koje hostuje Namecheap u Sjedinjenim Američkim Državama. Kada podaci napuštaju Ujedinjeno Kraljevstvo, prenos je obuhvaćen propisima Ujedinjenog Kraljevstva o adekvatnosti (UK adequacy regulations) ili Međunarodnim ugovorom o prenosu podataka (International Data Transfer Agreement) ili Dodatkom (Addendum), a kada to zahteva pravo vaše zemlje, i merom zaštite koju to pravo priznaje. Možete nas zamoliti za pojedinosti o merama zaštite koje se primenjuju.\n",
+   "\n**Međunarodni prenos.** Podaci o vašem nalogu i podaci o porudžbinama čuvaju se i obrađuju u Ujedinjenom Kraljevstvu. Neke radnje se obavljaju van njega: izdvajanje sadržaja menija i automatski odgovori na WhatsApp-u, za koje se koristi Google-ova usluga u Sjedinjenim Američkim Državama; dostava WhatsApp poruka, koju obavlja Meta u Sjedinjenim Američkim Državama; plaćanja, koja obavlja Stripe u Sjedinjenim Američkim Državama; i push obaveštenja, koja dostavljaju Apple i Google u Sjedinjenim Američkim Državama. Kada podaci napuštaju Ujedinjeno Kraljevstvo, prenos je obuhvaćen propisima Ujedinjenog Kraljevstva o adekvatnosti (UK adequacy regulations) ili Međunarodnim ugovorom o prenosu podataka (International Data Transfer Agreement) ili Dodatkom (Addendum), a kada to zahteva pravo vaše zemlje, i merom zaštite koju to pravo priznaje. Možete nas zamoliti za pojedinosti o merama zaštite koje se primenjuju.\n"
+  ]
+ ],
+ "content/legal/sv-SE/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Integritetspolicy",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Integritetspolicy"
+  ],
+  [
+   "| Stripe | Tar emot betalningar från dina kunder och för dem vidare till dig | USA |\n| Anthropic (Claude) | Översätter meddelanden som du skickar till oss och hjälper till att formulera utkast till våra svar | USA |\n| Namecheap | Våra e-postlådor | USA |\n",
+   "| Stripe | Tar emot betalningar från dina kunder och för dem vidare till dig | USA |\n"
+  ],
+  [
+   "\n**Internationella överföringar.** Dina kontouppgifter och beställningsuppgifter lagras och behandlas i Storbritannien. Vissa saker hanteras utanför Storbritannien: menyutläsning och automatiska svar på WhatsApp, som använder en tjänst från Google i USA; leverans av WhatsApp-meddelanden, som hanteras av Meta i USA; betalningar, som hanteras av Stripe i USA; pushnotiser, som levereras av Apple och Google i USA; översättning av meddelanden och utkast till svar, som använder Anthropic i USA; och våra e-postlådor, som drivs av Namecheap i USA. När uppgifter lämnar Storbritannien omfattas överföringen av brittiska föreskrifter om adekvat skyddsnivå (UK adequacy regulations) eller av International Data Transfer Agreement eller Addendum och, där lagen i ditt land kräver det, av en skyddsåtgärd som den lagen erkänner. Du kan be oss om uppgifter om vilka skyddsåtgärder som gäller.\n",
+   "\n**Internationella överföringar.** Dina kontouppgifter och beställningsuppgifter lagras och behandlas i Storbritannien. Vissa saker hanteras utanför Storbritannien: menyutläsning och automatiska svar på WhatsApp, som använder en tjänst från Google i USA; leverans av WhatsApp-meddelanden, som hanteras av Meta i USA; betalningar, som hanteras av Stripe i USA; och pushnotiser, som levereras av Apple och Google i USA. När uppgifter lämnar Storbritannien omfattas överföringen av brittiska föreskrifter om adekvat skyddsnivå (UK adequacy regulations) eller av International Data Transfer Agreement eller Addendum och, där lagen i ditt land kräver det, av en skyddsåtgärd som den lagen erkänner. Du kan be oss om uppgifter om vilka skyddsåtgärder som gäller.\n"
+  ]
+ ],
+ "content/legal/sw-TZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Sera ya Faragha",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Sera ya Faragha"
+  ],
+  [
+   "| Stripe | Kupokea malipo kutoka kwa wateja wako na kuyapitisha kwako | Marekani |\n| Anthropic (Claude) | Kutafsiri ujumbe unaotutumia na kusaidia kuandaa rasimu za majibu yetu | Marekani |\n| Namecheap | Masanduku yetu ya barua pepe | Marekani |\n",
+   "| Stripe | Kupokea malipo kutoka kwa wateja wako na kuyapitisha kwako | Marekani |\n"
+  ],
+  [
+   "\n**Uhamishaji wa data kimataifa.** Data za akaunti yako na data za oda zinahifadhiwa na kuchakatwa nchini Uingereza. Baadhi ya mambo yanashughulikiwa nje yake: kutoa yaliyomo kwenye menyu na majibu ya kiotomatiki ya WhatsApp, ambayo yanatumia huduma ya Google nchini Marekani; kufikisha ujumbe wa WhatsApp, kunakoshughulikiwa na Meta nchini Marekani; malipo, yanayoshughulikiwa na Stripe nchini Marekani; arifa (push notifications), zinazofikishwa na Apple na Google nchini Marekani; kutafsiri ujumbe na kuandaa rasimu za majibu, kunakotumia Anthropic nchini Marekani; na masanduku yetu ya barua pepe, yanayohifadhiwa na Namecheap nchini Marekani. Pale data zinapotoka nje ya Uingereza, uhamishaji unalindwa na kanuni za utoshelevu za Uingereza (UK adequacy regulations) au na Mkataba wa Kimataifa wa Uhamishaji wa Data (International Data Transfer Agreement) au Nyongeza yake (Addendum), na, pale sheria ya nchi yako inapotaka hivyo, na kinga inayotambuliwa na sheria hiyo. Unaweza kutuomba maelezo ya kinga zinazohusika.\n",
+   "\n**Uhamishaji wa data kimataifa.** Data za akaunti yako na data za oda zinahifadhiwa na kuchakatwa nchini Uingereza. Baadhi ya mambo yanashughulikiwa nje yake: kutoa yaliyomo kwenye menyu na majibu ya kiotomatiki ya WhatsApp, ambayo yanatumia huduma ya Google nchini Marekani; kufikisha ujumbe wa WhatsApp, kunakoshughulikiwa na Meta nchini Marekani; malipo, yanayoshughulikiwa na Stripe nchini Marekani; na arifa (push notifications), zinazofikishwa na Apple na Google nchini Marekani. Pale data zinapotoka nje ya Uingereza, uhamishaji unalindwa na kanuni za utoshelevu za Uingereza (UK adequacy regulations) au na Mkataba wa Kimataifa wa Uhamishaji wa Data (International Data Transfer Agreement) au Nyongeza yake (Addendum), na, pale sheria ya nchi yako inapotaka hivyo, na kinga inayotambuliwa na sheria hiyo. Unaweza kutuomba maelezo ya kinga zinazohusika.\n"
+  ]
+ ],
+ "content/legal/th-TH/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# นโยบายความเป็นส่วนตัว",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# นโยบายความเป็นส่วนตัว"
+  ],
+  [
+   "| Stripe | การรับชำระเงินจากลูกค้าของท่านและส่งต่อเงินนั้นให้แก่ท่าน | สหรัฐอเมริกา |\n| Anthropic (Claude) | การแปลข้อความที่ท่านส่งถึงเราและการช่วยร่างคำตอบของเรา | สหรัฐอเมริกา |\n| Namecheap | กล่องอีเมลของเรา | สหรัฐอเมริกา |\n",
+   "| Stripe | การรับชำระเงินจากลูกค้าของท่านและส่งต่อเงินนั้นให้แก่ท่าน | สหรัฐอเมริกา |\n"
+  ],
+  [
+   "\n**การโอนข้อมูลระหว่างประเทศ** ข้อมูลบัญชีและข้อมูลคำสั่งซื้อของท่านจัดเก็บและประมวลผลในสหราชอาณาจักร บางเรื่องมีการดำเนินการนอกสหราชอาณาจักร ได้แก่ การดึงข้อมูลเมนูและข้อความตอบกลับอัตโนมัติทาง WhatsApp ซึ่งใช้บริการของ Google ในสหรัฐอเมริกา การส่งข้อความ WhatsApp ซึ่งดำเนินการโดย Meta ในสหรัฐอเมริกา การชำระเงิน ซึ่งดำเนินการโดย Stripe ในสหรัฐอเมริกา การแจ้งเตือนแบบพุช ซึ่งส่งโดย Apple และ Google ในสหรัฐอเมริกา การแปลข้อความและการร่างคำตอบ ซึ่งใช้ Anthropic ในสหรัฐอเมริกา และกล่องอีเมลของเรา ซึ่ง Namecheap เป็นผู้ให้บริการโฮสต์ในสหรัฐอเมริกา ในกรณีที่ข้อมูลถูกส่งออกนอกสหราชอาณาจักร การโอนนั้นอยู่ภายใต้ UK adequacy regulations (กฎว่าด้วยความเพียงพอของการคุ้มครองข้อมูลของสหราชอาณาจักร) หรือ International Data Transfer Agreement หรือ Addendum และในกรณีที่กฎหมายของประเทศของท่านกำหนดไว้ ก็อยู่ภายใต้มาตรการคุ้มครองที่กฎหมายนั้นรับรองด้วย ท่านสามารถขอรายละเอียดของมาตรการคุ้มครองที่ใช้บังคับจากเราได้\n",
+   "\n**การโอนข้อมูลระหว่างประเทศ** ข้อมูลบัญชีและข้อมูลคำสั่งซื้อของท่านจัดเก็บและประมวลผลในสหราชอาณาจักร บางเรื่องมีการดำเนินการนอกสหราชอาณาจักร ได้แก่ การดึงข้อมูลเมนูและข้อความตอบกลับอัตโนมัติทาง WhatsApp ซึ่งใช้บริการของ Google ในสหรัฐอเมริกา การส่งข้อความ WhatsApp ซึ่งดำเนินการโดย Meta ในสหรัฐอเมริกา การชำระเงิน ซึ่งดำเนินการโดย Stripe ในสหรัฐอเมริกา และการแจ้งเตือนแบบพุช ซึ่งส่งโดย Apple และ Google ในสหรัฐอเมริกา ในกรณีที่ข้อมูลถูกส่งออกนอกสหราชอาณาจักร การโอนนั้นอยู่ภายใต้ UK adequacy regulations (กฎว่าด้วยความเพียงพอของการคุ้มครองข้อมูลของสหราชอาณาจักร) หรือ International Data Transfer Agreement หรือ Addendum และในกรณีที่กฎหมายของประเทศของท่านกำหนดไว้ ก็อยู่ภายใต้มาตรการคุ้มครองที่กฎหมายนั้นรับรองด้วย ท่านสามารถขอรายละเอียดของมาตรการคุ้มครองที่ใช้บังคับจากเราได้\n"
+  ]
+ ],
+ "content/legal/tr-TR/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Gizlilik Politikası",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Gizlilik Politikası"
+  ],
+  [
+   "| Stripe | Müşterilerinizden ödeme alınması ve size aktarılması | Amerika Birleşik Devletleri |\n| Anthropic (Claude) | Bize gönderdiğiniz mesajların çevrilmesi ve yanıtlarımızın taslağının hazırlanmasına yardımcı olunması | Amerika Birleşik Devletleri |\n| Namecheap | E-posta kutularımız | Amerika Birleşik Devletleri |\n",
+   "| Stripe | Müşterilerinizden ödeme alınması ve size aktarılması | Amerika Birleşik Devletleri |\n"
+  ],
+  [
+   "\n**Yurt dışına aktarımlar.** Hesap verileriniz ve sipariş verileriniz Birleşik Krallık’ta saklanır ve işlenir. Bazı işlemler Birleşik Krallık dışında yürütülür: Amerika Birleşik Devletleri’ndeki bir Google hizmetini kullanan menü içeriği çıkarma ve WhatsApp otomatik yanıtları; Amerika Birleşik Devletleri’nde Meta tarafından yürütülen WhatsApp mesaj iletimi; Amerika Birleşik Devletleri’nde Stripe tarafından yürütülen ödemeler; Amerika Birleşik Devletleri’nde Apple ve Google tarafından iletilen anlık bildirimler; Amerika Birleşik Devletleri’nde Anthropic’i kullanan mesaj çevirisi ve yanıt taslağı hazırlama ve Amerika Birleşik Devletleri’nde Namecheap tarafından barındırılan e-posta kutularımız. Veriler Birleşik Krallık dışına çıktığında aktarım, Birleşik Krallık yeterlilik düzenlemeleri (UK adequacy regulations) veya Uluslararası Veri Aktarım Sözleşmesi (International Data Transfer Agreement) ya da Ek (Addendum) kapsamında ve ülkenizin hukukunun gerektirdiği durumlarda ayrıca o hukukun tanıdığı bir güvence kapsamındadır. Geçerli güvencelerin ayrıntılarını bizden talep edebilirsiniz.\n",
+   "\n**Yurt dışına aktarımlar.** Hesap verileriniz ve sipariş verileriniz Birleşik Krallık’ta saklanır ve işlenir. Bazı işlemler Birleşik Krallık dışında yürütülür: Amerika Birleşik Devletleri’ndeki bir Google hizmetini kullanan menü içeriği çıkarma ve WhatsApp otomatik yanıtları; Amerika Birleşik Devletleri’nde Meta tarafından yürütülen WhatsApp mesaj iletimi; Amerika Birleşik Devletleri’nde Stripe tarafından yürütülen ödemeler ve Amerika Birleşik Devletleri’nde Apple ve Google tarafından iletilen anlık bildirimler. Veriler Birleşik Krallık dışına çıktığında aktarım, Birleşik Krallık yeterlilik düzenlemeleri (UK adequacy regulations) veya Uluslararası Veri Aktarım Sözleşmesi (International Data Transfer Agreement) ya da Ek (Addendum) kapsamında ve ülkenizin hukukunun gerektirdiği durumlarda ayrıca o hukukun tanıdığı bir güvence kapsamındadır. Geçerli güvencelerin ayrıntılarını bizden talep edebilirsiniz.\n"
+  ]
+ ],
+ "content/legal/uk-UA/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Політика конфіденційності",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Політика конфіденційності"
+  ],
+  [
+   "| Stripe | Отримання платежів від ваших клієнтів і перерахування їх вам | США |\n| Anthropic (Claude) | Переклад повідомлень, які ви нам надсилаєте, і допомога в підготовці наших відповідей | США |\n| Namecheap | Наші поштові скриньки | США |\n",
+   "| Stripe | Отримання платежів від ваших клієнтів і перерахування їх вам | США |\n"
+  ],
+  [
+   "\n**Міжнародне передавання даних.** Дані вашого облікового запису та дані замовлень зберігаються й обробляються у Великій Британії. Частина обробки відбувається за її межами: витягування меню й автоматичні відповіді у WhatsApp, які використовують сервіс Google у США; доставлення повідомлень WhatsApp, яке виконує Meta у США; платежі, які обробляє Stripe у США; push-сповіщення, які доставляють Apple і Google у США; переклад повідомлень і підготовка відповідей, для яких використовується Anthropic у США; і наші поштові скриньки, які розміщує Namecheap у США. Коли дані залишають Велику Британію, передавання підпадає під положення Великої Британії про належний рівень захисту або під Угоду про міжнародне передавання даних (International Data Transfer Agreement) чи Додаток (Addendum), а якщо цього вимагає законодавство вашої країни, — також під гарантію, яку визнає це законодавство. Ви можете запитати в нас відомості про застосовані гарантії.\n",
+   "\n**Міжнародне передавання даних.** Дані вашого облікового запису та дані замовлень зберігаються й обробляються у Великій Британії. Частина обробки відбувається за її межами: витягування меню й автоматичні відповіді у WhatsApp, які використовують сервіс Google у США; доставлення повідомлень WhatsApp, яке виконує Meta у США; платежі, які обробляє Stripe у США; і push-сповіщення, які доставляють Apple і Google у США. Коли дані залишають Велику Британію, передавання підпадає під положення Великої Британії про належний рівень захисту або під Угоду про міжнародне передавання даних (International Data Transfer Agreement) чи Додаток (Addendum), а якщо цього вимагає законодавство вашої країни, — також під гарантію, яку визнає це законодавство. Ви можете запитати в нас відомості про застосовані гарантії.\n"
+  ]
+ ],
+ "content/legal/uz-UZ/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# Maxfiylik siyosati",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# Maxfiylik siyosati"
+  ],
+  [
+   "| Stripe | Mijozlaringizdan toʻlovlarni qabul qilish va ularni sizga oʻtkazish | Amerika Qoʻshma Shtatlari |\n| Anthropic (Claude) | Bizga yuborgan xabarlaringizni tarjima qilish va javoblarimiz qoralamasini tayyorlashga yordam berish | Amerika Qoʻshma Shtatlari |\n| Namecheap | Elektron pochta qutilarimiz | Amerika Qoʻshma Shtatlari |\n",
+   "| Stripe | Mijozlaringizdan toʻlovlarni qabul qilish va ularni sizga oʻtkazish | Amerika Qoʻshma Shtatlari |\n"
+  ],
+  [
+   "\n**Xalqaro uzatish.** Hisob maʼlumotlaringiz va buyurtma maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ishlov beriladi. Baʼzi ishlar undan tashqarida bajariladi: Amerika Qoʻshma Shtatlaridagi Google xizmatidan foydalanadigan menyuni ajratib olish va WhatsApp avtomatik javoblari; Amerika Qoʻshma Shtatlarida Meta bajaradigan WhatsApp xabarlarini yetkazish; Amerika Qoʻshma Shtatlarida Stripe bajaradigan toʻlovlar; Amerika Qoʻshma Shtatlarida Apple va Google yetkazadigan push-bildirishnomalar; Amerika Qoʻshma Shtatlaridagi Anthropic xizmatidan foydalanadigan xabarlarni tarjima qilish va javoblar qoralamasini tayyorlash; va Amerika Qoʻshma Shtatlarida Namecheap joylashtiradigan elektron pochta qutilarimiz. Maʼlumotlar Buyuk Britaniyadan chiqqanda, uzatish Buyuk Britaniyaning adekvatlik qoidalari yoki Xalqaro maʼlumotlarni uzatish shartnomasi (International Data Transfer Agreement) yoki Qoʻshimcha (Addendum) bilan, mamlakatingiz qonunchiligi talab qilgan hollarda esa ushbu qonunchilik tan oladigan kafolat bilan ham qamrab olinadi. Qaysi kafolatlar qoʻllanilishi haqida bizdan batafsil maʼlumot soʻrashingiz mumkin.\n",
+   "\n**Xalqaro uzatish.** Hisob maʼlumotlaringiz va buyurtma maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ishlov beriladi. Baʼzi ishlar undan tashqarida bajariladi: Amerika Qoʻshma Shtatlaridagi Google xizmatidan foydalanadigan menyuni ajratib olish va WhatsApp avtomatik javoblari; Amerika Qoʻshma Shtatlarida Meta bajaradigan WhatsApp xabarlarini yetkazish; Amerika Qoʻshma Shtatlarida Stripe bajaradigan toʻlovlar; va Amerika Qoʻshma Shtatlarida Apple va Google yetkazadigan push-bildirishnomalar. Maʼlumotlar Buyuk Britaniyadan chiqqanda, uzatish Buyuk Britaniyaning adekvatlik qoidalari yoki Xalqaro maʼlumotlarni uzatish shartnomasi (International Data Transfer Agreement) yoki Qoʻshimcha (Addendum) bilan, mamlakatingiz qonunchiligi talab qilgan hollarda esa ushbu qonunchilik tan oladigan kafolat bilan ham qamrab olinadi. Qaysi kafolatlar qoʻllanilishi haqida bizdan batafsil maʼlumot soʻrashingiz mumkin.\n"
+  ]
+ ],
+ "content/legal/zh-HK/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# 私隱政策",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# 私隱政策"
+  ],
+  [
+   "| Stripe | 向閣下的顧客收取款項並轉交閣下 | 美國 |\n| Anthropic (Claude) | 翻譯閣下傳送給本公司的訊息，並協助草擬本公司的回覆 | 美國 |\n| Namecheap | 本公司的電郵信箱 | 美國 |\n",
+   "| Stripe | 向閣下的顧客收取款項並轉交閣下 | 美國 |\n"
+  ],
+  [
+   "\n**跨境轉移。** 閣下的帳戶資料及訂單資料在英國儲存及處理。部分事項在英國以外處理：餐牌擷取及 WhatsApp 自動回覆，使用位於美國的 Google 服務；WhatsApp 訊息傳送，由位於美國的 Meta 處理；付款，由位於美國的 Stripe 處理；推送通知，由位於美國的 Apple 及 Google 傳送；訊息翻譯及回覆草擬，使用位於美國的 Anthropic；以及本公司的電郵信箱，由位於美國的 Namecheap 寄存。凡資料離開英國，有關轉移受英國充分性規例，或 International Data Transfer Agreement（國際資料轉移協議）或 Addendum（附錄）涵蓋；如閣下所在國家的法律有此要求，亦受該法律認可的保障措施涵蓋。閣下可要求本公司提供適用保障措施的詳情。\n",
+   "\n**跨境轉移。** 閣下的帳戶資料及訂單資料在英國儲存及處理。部分事項在英國以外處理：餐牌擷取及 WhatsApp 自動回覆，使用位於美國的 Google 服務；WhatsApp 訊息傳送，由位於美國的 Meta 處理；付款，由位於美國的 Stripe 處理；以及推送通知，由位於美國的 Apple 及 Google 傳送。凡資料離開英國，有關轉移受英國充分性規例，或 International Data Transfer Agreement（國際資料轉移協議）或 Addendum（附錄）涵蓋；如閣下所在國家的法律有此要求，亦受該法律認可的保障措施涵蓋。閣下可要求本公司提供適用保障措施的詳情。\n"
+  ]
+ ],
+ "content/legal/zh-TW/privacy-policy.md": [
+  [
+   "<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->\n# 隱私權政策",
+   "<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->\n# 隱私權政策"
+  ],
+  [
+   "| Stripe | 向你的顧客收款並轉交給你 | 美國 |\n| Anthropic (Claude) | 翻譯你傳送給本公司的訊息，並協助草擬本公司的回覆 | 美國 |\n| Namecheap | 本公司的電子郵件信箱 | 美國 |\n",
+   "| Stripe | 向你的顧客收款並轉交給你 | 美國 |\n"
+  ],
+  [
+   "\n**國際傳輸。** 你的帳號資料及訂單資料均在英國儲存及處理。部分事項於英國境外處理：菜單擷取及 WhatsApp 自動回覆，使用位於美國的 Google 服務；WhatsApp 訊息傳遞，由位於美國的 Meta 處理；付款，由位於美國的 Stripe 處理；推播通知，由位於美國的 Apple 及 Google 傳送；訊息翻譯及回覆草擬，使用位於美國的 Anthropic；以及本公司的電子郵件信箱，由位於美國的 Namecheap 代管。資料傳輸至英國境外時，該傳輸受英國適足性規則（UK adequacy regulations），或國際資料傳輸協議（International Data Transfer Agreement）或其增補條款（Addendum）所涵蓋；你所在國家的法律有此要求時，並受該法律所認可的保護措施所涵蓋。你可要求本公司提供所適用保護措施的詳細資訊。\n",
+   "\n**國際傳輸。** 你的帳號資料及訂單資料均在英國儲存及處理。部分事項於英國境外處理：菜單擷取及 WhatsApp 自動回覆，使用位於美國的 Google 服務；WhatsApp 訊息傳遞，由位於美國的 Meta 處理；付款，由位於美國的 Stripe 處理；推播通知，由位於美國的 Apple 及 Google 傳送。資料傳輸至英國境外時，該傳輸受英國適足性規則（UK adequacy regulations），或國際資料傳輸協議（International Data Transfer Agreement）或其增補條款（Addendum）所涵蓋；你所在國家的法律有此要求時，並受該法律所認可的保護措施所涵蓋。你可要求本公司提供所適用保護措施的詳細資訊。\n"
+  ]
+ ],
+ "lib/legal.ts": [
+  [
+   " *  parsing the file. ⚠️ If you amend a document, change BOTH — the .md line is what a reader sees. */\nexport const PRIVACY_UPDATED = '27 November 2026'\nexport const TERMS_UPDATED = '19 November 2026'",
+   " *  parsing the file. ⚠️ If you amend a document, change BOTH — the .md line is what a reader sees. */\nexport const PRIVACY_UPDATED = '25 November 2026'\nexport const TERMS_UPDATED = '19 November 2026'"
+  ],
+  [
+   " *  (app/api/signup). 🔴 MOVE IT WITH THE DOCUMENTS: it names the Terms of Service, Privacy Policy and Country-specific\n *  terms dated above — the latest of them; 27 November 2026 since the Privacy Policy's section 6 named Anthropic (Claude) and\n *  Namecheap (privacy-processors-1), 24 November 2026 before that, since the Privacy Policy became one policy for every country and the\n *  Country-specific terms lost their per-country privacy parts (france-privacy-1), 19 November 2026 before that, since the Terms' post-pay wording (terms-postpay-1: the fee on every pre-order,",
+   " *  (app/api/signup). 🔴 MOVE IT WITH THE DOCUMENTS: it names the Terms of Service, Privacy Policy and Country-specific\n *  terms dated above — the latest of them; 24 November 2026 since the Privacy Policy became one policy for every country and the\n *  Country-specific terms lost their per-country privacy parts (france-privacy-1), 19 November 2026 before that, since the Terms' post-pay wording (terms-postpay-1: the fee on every pre-order,"
+  ],
+  [
+   " *  to re-accept anything (checked 20 October 2026 — app, edge functions, database functions and triggers). */\nexport const TERMS_VERSION = '2026-11-27'\n",
+   " *  to re-accept anything (checked 20 October 2026 — app, edge functions, database functions and triggers). */\nexport const TERMS_VERSION = '2026-11-24'\n"
+  ]
+ ]
+}

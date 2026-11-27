@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Privacybeleid
 
 **Laatst bijgewerkt:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Wij maken gebruik van een klein aantal dienstverleners, die elk uitsluitend volg
 | Apple en Google | Bezorgen van pushmeldingen op uw apparaat | Verenigde Staten |
 | Meta (WhatsApp) | Overbrengen van WhatsApp-berichten tussen uw klanten en uw zakelijke nummer | Verenigde Staten |
 | Stripe | Innen van betalingen van uw klanten en deze aan u doorbetalen | Verenigde Staten |
+| Anthropic (Claude) | Vertalen van berichten die u ons stuurt en helpen bij het opstellen van onze antwoorden | Verenigde Staten |
+| Namecheap | Onze e-mailpostvakken | Verenigde Staten |
 
 Wij kunnen gegevens ook verstrekken wanneer wij daartoe wettelijk verplicht zijn, of om rechtsvorderingen in te stellen of ons daartegen te verweren.
 
 **Wij verkopen geen persoonsgegevens en delen ze niet voor advertentiedoeleinden.**
 
-**Internationale doorgiften.** Uw accountgegevens en bestelgegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. Sommige zaken worden daarbuiten afgehandeld: het uitlezen van menu's en de automatische WhatsApp-antwoorden, waarvoor een dienst van Google in de Verenigde Staten wordt gebruikt; de bezorging van WhatsApp-berichten, die wordt afgehandeld door Meta in de Verenigde Staten; betalingen, die worden afgehandeld door Stripe in de Verenigde Staten; en pushmeldingen, die worden bezorgd door Apple en Google in de Verenigde Staten. Waar gegevens het VK verlaten, valt de doorgifte onder de UK adequacy regulations (Britse adequaatheidsregelgeving) of onder de International Data Transfer Agreement of het Addendum, en, waar het recht van uw land dat vereist, onder een waarborg die dat recht erkent. U kunt ons vragen naar de details van de waarborgen die van toepassing zijn.
+**Internationale doorgiften.** Uw accountgegevens en bestelgegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. Sommige zaken worden daarbuiten afgehandeld: het uitlezen van menu's en de automatische WhatsApp-antwoorden, waarvoor een dienst van Google in de Verenigde Staten wordt gebruikt; de bezorging van WhatsApp-berichten, die wordt afgehandeld door Meta in de Verenigde Staten; betalingen, die worden afgehandeld door Stripe in de Verenigde Staten; pushmeldingen, die worden bezorgd door Apple en Google in de Verenigde Staten; het vertalen van berichten en het opstellen van antwoorden, waarvoor Anthropic in de Verenigde Staten wordt gebruikt; en onze e-mailpostvakken, die worden gehost door Namecheap in de Verenigde Staten. Waar gegevens het VK verlaten, valt de doorgifte onder de UK adequacy regulations (Britse adequaatheidsregelgeving) of onder de International Data Transfer Agreement of het Addendum, en, waar het recht van uw land dat vereist, onder een waarborg die dat recht erkent. U kunt ons vragen naar de details van de waarborgen die van toepassing zijn.
 
 Naarmate onze dienst groeit, kunnen wij aanbieders toevoegen, waaronder een sms-aanbieder. Wij werken deze lijst bij voordat zij uw gegevens gaan verwerken.
 

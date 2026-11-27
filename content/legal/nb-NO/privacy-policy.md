@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Personvernerklæring
 
 **Sist oppdatert:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Vi bruker et lite antall tjenesteleverandører, som hver behandler opplysninger 
 | Apple og Google | Levere push-varsler til enheten din | USA |
 | Meta (WhatsApp) | Formidle WhatsApp-meldinger mellom kundene dine og virksomhetens nummer | USA |
 | Stripe | Ta imot betalinger fra kundene dine og overføre dem til deg | USA |
+| Anthropic (Claude) | Oversette meldinger du sender oss og hjelpe til med å lage utkast til svarene våre | USA |
+| Namecheap | E-postkassene våre | USA |
 
 Vi kan også utlevere opplysninger der loven pålegger oss det, eller for å fastsette eller forsvare rettskrav.
 
 **Vi selger ikke personopplysninger, og vi deler dem ikke for annonsering.**
 
-**Internasjonale overføringer.** Kontoopplysningene og bestillingsopplysningene dine lagres og behandles i Storbritannia. Noe håndteres utenfor Storbritannia: uthenting av menyer og automatiske WhatsApp-svar, som bruker en Google-tjeneste i USA; levering av WhatsApp-meldinger, som håndteres av Meta i USA; betalinger, som håndteres av Stripe i USA; og push-varsler, som leveres av Apple og Google i USA. Der opplysninger forlater Storbritannia, er overføringen dekket av britiske adekvansbestemmelser (UK adequacy regulations) eller av International Data Transfer Agreement eller Addendum (britisk avtale om, eller tillegg for, internasjonal dataoverføring) og, der lovgivningen i landet ditt krever det, av en garanti som den lovgivningen anerkjenner. Du kan be oss om nærmere opplysninger om garantiene som gjelder.
+**Internasjonale overføringer.** Kontoopplysningene og bestillingsopplysningene dine lagres og behandles i Storbritannia. Noe håndteres utenfor Storbritannia: uthenting av menyer og automatiske WhatsApp-svar, som bruker en Google-tjeneste i USA; levering av WhatsApp-meldinger, som håndteres av Meta i USA; betalinger, som håndteres av Stripe i USA; push-varsler, som leveres av Apple og Google i USA; oversettelse av meldinger og utkast til svar, som bruker Anthropic i USA; og e-postkassene våre, som driftes av Namecheap i USA. Der opplysninger forlater Storbritannia, er overføringen dekket av britiske adekvansbestemmelser (UK adequacy regulations) eller av International Data Transfer Agreement eller Addendum (britisk avtale om, eller tillegg for, internasjonal dataoverføring) og, der lovgivningen i landet ditt krever det, av en garanti som den lovgivningen anerkjenner. Du kan be oss om nærmere opplysninger om garantiene som gjelder.
 
 Etter hvert som tjenesten vår vokser, kan vi legge til leverandører, blant annet en SMS-leverandør. Vi oppdaterer denne listen før de begynner å behandle opplysningene dine.
 

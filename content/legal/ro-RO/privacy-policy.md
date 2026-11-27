@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Politica de confidențialitate
 
 **Ultima actualizare:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Utilizăm un număr mic de furnizori de servicii, fiecare dintre aceștia preluc
 | Apple and Google | Livrarea notificărilor push pe dispozitivul dumneavoastră | Statele Unite |
 | Meta (WhatsApp) | Transmiterea mesajelor WhatsApp între clienții dumneavoastră și numărul afacerii dumneavoastră | Statele Unite |
 | Stripe | Încasarea plăților de la clienții dumneavoastră și transferarea acestora către dumneavoastră | Statele Unite |
+| Anthropic (Claude) | Traducerea mesajelor pe care ni le trimiteți și ajutor la redactarea răspunsurilor noastre | Statele Unite |
+| Namecheap | Căsuțele noastre de e-mail | Statele Unite |
 
 De asemenea, putem divulga date atunci când legea ne obligă sau pentru a constata sau a apăra drepturi în instanță.
 
 **Nu vindem date cu caracter personal și nu le partajăm în scopuri publicitare.**
 
-**Transferuri internaționale.** Datele contului și datele comenzilor dumneavoastră sunt stocate și prelucrate în Regatul Unit. Unele operațiuni sunt efectuate în afara acestuia: extragerea meniurilor și răspunsurile automate pe WhatsApp, care utilizează un serviciu Google din Statele Unite; livrarea mesajelor WhatsApp, care este efectuată de Meta în Statele Unite; plățile, care sunt gestionate de Stripe în Statele Unite; și notificările push, care sunt livrate de Apple și Google în Statele Unite. Atunci când datele părăsesc Regatul Unit, transferul este acoperit de reglementările britanice privind caracterul adecvat (UK adequacy regulations) sau de International Data Transfer Agreement ori de Addendum și, acolo unde legea din țara dumneavoastră impune acest lucru, de o garanție recunoscută de legea respectivă. Ne puteți cere detalii despre garanțiile aplicabile.
+**Transferuri internaționale.** Datele contului și datele comenzilor dumneavoastră sunt stocate și prelucrate în Regatul Unit. Unele operațiuni sunt efectuate în afara acestuia: extragerea meniurilor și răspunsurile automate pe WhatsApp, care utilizează un serviciu Google din Statele Unite; livrarea mesajelor WhatsApp, care este efectuată de Meta în Statele Unite; plățile, care sunt gestionate de Stripe în Statele Unite; notificările push, care sunt livrate de Apple și Google în Statele Unite; traducerea mesajelor și redactarea răspunsurilor, care utilizează Anthropic în Statele Unite; și căsuțele noastre de e-mail, găzduite de Namecheap în Statele Unite. Atunci când datele părăsesc Regatul Unit, transferul este acoperit de reglementările britanice privind caracterul adecvat (UK adequacy regulations) sau de International Data Transfer Agreement ori de Addendum și, acolo unde legea din țara dumneavoastră impune acest lucru, de o garanție recunoscută de legea respectivă. Ne puteți cere detalii despre garanțiile aplicabile.
 
 Pe măsură ce serviciul nostru se extinde, putem adăuga furnizori, inclusiv un furnizor de SMS. Vom actualiza această listă înainte ca aceștia să înceapă să vă prelucreze datele.
 

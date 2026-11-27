@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Política de Privacidade
 
 **Última atualização:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Utilizamos um pequeno número de prestadores de serviços, cada um dos quais tra
 | Apple e Google | Entrega de notificações push no seu dispositivo | Estados Unidos |
 | Meta (WhatsApp) | Transmissão de mensagens de WhatsApp entre os seus clientes e o número da sua empresa | Estados Unidos |
 | Stripe | Recebimento de pagamentos dos seus clientes e repasse desses pagamentos a você | Estados Unidos |
+| Anthropic (Claude) | Tradução das mensagens que você nos envia e ajuda na redação das nossas respostas | Estados Unidos |
+| Namecheap | Nossas caixas de e-mail | Estados Unidos |
 
 Também podemos divulgar dados quando formos obrigados por lei, ou para estabelecer ou defender direitos em processos judiciais.
 
 **Não vendemos dados pessoais e não os compartilhamos para fins de publicidade.**
 
-**Transferências internacionais.** Os dados da sua conta e os dados dos pedidos são armazenados e tratados no Reino Unido. Algumas atividades são realizadas fora dele: a extração de cardápios e as respostas automáticas do WhatsApp, que utilizam um serviço do Google nos Estados Unidos; a entrega de mensagens do WhatsApp, feita pela Meta nos Estados Unidos; os pagamentos, processados pela Stripe nos Estados Unidos; e as notificações push, entregues pela Apple e pelo Google nos Estados Unidos. Quando os dados saem do Reino Unido, a transferência é amparada pelos regulamentos de adequação do Reino Unido ou pelo International Data Transfer Agreement (Acordo Internacional de Transferência de Dados) ou pelo Addendum (Adendo) e, quando a lei do seu país o exigir, por uma garantia reconhecida por essa lei. Você pode nos pedir detalhes sobre as garantias aplicáveis.
+**Transferências internacionais.** Os dados da sua conta e os dados dos pedidos são armazenados e tratados no Reino Unido. Algumas atividades são realizadas fora dele: a extração de cardápios e as respostas automáticas do WhatsApp, que utilizam um serviço do Google nos Estados Unidos; a entrega de mensagens do WhatsApp, feita pela Meta nos Estados Unidos; os pagamentos, processados pela Stripe nos Estados Unidos; as notificações push, entregues pela Apple e pelo Google nos Estados Unidos; a tradução de mensagens e a redação de respostas, que utilizam a Anthropic nos Estados Unidos; e nossas caixas de e-mail, hospedadas pela Namecheap nos Estados Unidos. Quando os dados saem do Reino Unido, a transferência é amparada pelos regulamentos de adequação do Reino Unido ou pelo International Data Transfer Agreement (Acordo Internacional de Transferência de Dados) ou pelo Addendum (Adendo) e, quando a lei do seu país o exigir, por uma garantia reconhecida por essa lei. Você pode nos pedir detalhes sobre as garantias aplicáveis.
 
 À medida que o nosso serviço crescer, poderemos acrescentar prestadores, incluindo um provedor de SMS. Atualizaremos esta lista antes que eles comecem a tratar os seus dados.
 

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Gizlilik Politikası
 
 **Son güncelleme:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Her biri verileri yalnızca bizim talimatlarımız doğrultusunda işleyen az sa
 | Apple ve Google | Anlık bildirimlerin cihazınıza iletilmesi | Amerika Birleşik Devletleri |
 | Meta (WhatsApp) | WhatsApp mesajlarının müşterileriniz ile işletme numaranız arasında iletilmesi | Amerika Birleşik Devletleri |
 | Stripe | Müşterilerinizden ödeme alınması ve size aktarılması | Amerika Birleşik Devletleri |
+| Anthropic (Claude) | Bize gönderdiğiniz mesajların çevrilmesi ve yanıtlarımızın taslağının hazırlanmasına yardımcı olunması | Amerika Birleşik Devletleri |
+| Namecheap | E-posta kutularımız | Amerika Birleşik Devletleri |
 
 Kanunen zorunlu olduğumuz durumlarda veya hukuki taleplerin tesisi ya da savunulması amacıyla da verileri açıklayabiliriz.
 
 **Kişisel verileri satmayız ve reklam amacıyla paylaşmayız.**
 
-**Yurt dışına aktarımlar.** Hesap verileriniz ve sipariş verileriniz Birleşik Krallık’ta saklanır ve işlenir. Bazı işlemler Birleşik Krallık dışında yürütülür: Amerika Birleşik Devletleri’ndeki bir Google hizmetini kullanan menü içeriği çıkarma ve WhatsApp otomatik yanıtları; Amerika Birleşik Devletleri’nde Meta tarafından yürütülen WhatsApp mesaj iletimi; Amerika Birleşik Devletleri’nde Stripe tarafından yürütülen ödemeler ve Amerika Birleşik Devletleri’nde Apple ve Google tarafından iletilen anlık bildirimler. Veriler Birleşik Krallık dışına çıktığında aktarım, Birleşik Krallık yeterlilik düzenlemeleri (UK adequacy regulations) veya Uluslararası Veri Aktarım Sözleşmesi (International Data Transfer Agreement) ya da Ek (Addendum) kapsamında ve ülkenizin hukukunun gerektirdiği durumlarda ayrıca o hukukun tanıdığı bir güvence kapsamındadır. Geçerli güvencelerin ayrıntılarını bizden talep edebilirsiniz.
+**Yurt dışına aktarımlar.** Hesap verileriniz ve sipariş verileriniz Birleşik Krallık’ta saklanır ve işlenir. Bazı işlemler Birleşik Krallık dışında yürütülür: Amerika Birleşik Devletleri’ndeki bir Google hizmetini kullanan menü içeriği çıkarma ve WhatsApp otomatik yanıtları; Amerika Birleşik Devletleri’nde Meta tarafından yürütülen WhatsApp mesaj iletimi; Amerika Birleşik Devletleri’nde Stripe tarafından yürütülen ödemeler; Amerika Birleşik Devletleri’nde Apple ve Google tarafından iletilen anlık bildirimler; Amerika Birleşik Devletleri’nde Anthropic’i kullanan mesaj çevirisi ve yanıt taslağı hazırlama ve Amerika Birleşik Devletleri’nde Namecheap tarafından barındırılan e-posta kutularımız. Veriler Birleşik Krallık dışına çıktığında aktarım, Birleşik Krallık yeterlilik düzenlemeleri (UK adequacy regulations) veya Uluslararası Veri Aktarım Sözleşmesi (International Data Transfer Agreement) ya da Ek (Addendum) kapsamında ve ülkenizin hukukunun gerektirdiği durumlarda ayrıca o hukukun tanıdığı bir güvence kapsamındadır. Geçerli güvencelerin ayrıntılarını bizden talep edebilirsiniz.
 
 Hizmetimiz büyüdükçe bir SMS sağlayıcısı da dâhil olmak üzere yeni sağlayıcılar ekleyebiliriz. Bu sağlayıcılar verilerinizi işlemeye başlamadan önce bu listeyi güncelleriz.
 

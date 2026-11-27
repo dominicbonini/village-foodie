@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Política de privadesa
 
 **Última actualització:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Utilitzem un nombre reduït de proveïdors de serveis, cadascun dels quals tract
 | Apple i Google | Lliurar notificacions push al teu dispositiu | Estats Units |
 | Meta (WhatsApp) | Transmetre els missatges de WhatsApp entre els teus clients i el número del teu negoci | Estats Units |
 | Stripe | Cobrar els pagaments dels teus clients i transferir-te’ls | Estats Units |
+| Anthropic (Claude) | Traduir els missatges que ens envies i ajudar a redactar les nostres respostes | Estats Units |
+| Namecheap | Les nostres bústies de correu electrònic | Estats Units |
 
 També podem revelar dades quan la llei ens hi obligui, o per formular o defensar reclamacions legals.
 
 **No venem dades personals ni les compartim amb finalitats publicitàries.**
 
-**Transferències internacionals.** Les dades del teu compte i de les comandes es desen i es tracten al Regne Unit. Algunes coses es gestionen fora del Regne Unit: l’extracció de cartes i les respostes automàtiques de WhatsApp, que utilitzen un servei de Google als Estats Units; el lliurament de missatges de WhatsApp, que gestiona Meta als Estats Units; els pagaments, que gestiona Stripe als Estats Units; i les notificacions push, que lliuren Apple i Google als Estats Units. Quan les dades surten del Regne Unit, la transferència està coberta per les normes d’adequació del Regne Unit o per l’International Data Transfer Agreement o l’Addendum i, quan la llei del teu país ho exigeix, per una garantia que aquesta llei reconeix. Ens pots demanar els detalls de les garanties que s’hi apliquen.
+**Transferències internacionals.** Les dades del teu compte i de les comandes es desen i es tracten al Regne Unit. Algunes coses es gestionen fora del Regne Unit: l’extracció de cartes i les respostes automàtiques de WhatsApp, que utilitzen un servei de Google als Estats Units; el lliurament de missatges de WhatsApp, que gestiona Meta als Estats Units; els pagaments, que gestiona Stripe als Estats Units; les notificacions push, que lliuren Apple i Google als Estats Units; la traducció de missatges i la redacció de respostes, que utilitzen Anthropic als Estats Units; i les nostres bústies de correu electrònic, que allotja Namecheap als Estats Units. Quan les dades surten del Regne Unit, la transferència està coberta per les normes d’adequació del Regne Unit o per l’International Data Transfer Agreement o l’Addendum i, quan la llei del teu país ho exigeix, per una garantia que aquesta llei reconeix. Ens pots demanar els detalls de les garanties que s’hi apliquen.
 
 A mesura que el nostre servei creixi, podem afegir proveïdors, inclòs un proveïdor d’SMS. Actualitzarem aquesta llista abans que comencin a tractar les teves dades.
 

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Privaatsuspoliitika
 
 **Viimati uuendatud:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Kasutame väikest arvu teenuseosutajaid, kellest igaüks töötleb andmeid ainul
 | Apple ja Google | Tõuketeavituste edastamine teie seadmesse | Ameerika Ühendriigid |
 | Meta (WhatsApp) | WhatsAppi sõnumite edastamine teie klientide ja teie ettevõtte numbri vahel | Ameerika Ühendriigid |
 | Stripe | Teie klientidelt maksete vastuvõtmine ja nende teile edasikandmine | Ameerika Ühendriigid |
+| Anthropic (Claude) | Teie meile saadetud sõnumite tõlkimine ja abi meie vastuste koostamisel | Ameerika Ühendriigid |
+| Namecheap | Meie e-postkastid | Ameerika Ühendriigid |
 
 Võime andmeid avaldada ka siis, kui seadus seda nõuab, või õigusnõuete esitamiseks või nende vastu kaitsmiseks.
 
 **Me ei müü isikuandmeid ega jaga neid reklaami eesmärgil.**
 
-**Rahvusvahelised edastamised.** Teie kontoandmeid ja tellimuste andmeid säilitatakse ja töödeldakse Ühendkuningriigis. Mõnda toimingut tehakse väljaspool seda: menüüde väljalugemine ja WhatsAppi automaatsed vastused, mis kasutavad Google’i teenust Ameerika Ühendriikides; WhatsAppi sõnumite edastamine, mida teeb Meta Ameerika Ühendriikides; maksed, mida töötleb Stripe Ameerika Ühendriikides; ning tõuketeavitused, mida edastavad Apple ja Google Ameerika Ühendriikides. Kui andmed lahkuvad Ühendkuningriigist, on edastamine kaetud Ühendkuningriigi piisavusotsustega (UK adequacy regulations) või dokumendiga International Data Transfer Agreement (rahvusvahelise andmeedastuse leping) või Addendum (lisa) ning, kui teie riigi õigus seda nõuab, kaitsemeetmega, mida see õigus tunnustab. Võite küsida meilt teavet kohaldatavate kaitsemeetmete kohta.
+**Rahvusvahelised edastamised.** Teie kontoandmeid ja tellimuste andmeid säilitatakse ja töödeldakse Ühendkuningriigis. Mõnda toimingut tehakse väljaspool seda: menüüde väljalugemine ja WhatsAppi automaatsed vastused, mis kasutavad Google’i teenust Ameerika Ühendriikides; WhatsAppi sõnumite edastamine, mida teeb Meta Ameerika Ühendriikides; maksed, mida töötleb Stripe Ameerika Ühendriikides; tõuketeavitused, mida edastavad Apple ja Google Ameerika Ühendriikides; sõnumite tõlkimine ja vastuste koostamine, mis kasutavad Anthropicu teenust Ameerika Ühendriikides; ning meie e-postkastid, mida majutab Namecheap Ameerika Ühendriikides. Kui andmed lahkuvad Ühendkuningriigist, on edastamine kaetud Ühendkuningriigi piisavusotsustega (UK adequacy regulations) või dokumendiga International Data Transfer Agreement (rahvusvahelise andmeedastuse leping) või Addendum (lisa) ning, kui teie riigi õigus seda nõuab, kaitsemeetmega, mida see õigus tunnustab. Võite küsida meilt teavet kohaldatavate kaitsemeetmete kohta.
 
 Teenuse kasvades võime lisada teenuseosutajaid, sealhulgas SMS-teenuse pakkuja. Uuendame seda loetelu enne, kui nad hakkavad teie andmeid töötlema.
 

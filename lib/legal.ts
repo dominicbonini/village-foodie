@@ -89,7 +89,7 @@ export const COUNTRY_TERMS_PATH = '/country-terms'
  *  🔴 THESE MIRROR THE `**Last updated:**` LINE INSIDE content/legal/*.md, WHICH IS THE SOURCE OF TRUTH.
  *  The pages render the document's own line; these exist for anywhere else that needs the date without
  *  parsing the file. ⚠️ If you amend a document, change BOTH — the .md line is what a reader sees. */
-export const PRIVACY_UPDATED = '25 November 2026'
+export const PRIVACY_UPDATED = '27 November 2026'
 export const TERMS_UPDATED = '19 November 2026'
 export const COUNTRY_TERMS_UPDATED = '24 November 2026'
 
@@ -103,7 +103,8 @@ export function legalUpdatedDate(written: string): Date {
 
 /** The version of the terms a signup accepts, recorded as `operators.terms_version` beside `terms_accepted_at`
  *  (app/api/signup). 🔴 MOVE IT WITH THE DOCUMENTS: it names the Terms of Service, Privacy Policy and Country-specific
- *  terms dated above — the latest of them; 24 November 2026 since the Privacy Policy became one policy for every country and the
+ *  terms dated above — the latest of them; 27 November 2026 since the Privacy Policy's section 6 named Anthropic (Claude) and
+ *  Namecheap (privacy-processors-1), 24 November 2026 before that, since the Privacy Policy became one policy for every country and the
  *  Country-specific terms lost their per-country privacy parts (france-privacy-1), 19 November 2026 before that, since the Terms' post-pay wording (terms-postpay-1: the fee on every pre-order,
  *  monthly billing where it can't be taken from the payment, a card on file at the trial's end, the 5-day pause, the trial ending on Pay as
  *  you go), 4 November 2026 before that, since the Privacy Policy's compliance-documents paragraph (paperwork-1: stored, read by
@@ -118,7 +119,7 @@ export function legalUpdatedDate(written: string): Date {
  *  'holding-2026-07-23', typed in the route, and stayed there while the documents moved twice (legal follow-ups,
  *  19 October 2026). ⚠️ It is only WRITTEN, at signup: nothing reads or compares it, so moving it asks no existing truck
  *  to re-accept anything (checked 20 October 2026 — app, edge functions, database functions and triggers). */
-export const TERMS_VERSION = '2026-11-24'
+export const TERMS_VERSION = '2026-11-27'
 
 /** Both documents, for anywhere that renders the pair (footers, consent lines). */
 export const LEGAL_LINKS = [

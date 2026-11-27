@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 25 November 2026
+**Last updated:** 27 November 2026
 
 This policy explains how HatchGrab Ltd ("we", "us", "our") collects and uses personal data across two connected services:
 
@@ -131,12 +131,14 @@ We use a small number of service providers, each of which processes data only on
 | Apple and Google | Delivering push notifications to your device | United States |
 | Meta (WhatsApp) | Carrying WhatsApp messages between your customers and your business number | United States |
 | Stripe | Taking payments from your customers and passing them on to you | United States |
+| Anthropic (Claude) | Translating messages you send us and helping draft our replies | United States |
+| Namecheap | Our email mailboxes | United States |
 
 We may also disclose data where we are required to by law, or to establish or defend legal claims.
 
 **We do not sell personal data, and we do not share it for advertising.**
 
-**International transfers.** Your account data and order data are stored and processed in the United Kingdom. Some things are handled outside it: menu extraction and WhatsApp automatic replies, which use a Google service in the United States; WhatsApp message delivery, which is handled by Meta in the United States; payments, which are handled by Stripe in the United States; and push notifications, which are delivered by Apple and Google in the United States. Where data leaves the UK, the transfer is covered by UK adequacy regulations or by the International Data Transfer Agreement or Addendum, and, where the law of your country requires it, by a safeguard that law recognises. You can ask us for details of the safeguards that apply.
+**International transfers.** Your account data and order data are stored and processed in the United Kingdom. Some things are handled outside it: menu extraction and WhatsApp automatic replies, which use a Google service in the United States; WhatsApp message delivery, which is handled by Meta in the United States; payments, which are handled by Stripe in the United States; push notifications, which are delivered by Apple and Google in the United States; message translation and reply drafting, which use Anthropic in the United States; and our email mailboxes, which Namecheap hosts in the United States. Where data leaves the UK, the transfer is covered by UK adequacy regulations or by the International Data Transfer Agreement or Addendum, and, where the law of your country requires it, by a safeguard that law recognises. You can ask us for details of the safeguards that apply.
 
 As our service grows we may add providers, including an SMS provider. We will update this list before they begin processing your data.
 

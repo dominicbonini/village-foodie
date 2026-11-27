@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Politika e privatësisë
 
 **Përditësuar së fundi:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Ne përdorim një numër të vogël ofruesish shërbimesh, secili prej të cilë
 | Apple dhe Google | Dërgimi i njoftimeve push në pajisjen tuaj | Shtetet e Bashkuara |
 | Meta (WhatsApp) | Përcjellja e mesazheve në WhatsApp ndërmjet klientëve tuaj dhe numrit të biznesit tuaj | Shtetet e Bashkuara |
 | Stripe | Marrja e pagesave nga klientët tuaj dhe kalimi i tyre te ju | Shtetet e Bashkuara |
+| Anthropic (Claude) | Përkthimi i mesazheve që na dërgoni dhe ndihma në hartimin e përgjigjeve tona | Shtetet e Bashkuara |
+| Namecheap | Kutitë tona postare të email-it | Shtetet e Bashkuara |
 
 Ne mund t’i zbulojmë të dhënat edhe kur jemi të detyruar me ligj, ose për të vendosur apo për t’u mbrojtur nga pretendime ligjore.
 
 **Ne nuk i shesim të dhënat personale dhe nuk i ndajmë për reklama.**
 
-**Transferimet ndërkombëtare.** Të dhënat e llogarisë suaj dhe të dhënat e porosive ruhen dhe përpunohen në Mbretërinë e Bashkuar. Disa gjëra trajtohen jashtë saj: nxjerrja e menusë dhe përgjigjet automatike në WhatsApp, që përdorin një shërbim të Google në Shtetet e Bashkuara; dërgimi i mesazheve në WhatsApp, që trajtohet nga Meta në Shtetet e Bashkuara; pagesat, që trajtohen nga Stripe në Shtetet e Bashkuara; dhe njoftimet push, që dërgohen nga Apple dhe Google në Shtetet e Bashkuara. Kur të dhënat dalin nga Mbretëria e Bashkuar, transferimi mbulohet nga rregulloret e përshtatshmërisë të Mbretërisë së Bashkuar ose nga Marrëveshja Ndërkombëtare e Transferimit të të Dhënave (International Data Transfer Agreement) ose Shtojca (Addendum) dhe, kur e kërkon ligji i shtetit tuaj, nga një masë mbrojtëse që e njeh ai ligj. Mund të na kërkoni hollësi për masat mbrojtëse që zbatohen.
+**Transferimet ndërkombëtare.** Të dhënat e llogarisë suaj dhe të dhënat e porosive ruhen dhe përpunohen në Mbretërinë e Bashkuar. Disa gjëra trajtohen jashtë saj: nxjerrja e menusë dhe përgjigjet automatike në WhatsApp, që përdorin një shërbim të Google në Shtetet e Bashkuara; dërgimi i mesazheve në WhatsApp, që trajtohet nga Meta në Shtetet e Bashkuara; pagesat, që trajtohen nga Stripe në Shtetet e Bashkuara; njoftimet push, që dërgohen nga Apple dhe Google në Shtetet e Bashkuara; përkthimi i mesazheve dhe hartimi i përgjigjeve, që përdorin Anthropic në Shtetet e Bashkuara; dhe kutitë tona postare të email-it, që strehohen nga Namecheap në Shtetet e Bashkuara. Kur të dhënat dalin nga Mbretëria e Bashkuar, transferimi mbulohet nga rregulloret e përshtatshmërisë të Mbretërisë së Bashkuar ose nga Marrëveshja Ndërkombëtare e Transferimit të të Dhënave (International Data Transfer Agreement) ose Shtojca (Addendum) dhe, kur e kërkon ligji i shtetit tuaj, nga një masë mbrojtëse që e njeh ai ligj. Mund të na kërkoni hollësi për masat mbrojtëse që zbatohen.
 
 Ndërsa shërbimi ynë rritet, mund të shtojmë ofrues, përfshirë një ofrues SMS. Do ta përditësojmë këtë listë para se ata të fillojnë të përpunojnë të dhënat tuaja.
 

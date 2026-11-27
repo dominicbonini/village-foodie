@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Tietosuojaseloste
 
 **Päivitetty viimeksi:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Käytämme pientä määrää palveluntarjoajia, joista kukin käsittelee tietoj
 | Apple and Google | Push-ilmoitusten toimittaminen laitteellesi | Yhdysvallat |
 | Meta (WhatsApp) | WhatsApp-viestien välittäminen asiakkaidesi ja yrityksesi numeron välillä | Yhdysvallat |
 | Stripe | Maksujen vastaanottaminen asiakkailtasi ja niiden tilittäminen sinulle | Yhdysvallat |
+| Anthropic (Claude) | Meille lähettämiesi viestien kääntäminen ja apu vastaustemme luonnostelussa | Yhdysvallat |
+| Namecheap | Sähköpostilaatikkomme | Yhdysvallat |
 
 Voimme myös luovuttaa tietoja, jos laki meitä siihen velvoittaa, tai oikeudellisten vaatimusten laatimiseksi tai puolustamiseksi.
 
 **Emme myy henkilötietoja emmekä jaa niitä mainontaa varten.**
 
-**Kansainväliset siirrot.** Tilitietojasi ja tilaustietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Osa käsittelystä tapahtuu sen ulkopuolella: ruokalistojen tietojen poiminta ja WhatsAppin automaattiset vastaukset, joissa käytetään Googlen palvelua Yhdysvalloissa; WhatsApp-viestien toimittaminen, jonka hoitaa Meta Yhdysvalloissa; maksut, jotka hoitaa Stripe Yhdysvalloissa; sekä push-ilmoitukset, jotka toimittavat Apple ja Google Yhdysvalloissa. Kun tietoja siirretään Yhdistyneen kuningaskunnan ulkopuolelle, siirto perustuu Yhdistyneen kuningaskunnan tietosuojan riittävyyttä koskeviin säännöksiin (UK adequacy regulations) tai International Data Transfer Agreement -sopimukseen tai Addendum-lisäykseen (kansainvälistä tiedonsiirtoa koskeva sopimus tai lisäys) sekä, jos maasi lainsäädäntö sitä edellyttää, kyseisen lainsäädännön tunnustamaan suojatoimeen. Voit pyytää meiltä tietoja sovellettavista suojatoimista.
+**Kansainväliset siirrot.** Tilitietojasi ja tilaustietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Osa käsittelystä tapahtuu sen ulkopuolella: ruokalistojen tietojen poiminta ja WhatsAppin automaattiset vastaukset, joissa käytetään Googlen palvelua Yhdysvalloissa; WhatsApp-viestien toimittaminen, jonka hoitaa Meta Yhdysvalloissa; maksut, jotka hoitaa Stripe Yhdysvalloissa; push-ilmoitukset, jotka toimittavat Apple ja Google Yhdysvalloissa; viestien kääntäminen ja vastausten luonnostelu, joissa käytetään Anthropicia Yhdysvalloissa; sekä sähköpostilaatikkomme, joita Namecheap ylläpitää Yhdysvalloissa. Kun tietoja siirretään Yhdistyneen kuningaskunnan ulkopuolelle, siirto perustuu Yhdistyneen kuningaskunnan tietosuojan riittävyyttä koskeviin säännöksiin (UK adequacy regulations) tai International Data Transfer Agreement -sopimukseen tai Addendum-lisäykseen (kansainvälistä tiedonsiirtoa koskeva sopimus tai lisäys) sekä, jos maasi lainsäädäntö sitä edellyttää, kyseisen lainsäädännön tunnustamaan suojatoimeen. Voit pyytää meiltä tietoja sovellettavista suojatoimista.
 
 Palvelumme kasvaessa voimme ottaa käyttöön uusia palveluntarjoajia, mukaan lukien tekstiviestipalvelun tarjoajan. Päivitämme tämän luettelon ennen kuin ne aloittavat tietojesi käsittelyn.
 

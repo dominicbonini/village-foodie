@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Politika privatnosti
 
 **Poslednje ažuriranje:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Koristimo mali broj pružalaca usluga, od kojih svaki obrađuje podatke isključ
 | Apple i Google | Dostavljanje push obaveštenja na vaš uređaj | Sjedinjene Američke Države |
 | Meta (WhatsApp) | Prenos WhatsApp poruka između vaših kupaca i poslovnog broja vaše firme | Sjedinjene Američke Države |
 | Stripe | Naplata plaćanja od vaših kupaca i njihovo prosleđivanje vama | Sjedinjene Američke Države |
+| Anthropic (Claude) | Prevođenje poruka koje nam šaljete i pomoć pri sastavljanju naših odgovora | Sjedinjene Američke Države |
+| Namecheap | Naši sandučići e-pošte | Sjedinjene Američke Države |
 
 Podatke možemo otkriti i kada smo na to obavezni po zakonu, ili radi utvrđivanja ili odbrane pravnih zahteva.
 
 **Ne prodajemo podatke o ličnosti i ne delimo ih u reklamne svrhe.**
 
-**Međunarodni prenos.** Podaci o vašem nalogu i podaci o porudžbinama čuvaju se i obrađuju u Ujedinjenom Kraljevstvu. Neke radnje se obavljaju van njega: izdvajanje sadržaja menija i automatski odgovori na WhatsApp-u, za koje se koristi Google-ova usluga u Sjedinjenim Američkim Državama; dostava WhatsApp poruka, koju obavlja Meta u Sjedinjenim Američkim Državama; plaćanja, koja obavlja Stripe u Sjedinjenim Američkim Državama; i push obaveštenja, koja dostavljaju Apple i Google u Sjedinjenim Američkim Državama. Kada podaci napuštaju Ujedinjeno Kraljevstvo, prenos je obuhvaćen propisima Ujedinjenog Kraljevstva o adekvatnosti (UK adequacy regulations) ili Međunarodnim ugovorom o prenosu podataka (International Data Transfer Agreement) ili Dodatkom (Addendum), a kada to zahteva pravo vaše zemlje, i merom zaštite koju to pravo priznaje. Možete nas zamoliti za pojedinosti o merama zaštite koje se primenjuju.
+**Međunarodni prenos.** Podaci o vašem nalogu i podaci o porudžbinama čuvaju se i obrađuju u Ujedinjenom Kraljevstvu. Neke radnje se obavljaju van njega: izdvajanje sadržaja menija i automatski odgovori na WhatsApp-u, za koje se koristi Google-ova usluga u Sjedinjenim Američkim Državama; dostava WhatsApp poruka, koju obavlja Meta u Sjedinjenim Američkim Državama; plaćanja, koja obavlja Stripe u Sjedinjenim Američkim Državama; push obaveštenja, koja dostavljaju Apple i Google u Sjedinjenim Američkim Državama; prevođenje poruka i sastavljanje odgovora, za koje se koristi Anthropic u Sjedinjenim Američkim Državama; i naši sandučići e-pošte, koje hostuje Namecheap u Sjedinjenim Američkim Državama. Kada podaci napuštaju Ujedinjeno Kraljevstvo, prenos je obuhvaćen propisima Ujedinjenog Kraljevstva o adekvatnosti (UK adequacy regulations) ili Međunarodnim ugovorom o prenosu podataka (International Data Transfer Agreement) ili Dodatkom (Addendum), a kada to zahteva pravo vaše zemlje, i merom zaštite koju to pravo priznaje. Možete nas zamoliti za pojedinosti o merama zaštite koje se primenjuju.
 
 Kako naša usluga bude rasla, možemo dodati nove pružaoce usluga, uključujući pružaoca SMS usluga. Ovaj spisak ćemo ažurirati pre nego što oni počnu da obrađuju vaše podatke.
 

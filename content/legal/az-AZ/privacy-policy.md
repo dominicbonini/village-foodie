@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Məxfilik siyasəti
 
 **Son yenilənmə:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Az sayda xidmət təchizatçısından istifadə edirik, onların hər biri məlu
 | Apple və Google | Cihazınıza push-bildirişlərin çatdırılması | Amerika Birləşmiş Ştatları |
 | Meta (WhatsApp) | Müştəriləriniz və biznes nömrəniz arasında WhatsApp mesajlarının ötürülməsi | Amerika Birləşmiş Ştatları |
 | Stripe | Müştərilərinizdən ödənişlərin qəbulu və sizə ötürülməsi | Amerika Birləşmiş Ştatları |
+| Anthropic (Claude) | Bizə göndərdiyiniz mesajların tərcüməsi və cavablarımızın hazırlanmasına kömək | Amerika Birləşmiş Ştatları |
+| Namecheap | E-poçt qutularımız | Amerika Birləşmiş Ştatları |
 
 Həmçinin qanun tələb etdikdə və ya hüquqi iddiaları əsaslandırmaq və ya müdafiə etmək üçün məlumatları açıqlaya bilərik.
 
 **Şəxsi məlumatları satmırıq və reklam üçün paylaşmırıq.**
 
-**Beynəlxalq ötürmələr.** Hesab məlumatlarınız və sifariş məlumatlarınız Birləşmiş Krallıqda saxlanılır və emal olunur. Bəzi işlər onun xaricində görülür: Amerika Birləşmiş Ştatlarındakı Google xidmətindən istifadə edən menyu çıxarılması və WhatsApp avtomatik cavabları; Amerika Birləşmiş Ştatlarında Meta tərəfindən həyata keçirilən WhatsApp mesajlarının çatdırılması; Amerika Birləşmiş Ştatlarında Stripe tərəfindən həyata keçirilən ödənişlər; və Amerika Birləşmiş Ştatlarında Apple və Google tərəfindən çatdırılan push-bildirişlər. Məlumatlar Birləşmiş Krallıqdan çıxdıqda, ötürmə Birləşmiş Krallığın adekvatlıq qaydaları və ya Beynəlxalq Məlumat Ötürmə Müqaviləsi (International Data Transfer Agreement) və ya Əlavə (Addendum) ilə, ölkənizin qanunvericiliyi tələb etdikdə isə həmin qanunvericiliyin tanıdığı təminatla da əhatə olunur. Hansı təminatların tətbiq olunduğu barədə bizdən ətraflı məlumat istəyə bilərsiniz.
+**Beynəlxalq ötürmələr.** Hesab məlumatlarınız və sifariş məlumatlarınız Birləşmiş Krallıqda saxlanılır və emal olunur. Bəzi işlər onun xaricində görülür: Amerika Birləşmiş Ştatlarındakı Google xidmətindən istifadə edən menyu çıxarılması və WhatsApp avtomatik cavabları; Amerika Birləşmiş Ştatlarında Meta tərəfindən həyata keçirilən WhatsApp mesajlarının çatdırılması; Amerika Birləşmiş Ştatlarında Stripe tərəfindən həyata keçirilən ödənişlər; Amerika Birləşmiş Ştatlarında Apple və Google tərəfindən çatdırılan push-bildirişlər; Amerika Birləşmiş Ştatlarındakı Anthropic xidmətindən istifadə edən mesaj tərcüməsi və cavabların hazırlanması; və Amerika Birləşmiş Ştatlarında Namecheap tərəfindən yerləşdirilən e-poçt qutularımız. Məlumatlar Birləşmiş Krallıqdan çıxdıqda, ötürmə Birləşmiş Krallığın adekvatlıq qaydaları və ya Beynəlxalq Məlumat Ötürmə Müqaviləsi (International Data Transfer Agreement) və ya Əlavə (Addendum) ilə, ölkənizin qanunvericiliyi tələb etdikdə isə həmin qanunvericiliyin tanıdığı təminatla da əhatə olunur. Hansı təminatların tətbiq olunduğu barədə bizdən ətraflı məlumat istəyə bilərsiniz.
 
 Xidmətimiz böyüdükcə SMS provayderi də daxil olmaqla yeni provayderlər əlavə edə bilərik. Onlar məlumatlarınızı emal etməyə başlamazdan əvvəl bu siyahını yeniləyəcəyik.
 

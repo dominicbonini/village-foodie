@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # 私隱政策
 
 **最後更新:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ HatchGrab Ltd 是一家於英格蘭及威爾斯註冊的公司。
 | Apple and Google | 向閣下的裝置傳送推送通知 | 美國 |
 | Meta (WhatsApp) | 在閣下的顧客與閣下的業務號碼之間傳遞 WhatsApp 訊息 | 美國 |
 | Stripe | 向閣下的顧客收取款項並轉交閣下 | 美國 |
+| Anthropic (Claude) | 翻譯閣下傳送給本公司的訊息，並協助草擬本公司的回覆 | 美國 |
+| Namecheap | 本公司的電郵信箱 | 美國 |
 
 本公司亦可能在法律要求下，或為確立或抗辯法律申索而披露資料。
 
 **本公司不會出售個人資料，亦不會為廣告目的分享個人資料。**
 
-**跨境轉移。** 閣下的帳戶資料及訂單資料在英國儲存及處理。部分事項在英國以外處理：餐牌擷取及 WhatsApp 自動回覆，使用位於美國的 Google 服務；WhatsApp 訊息傳送，由位於美國的 Meta 處理；付款，由位於美國的 Stripe 處理；以及推送通知，由位於美國的 Apple 及 Google 傳送。凡資料離開英國，有關轉移受英國充分性規例，或 International Data Transfer Agreement（國際資料轉移協議）或 Addendum（附錄）涵蓋；如閣下所在國家的法律有此要求，亦受該法律認可的保障措施涵蓋。閣下可要求本公司提供適用保障措施的詳情。
+**跨境轉移。** 閣下的帳戶資料及訂單資料在英國儲存及處理。部分事項在英國以外處理：餐牌擷取及 WhatsApp 自動回覆，使用位於美國的 Google 服務；WhatsApp 訊息傳送，由位於美國的 Meta 處理；付款，由位於美國的 Stripe 處理；推送通知，由位於美國的 Apple 及 Google 傳送；訊息翻譯及回覆草擬，使用位於美國的 Anthropic；以及本公司的電郵信箱，由位於美國的 Namecheap 寄存。凡資料離開英國，有關轉移受英國充分性規例，或 International Data Transfer Agreement（國際資料轉移協議）或 Addendum（附錄）涵蓋；如閣下所在國家的法律有此要求，亦受該法律認可的保障措施涵蓋。閣下可要求本公司提供適用保障措施的詳情。
 
 隨着本公司服務的發展，本公司可能增加提供者，包括短訊服務提供者。本公司會在其開始處理閣下的資料之前更新此列表。
 

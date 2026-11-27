@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Privātuma politika
 
 **Pēdējoreiz atjaunināts:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Mēs izmantojam nelielu skaitu pakalpojumu sniedzēju, no kuriem katrs apstrād�
 | Apple un Google | Pašpiegādes paziņojumu piegāde uz jūsu ierīci | Amerikas Savienotās Valstis |
 | Meta (WhatsApp) | WhatsApp ziņojumu pārsūtīšana starp jūsu klientiem un jūsu uzņēmuma numuru | Amerikas Savienotās Valstis |
 | Stripe | Maksājumu pieņemšana no jūsu klientiem un to nodošana jums | Amerikas Savienotās Valstis |
+| Anthropic (Claude) | Jūsu mums sūtīto ziņojumu tulkošana un palīdzība mūsu atbilžu sagatavošanā | Amerikas Savienotās Valstis |
+| Namecheap | Mūsu e-pasta pastkastes | Amerikas Savienotās Valstis |
 
 Mēs varam izpaust datus arī tad, ja to no mums prasa tiesību akti, vai lai celtu vai aizstāvētu juridiskas prasības.
 
 **Mēs nepārdodam personas datus un nekopīgojam tos reklāmas nolūkos.**
 
-**Starptautiska nosūtīšana.** Jūsu konta dati un pasūtījumu dati tiek glabāti un apstrādāti Apvienotajā Karalistē. Dažas darbības tiek veiktas ārpus tās: ēdienkaršu satura iegūšana un WhatsApp automātiskās atbildes, kurās tiek izmantots Google pakalpojums Amerikas Savienotajās Valstīs; WhatsApp ziņojumu piegāde, ko veic Meta Amerikas Savienotajās Valstīs; maksājumi, ko apstrādā Stripe Amerikas Savienotajās Valstīs; un pašpiegādes paziņojumi, ko piegādā Apple un Google Amerikas Savienotajās Valstīs. Ja dati tiek nosūtīti ārpus Apvienotās Karalistes, nosūtīšanu aptver Apvienotās Karalistes noteikumi par aizsardzības līmeņa pietiekamību vai International Data Transfer Agreement (Starptautiskās datu nosūtīšanas līgums) vai Addendum (papildinājums), un, ja to prasa jūsu valsts tiesību akti, arī garantija, ko atzīst šie tiesību akti. Jūs varat lūgt mums sniegt informāciju par piemērojamajām garantijām.
+**Starptautiska nosūtīšana.** Jūsu konta dati un pasūtījumu dati tiek glabāti un apstrādāti Apvienotajā Karalistē. Dažas darbības tiek veiktas ārpus tās: ēdienkaršu satura iegūšana un WhatsApp automātiskās atbildes, kurās tiek izmantots Google pakalpojums Amerikas Savienotajās Valstīs; WhatsApp ziņojumu piegāde, ko veic Meta Amerikas Savienotajās Valstīs; maksājumi, ko apstrādā Stripe Amerikas Savienotajās Valstīs; pašpiegādes paziņojumi, ko piegādā Apple un Google Amerikas Savienotajās Valstīs; ziņojumu tulkošana un atbilžu sagatavošana, kurās tiek izmantots Anthropic Amerikas Savienotajās Valstīs; un mūsu e-pasta pastkastes, ko uztur Namecheap Amerikas Savienotajās Valstīs. Ja dati tiek nosūtīti ārpus Apvienotās Karalistes, nosūtīšanu aptver Apvienotās Karalistes noteikumi par aizsardzības līmeņa pietiekamību vai International Data Transfer Agreement (Starptautiskās datu nosūtīšanas līgums) vai Addendum (papildinājums), un, ja to prasa jūsu valsts tiesību akti, arī garantija, ko atzīst šie tiesību akti. Jūs varat lūgt mums sniegt informāciju par piemērojamajām garantijām.
 
 Mūsu pakalpojumam augot, mēs varam pievienot pakalpojumu sniedzējus, tostarp īsziņu pakalpojumu sniedzēju. Mēs atjaunināsim šo sarakstu, pirms tie sāks apstrādāt jūsu datus.
 

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Maxfiylik siyosati
 
 **Oxirgi yangilanish:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Biz oz sonli xizmat koʻrsatuvchilardan foydalanamiz, ularning har biri maʼlumo
 | Apple va Google | Qurilmangizga push-bildirishnomalarni yetkazish | Amerika Qoʻshma Shtatlari |
 | Meta (WhatsApp) | Mijozlaringiz va biznes raqamingiz oʻrtasida WhatsApp xabarlarini uzatish | Amerika Qoʻshma Shtatlari |
 | Stripe | Mijozlaringizdan toʻlovlarni qabul qilish va ularni sizga oʻtkazish | Amerika Qoʻshma Shtatlari |
+| Anthropic (Claude) | Bizga yuborgan xabarlaringizni tarjima qilish va javoblarimiz qoralamasini tayyorlashga yordam berish | Amerika Qoʻshma Shtatlari |
+| Namecheap | Elektron pochta qutilarimiz | Amerika Qoʻshma Shtatlari |
 
 Shuningdek, qonun talab qilganda yoki huquqiy daʼvolarni asoslash yoki himoya qilish uchun maʼlumotlarni oshkor qilishimiz mumkin.
 
 **Biz shaxsiy maʼlumotlarni sotmaymiz va reklama uchun ulashmaymiz.**
 
-**Xalqaro uzatish.** Hisob maʼlumotlaringiz va buyurtma maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ishlov beriladi. Baʼzi ishlar undan tashqarida bajariladi: Amerika Qoʻshma Shtatlaridagi Google xizmatidan foydalanadigan menyuni ajratib olish va WhatsApp avtomatik javoblari; Amerika Qoʻshma Shtatlarida Meta bajaradigan WhatsApp xabarlarini yetkazish; Amerika Qoʻshma Shtatlarida Stripe bajaradigan toʻlovlar; va Amerika Qoʻshma Shtatlarida Apple va Google yetkazadigan push-bildirishnomalar. Maʼlumotlar Buyuk Britaniyadan chiqqanda, uzatish Buyuk Britaniyaning adekvatlik qoidalari yoki Xalqaro maʼlumotlarni uzatish shartnomasi (International Data Transfer Agreement) yoki Qoʻshimcha (Addendum) bilan, mamlakatingiz qonunchiligi talab qilgan hollarda esa ushbu qonunchilik tan oladigan kafolat bilan ham qamrab olinadi. Qaysi kafolatlar qoʻllanilishi haqida bizdan batafsil maʼlumot soʻrashingiz mumkin.
+**Xalqaro uzatish.** Hisob maʼlumotlaringiz va buyurtma maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ishlov beriladi. Baʼzi ishlar undan tashqarida bajariladi: Amerika Qoʻshma Shtatlaridagi Google xizmatidan foydalanadigan menyuni ajratib olish va WhatsApp avtomatik javoblari; Amerika Qoʻshma Shtatlarida Meta bajaradigan WhatsApp xabarlarini yetkazish; Amerika Qoʻshma Shtatlarida Stripe bajaradigan toʻlovlar; Amerika Qoʻshma Shtatlarida Apple va Google yetkazadigan push-bildirishnomalar; Amerika Qoʻshma Shtatlaridagi Anthropic xizmatidan foydalanadigan xabarlarni tarjima qilish va javoblar qoralamasini tayyorlash; va Amerika Qoʻshma Shtatlarida Namecheap joylashtiradigan elektron pochta qutilarimiz. Maʼlumotlar Buyuk Britaniyadan chiqqanda, uzatish Buyuk Britaniyaning adekvatlik qoidalari yoki Xalqaro maʼlumotlarni uzatish shartnomasi (International Data Transfer Agreement) yoki Qoʻshimcha (Addendum) bilan, mamlakatingiz qonunchiligi talab qilgan hollarda esa ushbu qonunchilik tan oladigan kafolat bilan ham qamrab olinadi. Qaysi kafolatlar qoʻllanilishi haqida bizdan batafsil maʼlumot soʻrashingiz mumkin.
 
 Xizmatimiz oʻsgani sari yangi provayderlar, jumladan SMS provayderini qoʻshishimiz mumkin. Ular maʼlumotlaringizga ishlov berishni boshlashidan oldin ushbu roʻyxatni yangilaymiz.
 

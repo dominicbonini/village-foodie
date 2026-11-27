@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Dasar Privasi
 
 **Kemas kini terakhir:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Kami menggunakan sebilangan kecil pembekal perkhidmatan, yang setiap satunya mem
 | Apple and Google | Menyampaikan pemberitahuan tolak ke peranti anda | Amerika Syarikat |
 | Meta (WhatsApp) | Membawa mesej WhatsApp antara pelanggan anda dengan nombor perniagaan anda | Amerika Syarikat |
 | Stripe | Menerima pembayaran daripada pelanggan anda dan menyerahkannya kepada anda | Amerika Syarikat |
+| Anthropic (Claude) | Menterjemah mesej yang anda hantar kepada kami dan membantu merangka balasan kami | Amerika Syarikat |
+| Namecheap | Peti mel e-mel kami | Amerika Syarikat |
 
 Kami juga boleh mendedahkan data apabila kami dikehendaki berbuat demikian oleh undang-undang, atau untuk mewujudkan atau mempertahankan tuntutan undang-undang.
 
 **Kami tidak menjual data peribadi, dan kami tidak berkongsinya untuk pengiklanan.**
 
-**Pemindahan antarabangsa.** Data akaun dan data pesanan anda disimpan dan diproses di United Kingdom. Sesetengah perkara dikendalikan di luarnya: pengekstrakan menu dan balasan automatik WhatsApp, yang menggunakan perkhidmatan Google di Amerika Syarikat; penghantaran mesej WhatsApp, yang dikendalikan oleh Meta di Amerika Syarikat; pembayaran, yang dikendalikan oleh Stripe di Amerika Syarikat; dan pemberitahuan tolak, yang disampaikan oleh Apple dan Google di Amerika Syarikat. Apabila data meninggalkan UK, pemindahan itu dilindungi oleh peraturan kecukupan UK atau oleh International Data Transfer Agreement (Perjanjian Pemindahan Data Antarabangsa) atau Addendum, dan, apabila dikehendaki oleh undang-undang negara anda, oleh perlindungan yang diiktiraf oleh undang-undang itu. Anda boleh meminta daripada kami butiran perlindungan yang terpakai.
+**Pemindahan antarabangsa.** Data akaun dan data pesanan anda disimpan dan diproses di United Kingdom. Sesetengah perkara dikendalikan di luarnya: pengekstrakan menu dan balasan automatik WhatsApp, yang menggunakan perkhidmatan Google di Amerika Syarikat; penghantaran mesej WhatsApp, yang dikendalikan oleh Meta di Amerika Syarikat; pembayaran, yang dikendalikan oleh Stripe di Amerika Syarikat; pemberitahuan tolak, yang disampaikan oleh Apple dan Google di Amerika Syarikat; terjemahan mesej dan perangkaan balasan, yang menggunakan Anthropic di Amerika Syarikat; dan peti mel e-mel kami, yang dihoskan oleh Namecheap di Amerika Syarikat. Apabila data meninggalkan UK, pemindahan itu dilindungi oleh peraturan kecukupan UK atau oleh International Data Transfer Agreement (Perjanjian Pemindahan Data Antarabangsa) atau Addendum, dan, apabila dikehendaki oleh undang-undang negara anda, oleh perlindungan yang diiktiraf oleh undang-undang itu. Anda boleh meminta daripada kami butiran perlindungan yang terpakai.
 
 Seiring dengan perkembangan perkhidmatan kami, kami mungkin menambah pembekal, termasuk pembekal SMS. Kami akan mengemas kini senarai ini sebelum mereka mula memproses data anda.
 

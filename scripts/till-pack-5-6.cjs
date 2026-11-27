@@ -391,22 +391,27 @@ export { POST as archivePOST } from '@/app/api/till/archive/route'`)
   const pp = read('content/legal/privacy-policy.md')
   const s7 = pp.slice(pp.indexOf('## 7.'), pp.indexOf('## 8.'))
   t('G1 · section 7 of the English policy has EXACTLY the approved line, once, where the old one was; the old line is gone', pp.split(NEW_EN).length === 2 && s7.includes(NEW_EN) && !pp.includes('as UK tax law requires'))
-  t('G2 · "Last updated" is 25 November 2026, and lib/legal.ts\'s mirror (PRIVACY_UPDATED) says the same', /\*\*Last updated:\*\* 25 November 2026\n/.test(pp) && /export const PRIVACY_UPDATED = '25 November 2026'/.test(read('lib/legal.ts')))
+  // ⚠️ RE-PINNED (privacy-processors-1, 27 November 2026, docs/privacy-processors-1-report.md): a newer round changed section 6, the
+  // transfers sentence, the date (27 November 2026) and TERMS_VERSION. G2, G3, G4 and G6 take EXACTLY that named edit back first
+  // (scripts/_named-privacy-processors-1.cjs, which throws if it is not there exactly) and check this round's own change as before.
+  const PP1 = require('./_named-privacy-processors-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+  const ppOwn = PP1.asBefore('content/legal/privacy-policy.md', pp), legalOwn = PP1.asBefore('lib/legal.ts', read('lib/legal.ts'))
+  t('G2 · "Last updated" is 25 November 2026, and lib/legal.ts\'s mirror (PRIVACY_UPDATED) says the same', /\*\*Last updated:\*\* 25 November 2026\n/.test(ppOwn) && /export const PRIVACY_UPDATED = '25 November 2026'/.test(legalOwn))
   const before = git('show', `${START}:content/legal/privacy-policy.md`)
-  t('G3 · nothing else in the English policy changed (two lines: the records line and the date)', (() => { const a = before.split('\n'), b = pp.split('\n'); return a.length === b.length && a.filter((x, i) => x !== b[i]).length === 2 })())
+  t('G3 · nothing else in the English policy changed (two lines: the records line and the date)', (() => { const a = before.split('\n'), b = ppOwn.split('\n'); return a.length === b.length && a.filter((x, i) => x !== b[i]).length === 2 })())
   const back = JSON.parse(read('docs/till-pack-5-6/privacy-line-back-translations.json'))
   const USED = Object.keys(back).sort()
   const UNUSED = ['fil-PH', 'hi-IN', 'ur-PK', 'ta-LK', 'vi-VN']
   const transBad = []
   for (const loc of USED) {
-    const f = `content/legal/${loc}/privacy-policy.md`, now = read(f), was = git('show', `${START}:${f}`)
+    const f = `content/legal/${loc}/privacy-policy.md`, cur = read(f), now = PP1.asBefore(f, cur), was = git('show', `${START}:${f}`)
     const changed = now.split('\n').filter((x, i) => x !== was.split('\n')[i])
-    const problems = LT.compare('privacy-policy.md', now)
+    const problems = LT.compare('privacy-policy.md', cur)   // the structure checker runs on the file as it is today (stamped to today's English)
     if (!now.includes(back[loc].new_line + '\n') || now.includes(back[loc].old_line + '\n') || changed.length !== 2 || problems.length) transBad.push(`${loc}: ${problems.slice(0, 2).join('; ')}`)
   }
   t(`G4 · the line is translated in EVERY language an enabled country uses (${USED.length}), each with its back-translation; each file changes by exactly its line and its source stamp, and passes the structure checker`, USED.length === 54 && transBad.length === 0, transBad)
   t('G5 · the five bases no enabled country uses are untouched (fil-PH, hi-IN, ur-PK, ta-LK, vi-VN)', UNUSED.every(l => read(`content/legal/${l}/privacy-policy.md`) === git('show', `${START}:content/legal/${l}/privacy-policy.md`)))
-  t('G6 · TERMS_VERSION is NOT moved ("change nothing else" — the report flags it)', /export const TERMS_VERSION = '2026-11-24'/.test(read('lib/legal.ts')))
+  t('G6 · TERMS_VERSION is NOT moved ("change nothing else" — the report flags it)', /export const TERMS_VERSION = '2026-11-24'/.test(legalOwn))
 
   head('H · THE MIGRATION, THE BUCKET, AND WHAT ELSE CHANGED')
   const C = mig.replace(/--[^\n]*/g, '')
@@ -419,7 +424,10 @@ export { POST as archivePOST } from '@/app/api/till/archive/route'`)
   const screens = mine.filter(f => /^components\//.test(f) || /^app\/(?!api\/)/.test(f) || /\.tsx$/.test(f))
   t('H6 · NO SCREEN: no component, page or .tsx file is changed by this work', screens.length === 0, screens)
   const msgFiles = mine.filter(f => /^messages\/[^/]+\.json$/.test(f))
-  const msgOther = msgFiles.filter(f => { const now = JSON.parse(read(f)); const was = JSON.parse(git('show', `${START}:${f}`)); delete now.emailTillArchive; return J(now) !== J(was) })
+  // ⚠️ RE-PINNED (privacy-processors-1, 27 November 2026): compare-suits-fix-2 (26 Nov, docs/compare-suits-fix-2-report.md) later changed
+  // comparison.fit in the message files (the new guide's keys; the old tills / delivery keys removed) — set aside here, on both sides.
+  const noFit = o => { if (o.comparison && o.comparison.fit) { o.comparison = { ...o.comparison }; delete o.comparison.fit } return o }
+  const msgOther = msgFiles.filter(f => { const now = noFit(JSON.parse(read(f))); const was = noFit(JSON.parse(git('show', `${START}:${f}`))); delete now.emailTillArchive; return J(now) !== J(was) })
   t(`H7 · the ${msgFiles.length} message files gain exactly one namespace — emailTillArchive, the one new message — and nothing else`, msgFiles.length === 60 && msgOther.length === 0, msgOther)
   t('H8 · the email is the only new message: the archive mailer is the only new sender', mine.filter(f => /\.ts$/.test(f) && /api\.brevo\.com/.test(fs.existsSync(path.join(REPO, f)) ? read(f) : '')).every(f => f === 'lib/till/archive-mailer.ts'))
   t('H9 · the dependency: fflate, exact version, no native code', JSON.parse(read('package.json')).dependencies.fflate === '0.8.2')

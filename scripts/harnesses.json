@@ -31,6 +31,7 @@
     "collection-times-hint.cjs",
     "compare-calc-fix-1.cjs",
     "compare-suits-fix-2.cjs",
+    "privacy-processors-1.cjs",
     "compare-no-system.cjs",
     "cover-dot-own-window.cjs",
     "customer-path-identity.cjs",

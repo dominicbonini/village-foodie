@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:a02833800637ee0e410d6813f66d3104ae2478c7877bddbeb493d5d730d36455 -->
+<!-- translation-of: privacy-policy.md sha256:8f1ff8628c029c231cbdc9c6e75391008d82d9cedbd429823893038c95413fa9 -->
 # Privatumo politika
 
 **Paskutinį kartą atnaujinta:** {{LAST_UPDATED}}
@@ -131,12 +131,14 @@ Naudojamės nedideliu skaičiumi paslaugų teikėjų, kurių kiekvienas duomenis
 | Apple ir Google | Tiesioginių pranešimų pristatymas į jūsų įrenginį | Jungtinės Amerikos Valstijos |
 | Meta (WhatsApp) | WhatsApp žinučių perdavimas tarp jūsų klientų ir jūsų verslo numerio | Jungtinės Amerikos Valstijos |
 | Stripe | Mokėjimų iš jūsų klientų priėmimas ir jų pervedimas jums | Jungtinės Amerikos Valstijos |
+| Anthropic (Claude) | Jūsų mums siunčiamų žinučių vertimas ir pagalba rengiant mūsų atsakymų juodraščius | Jungtinės Amerikos Valstijos |
+| Namecheap | Mūsų el. pašto dėžutės | Jungtinės Amerikos Valstijos |
 
 Duomenis taip pat galime atskleisti, kai to reikalauja įstatymai, arba siekdami pareikšti ar apginti teisinius reikalavimus.
 
 **Asmens duomenų neparduodame ir nesidaliname jais reklamos tikslais.**
 
-**Tarptautiniai perdavimai.** Jūsų paskyros duomenys ir užsakymų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje. Kai kurie dalykai tvarkomi už jos ribų: meniu nuskaitymas ir WhatsApp automatiniai atsakymai, kuriems naudojama Google paslauga Jungtinėse Amerikos Valstijose; WhatsApp žinučių pristatymas, kurį atlieka Meta Jungtinėse Amerikos Valstijose; mokėjimai, kuriuos tvarko Stripe Jungtinėse Amerikos Valstijose; ir tiesioginiai pranešimai, kuriuos pristato Apple ir Google Jungtinėse Amerikos Valstijose. Kai duomenys perduodami už JK ribų, perdavimui taikomi JK tinkamumo reglamentai (UK adequacy regulations) arba International Data Transfer Agreement (Tarptautinio duomenų perdavimo sutartis) ar Addendum (Priedas), o kai to reikalauja jūsų šalies teisė, – ir tos teisės pripažįstama apsaugos priemonė. Galite paprašyti mūsų informacijos apie taikomas apsaugos priemones.
+**Tarptautiniai perdavimai.** Jūsų paskyros duomenys ir užsakymų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje. Kai kurie dalykai tvarkomi už jos ribų: meniu nuskaitymas ir WhatsApp automatiniai atsakymai, kuriems naudojama Google paslauga Jungtinėse Amerikos Valstijose; WhatsApp žinučių pristatymas, kurį atlieka Meta Jungtinėse Amerikos Valstijose; mokėjimai, kuriuos tvarko Stripe Jungtinėse Amerikos Valstijose; tiesioginiai pranešimai, kuriuos pristato Apple ir Google Jungtinėse Amerikos Valstijose; žinučių vertimas ir atsakymų rengimas, kuriems naudojama Anthropic Jungtinėse Amerikos Valstijose; ir mūsų el. pašto dėžutės, kurias talpina Namecheap Jungtinėse Amerikos Valstijose. Kai duomenys perduodami už JK ribų, perdavimui taikomi JK tinkamumo reglamentai (UK adequacy regulations) arba International Data Transfer Agreement (Tarptautinio duomenų perdavimo sutartis) ar Addendum (Priedas), o kai to reikalauja jūsų šalies teisė, – ir tos teisės pripažįstama apsaugos priemonė. Galite paprašyti mūsų informacijos apie taikomas apsaugos priemones.
 
 Plečiantis mūsų paslaugai, galime pridėti naujų teikėjų, įskaitant SMS paslaugų teikėją. Šį sąrašą atnaujinsime prieš jiems pradedant tvarkyti jūsų duomenis.
 
