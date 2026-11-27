@@ -30,7 +30,10 @@ const PAGE = 'app/(public)/[country]/[section]/[slug]/page.tsx', TWIN = 'app/api
   const page = read(PAGE), twin = read(TWIN), server = read('lib/comparison-server.ts')
   t('the page is no longer force-dynamic; revalidate = 2592000 (30 days); dynamicParams true; no page built ahead (generateStaticParams → [])',
     !/force-dynamic/.test(code(page)) && /^export const revalidate = 2592000\b/m.test(page) && /^export const dynamicParams = true$/m.test(page) && /export function generateStaticParams\(\): Params\[\] \{ return \[\] \}/.test(page))
-  t('the twin route too: no force-dynamic; revalidate = 2592000', !/force-dynamic/.test(code(twin)) && /^export const revalidate = 2592000\b/m.test(twin))
+  t('the twin route too: no force-dynamic; revalidate = 2592000; no twin built ahead (generateStaticParams → [], which makes a GET handler cacheable in Next 16)',
+    !/force-dynamic/.test(code(twin)) && /^export const revalidate = 2592000\b/m.test(twin) && /export function generateStaticParams\(\): \{ country: string; section: string; slug: string; format: string \}\[\] \{ return \[\] \}/.test(twin))
+  t('the header and footer\'s country comes from the ADDRESS with no host read (resolveCountryAddress, as the built-ahead landing pages) — resolveVisitorCountry\'s host check read headers() and made every on-demand render fail (DYNAMIC_SERVER_USAGE) in the production build',
+    /const visitor = await resolveCountryAddress\(p\.country, 'landing'\)/.test(page) && !/resolveVisitorCountry/.test(code(page)))
   t('the page reads no headers() or cookies(), and no host (proxy.ts has the host rule now)', !/\bheaders\(\)|\bcookies\(\)|isHatchGrabHost/.test(code(page)) && !/req\.headers\.get\('host'\)|isHatchGrabHost/.test(code(twin)))
   t('the admin is read ONLY in draft mode (page and twins)', /const preview = \(await draftMode\(\)\)\.isEnabled\n  return resolveComparison\(country, section, slug, async \(\) => preview && \(await adminUser\(\)\) !== null\)/.test(page)
     && /const preview = \(await draftMode\(\)\)\.isEnabled\n  const r = await resolveComparison\(country, section, slug, async \(\) => preview && \(await adminUser\(req\)\) !== null\)/.test(twin))

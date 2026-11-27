@@ -24,7 +24,7 @@ import { adminUser } from '@/lib/auth/admin'
 import { MarketingFrame } from '@/components/landing/MarketingFrame'   // site-chrome-1: the ONE shared header and footer
 import { DemoCta } from '@/components/landing/DemoUpload'
 import { FaqDetails } from '@/components/faq/FaqDetails'   // faq-3: the FAQ markup, shared with the English landing pages
-import { resolveVisitorCountry } from '@/lib/visitor-country'
+import { resolveCountryAddress } from '@/lib/visitor-country'   // compare-cache-1: the address's country, no host read (proxy.ts has the host rule)
 import { resolveComparison, comparisonT, comparisonSuitsT, liveComparisonAlternates } from '@/lib/comparison-server'
 import { buildComparison, comparisonGraph, type Cell } from '@/lib/comparison'
 import { translatorFor } from '@/lib/i18n/translator'
@@ -94,7 +94,8 @@ export default async function ComparisonPage({ params, searchParams }: { params:
   // compare-cache-1: searchParams only for an admin (draft mode) — the public render never reads them.
   const publicView = !admin || (await searchParams).view === 'public'
   const v = buildComparison(input, t, { admin, publicView }, comparisonSuitsT(settings.locale))
-  const visitor = await resolveVisitorCountry(undefined, { segment: p.country, page: 'landing' })
+  // compare-cache-1: the country of the ADDRESS, reading nothing from the request (as the built-ahead landing pages do).
+  const visitor = await resolveCountryAddress(p.country, 'landing')
   const graph = comparisonGraph(v, input, t)
   const live = flags.status === 'live'
   const badge = <span className="cmp-badge">{t('admin.unverified')}</span>

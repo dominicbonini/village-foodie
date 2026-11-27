@@ -15,6 +15,8 @@ import { buildComparison, comparisonMarkdown, comparisonJson } from '@/lib/compa
 
 export const revalidate = 2592000   // 30 days — lib/marketing-tags.ts COMPARISON_REVALIDATE_SECONDS
 export const dynamicParams = true
+/** No twin built ahead: each renders on its first request, then is kept (as the page). */
+export function generateStaticParams(): { country: string; section: string; slug: string; format: string }[] { return [] }
 
 const notFound = () => new NextResponse('Not found', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } })
 
