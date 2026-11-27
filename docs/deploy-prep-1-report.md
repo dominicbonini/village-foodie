@@ -1,165 +1,178 @@
-# deploy-prep-1: a deploy branch with only vercel-cost-1 and what came before it
+# manual-v16-43 + deploy-prep-1: STOPPED at step 4 (new harness failures); the manual delta is missing (27 Nov 2026)
 
-**24 November 2026 · nothing pushed, nothing deployed, no `vercel` command run · no .env file opened · the only database access was one
-read-only SELECT**
+## 1 · Summary
 
-## 0 · Result
+- **Part A (the manual) didn't run.** There's **no `reference-manual-delta-v16-43.md` in ~/Downloads**: the newest there is v16-41, which was applied as V16.42 on 26 Nov. The manual is still V16.42.
+- **Part B stopped at step 4, as the prompt says.** The full sweep has **9 harnesses failing that aren't in the recorded baseline**, plus a third cwv-2 check.
+  - **All of them trace to my own comparison work of 26–27 Nov** (compare-suits-fix-2 `97d47768`, compare-cache-1 `30ec10c5`). None comes from the other workstreams.
+  - None is a runtime fault. They're translation-completeness checks and scope proofs.
+  - I missed them because I ran only the comparison harnesses after those changes, not the full sweep.
+- **Not done** because of the stop: step 5 (the local production server checks), step 6 (fast-forwarding `main`) and step 7 (the deploy instructions). Nothing was pushed, deployed, enabled or written to the database.
+- **Checked and fine:** steps 1–3.
+  - the batch fast-forwards and contains no landing-page change;
+  - every schema object of the 31 new migrations exists in production;
+  - nothing the workflow needs is missing from GitHub;
+  - `tsc` reports 0 errors.
 
-- ✅ **The local branch `deploy-vercel-cost-1` is at `5df925d8`** (vercel-cost-1). It was made with `git branch` only, so `main`,
-  `france-vat-1` and the checked-out files didn't move.
-- ✅ **It contains 8 commits beyond `origin/main` (`f2e2b4ab`) and 140 changed files.** None is a france-vat-1, enquiries, inbox or
-  france-records / receipts commit or file.
-- ✅ **The ordering, checkout, payments, KDS, dashboard, Add order, heartbeat, offline / outbox, auth, Manage and app paths are
-  byte-identical to `origin/main`.** That covers 61 paths and 545 files. A wider set (all of `app/(app)`, `app/api`, `components`, the
-  shared readers, `public`, `supabase/functions` and the package files) is identical too: 887 files.
-- ✅ **The one migration in the range (`20261122_languages_switch_4.sql`) is already applied** to the live database.
-- ✅ **The checks pass on the branch** (in a worktree, guarded, since removed):
-  - `scripts/vercel-cost-1.cjs`: **30 / 30**;
-  - `scripts/vercel-cost-1-local.cjs`: **16 / 16** (on a stand-in production build);
-  - `tsc`: **0 errors**;
-  - the production build: **passed**.
-- 🔴 **Before you deploy, set `REVALIDATE_SECRET`.** Add it in Vercel (Production) and as a GitHub secret (vercel-cost-1 report §2).
-  Without it, the live `/api/revalidate` keeps answering **503**: the route code is unchanged, so the 401 check in §5 depends on that
-  setting, not on this deploy. Also confirm the commit of the current production deployment (§6).
+## 2 · Part A: the manual
 
-## 1 · The branch
+`~/Downloads` holds `reference-manual-delta-v16-40.md` and `reference-manual-delta-v16-41.md` only, and both are already applied (V16.40; v16-41 as V16.42). So no section E SQL ran and nothing was committed for Part A.
 
-```
-git branch deploy-vercel-cost-1 5df925d8      # no checkout; HEAD stays france-vat-1
-```
+**Needs:** the v16-43 delta saved to ~/Downloads.
 
-- **origin/main:** `f2e2b4ab` ("languages"), fetched first. It is an ancestor of `5df925d8`.
-- **Unmoved:**
-  - `main` is still `59ae6161`;
-  - `france-vat-1` is still `ff4b3f90`;
-  - the checked-out branch is still `france-vat-1`.
+## 3 · Step 1: what's in the batch
 
-## 2 · What's in the range (`origin/main..deploy-vercel-cost-1`)
+- **`france-vat-1` is 615 commits ahead of `origin/main` (`5df925d8`, vercel-cost-1, 23 Nov) and 0 behind**, so it **fast-forwards**.
+- Local `main` (`59ae6161`) is 2 ahead of origin/main and is an ancestor of france-vat-1.
 
-**8 commits:**
+**By workstream** (commit counts):
 
-| Commit | Date | What |
+| Workstream | Commits |
+|---|---|
+| compare-research-7 | 239 |
+| compare-research-6 | 143 |
+| compare-research-3 | 89 |
+| compare-research-4 | 23 |
+| compare-research-5 | 14 |
+| compare-research-3b | 8 |
+| compare-cache-1 | 7 |
+| compare-research-1 | 4 |
+| compare-fix-2 | 4 |
+| compare-research-2 | 5 |
+| compare-suits-fix-2, compare-calc-fix-1, hatches-up-1, checker-prep-1 | 3 each |
+| compare-fix-1, compare-square-1, plan-names-1, checker-cadence-1 | 2 each |
+| compare-research-1c, compare-territories-1, foodtruck-audit-1 | 1 each |
+| till-pack-5-6, till-pack-2 | 5 each |
+| till-pack-1 | 4 |
+| till-pack-1b | 3 |
+| till-pack-4 | 2 |
+| france-vat-1, france-records-1, france-receipts-1, france-notes-1 | 4 each |
+| vat-live-check-1 | 2 |
+| france-privacy-1, france-privacy-2 | 1 each |
+| inbox-1 | 3 |
+| inbox-2, enquiries-backend-1 | 2 each |
+| privacy-processors-1 | 3 (with today's harness fix) |
+| manual-v16-36 … v16-42 | 8 |
+
+**Landing pages: none.** No file under `components/landing`, the landing routes, `app/(public)/[country]/page.tsx` or `components/pricing` differs from origin/main.
+
+**Built but switched off or observe-only.** These go out with the deploy, as their reports say:
+
+- **Enquiries:** intake and drafts are off (`enquiries_intake_enabled` false).
+- **Inbox:** the alias From is off.
+- **The till module:** observe mode; pack-3 enforcement not built; screens need mockups; no signing key registered yet.
+- **The comparison guide:** hidden in the 77 non-English countries.
+
+## 4 · Step 2: the database
+
+The project keeps **no migration run ledger** (`scripts/db-migrate.cjs` applies over `pg` and records nothing). So each migration was judged by its effects, as earlier deploy postures did.
+
+- **The 31 migrations new since origin/main** (`20261123_enquiries_backend_1` … `20261150_till_pack_5_6`): every table, column, function, trigger and storage bucket they create, **135 distinct objects**, checked read-only. **All exist; none is missing.** The query is in §9.
+- **The data migrations' effects, spot-checked:**
+  - checker tiers 90 / 180 / 365, monthly cap 50;
+  - food_truck_class A 16 · B 34;
+  - `comparison_country_copy` 96 rows;
+  - Hatches Up's website;
+  - What The Truck's plan "(online fee + VAT)" 395;
+  - Chuzmonster's order.yapp.li;
+  - 96 live comparison countries.
+
+## 5 · Step 3: settings
+
+**Vercel Production environment variables:** the Vercel CLI isn't installed on this machine, so **Dominic, please check these names exist** in Vercel › Settings › Environment Variables › Production.
+
+- **New since origin/main:**
+  - `ANTHROPIC_API_KEY`: enquiries drafting and translation (switched off; needed before Open item 41 is switched on);
+  - `TILL_SIGNING_KEY`: till closes and archives are signed with it, or "signed later" without it.
+- **Read by the batch and already read by origin/main** (should already be set): `REVALIDATE_SECRET` (the comparison and marketing refresh), `CRON_SECRET`, `BREVO_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_URL`.
+
+**GitHub Actions** (`gh secret list` / `gh variable list`, names only):
+
+- **Present:** `SUPABASE_DB_URL`, `REVALIDATE_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_URL` (plus GEMINI_API_KEY, GOOGLE_SHEETS_CREDENTIALS, HATCHGRAB_API_URL, INBOUND_SCHEDULE_SECRET, SPREADSHEET_ID).
+- **Variables:** ANTHROPIC_FEDERATION_RULE_ID, ANTHROPIC_ORGANIZATION_ID, ANTHROPIC_SERVICE_ACCOUNT_ID, ANTHROPIC_WORKSPACE_ID.
+- **Missing, optional:** `BREVO_API_KEY` and `EMAIL_FROM_ADDRESS`. The competitor-check workflow's comment: "email, optional … without them the email is skipped with a warning".
+- **The site URL for the refresh:** `REVALIDATE_BASE_URL` isn't set and isn't needed; the scripts default to `https://www.hatchgrab.com`.
+- **So nothing the workflow's publish needs is missing.**
+
+## 6 · Step 4: checks (STOP)
+
+- **`tsc --noEmit`: 0 errors.**
+- **`npm run build`:** not run in this prompt (the stop came first). The last full build, 27 Nov, exited 0, after compare-cache-1's runtime fix (`5dcf78ce`), with the page and its twins ● ISR. The only commits since are appendix code (`0a5f70d2`, `fb58b8ee`) and harness and report changes.
+- **The sweep:** `run-harnesses.cjs` over `harnesses.json` minus compare-fix-2 and checker-prep-1 (246 harnesses). Those two name the service-role key, so the runner's screen refuses the whole run with either listed, as in till-pack-5-6's sweep. Both pass when run directly.
+  - **One fix was needed first:** my **privacy-processors-1** harness named the payments processor, which the screen refuses, so no sweep could run at all. Fixed and committed (`bfab1a40`): it finds that table row by position; 9/0.
+  - vercel-cost-1 and compare-de-1-screens aren't in harnesses.json, so the sweep doesn't run them. Their known failures (3 and 2) are explained in compare-cache-1-report appendix 2.
+
+**The result: 29 failed.** The baseline is the 20 harnesses that failed on both sides of till-pack-5-6's sweep (25 Nov): billing-1, contact-1, costs-accounts-1, country-settings-parity, cwv-2, event-types-render, faq-1, france-1, inbox-2, language-phase-1b, -1c, -1d, -1d2, -1e, -2, legal-languages-1, loyalty-1, screenshot-truck-details, site-chrome-1, tidy-1.
+
+**New: 9 harnesses, plus one more cwv-2 check.** All are mine.
+
+| Harness | What fails | Cause |
 |---|---|---|
-| 2117bbb0 | 22 Nov 21:57 | languages-switch-4: Cambodia km-KH, Laos lo-LA, Ethiopia am-ET (migration; guarded) |
-| 48fc9490 | 22 Nov 21:59 | event-types.cjs: a comment reworded and one literal split (harness screen) |
-| fc44e0b3 | 22 Nov 22:00 | languages-switch-4: report |
-| 389e2979 | 23 Nov 10:05 | languages-switch-5: store listings say "50+ languages"; Catalan live; Play-only listings folder |
-| 981b888e | 23 Nov 10:07 | languages-switch-5: report |
-| add6a761 | 23 Nov 10:17 | reference manual V16.34 |
-| d309e4ef | 23 Nov 10:18 | manual-v16-34: report |
-| 5df925d8 | 23 Nov 11:21 | **vercel-cost-1**: marketing country pages with no timer, built ahead only for the busiest countries |
+| **faq-2** (59), **faq-3** (59), **faq-4** (59), **europe-languages-1** (28), **world-countries-1** (7), **country-picker-1** (1), **paperwork-1** (1) | the translation checker's "structural 0": every non-English base is "**missing 15**: each would show its English fallback" | compare-suits-fix-2 (`97d47768`) added **15 English-only `comparison.fit` keys** (the new guide). Dominic decided "non-English locales get no new text: their guide is hidden". I re-pinned compare-languages-1 for that, but these seven harnesses run the shared translation checker, which requires every key in every base. **At runtime nothing shows:** the 77 non-English countries' guide is hidden (`fit_off`), so those keys are never asked for there. |
+| **till-pack-2** (2) | "no screen … file changed (every .tsx untouched)" → `app/(public)/[country]/[section]/[slug]/page.tsx`; "the 86 message files change by exactly one key" | its scope proof against `2ae128bc`; the comparison page (compare-suits-fix-2, compare-cache-1) and the guide's message keys changed after it |
+| **countries-api** (1) | "…clears the loader's cache after every successful write (and, perf-1, expires the marketing pages' country data)" | its pin of `app/api/admin/countries/route.ts`; compare-cache-1 added the `code` argument and the per-country comparison refresh to `guarded()` |
+| **cwv-2** (3 now, 2 in the baseline) | the new third: "proxy.ts is otherwise exactly as before" | compare-cache-1's host rule in proxy.ts |
 
-**140 changed files, by area:**
+**Their effect on the deploy:** none at runtime. The translation gap is never shown, since non-English guides are hidden. The others are frozen scope proofs of earlier work. But they are new failures, so **I stopped, as asked**.
 
-| Area | Files | What |
-|---|---|---|
-| **Site code** | **6** | `app/(public)/[country]/page.tsx`, `features/page.tsx` and `faq/page.tsx` (no timer; dynamicParams true); `lib/built-ahead-countries.ts` (new), `lib/marketing-cache.ts`, `lib/marketing-tags.ts` |
-| Workflow | 1 | `.github/workflows/faq-translate.yml` (passes `REVALIDATE_SECRET`) |
-| Database | 1 | `supabase/migrations/20261122_languages_switch_4.sql` (already applied, §3) |
-| Scripts (not deployed) | 9 | `scripts/vercel-cost-1.cjs` and `vercel-cost-1-local.cjs` (new), `revalidate-pages.cjs`, `competitor-check/main.ts` (one line), `cwv-2.cjs`, `perf-1.cjs`, `event-types.cjs`, `ios-intl-1.cjs`, `ios/listing-rules.cjs` |
-| Store listings (not deployed) | 60 | `data/store-listing/*.json`, `next/`, `play/` |
-| Docs (not deployed) | 63 | `docs/i18n/` (54), `docs/languages-world-2/` (4), 5 reports and the manual |
+## 7 · What needs you (to clear the stop)
 
-**Nothing excluded is in it.** `git log origin/main..deploy-vercel-cost-1 | grep -iE "france|vat|enquir|inbox|receipt|records"` finds
-nothing, and the same search over the changed files' names finds nothing.
-- france-vat-1 is built on top of these 8 commits: it has 45 commits beyond origin/main, and only these 8 are in the deploy branch.
-- Local `main` (10 ahead of origin/main, enquiries-backend-1 included) isn't in it either.
+1. **The 15 English-only guide keys**, which fail 7 harnesses. Two options:
+   - **(a) Recommended:** make the translation checker accept a short **English-only key list** (the 15 `comparison.fit` guide keys) for every non-English base, as long as that country's guide is hidden. One small list file plus the checker reading it, and the seven harnesses pass unchanged. Non-English still gets no new text, as you decided.
+   - **(b)** Add the 15 keys to every base now, unchecked and never shown, to satisfy the checker. That contradicts "non-English locales get no new text".
+2. **The scope proofs** (till-pack-2's two, countries-api's one, cwv-2's third): re-pin each to compare up to its own last commit, or to set aside the named comparison changes, as done for compare-fix-1, compare-square-1, compare-calc-fix-1 and others. Each would get a dated ⚠️ note.
+3. **The v16-43 manual delta:** save it to ~/Downloads, or confirm Part A is dropped for now.
 
-## 3 · Proofs against origin/main
+Once 1 and 2 are in and the sweep is back to the baseline 20, steps 5–7 follow:
 
-**Byte-identical paths** (bash, `git diff --name-only origin/main deploy-vercel-cost-1 -- <paths>`):
+- the local production server checks: GB / FR / GU comparison pages, GB .md, /privacy 27 November, the 401, test-kitchen GET;
+- fast-forwarding `main`. `git checkout main` would carry the other session's 26 modified files; they don't block the fast-forward, but `git fetch . france-vat-1:main` does the same without touching the working tree;
+- the push command and the after-deploy steps.
 
-| Set | Paths / files | Changed |
-|---|---|---|
-| vercel-cost-1's own ordering list (same filter, existing paths): `app/(app)` trucks, order, o, p, dashboard (KDS and Add order inside it), kds, manage, admin, login, signup, setup, password and verify pages, app, layout and providers; `app/api` orders, menu, events, slots, dashboard, heartbeat, stripe, webhooks, payments, auth, manage, admin, native, printing, account, cron, ping, signup, setup; `components` dashboard, manage, admin, native, WebOfflineBanner; `lib` orders, payments, auth, **native (outbox, heartbeat, offline overlays)**, printing, admin, billing, slots, menu-loader, order calculations and charges, preorder; `proxy.ts`, `vercel.json`, `next.config.ts`, `android`, `ios`, `capacitor.config.ts` | 61 paths, 545 files | **0** |
-| the 11 shared readers (country settings, plans, comparison switches, FAQ, Supabase client, marketing render, visitor country, marketing country…) | 11 files | **0** |
-| wider: all of `app/(app)`, `app/api`, `components`, `lib/copy`, `lib/i18n`, `lib/native/outbox.ts`, `lib/native/useHeartbeat.ts`, `public` (offline.html), `supabase/functions` (heartbeat monitor), `package.json`, `package-lock.json`, `middleware.ts` | 887 files | **0** |
+## 8 · Other sessions' files, left alone
 
-- **The one absent path:** `lib/stripe.ts` is in the list but exists in neither tree, so it's skipped by the same filter
-  vercel-cost-1.cjs uses.
-- **The diff can see a change:** the same command over `app/(public)` and `lib/marketing-cache.ts` finds the 4 known changes.
-- **Tree hashes are equal on both sides** for `app/(app)` 802c0ca3, `app/api` 1ebb76e7, `components` 6ebbfd2e, `lib/native` 63f33ee8,
-  `lib/orders` 5a3f5ba1, `lib/payments` 39f4d4ef, `lib/auth` f853fdf6, `android` ab417391 and `ios` cc6f529c.
-- **A correction on my own first attempt:** I ran the path loop in zsh first. zsh doesn't split variables, so that loop's "0" counts
-  proved nothing. I discarded them and re-ran everything above in bash; the tree hashes were valid either way.
+**Modified, not mine:**
 
-**The migration in the range is applied** (read-only, MCP):
+- `docs/inbox-1/*.png` (16);
+- `docs/plans-everywhere-5-report.md`;
+- `docs/till-pack-1/{chain-check.jsonl,rows-check.json,timings.json}`;
+- `docs/till-pack-2/{chain-check.jsonl,rows-check.json}`;
+- `scripts/fixtures/language-phase-{1d,1d2,1e,2}-us-changed.txt`.
+
+**Untracked, another session's:** `docs/manual-v16-37-report.md`, `docs/manual-v16-39-report.md`, `docs/till-law-1-report.md`, `docs/till-pack-0-report.md`.
+
+**Untracked, mine:** read-only reports left uncommitted as those prompts said. They are `docs/compare-calc-check-1-report.md`, `docs/compare-suits-fix-1-report.md` and `docs/manual-v16-42-report.md`.
+
+## 9 · SQL run (read-only)
+
+**1. The 31 migrations' schema objects** (135 distinct). A `values` list of (migration, kind, object, column), generated from each file's `create table`, `add column`, `create function`, `create trigger` and storage bucket insert. Then:
 
 ```sql
-select country_code, locale, short_name, updated_by, updated_at from public.country_settings where country_code in ('KH','LA','ET') order by country_code;
+select json_build_object('checked', (select count(*) from want), 'missing', (select coalesce(json_agg(…),'[]') from want w where not (
+  (kind='table' and exists (select 1 from information_schema.tables where table_schema='public' and table_name=w.obj)) or
+  (kind='column' and exists (select 1 from information_schema.columns where table_schema='public' and table_name=w.obj and column_name=w.col)) or
+  (kind='function' and exists (select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname=w.obj)) or
+  (kind='trigger' and exists (select 1 from pg_trigger where tgname=w.obj and not tgisinternal)) or
+  (kind='bucket' and exists (select 1 from storage.buckets where id=w.obj)))))
 ```
 
-| country | locale | short_name | updated_by | updated_at |
-|---|---|---|---|---|
-| ET | am-ET | ኢትዮጵያ | languages-switch-4 | 2026-11-22 21:57:43 UTC |
-| KH | km-KH | កម្ពុជា | languages-switch-4 | 2026-11-22 21:57:43 UTC |
-| LA | lo-LA | ລາວ | languages-switch-4 | 2026-11-22 21:57:43 UTC |
+The result: checked 135, missing []. The full statement, with its values list, is in the session's scratch folder (migcheck.sql).
 
-These are exactly the values the migration sets, so it has run. It's guarded on the old values, so a re-run would change nothing. No
-other file under `supabase/` is in the range.
+**2. The data effects:**
 
-## 4 · The checks on the branch (in a worktree)
+```sql
+select json_build_object('checker_settings', (select json_build_object('tiers', tier_intervals, 'monthly_cap', monthly_cap_usd) from competitor_check_settings),
+ 'food_truck_class', (select json_object_agg(coalesce(food_truck_class,'null'), n) from (select food_truck_class, count(*) n from competitors group by 1) x),
+ 'country_copy_rows', (select count(*) from comparison_country_copy), 'hatches_up', (select website from competitors where id='fbbf6c37-2dd0-5f11-9e68-a0be5d563629'),
+ 'wtt_plan', (select plan_name||' '||card_bps from competitor_plans where id='8c777139-ad56-5b20-93c1-b9f44dc8bb1c'),
+ 'chuzmonster', (select website from competitors where id::text like 'da91c9a7%'),
+ 'live', (select count(*) from comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)));
+```
 
-- **The worktree:** `<scratchpad>/wt-deploy` on `deploy-vercel-cost-1`, with no .env file in it.
-- **node_modules:** first a symlink. Turbopack refused it ("Symlink node_modules is invalid, it points out of the filesystem root"), so
-  I replaced it with an APFS clone (`cp -cR`, copy-on-write).
-- **Disk:** `_disk-guard.cjs check` passed before each step (218 GB free). The build ran under `scripts/guarded.sh`.
-- **Temp files:** the harness ran with `--require ./scripts/_harness-tmp.cjs`.
+The result: tiers core 180 / secondary 365 / commercial 90, cap 50; A 16 · B 34 · null 234; 96 rows; https://hatchesup.co.uk; "What The Truck (online fee + VAT) 395"; https://order.yapp.li; 96 live.
 
-| Check | Result |
-|---|---|
-| `node scripts/vercel-cost-1.cjs` | ✅ **30 passed, 0 failed**: no timer; built-ahead list; route unchanged; compare and legal per request; 61 ordering paths and 11 shared readers byte-identical to d309e4ef; only its own files changed |
-| `npx tsc --noEmit -p .` | ✅ **0 errors** |
-| `scripts/guarded.sh npx next build` (on the stand-in: `NEXT_PUBLIC_SUPABASE_URL` / `SUPABASE_URL` = `http://127.0.0.1:54399`, dummy keys, process environment only) | ✅ compiled in 25 s; 1,004 static pages; `/[country]`, `/features`, `/faq` ● (built ahead); compare and legal ƒ |
-| `node scripts/vercel-cost-1-local.cjs` | ✅ **16 passed, 0 failed** (below) |
+## Flags
 
-**vercel-cost-1-local, check by check:**
-- **The build:** exactly 24 country pages are prerendered (8 countries × landing, features and FAQ), none with a timer, and the routes
-  stay open to other countries.
-- **A first visit:** `/mt` answers 200 when rendered now (MISS), then comes from the cache (HIT, `s-maxage=31536000`, no timer).
-  `/mt/features` and `/mt/faq` answer 200. `/uk` answers 200 from the build (HIT).
-- **A price change:** before a refresh, /uk shows £29 and /mt €29. After `POST /api/revalidate {"tags":["marketing-plans"]}`, the very
-  next request shows £33 / €33, which is then kept; it goes back the same way.
-- **An empty FAQ:** a cached 404 is replaced on the very next request after its tag is refreshed.
-- **The route stays closed:** no secret → **401**, a wrong secret → 401, a tag not on the list → 400.
-
-**Afterwards:**
-- the stand-in (port 54399) is stopped; nothing is listening on 54399 or 3502;
-- `git worktree remove --force` deleted the worktree, its `.next` and the cloned node_modules;
-- only another session's two worktrees remain, untouched.
-
-## 5 · What to check right after the deploy
-
-**Before:** `REVALIDATE_SECRET` set in Vercel → Project → Settings → Environment Variables (**Production**), and the same value as a
-GitHub repository secret. Without it the first check answers 503.
-
-1. **The route is closed but configured:**
-   ```
-   curl -s -o /dev/null -w '%{http_code}\n' -X POST https://www.hatchgrab.com/api/revalidate
-   ```
-   → **401**. **503** means `REVALIDATE_SECRET` isn't set on that deployment: add it and redeploy.
-2. **The country pages:**
-   ```
-   for p in uk mt fr; do printf '%s ' /$p; curl -s -o /dev/null -w '%{http_code}\n' https://www.hatchgrab.com/$p; done
-   ```
-   → **200** for each. `/uk` and `/fr` are built ahead. `/mt` is rendered on its first visit; the first request may take a moment, then
-   it's cached.
-3. **One test-truck order page** (any test truck's public order link) loads, shows its menu and lets you reach the basket. The
-   ordering code is byte-identical to what is live now (§3).
-4. **Optionally, refresh the marketing pages once:**
-   `REVALIDATE_SECRET='…' node scripts/revalidate-pages.cjs` → it should report the tags refreshed.
-
-## 6 · Flags
-
-- 🔴 **Confirm the current production deployment's commit before deploying.** I can't see Vercel (no `vercel` command, by rule).
-  - If production runs `origin/main` `f2e2b4ab`, or anything already in this branch, this deploy adds only the 8 commits above.
-  - If it was deployed by hand from a newer local commit (for example from local `main`, 10 ahead with enquiries-backend-1), this deploy
-    would roll that back.
-- **languages-switch-5's "two push blockers" are not deploy blockers.** They are about pushing the App Store listings: `/ad/faq` answers
-  404, and `/mx` redirects because Mexico is off. They don't affect this web deploy.
-- **The report isn't committed.** This file is in the working folder of `france-vat-1`. I didn't commit it, because the brief said not
-  to change the checked-out branch's files. Commit it, or move it, as you prefer.
-- **Garbled or contradictory instructions:** nothing in the prompt arrived garbled, and nothing contradicts. The only near-conflict was
-  "don't change the checked-out branch's files" against "write the report to docs/"; I read the report as explicitly asked for, and
-  left it uncommitted.
-- **What wasn't done:** no push, no deploy, no `vercel`, no .env file opened, and no write to any database (one read-only SELECT).
+- Nothing in the prompt arrived garbled.
+- **Two blockers.** Part A's input file is missing. Part B hit its own STOP rule at step 4.
+- **No push, no deploy**, no workflow change, no database writes, no .env file opened. Only names were listed.
