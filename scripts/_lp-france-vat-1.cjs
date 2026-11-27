@@ -24,7 +24,10 @@ const leaves = (o, p = '', out = []) => { for (const [k, v] of Object.entries(o)
 function missingKeys(locale) {
   const en = leaves(JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')))
   const have = new Set(leaves(JSON.parse(fs.readFileSync(path.join(REPO, `messages/${locale}.json`), 'utf8'))))
-  return en.filter(k => !have.has(k) && !k.startsWith('planNames.'))
+  // ⚠️ RE-PINNED (deploy-prep-1, Dominic, 27 November 2026, docs/deploy-prep-1-report.md): a key the translation checker itself does not
+  // count as missing — English only on purpose (docs/i18n/english-only-keys.json: compare-suits-fix-2's 15 guide keys) — is not missing here either.
+  const { englishOnly } = require('./translation-check.cjs')
+  return en.filter(k => !have.has(k) && !k.startsWith('planNames.') && !englishOnly(k, locale))
 }
 /** One key, one locale: is it france-vat-1's named set-aside? */
 const setAside = (locale, key) => UNUSED_BASES.includes(locale) && NEW.has(key)

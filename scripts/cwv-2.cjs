@@ -211,7 +211,10 @@ t('proxy.ts is otherwise exactly as before (the switched-off redirects, Village 
   // ⚠️ RE-PINNED (gsc-index-2, 9 November 2026): its /support block taken back exactly first (scripts/_lp-gsc-index-2.cjs asBefore).
   // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026): its in-app page rule and import taken back exactly first (scripts/_named-app-fixes-1.cjs undoCode).
   // ⚠️ RE-PINNED (partners-2, 16 November 2026): and before it, the /api/signup/code meter (scripts/_named-partners-2.cjs undoCode).
-  require('./_lp-gsc-index-2.cjs').asBefore('proxy.ts', require('./_named-app-fixes-1.cjs').undoCode('proxy.ts', P2.undoCode('proxy.ts', PX) ?? PX) ?? PX).replace(/\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/, '\n').replace("import { isOwnOneSegment } from '@/lib/top-level-routes'\n", '') === git('show', `${BEFORE}:proxy.ts`))
+  // ⚠️ RE-PINNED (deploy-prep-1, Dominic, 27 November 2026, docs/deploy-prep-1-report.md): compare-cache-1 added a host rule (comparison
+  // addresses 404 off HatchGrab — proved by scripts/compare-cache-1.cjs), so this check now reads proxy.ts as at cwv-2's own last commit
+  // (1e10844e) instead of the working tree; the undo chain above is applied to it exactly as before.
+  ((PXO) => require('./_lp-gsc-index-2.cjs').asBefore('proxy.ts', require('./_named-app-fixes-1.cjs').undoCode('proxy.ts', P2.undoCode('proxy.ts', PXO) ?? PXO) ?? PXO))(git('show', '1e10844e:proxy.ts')).replace(/\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/, '\n').replace("import { isOwnOneSegment } from '@/lib/top-level-routes'\n", '') === git('show', `${BEFORE}:proxy.ts`))
 const TL = read('lib/top-level-routes.ts')
 const listOf = name => JSON.parse('[' + (TL.match(new RegExp(`export const ${name}: readonly string\\[\\] = \\[([\\s\\S]*?)\\]`)) || [, ''])[1].replace(/'/g, '"') + ']')
 const oneSeg = [...new Set(appFiles.map(f => f.split('/').slice(1).filter(p => !/^\(.*\)$/.test(p))).flatMap(p => (p.length === 2 && /^(page|route)\.(tsx?|js)$/.test(p[1]) && !p[0].startsWith('[') ? [p[0]]

@@ -401,13 +401,18 @@ const quiet = async f => { const e = console.error, w = console.warn, l = consol
   // ══ I ═════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head(`I · NO SCREEN OR CUSTOMER OUTPUT CHANGED — the diff against ${START}`)
   {
-    const changed = git('diff', '--name-only', START, '--').split('\n').filter(Boolean)
+    // ⚠️ RE-PINNED (deploy-prep-1, Dominic, 27 November 2026, docs/deploy-prep-1-report.md): this section compared START with the WORKING
+    // TREE, so the comparison page (compare-suits-fix-2, compare-cache-1: page.tsx) and the guide's message keys, both changed after it,
+    // tripped its two checks. It now compares START with till-pack-2's own last commit (OWN, ed05a575 — till-pack-5-6's sweep), the files
+    // and the message contents alike.
+    const OWN = 'ed05a575'
+    const changed = git('diff', '--name-only', START, OWN, '--').split('\n').filter(Boolean)
     const mine = changed.filter(f => !/^docs\/(compare|plans-everywhere|manual-v|deploy-prep|till-law|till-pack-0)/.test(f))
     const screens = mine.filter(f => /^(app\/\(app\)|components\/|lib\/printing\/|lib\/email|app\/\(marketing\)|app\/page)/.test(f) || /\.tsx$/.test(f))
     t('no screen, component, page, ticket or email file changed (every .tsx untouched; app/(app), components, lib/printing, lib/email* untouched)', screens.length === 0, screens)
     const msgs = mine.filter(f => /^messages\/[^/]+\.json$/.test(f))
     const otherThanKey = msgs.filter(f => {
-      const before = JSON.parse(git('show', `${START}:${f}`)), after = JSON.parse(read(f))
+      const before = JSON.parse(git('show', `${START}:${f}`)), after = JSON.parse(git('show', `${OWN}:${f}`))
       if (after.errorsKitchen) delete after.errorsKitchen.sale_closed
       // ⚠️ RE-PINNED (till-pack-5-6, 25 November 2026, docs/till-pack-5-6-report.md): till-pack-5-6 adds ONE new namespace, emailTillArchive
       // (the archive email, the prompt's only new message; scripts/till-pack-5-6.cjs holds it) — set aside only where START did not have it.

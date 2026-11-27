@@ -96,6 +96,11 @@ function missingPluralCategories(msg, locale) {
 
 /** compare-de-1: namespaces that exist only in the languages listed (docs/i18n/scoped-namespaces.json). */
 const SCOPED = (() => { try { const j = JSON.parse(fs.readFileSync(path.join(REPO, 'docs/i18n/scoped-namespaces.json'), 'utf8')); delete j.$comment; return j } catch { return {} } })()
+/** deploy-prep-1 (Dominic, 27 November 2026): keys kept in English only, on purpose, while the part of the page that uses them is hidden
+ *  in every non-English country (docs/i18n/english-only-keys.json — today the 15 comparison.fit guide keys, hidden by fit_off). They are
+ *  not counted as missing in another language unless that language is in the group's `notFor`; nothing else about them changes. */
+const ENGLISH_ONLY = (() => { try { const j = JSON.parse(fs.readFileSync(path.join(REPO, 'docs/i18n/english-only-keys.json'), 'utf8')); delete j.$comment; return Object.values(j) } catch { return [] } })()
+const englishOnly = (k, locale) => { const lang = locale.split('-')[0].toLowerCase(); return lang !== 'en' && ENGLISH_ONLY.some(g => g.keys.includes(k) && !(g.notFor ?? []).some(x => x === lang || x === locale)) }
 
 function check({ locale, messages, en, glossary, back, planKeys, knownPlanKeys, guardLanguages, sameWords, drops }) {
   const lang = locale.split('-')[0].toLowerCase()
@@ -112,7 +117,7 @@ function check({ locale, messages, en, glossary, back, planKeys, knownPlanKeys, 
   // compare-de-1 (24 October 2026): a namespace scoped to the languages whose pages use it (docs/i18n/scoped-namespaces.json)
   // is not missing in any other language — e.g. the German comparison page's words in Polish.
   const scopedOut = k => { const sc = SCOPED[k.split('.')[0]]; return !!sc && !sc.languages.includes(lang) }
-  for (const k of Object.keys(E)) if (!(k in T) && !scopedOut(k)) S.missing.push(k)
+  for (const k of Object.keys(E)) if (!(k in T) && !scopedOut(k) && !englishOnly(k, locale)) S.missing.push(k)
   for (const k of Object.keys(T)) if (!(k in E)) {
     // france-1: any ACTIVE plan may carry words (Pro's description, the trial's name); `planKeys` are those that need a NAME.
     if (isPlanKey(k)) { const pk = k.split('.')[1]; const known = knownPlanKeys ?? planKeys; if (known && !known.includes(pk)) S.extra.push(`${k} (no such plan)`) }
@@ -200,7 +205,7 @@ function report({ locale, S, F, counts }, max = 12) {
   return L.join('\n')
 }
 
-module.exports = { check, report, skeleton, termRe, flat, missingPluralCategories }
+module.exports = { check, report, skeleton, termRe, flat, missingPluralCategories, englishOnly }
 
 if (require.main === module) {
   const a = args()

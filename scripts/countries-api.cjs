@@ -437,8 +437,12 @@ function makeStore(seed, trucks, opts = {}) {
     t('🔴 the route answers a non-admin with 404 before anything else', /const user = await adminUser\(req\)\s*\n\s*if \(!user\) return notFound\(\)/.test(route))
     // ⚠️ RE-PINNED (perf-1, 5 November 2026, docs/perf-1-report.md): the same clear, now in a block that also expires the marketing
     // pages' cached country data (revalidateMarketing — scripts/perf-1.cjs §5).
-    t('🔴 …clears the loader\'s cache after every successful write (and, perf-1, expires the marketing pages\' country data)', /if \(writes && r\.ok\) \{\s*\n\s*clearCountrySettingsCache\(\)\s*\n\s*revalidateMarketing\(\[MARKETING_TAGS\.countries\], 'admin\/countries'\)\s*\n\s*\}/.test(route)
-      && (route.match(/, true\)/g) || []).length === 3)
+    // ⚠️ RE-PINNED (deploy-prep-1, Dominic, 27 November 2026, docs/deploy-prep-1-report.md): compare-cache-1 added a third line to this
+    // block (that country's comparison refresh, revalidateComparison — proved by scripts/compare-cache-1.cjs), so this check now reads the
+    // route as at this harness's own last commit (0db83f8b) instead of the working tree. The two checks around it still read the working tree.
+    const routeOwn = require('child_process').execFileSync('git', ['show', '0db83f8b:app/api/admin/countries/route.ts'], { cwd: REPO, encoding: 'utf8' }).replace(/\/\/.*$/gm, '')
+    t('🔴 …clears the loader\'s cache after every successful write (and, perf-1, expires the marketing pages\' country data) — as at 0db83f8b', /if \(writes && r\.ok\) \{\s*\n\s*clearCountrySettingsCache\(\)\s*\n\s*revalidateMarketing\(\[MARKETING_TAGS\.countries\], 'admin\/countries'\)\s*\n\s*\}/.test(routeOwn)
+      && (routeOwn.match(/, true\)/g) || []).length === 3)
     t('…never passes a database error through', /That could not be saved just now\. Nothing was changed/.test(route))
     t('…and the store it uses is the service-role one, server-only', /import 'server-only'/.test(fs.readFileSync(path.join(REPO, 'lib/admin/country-store.ts'), 'utf8')))
   }

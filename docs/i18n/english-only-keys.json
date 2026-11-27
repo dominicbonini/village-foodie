@@ -1,0 +1,26 @@
+{
+  "$comment": "deploy-prep-1 (Dominic, 27 November 2026; docs/deploy-prep-1-report.md): keys that exist in English only, on purpose. scripts/translation-check.cjs does not count them as missing in any other language while that language's countries hide the part of the page that uses them. Dominic decided that non-English locales get no new text until a native speaker has checked it, so nothing here may be machine-translated to make the check pass. When a non-English country's guide is switched on (comparison_country_copy.fit_off false), first translate these keys in its language and remove them from this list for it: add the language to `notFor`, and the checker then counts them as missing there again. Every other check on these keys still runs in every language that has them (ICU, placeholders, flags).",
+  "comparison.fit": {
+    "since": "2026-11-27",
+    "why": "compare-suits-fix-2 (97d47768): the new guide \"Which system suits whom?\" is English only. Every live non-English country has fit_off true (migration 20261148), and a country with no row hides the guide in a non-English locale (lib/comparison.ts buildFit), so these words are never requested there.",
+    "hiddenBy": "comparison_country_copy.fit_off",
+    "notFor": [],
+    "keys": [
+      "comparison.fit.mayNot",
+      "comparison.fit.suits.places",
+      "comparison.fit.suits.ahead",
+      "comparison.fit.suits.limit",
+      "comparison.fit.suits.contract",
+      "comparison.fit.notSuit.delivery",
+      "comparison.fit.notSuit.payOnline",
+      "comparison.fit.notSuit.payAtTruck",
+      "comparison.fit.collect.collection",
+      "comparison.fit.collect.pickup",
+      "comparison.fit.collectVerb.collection",
+      "comparison.fit.collectVerb.pickup",
+      "comparison.fit.deliveryTitle",
+      "comparison.fit.deliveryNamed",
+      "comparison.fit.deliveryNone"
+    ]
+  }
+}
