@@ -161,7 +161,7 @@ const PAGE = 'app/(public)/[country]/[section]/[slug]/page.tsx', TWIN = 'app/api
   t('scripts/db-migrate.cjs refreshes no comparison page (it names only the marketing tags)', !/comparison-/.test(read('scripts/db-migrate.cjs')) && !/comparison-/.test(read('scripts/revalidate-pages.cjs').replace(/\/\/[^\n]*/g, '')))
 
   head('8 · Admin › Billing and Admin › Pricing check saves refresh their countries (appendix, Dominic 27 Nov)')
-  const REFRESH = 'export function revalidateComparison(codes, why) { (globalThis.__ccRefresh ??= []).push(...codes) }'
+  const REFRESH = 'export function revalidateComparison(codes, why) { (globalThis.__ccRefresh ??= []).push(...codes) }\nexport async function liveComparisonCodes() { return ["GB", "FR", "DE", "US"] }'
   const ADMIN = 'export async function adminUser() { return globalThis.__ccAdmin ? { id: "a", email: "a@x" } : null }\nexport async function verifyAdmin() { return !!globalThis.__ccAdmin }'
   {
     const BI = await kit.bundle('cc1-billing', "export { PUT } from '@/app/api/admin/billing/route'", { stubs: {
@@ -194,6 +194,8 @@ const PAGE = 'app/(public)/[country]/[section]/[slug]/page.tsx', TWIN = 'app/api
           async setPlanAutoBlocked(id, b) { const p = S().plans.find(x => x.id === id); return p ? { ...p, auto_blocked: b } : null },
           async currentBenchmark() { return null },
           async insertBenchmark(row) { return { id: 'b1', ...row, superseded_at: null, created_at: 'now' } },
+          async features() { return [{ key: 'ahead', group_key: 'ordering', sort_order: 1, checked: true, show_scope: 'all', show_countries: [], hatchgrab_source: 'builtin', labels: {}, explanations: {}, updated_at: 'now' }] },
+          async updateFeature(key, cols) { return key === 'ahead' ? { key, group_key: 'ordering', sort_order: 1, checked: true, show_scope: 'all', show_countries: [], hatchgrab_source: 'builtin', labels: {}, explanations: {}, ...cols } : null },
         }`,
     } })
     const plan = { id: 'p1', competitor_id: 'c1', country_code: 'GB', plan_name: 'Free', currency: 'GBP', price_hidden: false, monthly_minor: 0, yearly_only: false, setup_minor: 0,
@@ -214,10 +216,17 @@ const PAGE = 'app/(public)/[country]/[section]/[slug]/page.tsx', TWIN = 'app/api
     const rm = await post({ action: 'entry_remove', id: 'e1' })
     t('…an entry removed (it returns no row): the countries it was in, read before the save (GB, FR)', rm.status === 200 && JSON.stringify(rm.refreshed) === '["FR","GB"]', rm)
     const bench = await post({ action: 'edit_benchmark', countryCode: 'GB', fields: { currency: 'GBP', mealMinor: 1600, eurRate: 0.84, eurRateDate: '2026-11-27' } })
-    t('…the country data (edit_benchmark) is not a competitor save: nothing refreshed', bench.status === 200 && bench.refreshed.length === 0, bench)
+    // ⚠️ RE-PINNED (compare-cache-1 appendix 2, Dominic 27 Nov): the country data now refreshes that country's page.
+    t('…the country data (edit_benchmark: meal price, exchange rate) refreshes THAT country only (GB)', bench.status === 200 && JSON.stringify(bench.refreshed) === '["GB"]', bench)
+    const feat = await post({ action: 'feature_update', key: 'ahead', showScope: 'hidden' })
+    t('…a feature-list save refreshes EVERY live country\'s page (here GB FR DE US, from liveComparisonCodes)', feat.status === 200 && JSON.stringify(feat.refreshed) === '["DE","FR","GB","US"]', feat)
+    const featBad = await post({ action: 'feature_update', key: 'nope', showScope: 'hidden' }), benchBad = await post({ action: 'edit_benchmark', countryCode: 'GB', fields: { currency: 'GBP' } })
+    t('…and nothing when either fails (an unknown feature 404; a new country\'s data missing its meal price 400)', featBad.status === 404 && benchBad.status === 400 && !featBad.refreshed.length && !benchBad.refreshed.length, [featBad, benchBad])
     const gone = await post({ action: 'entry_update', id: 'nope', fields: { chooseWhen: 'x' } }), anonP = await post({ action: 'competitor_category', competitorId: 'c1', category: null }, { admin: false })
     t('…nothing refreshed when the save fails (an entry that is gone, 404) or the caller is not an admin (404)', gone.status === 404 && anonP.status === 404 && !gone.refreshed.length && !anonP.refreshed.length, [gone, anonP])
   }
+  t('pricing-copy-4\'s rule holds: lib/comparison.ts names no paymentModel — buildFit takes the helper\'s own parameter type (offersOnlineCardPayments)',
+    !/paymentModel/.test(read('lib/comparison.ts')) && /settings: Parameters<typeof offersOnlineCardPayments>\[0\] & Pick<CountrySettings, 'locale'>/.test(read('lib/comparison.ts')))
   t('both screens\' saves call the same refresh as Admin › Countries (revalidateComparison, lib/comparison-server.ts)',
     /revalidateComparison\(\[code as string\], 'admin\/billing country model'\)/.test(read('app/api/admin/billing/route.ts')) && /revalidateComparison\(codes, `admin\/pricing-check \$\{String\(body\.action\)\}`\)/.test(read('app/api/admin/pricing-check/route.ts')))
 

@@ -40,7 +40,7 @@ function englishFeature(f: ComparisonFeature) {
 import { getPlanCatalog } from '@/lib/plans-server'
 import { listCountrySettings } from '@/lib/country-settings'
 import { isCountedCompetitor, isPendingPos } from '@/lib/pricing-check'
-import { revalidateComparison } from '@/lib/comparison-server'   // compare-cache-1: the comparison pages (cached 30 days) a save changed
+import { revalidateComparison, liveComparisonCodes } from '@/lib/comparison-server'   // compare-cache-1: the comparison pages (cached 30 days) a save changed
 import competitors from '@/data/pricing-research-1/competitors.json'
 import plans from '@/data/pricing-research-1/plans.json'
 import benchmarks from '@/data/pricing-research-1/benchmarks.json'
@@ -100,8 +100,9 @@ export async function GET(req: NextRequest) {
 
 /** compare-cache-1 (Dominic, 27 November 2026): the saves that change what a competitor's comparison pages show — its plans, its answers,
  *  the competitor itself and its entries. After one succeeds, the page of EVERY country where that competitor has an entry is refreshed
- *  (comparison-<CC>, the same call as Admin › Countries). The country data (edit_benchmark), the feature list and the one-off import are
- *  not competitor saves and refresh nothing here. */
+ *  (comparison-<CC>, the same call as Admin › Countries). Appendix 2 (Dominic, 27 November 2026): the country data (edit_benchmark: the
+ *  meal price and exchange rate the price answers use) refreshes THAT country's page; the feature list (feature_add, feature_update: rows
+ *  on every page) refreshes EVERY live country's page — rare, so all of them. The one-off import refreshes nothing. */
 const COMPETITOR_SAVES = new Set(['verify', 'unverify', 'edit_plan', 'feature_value', 'add_competitor', 'verify_features', 'unverify_features', 'competitor_category',
   'entry_add', 'entry_update', 'entry_flags', 'entry_verify', 'entry_unverify', 'entry_move', 'entry_remove'])
 type Row = Record<string, unknown>
@@ -124,6 +125,7 @@ export async function POST(req: NextRequest) {
     if (body.action === 'import') return reply(await importResearch(servicePricingStore, { competitors, plans, benchmarks } as never))
     const at = new Date().toISOString()
     const saves = COMPETITOR_SAVES.has(String(body.action))
+    const countrySave = body.action === 'edit_benchmark', featureListSave = body.action === 'feature_add' || body.action === 'feature_update'
     const before = saves ? await servicePricingStore.listEntries() : []
     const r = await act(servicePricingStore, body, { by: user.id, at, today: at.slice(0, 10) })
     if (r.ok && saves) {
@@ -133,6 +135,12 @@ export async function POST(req: NextRequest) {
         const codes = [...before, ...(await servicePricingStore.listEntries())].filter(e => ids.has(String(e.competitor_id))).map(e => String(e.country_code))
         if (codes.length) revalidateComparison(codes, `admin/pricing-check ${String(body.action)}`)
       } catch (e) { console.error('[admin/pricing-check] the comparison pages could not be refreshed:', e instanceof Error ? e.message : e) }
+    }
+    // compare-cache-1 appendix 2: the country data → that country; the feature list → every live country.
+    if (r.ok && countrySave && typeof body.countryCode === 'string') revalidateComparison([body.countryCode], 'admin/pricing-check edit_benchmark')
+    if (r.ok && featureListSave) {
+      try { revalidateComparison(await liveComparisonCodes(), `admin/pricing-check ${String(body.action)}`) }
+      catch (e) { console.error('[admin/pricing-check] the comparison pages could not be refreshed:', e instanceof Error ? e.message : e) }
     }
     return reply(r)
   })

@@ -200,7 +200,7 @@ const minDate = (ds: (string | null | undefined)[]) => ds.filter((d): d is strin
 
 /** compare-suits-fix-2: the guide for one country, or null when it is hidden — pure (the page, the .md twin and
  *  scripts/compare-suits-fix-2.cjs all use it). */
-export function buildFit(o: { settings: Pick<CountrySettings, 'locale' | 'paymentModel'>; country: string; copy: CountryCopy | null; rivals: Fit['rivals'] }, t: ComparisonT): Fit | null {
+export function buildFit(o: { settings: Parameters<typeof offersOnlineCardPayments>[0] & Pick<CountrySettings, 'locale'>; country: string; copy: CountryCopy | null; rivals: Fit['rivals'] }, t: ComparisonT): Fit | null {
   const { settings, country, copy } = o
   const fitShown = copy ? !copy.fitOff : /^en(-|$)/i.test(settings.locale)
   if (!fitShown) return null
