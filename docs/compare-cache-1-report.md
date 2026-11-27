@@ -267,3 +267,83 @@ Both use **the same refresh call as Admin › Countries** (`revalidateComparison
 
 1. **The pricing-copy-4 fix above.**
 2. **The other Pricing check saves.** The country data (meal price and exchange rate, which drive the price answers) and the feature list (rows on every page) still refresh nothing. Say if they should: a benchmark save would refresh its country, and a feature-list save every live country.
+
+---
+
+## Appendix 2 · Country data and feature-list saves refresh; pricing-copy-4 fixed; the remaining failures explained (Dominic, 27 Nov; `fb58b8ee`)
+
+**Changed** (the same `revalidateComparison` call as the other saves, only on success; allowed files only):
+
+- **`app/api/admin/pricing-check/route.ts`:**
+  - a **country-data save** (`edit_benchmark`: meal price, exchange rate) refreshes **`comparison-<CC>` for that country**;
+  - a **feature-list save** (`feature_add`, `feature_update`) refreshes **every live country's** page (`liveComparisonCodes()`);
+  - the one-off research import still refreshes nothing.
+- **`lib/comparison.ts`, the one line:** `buildFit` takes `Parameters<typeof offersOnlineCardPayments>[0] & Pick<CountrySettings, 'locale'>` instead of naming `paymentModel`. Same type, nothing else changed. **pricing-copy-4: 1157 / 0** again.
+
+**Harness** (`compare-cache-1` section 8, now **53 / 0**):
+
+- `edit_benchmark` → GB only (re-pinned from "nothing");
+- `feature_update` → every live country (GB FR DE US from the stubbed live list);
+- a failed feature save (404) or a new country's data without its meal price (400) → nothing;
+- lib/comparison.ts names no `paymentModel`.
+
+**Every comparison harness, plus pricing-check-1 and pricing-copy-4:**
+
+| Harness | Pass / fail |
+|---|---|
+| compare-cache-1 | 53 / 0 |
+| pricing-check-1 | 82 / 0 |
+| pricing-copy-4 | 1157 / 0 |
+| compare-suits-fix-2 | 23 / 0 |
+| compare-calc-fix-1 | 20 / 0 |
+| compare-no-system | 54 / 0 |
+| compare-de-1 | 91 / 0 |
+| competitor-check-1 | 227 / 0 |
+| competitor-check-8 | 51 / 0 |
+| competitor-features-2 | 79 / 0 |
+| competitor-wtt-1 | 42 / 0 |
+| compare-suits-1 | 72 / 0 |
+| compare-autopublish-1 | 75 / 0 |
+| compare-languages-1 | 24 / 0 |
+| compare-ux-1 | 39 / 0 |
+| compare-fix-1 | 65 / 0 |
+| compare-fix-2 | 79 / 0 |
+| checker-prep-1 | 18 / 0 |
+| compare-square-1 | 27 / 0 |
+| perf-1 | 50 / 0 |
+| privacy-processors-1 | 9 / 0 |
+| compare-de-1-screens | 15 / 2 (explained below) |
+| vercel-cost-1 | 27 / 3 (explained below) |
+
+`tsc` 0 errors.
+
+### The remaining failures (read-only; nothing changed for them)
+
+**vercel-cost-1: 3 of 30.** All three are *scope proofs* of the vercel-cost-1 prompt itself: "nothing outside this work changed since its base `d309e4ef` (23 Nov)". None measures caching or cost.
+
+1. **"61 ordering … paths: byte-identical to d309e4ef (committed and working tree), no new file."**
+   - **Since `12e9a770`** (france-vat-1, 23 Nov), the first commit after the base to touch those paths.
+   - 19 commits have touched them since, across 13 workstreams: france-vat-1, inbox-1/2, france-records-1, france-receipts-1, france-notes-1, compare-fix-1, till-pack-2, -4, -5-6, compare-square-1, compare-calc-fix-1, compare-cache-1 (the Admin saves above).
+   - **Caching or cost:** none. Across those paths and the shared readers, the only caching-related lines added since `d309e4ef` are two `export const dynamic = 'force-dynamic'`, on the new `app/api/admin/inbox` and `app/api/cron/till-close` API routes. Route handlers are per request anyway, so that's no ISR or cost change.
+   - **The deploy:** it says nothing about it. It only means those files are part of the batch deploy, which they are on purpose.
+2. **"The 11 shared readers … byte-identical to d309e4ef."**
+   - **Since `97d47768`** (compare-suits-fix-2, 26 Nov: the guide-words read in `lib/comparison-server.ts`), then `30ec10c5` (compare-cache-1: `lib/comparison-server.ts` and `lib/comparison-flags.ts`).
+   - **Caching or cost: no effect on what the check protects.** `lib/comparison-flags.ts` only gained the pure host rule; the 60-second readers that ordering and the proxy use (`comparisonFlags`, `comparisonFlagsOf`) are byte for byte as before.
+   - `lib/comparison-server.ts` is read only by the comparison pages, sitemap and llms. Its changes are the per-country cache (cost **down**) and one small extra read per comparison render (the guide words, `comparison_country_copy`), now done once per refresh rather than per visit.
+3. **"This work changed only its own files."**
+   - It counts uncommitted working-tree files. It **fails only while the tree has uncommitted non-docs changes**: today another session's four `scripts/fixtures/language-phase-*-us-changed.txt`, modified since before this session. It passes in a clean tree (checked at `20e1846c`).
+   - **Caching, cost or deploy:** none. They're harness fixtures, never built or served.
+
+*Optional:* re-pin 1 and 2 to compare `d309e4ef` with vercel-cost-1's own last commit, as done for compare-fix-1 / compare-square-1 / compare-calc-fix-1. They would then go back to proving what they were written to prove.
+
+**compare-de-1-screens: 2 of 17.** Both are «WebKit / Chromium 390 public: the table scrolls sideways inside its own box».
+
+- **What it checks.** In a real browser at a 390 px phone width, the public German fixture page's table is wider than its box, so the box scrolls rather than the page.
+- **Why it fails.** That box doesn't scroll, because the table fits. The fixture's public view has **HatchGrab and one competitor** (Testanbieter A; B and C aren't verified). The table's minimum width is `7.75rem + columns × 5.9rem` (`--cmp-n`, compare-ux-1): **~313 px for two columns**, which fits 390 px. Three or more columns (≥ ~407 px) scroll inside the box as designed.
+- **What still holds:** the important check, «the page never scrolls sideways», passes in both engines.
+- **Since when:** most likely **`488073ee`** (compare-ux-1, 9 Nov). It introduced that width rule and changed this harness, but didn't run it: its report says it "rewrites the committed docs/compare-de-1 screenshots". The harness last passed at compare-de-1 (17 / 0, 24 Oct).
+  - This is inferred, not bisected. The harness renders with the CSS of whatever build is in `.next`, so an older commit can't be replayed exactly.
+  - Every run since 26 Nov fails the same two, including on `a7f405eb` before compare-suits-fix-2.
+- **Caching, cost or deploy:** none. It's a fixture-data expectation (two columns can't overflow), not a layout bug.
+- *Note:* each run rewrites 12 committed screenshots, which I restored after every run.
+- *Optional fix* (a harness change): give the fixture's public view a third verified competitor, or check the box only when the table is wider than the viewport.
