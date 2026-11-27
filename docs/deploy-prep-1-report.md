@@ -84,7 +84,7 @@ Each one now compares up to the harness's own last commit, which is hardcoded: t
 
 ## 5 · Step 1: what's in the batch
 
-- **`france-vat-1` is 618 commits ahead of `origin/main` (`5df925d8`, vercel-cost-1, 23 Nov) and 0 behind**, so it **fast-forwards**. That's 615 at the stop, plus `068ddf7c` and this report.
+- **`france-vat-1` is 620 commits ahead of `origin/main` (`5df925d8`, vercel-cost-1, 23 Nov) and 0 behind**, so it **fast-forwards**. That's 617 at the stop (its report `6c091892` included), plus `068ddf7c`, this report (`d41f667b`) and this count's correction.
 - `origin/main` is unchanged after a fresh `git fetch`.
 
 **By workstream** (commit counts):
