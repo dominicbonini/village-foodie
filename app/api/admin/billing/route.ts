@@ -21,6 +21,7 @@ import { getPlanCatalog } from '@/lib/plans-server'
 import { listCountrySettings, clearCountrySettingsCache } from '@/lib/country-settings'
 import { revalidateMarketing } from '@/lib/marketing-cache'   // pricing-copy-4: the pricing pages read the payment model
 import { MARKETING_TAGS } from '@/lib/marketing-tags'
+import { revalidateComparison } from '@/lib/comparison-server'   // compare-cache-1: the saved country's comparison page (cached 30 days)
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -107,6 +108,9 @@ export async function PUT(req: NextRequest) {
   // change is read at once: this instance's cache dropped, and the marketing pages' shared cache expired.
   clearCountrySettingsCache(code as string)
   revalidateMarketing([MARKETING_TAGS.countries], 'admin/billing country model')
+  // compare-cache-1 (Dominic, 27 November 2026): HatchGrab's payment model there is on that country's comparison page (the guide's payment
+  // line, the cost lines) — refresh that country's page and twins, only that country's.
+  revalidateComparison([code as string], 'admin/billing country model')
   return NextResponse.json({ row: saved })
 }
 

@@ -160,6 +160,67 @@ const PAGE = 'app/(public)/[country]/[section]/[slug]/page.tsx', TWIN = 'app/api
   t('the one-off publish: the dry run says which pages it WOULD refresh, and a real run refreshes only when there are some', /pages\$\{dryRun \? ' that would be' : ''\} refreshed: /.test(pubMain) && /if \(!dryRun && refresh\.length\) await revalidate\(refresh, p\.liveChanged === true, log\)/.test(pubMain))
   t('scripts/db-migrate.cjs refreshes no comparison page (it names only the marketing tags)', !/comparison-/.test(read('scripts/db-migrate.cjs')) && !/comparison-/.test(read('scripts/revalidate-pages.cjs').replace(/\/\/[^\n]*/g, '')))
 
+  head('8 · Admin › Billing and Admin › Pricing check saves refresh their countries (appendix, Dominic 27 Nov)')
+  const REFRESH = 'export function revalidateComparison(codes, why) { (globalThis.__ccRefresh ??= []).push(...codes) }'
+  const ADMIN = 'export async function adminUser() { return globalThis.__ccAdmin ? { id: "a", email: "a@x" } : null }\nexport async function verifyAdmin() { return !!globalThis.__ccAdmin }'
+  {
+    const BI = await kit.bundle('cc1-billing', "export { PUT } from '@/app/api/admin/billing/route'", { stubs: {
+      '@/lib/auth/admin': ADMIN, '@/lib/comparison-server': REFRESH,
+      '@/lib/billing/store': 'export async function serverBillingStore() { return { countryBilling: async c => globalThis.__ccBillingRow ?? null, saveCountryBilling: async row => ({ ...row, updatedAt: "now" }) } }',
+      '@/lib/country-settings': 'export async function listCountrySettings() { return [{ countryCode: "GB", name: "United Kingdom", platformFeeAllowed: true }, { countryCode: "FR", name: "France", platformFeeAllowed: true }] }\nexport function clearCountrySettingsCache() {}',
+      '@/lib/marketing-cache': 'export function revalidateMarketing() {}',
+    } })
+    const put = async (body, { admin = true, row = null } = {}) => { globalThis.__ccAdmin = admin; globalThis.__ccRefresh = []; globalThis.__ccBillingRow = row
+      const r = await BI.PUT(new NextRequest('http://hatchgrab.localhost:3000/api/admin/billing', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }))
+      return { status: r.status, refreshed: globalThis.__ccRefresh.slice() } }
+    const good = { countryCode: 'GB', paymentModel: 'fee_from_payment', postPaySurchargeBps: 0, postPaySurchargeFixedMinor: 0, minChargeMinor: 0, lateFeeMinor: 0 }
+    const b1 = await put(good), b2 = await put({ ...good, countryCode: 'FR', paymentModel: 'billed_at_truck' })
+    t('Admin › Billing: a saved country model refreshes THAT country\'s comparison page only (GB → comparison-GB; FR → comparison-FR)', b1.status === 200 && JSON.stringify(b1.refreshed) === '["GB"]' && b2.status === 200 && JSON.stringify(b2.refreshed) === '["FR"]', [b1, b2])
+    const bad = await put({ ...good, postPaySurchargeBps: -1 }), anon = await put(good, { admin: false }), stale = await put(good, { row: { countryCode: 'GB' } })
+    t('…nothing is refreshed when the save does not happen: invalid (400), not an admin (401), a stale row (409)', bad.status === 400 && anon.status === 401 && stale.status === 409 && ![bad, anon, stale].some(x => x.refreshed.length), [bad, anon, stale])
+  }
+  {
+    const PC = await kit.bundle('cc1-pricing', "export { POST } from '@/app/api/admin/pricing-check/route'", { stubs: {
+      '@/lib/auth/admin': ADMIN, '@/lib/comparison-server': REFRESH,
+      '@/lib/admin/pricing-check-store': `export class TablesMissing extends Error {}
+        export async function readDataImports() { return [] }
+        const S = () => globalThis.__ccStore
+        export const servicePricingStore = {
+          async listEntries() { return S().entries.map(e => ({ ...e })) },
+          async updateCompetitor(id, cols) { const c = S().competitors.find(x => x.id === id); return c ? { ...c, ...cols } : null },
+          async updateEntry(id, cols) { const e = S().entries.find(x => x.id === id); if (!e) return null; Object.assign(e, cols); return { ...e } },
+          async deleteEntry(id) { S().entries = S().entries.filter(e => e.id !== id) },
+          async setPlanVerified(id, at, by) { const p = S().plans.find(x => x.id === id); return p ? { ...p, verified_at: at, verified_by: by } : null },
+          async setPlanAutoBlocked(id, b) { const p = S().plans.find(x => x.id === id); return p ? { ...p, auto_blocked: b } : null },
+          async currentBenchmark() { return null },
+          async insertBenchmark(row) { return { id: 'b1', ...row, superseded_at: null, created_at: 'now' } },
+        }`,
+    } })
+    const plan = { id: 'p1', competitor_id: 'c1', country_code: 'GB', plan_name: 'Free', currency: 'GBP', price_hidden: false, monthly_minor: 0, yearly_only: false, setup_minor: 0,
+      truck_fee_bps: 0, truck_fee_fixed_minor: 0, customer_fee_bps: 0, customer_fee_fixed_minor: 0, card_mode: 'unknown', card_bps: null, card_fixed_minor: null, card_rate_assumed: true,
+      order_cap: null, included_orders: null, overage_fixed_minor: null, vat: 'unknown', status: 'counted', unclear: false, second_hand: false, source: 'research', source_url: null,
+      checked_on: '2026-11-27', verified_at: null, verified_by: null, notes: null, superseded_at: null, created_at: 'now' }
+    const fresh = () => ({ competitors: [{ id: 'c1', name: 'C1', website: 'https://c1.example', focus: 'food_truck', lifecycle: 'active' }, { id: 'c2', name: 'C2', website: 'https://c2.example', focus: 'food_truck', lifecycle: 'active' }],
+      plans: [plan], entries: [{ id: 'e1', country_code: 'GB', competitor_id: 'c1', sort_order: 1 }, { id: 'e2', country_code: 'FR', competitor_id: 'c1', sort_order: 1 }, { id: 'e3', country_code: 'DE', competitor_id: 'c2', sort_order: 1 }] })
+    const post = async (body, { admin = true } = {}) => { globalThis.__ccAdmin = admin; globalThis.__ccRefresh = []; globalThis.__ccStore = fresh()
+      const r = await PC.POST(new NextRequest('http://hatchgrab.localhost:3000/api/admin/pricing-check', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }))
+      return { status: r.status, refreshed: [...new Set(globalThis.__ccRefresh)].sort() } }
+    const cat = await post({ action: 'competitor_category', competitorId: 'c1', category: 'food_truck' })
+    t('Pricing check, a competitor save (its category): every country where it has an entry — GB and FR, not DE', cat.status === 200 && JSON.stringify(cat.refreshed) === '["FR","GB"]', cat)
+    const ver = await post({ action: 'verify', id: 'p1' })
+    t('…a plan save (Mark verified): the plan\'s competitor\'s countries (GB, FR)', ver.status === 200 && JSON.stringify(ver.refreshed) === '["FR","GB"]', ver)
+    const flags = await post({ action: 'entry_flags', id: 'e3', hidden: true })
+    t('…an entry save (hide): that competitor\'s countries (DE)', flags.status === 200 && JSON.stringify(flags.refreshed) === '["DE"]', flags)
+    const rm = await post({ action: 'entry_remove', id: 'e1' })
+    t('…an entry removed (it returns no row): the countries it was in, read before the save (GB, FR)', rm.status === 200 && JSON.stringify(rm.refreshed) === '["FR","GB"]', rm)
+    const bench = await post({ action: 'edit_benchmark', countryCode: 'GB', fields: { currency: 'GBP', mealMinor: 1600, eurRate: 0.84, eurRateDate: '2026-11-27' } })
+    t('…the country data (edit_benchmark) is not a competitor save: nothing refreshed', bench.status === 200 && bench.refreshed.length === 0, bench)
+    const gone = await post({ action: 'entry_update', id: 'nope', fields: { chooseWhen: 'x' } }), anonP = await post({ action: 'competitor_category', competitorId: 'c1', category: null }, { admin: false })
+    t('…nothing refreshed when the save fails (an entry that is gone, 404) or the caller is not an admin (404)', gone.status === 404 && anonP.status === 404 && !gone.refreshed.length && !anonP.refreshed.length, [gone, anonP])
+  }
+  t('both screens\' saves call the same refresh as Admin › Countries (revalidateComparison, lib/comparison-server.ts)',
+    /revalidateComparison\(\[code as string\], 'admin\/billing country model'\)/.test(read('app/api/admin/billing/route.ts')) && /revalidateComparison\(codes, `admin\/pricing-check \$\{String\(body\.action\)\}`\)/.test(read('app/api/admin/pricing-check/route.ts')))
+
   console.log(`\n${fail ? '🔴' : '✓'} compare-cache-1: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)
 })().catch(e => { console.error(e); process.exit(1) })
