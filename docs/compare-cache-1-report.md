@@ -197,3 +197,73 @@ So the cost no longer grows with visits. It's bounded by roughly **300–1,000 r
 ## Undo (only if Dominic asks)
 
 `git revert 5dcf78ce 30ec10c5`. That puts back force-dynamic, the old host checks and the `marketing-countries` refresh.
+
+---
+
+## Appendix · Admin › Billing and Admin › Pricing check refresh their countries (Dominic, 27 Nov; `0a5f70d2`)
+
+Both use **the same refresh call as Admin › Countries** (`revalidateComparison`, lib/comparison-server.ts). Each refreshes **only after a successful save**. Nothing else in either screen changed: the same answers and the same behaviour. Changed files: the two save routes, plus the harness.
+
+**Admin › Billing** (`app/api/admin/billing/route.ts`):
+
+- The country save (PUT: payment model, post-pay surcharge, minimum charge, late fee) refreshes **`comparison-<CC>` for the saved country**. Its payment model decides the guide's payment line and the cost wording.
+- The POST actions (preview, the month-end and plan-change tests) are about one truck's billing and change no country's prices or plans, so they refresh nothing.
+
+**Admin › Pricing check** (`app/api/admin/pricing-check/route.ts`):
+
+- **Which saves count.** The competitor, plan, entry and answer saves:
+  - verify / unverify a plan, edit_plan;
+  - feature_value, verify / unverify features;
+  - add_competitor, competitor_category;
+  - entry add / update / flags / verify / unverify / move / remove.
+- **What gets refreshed.** **Every country where that competitor has an entry.**
+- **How the competitor is found.** From what the save returned (its plan, entry, answer or competitor), the competitor it named, or the entry as it was before the save. That last source covers a move or a removal, which return no row and whose entry may be gone afterwards.
+- **What refreshes nothing:** the country data (edit_benchmark), the feature list (feature_add / feature_update) and the one-off research import. They aren't competitor saves (see "Needs you" below).
+
+**Harness** (`scripts/compare-cache-1.cjs` section 8; now **50 / 0**). The real routes run on fake stores:
+
+- **Billing:** GB → GB only; FR → FR only. Nothing is refreshed on invalid (400), not an admin (401) or a stale row (409).
+- **Pricing check:**
+  - a category save → GB and FR (where the competitor has entries), not DE;
+  - Mark verified → GB and FR;
+  - hide an entry → DE;
+  - remove an entry → GB and FR, read before the save;
+  - edit_benchmark → nothing;
+  - a failed save (404) or a non-admin → nothing.
+- Both routes call `revalidateComparison`.
+
+**Every comparison harness passes as before:**
+
+| Harness | Pass / fail |
+|---|---|
+| compare-cache-1 | 50 / 0 |
+| compare-suits-fix-2 | 23 / 0 |
+| compare-calc-fix-1 | 20 / 0 |
+| compare-no-system | 54 / 0 |
+| compare-de-1 | 91 / 0 |
+| competitor-check-1 | 227 / 0 |
+| competitor-check-8 | 51 / 0 |
+| competitor-features-2 | 79 / 0 |
+| competitor-wtt-1 | 42 / 0 |
+| compare-suits-1 | 72 / 0 |
+| compare-autopublish-1 | 75 / 0 |
+| compare-languages-1 | 24 / 0 |
+| compare-ux-1 | 39 / 0 |
+| compare-fix-1 | 65 / 0 |
+| compare-fix-2 | 79 / 0 |
+| checker-prep-1 | 18 / 0 |
+| compare-square-1 | 27 / 0 |
+| perf-1 | 50 / 0 |
+| privacy-processors-1 | 9 / 0 |
+| pricing-check-1 (pins the Pricing check route) | 82 / 0 |
+| compare-de-1-screens | 15 / 2 (pre-existing) |
+| vercel-cost-1 | 27 / 3 (pre-existing or environmental, as above) |
+
+`tsc` 0 errors.
+
+**🔴 Found, not caused by this appendix: pricing-copy-4 fails 1 of 1157.** Its check "no page or component reads paymentModel itself" flags `lib/comparison.ts`: `buildFit` (compare-suits-fix-2, `97d47768`) names `paymentModel` in its parameter type, although it reads the value only through `offersOnlineCardPayments`, as that check requires. lib/comparison.ts was outside this appendix's files, so it's unchanged. The one-line fix is to type the parameter as `Parameters<typeof offersOnlineCardPayments>[0] & Pick<CountrySettings, 'locale'>`; say if I should make it.
+
+**Needs you:**
+
+1. **The pricing-copy-4 fix above.**
+2. **The other Pricing check saves.** The country data (meal price and exchange rate, which drive the price answers) and the feature list (rows on every page) still refresh nothing. Say if they should: a benchmark save would refresh its country, and a feature-list save every live country.
