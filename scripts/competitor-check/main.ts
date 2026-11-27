@@ -26,18 +26,20 @@ import { startSemiDeep } from '@/lib/competitor-check/semi-deep'
 import { supabasePublishStore } from '@/lib/comparison-publish-store'
 import { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'
 import { NO_COMPARISON_PAGE } from '@/lib/comparison-types'
+import { comparisonTag } from '@/lib/marketing-tags'
 
-/** compare-autopublish-1: asks the site to refresh its cached comparison switches (tag marketing-countries). Never throws. */
-async function revalidateCountries(log: (l: string) => void): Promise<boolean> {
+/** compare-autopublish-1: asks the site to refresh its cached comparison switches. compare-cache-1 (27 November 2026): the changed
+ *  countries' comparison pages (comparison-<CC>), and marketing-countries only when a live status changed. Never throws. */
+async function revalidateCountries(codes: string[], liveChanged: boolean, log: (l: string) => void): Promise<boolean> {
   const warn = (m: string) => { log(`WARNING (pages not told — they keep showing the old data until refreshed: REVALIDATE_SECRET=… node scripts/revalidate-pages.cjs): ${m}`); return false }
   try {
     const secret = process.env.REVALIDATE_SECRET
     const base = (process.env.REVALIDATE_BASE_URL || 'https://www.hatchgrab.com').replace(/\/+$/, '')
     if (!secret) return warn('REVALIDATE_SECRET is not set.')
     const res = await fetch(`${base}/api/revalidate`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-revalidate-secret': secret },
-      body: JSON.stringify({ tags: ['marketing-countries'] }), signal: AbortSignal.timeout(10_000) })
+      body: JSON.stringify({ tags: [...codes.map(comparisonTag), ...(liveChanged ? ['marketing-countries'] : [])] }), signal: AbortSignal.timeout(10_000) })
     if (res.status !== 200) return warn(`${base}/api/revalidate answered ${res.status}.`)
-    log(`revalidate: ${base} refreshed marketing-countries.`)
+    log(`revalidate: ${base} refreshed ${codes.map(comparisonTag).join(', ')}${liveChanged ? ' and marketing-countries' : ''}.`)
     return true
   } catch (e) { return warn(`the site could not be reached: ${e instanceof Error ? e.message : e}`) }
 }
@@ -112,7 +114,7 @@ async function main() {
       const [{ servicePricingStore }, { serviceCheckStore }] = await Promise.all([import('@/lib/admin/pricing-check-store'), import('@/lib/admin/competitor-check-store')])
       const p = await runPublish({ pricing: servicePricingStore, checks: serviceCheckStore, store: supabasePublishStore(db), now: () => new Date(), log: line => console.log(line),
         // compare-languages-1: every country with an address has a comparison page in its own language, except AE.
-        hasPage: code => !!COUNTRY_PATH_SEGMENTS[code] && !NO_COMPARISON_PAGE.includes(code), revalidate: () => revalidateCountries(line => console.log(line)) })
+        hasPage: code => !!COUNTRY_PATH_SEGMENTS[code] && !NO_COMPARISON_PAGE.includes(code), revalidate: (codes, liveChanged) => revalidateCountries(codes, liveChanged, line => console.log(line)) })
       console.log(`publish: ${p.events} event(s); ${p.verdicts.filter(v => v.live).map(v => v.code).join(', ') || 'no country'} live`)
     } catch (e) { console.error(`publish step failed (the check results are saved): ${e instanceof Error ? e.message : e}`) }
   }

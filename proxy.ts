@@ -14,7 +14,7 @@ import { VISITOR_COUNTRY_COOKIE, VISITOR_COUNTRY_MAX_AGE } from '@/lib/visitor-c
 import { PAGE_LANG_HEADER } from '@/lib/page-lang'
 import { DEFAULT_LOCALE, LOCALES, isEnglish } from '@/lib/i18n/locales'
 import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH, legalAddressOf } from '@/lib/legal'
-import { comparisonAddressOf, comparisonFlagsOf } from '@/lib/comparison-flags'
+import { comparisonAddressOf, comparisonFlagsOf, comparisonBlockedOnHost } from '@/lib/comparison-flags'
 import { isOwnOneSegment } from '@/lib/top-level-routes'
 
 // seo-fixes S4: the legal documents, written in en-GB on every host.
@@ -228,6 +228,12 @@ export async function proxy(request: NextRequest) {
     const isPage = request.headers.has('rsc') || (dest ? dest === 'document' : (request.headers.get('accept') || '').includes('text/html'))
     if (isPage && inAppRoute(pathname) !== 'stay') return NextResponse.redirect(new URL('/app', request.url))
   }
+
+  // ── compare-cache-1 (Dominic, 27 November 2026, decision 3): A COMPARISON ADDRESS EXISTS ONLY ON A HATCHGRAB HOST ────────────────────
+  // The comparison pages, their .md / .json twins (and the twins' /api/compare/… route and the admin preview switch) are cached now, and a
+  // cached page cannot see the host — so the 404 they answered on any other host (villagefoodie.co.uk…) is answered here, as before.
+  // A BARE 404 FROM THE EDGE, like the custom-host one above.
+  if (comparisonBlockedOnHost(host, pathname)) return new NextResponse('Not found', { status: 404 })
 
   const isVillageFoodie =
     host === 'villagefoodie.co.uk' ||

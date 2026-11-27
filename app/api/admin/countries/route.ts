@@ -20,6 +20,7 @@ import { listCountries, saveCountry, addCountry, removeCountry, type ActionResul
 import { MARKETING_COUNTRY } from '@/lib/marketing-country'
 import { revalidateMarketing } from '@/lib/marketing-cache'   // perf-1: the marketing pages' cached data, expired on a write
 import { MARKETING_TAGS } from '@/lib/marketing-tags'
+import { revalidateComparison } from '@/lib/comparison-server'   // compare-cache-1: the saved country's comparison page (cached 30 days)
 
 export const dynamic = 'force-dynamic'
 
@@ -31,7 +32,7 @@ function reply<T>(r: ActionResult<T>) {
     : NextResponse.json({ error: r.error, errors: r.errors ?? [] }, { status: r.status })
 }
 
-async function guarded<T>(req: NextRequest, run: (stamp: { by: string; at: string }) => Promise<ActionResult<T>>, writes: boolean) {
+async function guarded<T>(req: NextRequest, run: (stamp: { by: string; at: string }) => Promise<ActionResult<T>>, writes: boolean, code?: unknown) {
   const user = await adminUser(req)
   if (!user) return notFound()
   try {
@@ -40,6 +41,8 @@ async function guarded<T>(req: NextRequest, run: (stamp: { by: string; at: strin
       clearCountrySettingsCache()
       // perf-1: a country saved, added, switched on or off, or removed — the marketing pages read it on the very next request.
       revalidateMarketing([MARKETING_TAGS.countries], 'admin/countries')
+      // compare-cache-1 (Dominic, 27 November 2026): and that country's comparison page and twins — only that country's.
+      if (typeof code === 'string') revalidateComparison([code], 'admin/countries')
     }
     return reply(r)
   } catch (e) {
@@ -58,15 +61,15 @@ export async function GET(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const b = await body(req)
-  return guarded(req, stamp => saveCountry(serviceCountryStore, b, stamp), true)
+  return guarded(req, stamp => saveCountry(serviceCountryStore, b, stamp), true, b.code)
 }
 
 export async function POST(req: NextRequest) {
   const b = await body(req)
-  return guarded(req, stamp => addCountry(serviceCountryStore, b, stamp), true)
+  return guarded(req, stamp => addCountry(serviceCountryStore, b, stamp), true, b.code)
 }
 
 export async function DELETE(req: NextRequest) {
   const b = await body(req)
-  return guarded(req, () => removeCountry(serviceCountryStore, b, [MARKETING_COUNTRY]), true)
+  return guarded(req, () => removeCountry(serviceCountryStore, b, [MARKETING_COUNTRY]), true, b.code)
 }

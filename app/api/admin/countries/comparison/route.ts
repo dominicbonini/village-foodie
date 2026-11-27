@@ -21,6 +21,7 @@ import { clearCountrySettingsCache, listCountrySettings } from '@/lib/country-se
 import { clearComparisonCache, comparisonFlags, comparisonPath } from '@/lib/comparison-server'
 import { isComparisonStatus, NEVER_AUTO_PUBLISH } from '@/lib/comparison-types'
 import { revalidateMarketing } from '@/lib/marketing-cache'   // perf-1: the marketing pages' cached data, expired on a write
+import { revalidateComparison } from '@/lib/comparison-server'   // compare-cache-1: the saved country's comparison page (cached 30 days)
 import { MARKETING_TAGS } from '@/lib/marketing-tags'
 
 export const dynamic = 'force-dynamic'
@@ -82,6 +83,7 @@ export async function PATCH(req: NextRequest) {
       if (error) throw new Error(error.message)
       clearComparisonCache()
       revalidateMarketing([MARKETING_TAGS.countries], 'admin/countries/comparison auto-publish')
+      revalidateComparison([code], 'admin/countries/comparison auto-publish')   // compare-cache-1: that country's page only
       return NextResponse.json({ code, autoPublish: b.autoPublish })
     } catch (e) {
       console.error('[admin/countries/comparison]', e instanceof Error ? e.message : e)
@@ -105,6 +107,7 @@ export async function PATCH(req: NextRequest) {
     clearComparisonCache(); clearCountrySettingsCache()
     // perf-1: the comparison status is a country setting the marketing pages read (their comparison links, hreflang).
     revalidateMarketing([MARKETING_TAGS.countries], 'admin/countries/comparison')
+    revalidateComparison([code], 'admin/countries/comparison')   // compare-cache-1: that country's page only (its status, Admin's switch)
     return NextResponse.json({ code, status: b.status })
   } catch (e) {
     console.error('[admin/countries/comparison]', e instanceof Error ? e.message : e)

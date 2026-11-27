@@ -290,7 +290,7 @@ let L
     }
     t('the import: each file in a transaction, --dry-run rolls back and checks the tables after equal the tables before', /dryRun,/.test(imp) && /inTransaction\(db\.client/.test(imp) && /the dry run changed the tables/.test(imp))
     t('the publish: ONE transaction, the countries only (skipFindings), AE refused, the refresh only after a real run has committed',
-      /inTransaction\(db\.client/.test(pub) && /skipFindings: true/.test(pub) && /AE came out live/.test(pub) && pub.indexOf('if (!dryRun) await revalidate') > pub.indexOf('}, { rollback: dryRun })') && !/runPublish\(\{[^}]*revalidate/.test(pub))
+      /inTransaction\(db\.client/.test(pub) && /skipFindings: true/.test(pub) && /AE came out live/.test(pub) && pub.indexOf('if (!dryRun && refresh.length) await revalidate(') > pub.indexOf('}, { rollback: dryRun })') /* ⚠️ RE-PINNED (compare-cache-1): only the changed countries */ && !/runPublish\(\{[^}]*revalidate/.test(pub))
     const wf = read('.github/workflows/competitor-check.yml')
     t('the Competitor check workflow file is unchanged by this work (it stays disabled on GitHub)', /scripts\/data-import\/main\.ts/.test(wf))
     const hj = JSON.parse(read('scripts/harnesses.json'))

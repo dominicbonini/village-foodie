@@ -7,12 +7,18 @@
 //       to check_urls (never when Admin set them by hand), so the next check fetches it directly;
 //   3 · every switched-on country evaluated: auto_verified_at on publishable entries and plans and on answers that pass the evidence rule;
 //       comparison_publish.auto_live / shown / live_since; an event for each change (the weekly summary reads them);
-//   4 · the pages told (POST /api/revalidate, tag marketing-countries) — a failure is a warning, never an error.
+//   4 · the pages told (POST /api/revalidate) — a failure is a warning, never an error. compare-cache-1 (Dominic, 27 November 2026):
+//       ONLY the countries whose page changed in this run (changedCountries: its live status, its line-up, a shown competitor's plan,
+//       price or answers — each shown item carries a fingerprint `fp` — or Admin's switch), as their tags comparison-<CC>; and
+//       marketing-countries only when some country's live status changed (the landing footers' comparison link and the hreflang).
 // Admin's choices win throughout (lib/comparison-publish.ts header). AE is never auto-published.
 import { acceptFinding, type CheckAdminStore } from '@/lib/admin/competitor-check-actions'
 import { competitorOut, planOut, entryOut, type PricingStore } from '@/lib/admin/pricing-check-actions'
 import { valueOut, passesEvidence, pagesCheckedOut, type PageKind } from '@/lib/comparison-features'
 import { decideFindings, evaluateCountry, ownSource, NEVER_AUTO, type Decision, type CountryVerdict, type PublishEvent } from '@/lib/comparison-publish'
+import { createHash } from 'node:crypto'
+import type { CompetitorPlan, Competitor, ComparisonEntry } from '@/lib/pricing-check'
+import type { FeatureValueRow } from '@/lib/comparison-features'
 
 type Row = Record<string, unknown>
 
@@ -50,8 +56,9 @@ export interface PublishDeps {
   log: (line: string) => void
   /** The country's language has a comparison page (lib/comparison-server.ts comparisonPath). */
   hasPage: (code: string, locale: string) => boolean
-  /** Asks the site to refresh its cached country switches; never throws. */
-  revalidate?: () => Promise<boolean>
+  /** compare-cache-1: asks the site to refresh these countries' comparison pages (comparison-<CC>), and the marketing pages' country
+   *  switches too when `liveChanged`; never throws. Called only when at least one country changed. */
+  revalidate?: (codes: string[], liveChanged: boolean) => Promise<boolean>
   forceAccept?: ReadonlyMap<string, string>
   forceReject?: ReadonlyMap<string, string>
   /** Skip step 1 (the evaluation only). */
@@ -60,6 +67,8 @@ export interface PublishDeps {
 export interface PublishReport {
   decisions: Decision[]; failedAccepts: { id: string; error: string }[]; checkUrls: { competitorId: string; urls: string[] }[]
   verdicts: CountryVerdict[]; events: number; revalidated: boolean | null
+  /** compare-cache-1: the countries whose page changed in this run (the pages refreshed), and whether any live status changed. */
+  refreshed?: string[]; liveChanged?: boolean
   /** compare-fix-1: countries whose evaluation or save failed (each logged; the run carried on). */
   countryErrors?: { code: string; error: string }[]
 }
@@ -81,6 +90,40 @@ export function guessKind(url: string): 'pricing' | 'features' | null {
   if (/(^|\/)(pricing|prices|price|plans|preise|preis|tarife?|kosten|precios|prix|tarifs|prezzi|prijzen)(\/|$|[.-])/.test(p)) return 'pricing'
   if (/(^|\/)(features?|funktionen|leistungen|product|products|produkt|fonctionnalites|funcionalidades)(\/|$|[.-])/.test(p)) return 'features'
   return null
+}
+
+// ── compare-cache-1: WHICH COUNTRIES' PAGES CHANGED IN A RUN ─────────────────────────────────────────────────────────────────────────────
+/** A shown competitor's fingerprint: everything of it the page shows — its name, address and kind, its entry's own words and group, its
+ *  plan's price fields and source and checked date, and its current answers for this country (value, note, quote, source, date, and
+ *  whether the page may show them). A short sha-256; the same inputs always give the same value. */
+export function shownFingerprint(o: { competitor: Pick<Competitor, 'name' | 'website' | 'focus'> & { category?: unknown }; entry: Pick<ComparisonEntry, 'chooseWhen'> & { groupLabel?: unknown } | null
+  plan: CompetitorPlan | null; answers: Pick<FeatureValueRow, 'featureKey' | 'countryCode' | 'value' | 'note' | 'quote' | 'sourceUrl' | 'checkedOn' | 'verifiedAt'>[]; shownAnswer: (a: FeatureValueRow) => boolean }): string {
+  const p = o.plan
+  const plan = p ? [p.planName, p.currency, p.monthlyMinor, p.yearlyOnly, p.priceHidden, p.setupMinor, p.truckFeeBps, p.truckFeeFixedMinor, p.customerFeeBps,
+    p.customerFeeFixedMinor, p.cardMode, p.cardBps, p.cardFixedMinor, p.vat, p.unclear, p.sourceUrl, p.checkedOn] : null
+  const answers = [...o.answers].sort((a, b) => `${a.featureKey}|${a.countryCode ?? ''}`.localeCompare(`${b.featureKey}|${b.countryCode ?? ''}`))
+    .map(a => [a.featureKey, a.countryCode ?? null, a.value, a.note ?? null, a.quote ?? null, a.sourceUrl ?? null, a.checkedOn ?? null, o.shownAnswer(a as FeatureValueRow)])
+  const c = o.competitor, e = o.entry
+  return createHash('sha256').update(JSON.stringify([c.name, c.website ?? null, c.focus ?? null, c.category ?? null, e?.chooseWhen ?? null, e?.groupLabel ?? null, plan, answers])).digest('hex').slice(0, 16)
+}
+type ShownItem = { competitorId?: unknown; planId?: unknown; fp?: unknown }
+/** The countries whose page a run changed: its live status, or its shown line-up (who, in which order, on which plan), or a shown
+ *  competitor's fingerprint. A fingerprint missing on the earlier side (rows written before compare-cache-1, i.e. before the deploy that
+ *  started every page afresh) is no change by itself. PURE. */
+export function changedCountries(before: ReadonlyMap<string, { live: boolean; shown: readonly ShownItem[] }>, after: ReadonlyMap<string, { live: boolean; shown: readonly ShownItem[] }>): { codes: string[]; liveChanged: boolean } {
+  const codes: string[] = []
+  let liveChanged = false
+  for (const [code, a] of after) {
+    const b = before.get(code) ?? { live: false, shown: [] }
+    if (b.live !== a.live) { liveChanged = true; codes.push(code); continue }
+    if (!a.live && !b.live) continue   // a 404 before and after: nothing on the page to change
+    const same = b.shown.length === a.shown.length && a.shown.every((x, i) => {
+      const y = b.shown[i]
+      return String(y.competitorId) === String(x.competitorId) && String(y.planId ?? '') === String(x.planId ?? '') && (y.fp === undefined || y.fp === x.fp)
+    })
+    if (!same) codes.push(code)
+  }
+  return { codes: codes.sort(), liveChanged }
 }
 
 export async function runPublish(d: PublishDeps): Promise<PublishReport> {
@@ -174,6 +217,7 @@ export async function runPublish(d: PublishDeps): Promise<PublishReport> {
   // from 10 Nov, so the countries after it were never evaluated and the marks, events and refresh below never ran). Logged and reported.
   const countryErrors: { code: string; error: string }[] = []
   const entryPlan = new Map<string, string>()
+  const beforePub = new Map<string, { live: boolean; shown: ShownItem[] }>(), afterPub = new Map<string, { live: boolean; shown: ShownItem[] }>()
   for (const c of countries) {
     try {
       const pub = pubRows.get(c.code)
@@ -195,7 +239,18 @@ export async function runPublish(d: PublishDeps): Promise<PublishReport> {
       }
       const wasLive = pub?.auto_live === true
       if (v.live !== wasLive) events.push({ country_code: c.code, competitor_id: null, kind: v.live ? 'country_live' : 'country_not_live', detail: v.live ? `live: ${v.shown.map(s => s.name).join(', ')}` : `not live: ${v.reason}` })
-      const shown = v.shown.map(s => ({ ...s, planId: v.competitors.find(x => x.competitorId === s.competitorId)?.planId ?? null }))
+      // compare-cache-1: each shown item carries its fingerprint, so the next run sees a changed price or answer on this page.
+      const shown = v.shown.map(s => {
+        const planId = v.competitors.find(x => x.competitorId === s.competitorId)?.planId ?? null
+        const comp = competitors.find(x => x.id === s.competitorId)
+        const entry = entries.find(x => x.competitorId === s.competitorId && x.countryCode === c.code) ?? null
+        const fp = comp ? shownFingerprint({ competitor: comp, entry, plan: plans.find(p => p.id === planId) ?? null,
+          answers: values.filter(x => x.competitorId === s.competitorId && x.supersededAt === null && (x.countryCode === null || x.countryCode === c.code)),
+          shownAnswer: x => !!x.verifiedAt || passesEvidence(x) }) : undefined
+        return { ...s, planId, ...(fp ? { fp } : {}) }
+      })
+      afterPub.set(c.code, { live: v.live, shown })
+      beforePub.set(c.code, { live: wasLive, shown: Array.isArray(pub?.shown) ? pub!.shown as ShownItem[] : [] })
       // compare-fix-1: AE's row always carries auto_publish false (the table's CHECK comparison_publish_never_ae; an upsert's insert half
       // is checked with the column defaults, so leaving it out broke every run).
       await d.store.savePublish(c.code, { auto_live: v.live, shown, evaluated_at: nowIso, live_since: v.live ? (wasLive ? pub?.live_since ?? nowIso : nowIso) : null, updated_at: nowIso,
@@ -233,8 +288,11 @@ export async function runPublish(d: PublishDeps): Promise<PublishReport> {
   if (events.length) await d.store.addEvents(events, nowIso)
   for (const v of verdicts.filter(x => autoCodes.has(x.code) && d.hasPage(x.code, countries.find(c => c.code === x.code)!.locale)))
     d.log(`publish: ${v.code} ${v.live ? 'LIVE' : 'not live'} — ${v.reason}${v.shown.length ? ` (${v.shown.map(s => s.name).join(', ')})` : ''}`)
-  const changed = events.some(e => !e.kind.startsWith('finding_'))
-  const revalidated = changed && d.revalidate ? await d.revalidate() : null
+  // compare-cache-1: refresh ONLY the pages that changed (a country with a page; AE never has one).
+  const diff = changedCountries(beforePub, afterPub)
+  const refreshed = diff.codes.filter(code => { const c = countries.find(x => x.code === code); return !!c && d.hasPage(code, c.locale) })
+  d.log(`publish: pages to refresh — ${refreshed.length ? refreshed.join(' ') : 'none'}${diff.liveChanged ? ' (a live status changed: the marketing pages\' country switches too)' : ''}`)
+  const revalidated = refreshed.length && d.revalidate ? await d.revalidate(refreshed, diff.liveChanged) : null
   if (countryErrors.length) d.log(`publish: ${countryErrors.length} countr${countryErrors.length === 1 ? 'y' : 'ies'} failed: ${countryErrors.map(x => x.code).join(', ')}`)
-  return { decisions, failedAccepts, checkUrls, verdicts, events: events.length, revalidated, countryErrors }
+  return { decisions, failedAccepts, checkUrls, verdicts, events: events.length, revalidated, countryErrors, refreshed, liveChanged: diff.liveChanged }
 }

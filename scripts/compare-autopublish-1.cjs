@@ -182,8 +182,10 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   const adminUrls = await run(baseRows({ competitors: [rc(C1), rc(C2, { check_urls: ['https://c2.example/x'], check_urls_by: 'admin' }), rc(C3)] }), [])
   t('D · …never when Admin set the check pages by hand', JSON.stringify(adminUrls.m.T.competitors.get(C2).check_urls) === '["https://c2.example/x"]')
   t('TRIGGER: something changed (a country went live) → the pages are told (revalidate called once)', a.told === 1 && a.m.events.some(e => e.kind === 'country_live') && a.m.events.some(e => e.kind === 'published'))
+  // ⚠️ RE-PINNED (compare-cache-1, 27 November 2026): the publish now refreshes only the countries whose page changed — answers included
+  // (each shown item's fingerprint). "The same state" therefore carries the first run's answers too (it accepted one: the preorder answer).
   const again = await run({ ...baseRows(), publish: [...a.m.T.comparison_publish.values()], entries: [...a.m.T.comparison_entries.values()], plans: [...a.m.T.competitor_plans.values()],
-    competitors: [...a.m.T.competitors.values()] }, [])
+    competitors: [...a.m.T.competitors.values()] }, [], { values: [...a.m.T.competitor_feature_values.values()] })
   t('…the same state again → no change events and the pages are NOT told', again.told === 0 && !again.m.events.length, again.m.events)
   const failing = await run({ ...baseRows(), publish: [...a.m.T.comparison_publish.values()], entries: [...a.m.T.comparison_entries.values()], plans: [...a.m.T.competitor_plans.values()],
     competitors: [...a.m.T.competitors.values()].map(c => (c.id === C1 ? { ...c, check_failures: 2 } : c)) }, [])

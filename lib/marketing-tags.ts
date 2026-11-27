@@ -12,6 +12,21 @@ export const MARKETING_TAGS = {
 export type MarketingTag = (typeof MARKETING_TAGS)[keyof typeof MARKETING_TAGS]
 export const MARKETING_TAG_LIST: readonly MarketingTag[] = Object.values(MARKETING_TAGS)
 export const isMarketingTag = (t: unknown): t is MarketingTag => typeof t === 'string' && (MARKETING_TAG_LIST as readonly string[]).includes(t)
+
+/** compare-cache-1 (Dominic, 27 November 2026; docs/compare-cache-1-report.md): ONE COUNTRY'S COMPARISON PAGE and its .md / .json twins —
+ *  `comparison-GB`. The comparison pages are cached for 30 days and carry ONLY this tag (never marketing-countries, so a migration
+ *  refreshes none of them). Expired by the publish step for the countries whose page changed in that run, and by an Admin › Countries
+ *  save for the country it saved. /api/revalidate accepts it (same secret). */
+export type ComparisonTag = `comparison-${string}`
+export const comparisonTag = (code: string): ComparisonTag => `comparison-${code.trim().toUpperCase()}`
+export const isComparisonTag = (t: unknown): t is ComparisonTag => typeof t === 'string' && /^comparison-[A-Z]{2}$/.test(t)
+/** Every tag /api/revalidate accepts: the three marketing tags and any country's comparison tag. */
+export type RefreshTag = MarketingTag | ComparisonTag
+export const isRefreshTag = (t: unknown): t is RefreshTag => isMarketingTag(t) || isComparisonTag(t)
+/** The most tags one request may name: the marketing tags and one per country code (there are fewer than 300). */
+export const MAX_REFRESH_TAGS = 300
+/** compare-cache-1: how long a comparison page is kept when nothing refreshes it — 30 days (the page's own `revalidate`). */
+export const COMPARISON_REVALIDATE_SECONDS = 2592000
 /** The cached data's expiry. perf-1 had 300 seconds (a change made where nothing calls the endpoint — the Supabase dashboard — showed
  *  within 5 minutes). vercel-cost-1 (23 November 2026, docs/vercel-cost-1-report.md): NONE. A numeric expiry here also shortened the
  *  pages' own (unstable_cache lowers the page's revalidate to it), and the 5-minute rebuilds were a third of the Vercel bill. The data

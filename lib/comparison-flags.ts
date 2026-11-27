@@ -83,6 +83,15 @@ export async function appsOf(code: string | null | undefined): Promise<{ ios: bo
 
 /** A comparison address or its twin — '/de/vergleich/foodtruck-bestellsystem', '….md', '….json' — taken apart, or null.
  *  The section and slug are not checked here (the page compares them with the country's messages and 404s). */
+/** compare-cache-1 (Dominic, 27 November 2026, decision 3): a comparison address — the page, its .md / .json twins, the twins' own
+ *  /api/compare/… route and the admin preview switch — exists ONLY on a HatchGrab host (hatchgrab.com, its previews, hatchgrab.localhost).
+ *  On any other host proxy.ts answers 404, as the page and the twin route did themselves before they were cached (a cached page cannot
+ *  see the host). The SAME host test as lib/brand.ts isHatchGrabHost and proxy.ts isHatchGrab. PURE. */
+export function comparisonBlockedOnHost(host: string, pathname: string): boolean {
+  if (host.includes('hatchgrab')) return false
+  return pathname.startsWith('/api/compare/') || comparisonAddressOf(pathname) !== null
+}
+
 export function comparisonAddressOf(pathname: string): { code: string; section: string; slug: string; format: 'html' | 'md' | 'json' } | null {
   const m = /^\/([a-z]{2})\/([a-z0-9-]+)\/([a-z0-9-]+?)(?:\.(md|json))?$/.exec(pathname)
   const code = m && countryOfSegment(m[1])

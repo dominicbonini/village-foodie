@@ -22,7 +22,10 @@ import { COUNTRY_PATH_SEGMENTS, HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/
 import { servicePricingStore } from '@/lib/admin/pricing-check-store'
 import { competitorOut, planOut, entryOut } from '@/lib/admin/pricing-check-actions'
 import { buildComparison, type ComparisonFlags, type ComparisonInput, type ComparisonT, type CountryCopy } from '@/lib/comparison'
-import { comparisonFlags, comparisonFlagsOf } from '@/lib/comparison-flags'
+import { comparisonFlags, comparisonFlagsOf, flagsFromRows, readPublishRows } from '@/lib/comparison-flags'
+import { unstable_cache, revalidateTag } from 'next/cache'
+import { comparisonTag, COMPARISON_REVALIDATE_SECONDS } from '@/lib/marketing-tags'
+import { DEPLOYMENT_KEY } from '@/lib/marketing-cache'
 import { NO_COMPARISON_PAGE } from '@/lib/comparison-types'
 export { comparisonFlags, comparisonFlagsOf, clearComparisonCache } from '@/lib/comparison-flags'
 import { valueOut, countryCharges, featureCheckOut, type ComparisonFeature, type FeatureValueRow, type FeatureCheckRow } from '@/lib/comparison-features'
@@ -155,11 +158,42 @@ export async function comparisonPage(code: string, flags?: ComparisonFlags): Pro
  *   • 'admin' — for everyone but a verified admin (`isAdmin` is lib/auth/admin.ts, asked only then).
  * 'live' is public. The host check (HatchGrab only) is the caller's, before this.
  */
+/** compare-cache-1 (Dominic, 27 November 2026; docs/compare-cache-1-report.md): ONE COUNTRY'S COMPARISON SWITCHES, read through Next's
+ *  data cache under that country's tag ONLY (comparison-GB) — so the cached page that reads them carries exactly that tag (never
+ *  marketing-countries: a migration refreshes no comparison page), and the first read after a refresh is the database, never a warm
+ *  server's 60-second in-memory copy (which could put a page that was just taken down back in the cache for 30 days). Keyed by country
+ *  and deployment. A failed read THROWS (nothing failed is kept): a cached page then keeps its last good version. */
+const taggedFlags = async (code: string): Promise<ComparisonFlags> => {
+  try { return await taggedFlagsRead(code) } catch (e) {
+    // Outside Next's runtime (a harness, a script) there is no data cache: the switches are read as before, uncached. Any other
+    // failure is real and is thrown.
+    if (e instanceof Error && /incrementalCache missing/.test(e.message)) return comparisonFlagsOf(code)
+    throw e
+  }
+}
+const taggedFlagsRead = (code: string): Promise<ComparisonFlags> => unstable_cache(async (): Promise<ComparisonFlags> => {
+  const { supabase } = await import('@/lib/supabase')
+  const { data, error } = await supabase.from('country_settings').select('country_code, comparison_status, ios_app_available, android_app_available').eq('country_code', code)
+  if (error) throw new Error(`comparison switches (${code}): ${error.message}`)
+  const publish = (await readPublishRows(supabase as never)).filter(r => (r as Record<string, unknown>).country_code === code)
+  return flagsFromRows(data ?? [], publish).get(code) ?? { countryCode: code, status: 'off', iosApp: false, androidApp: false }
+}, ['compare-cache-1', 'flags', code, DEPLOYMENT_KEY], { tags: [comparisonTag(code)], revalidate: COMPARISON_REVALIDATE_SECONDS })()
+
+/** compare-cache-1: expire these countries' comparison pages (and twins) now — an Admin › Countries save calls it for the country it
+ *  saved; the publish step reaches the same tags through /api/revalidate. Never throws. */
+export function revalidateComparison(codes: readonly string[], why: string): void {
+  for (const c of new Set(codes.map(x => x.trim().toUpperCase()).filter(x => /^[A-Z]{2}$/.test(x)))) {
+    try { revalidateTag(comparisonTag(c), { expire: 0 }) } catch (e) { console.error(`[comparison] could not expire ${comparisonTag(c)} (${why}):`, e instanceof Error ? e.message : e) }
+  }
+}
+
 export async function resolveComparison(segment: string, section: string, slug: string, isAdmin: () => Promise<boolean>):
   Promise<{ input: ComparisonInput; flags: ComparisonFlags; admin: boolean } | null> {
   const code = Object.entries(COUNTRY_PATH_SEGMENTS).find(([, s]) => s === segment)?.[0]
   if (!code) return null
-  const flags = await comparisonFlagsOf(code)
+  // compare-cache-1: through the country's tagged read (above), so every cached answer — the page, a 404 for a page not live — carries
+  // the tag that refreshes it.
+  const flags = await taggedFlags(code)
   if (flags.status === 'off') return null
   const admin = await isAdmin()
   if (flags.status === 'admin' && !admin) return null

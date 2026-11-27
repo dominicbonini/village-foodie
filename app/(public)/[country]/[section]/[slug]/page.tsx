@@ -18,9 +18,8 @@
 import { cache } from 'react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { headers } from 'next/headers'
+import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { isHatchGrabHost } from '@/lib/brand'
 import { adminUser } from '@/lib/auth/admin'
 import { MarketingFrame } from '@/components/landing/MarketingFrame'   // site-chrome-1: the ONE shared header and footer
 import { DemoCta } from '@/components/landing/DemoUpload'
@@ -34,15 +33,26 @@ import { StickyTableHead } from '@/components/StickyTableHead'   // compare-ux-1
 import '../../../(site)/landing/landing.css'
 import './comparison.css'
 
-export const dynamic = 'force-dynamic'
+// ── compare-cache-1 (Dominic, 27 November 2026; docs/compare-cache-1-report.md): CACHED FOR 30 DAYS, REFRESHED ON DEMAND ──────────
+// No longer force-dynamic. Each country's page renders on its first visit (no page is built ahead) and is then kept for 30 days, unless
+// its tag comparison-<CC> is expired first — by the publish step for a country whose page changed in that run, or by an Admin › Countries
+// save. 🔴 The public render reads NO request: no headers, no cookies, no searchParams. The host rule is proxy.ts's (404 on any host but
+// HatchGrab's). An ADMIN'S PREVIEW is Next's draft mode, switched on by /api/compare/preview (admin only): only then is the admin read
+// and ?view=public honoured, and Next renders the page per request, never from or into the cache. A page that is not live renders as a
+// 404 for everyone else — that 404 is what the cache keeps, under the same tag, until the country's next refresh.
+export const revalidate = 2592000   // 30 days — lib/marketing-tags.ts COMPARISON_REVALIDATE_SECONDS
+export const dynamicParams = true
+/** No page built ahead: each renders on its first visit, then is kept. */
+export function generateStaticParams(): Params[] { return [] }
 
 type Params = { country: string; section: string; slug: string }
 type Search = Record<string, string | string[] | undefined>
 
 /** One resolution per request — the metadata and the page ask the same question. Null = 404. */
 const resolve = cache(async (country: string, section: string, slug: string) => {
-  if (!isHatchGrabHost((await headers()).get('host') || '')) return null
-  return resolveComparison(country, section, slug, async () => (await adminUser()) !== null)
+  // compare-cache-1: the admin is read ONLY in draft mode (an admin's preview); the public render reads no cookie.
+  const preview = (await draftMode()).isEnabled
+  return resolveComparison(country, section, slug, async () => preview && (await adminUser()) !== null)
 })
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
@@ -81,6 +91,7 @@ export default async function ComparisonPage({ params, searchParams }: { params:
   const settings = input.settings
   const t = comparisonT(settings.locale)
   const rich = translatorFor(settings.locale, 'comparison')
+  // compare-cache-1: searchParams only for an admin (draft mode) — the public render never reads them.
   const publicView = !admin || (await searchParams).view === 'public'
   const v = buildComparison(input, t, { admin, publicView }, comparisonSuitsT(settings.locale))
   const visitor = await resolveVisitorCountry(undefined, { segment: p.country, page: 'landing' })

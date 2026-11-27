@@ -145,7 +145,9 @@ const BANNED = [/\bTSE\b/, /Lieferando/i, /\bWolt\b/i, /German|Deutschland|Allem
   t('the generated namespace files match the messages (scripts/split-messages.cjs --check)', (() => { try { execSync('node scripts/split-messages.cjs --check', { cwd: REPO, stdio: 'pipe' }); return true } catch { return false } })())
 
   head('4 · scope')
-  const changed = execSync(`git diff --name-only ${BASE} -- lib app components`, { cwd: REPO, encoding: 'utf8' }).split('\n').filter(Boolean)
+  // ⚠️ RE-PINNED (compare-cache-1, 27 November 2026): this work's own commit (97d47768), not the working tree — privacy-processors-1
+  // (lib/legal.ts) and compare-cache-1 (the comparison route, proxy, Admin's saves) changed lib/ and app/ after it, on purpose.
+  const changed = execSync(`git diff --name-only ${BASE} 97d47768 -- lib app components`, { cwd: REPO, encoding: 'utf8' }).split('\n').filter(Boolean)
   const allowed = ['lib/comparison.ts', 'lib/comparison-server.ts', 'app/(public)/[country]/[section]/[slug]/page.tsx', 'app/(public)/[country]/[section]/[slug]/comparison.css']
   t(`only the comparison code changed in lib/, app/ and components/ (${allowed.join(', ')})`, changed.every(f => allowed.includes(f)), changed)
   t('no landing-page file changed', !changed.some(f => /\[country\]\/page\.tsx$|components\/landing\//.test(f)))

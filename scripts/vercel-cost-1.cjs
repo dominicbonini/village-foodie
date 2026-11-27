@@ -48,8 +48,11 @@ t('lib/faq/public-cache.ts reads only through shared() (so it inherits both), wi
   !/unstable_cache|revalidate/.test(noComments(read('lib/faq/public-cache.ts'))) && /shared\('faq-page'/.test(read('lib/faq/public-cache.ts')))
 {
   const pub = walk('app/(public)').filter(f => /\.(ts|tsx)$/.test(f))
-  const numeric = pub.filter(f => /^export const revalidate = \d/m.test(read(f)) || /next:\s*\{\s*revalidate:\s*\d/.test(read(f)) || /unstable_cache\(/.test(read(f)))
-  t(`no file under app/(public) (${pub.length}) sets a numeric revalidate, a fetch revalidate or its own unstable_cache`, numeric.length === 0, numeric)
+  // ⚠️ RE-PINNED (compare-cache-1, 27 November 2026, docs/compare-cache-1-report.md): the comparison page is the ONE deliberate exception —
+  // Dominic's 30-day revalidate (2,592,000 s), refreshed on demand under its own tag comparison-<CC> (scripts/compare-cache-1.cjs proves it).
+  const CMP = 'app/(public)/[country]/[section]/[slug]/page.tsx'
+  const numeric = pub.filter(f => f !== CMP).filter(f => /^export const revalidate = \d/m.test(read(f)) || /next:\s*\{\s*revalidate:\s*\d/.test(read(f)) || /unstable_cache\(/.test(read(f)))
+  t(`no file under app/(public) (${pub.length}) sets a numeric revalidate, a fetch revalidate or its own unstable_cache — but the comparison page's 30 days`, numeric.length === 0 && /^export const revalidate = 2592000/m.test(read(CMP)), numeric)
 }
 
 // ══ 2 ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -68,8 +71,12 @@ head('2 · built ahead: only the busiest countries')
 // ══ 3 ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 head('3 · refreshed on demand')
 const unchanged = f => { try { return git('show', `${BASE}:${f}`) === read(f) } catch { return false } }
-t('app/api/revalidate/route.ts is byte-identical to BASE (perf-1: POST only, REVALIDATE_SECRET in a header, constant time, allow-listed tags, 503 when unset)',
-  unchanged('app/api/revalidate/route.ts') && unchanged('lib/revalidate-secret.ts'))
+// ⚠️ RE-PINNED (compare-cache-1, 27 November 2026): the route's allow-list also takes comparison-<CC> (Dominic's decision 1); perf-1's rules
+// are checked as rules now — POST only, the secret in a header compared in constant time (lib/revalidate-secret.ts byte-identical), 503 unset.
+{ const r = read('app/api/revalidate/route.ts')
+t('app/api/revalidate/route.ts keeps perf-1\'s rules (POST only, REVALIDATE_SECRET in a header, constant time, allow-listed tags, 503 when unset); lib/revalidate-secret.ts byte-identical to BASE',
+  unchanged('lib/revalidate-secret.ts') && /export async function POST\(/.test(r) && !/export async function (GET|PUT|DELETE)/.test(r) && /if \(!expected\) return NextResponse\.json\(\{ error: 'Revalidation is not configured\.' \}, \{ status: 503 \}\)/.test(r)
+  && /secretMatches\(req\.headers\.get\('x-revalidate-secret'\), expected\)/.test(r) && /!tags\.every\(isRefreshTag\)/.test(r) && /status: 400/.test(r)) }
 {
   const rp = read('scripts/revalidate-pages.cjs')
   t('scripts/revalidate-pages.cjs, run directly: every tag by default (or the tags named), exit 0 only on a 200', /if \(require\.main === module\) \{\n  const named = process\.argv\.slice\(2\)\n  revalidatePages\(named\.length \? named : TAGS/.test(rp) && /process\.exit\(ok \? 0 : 1\)/.test(rp))
@@ -84,13 +91,15 @@ t('Admin\'s writes expire the tags in-process: Countries, its comparison status,
   && /revalidateMarketing\(\[MARKETING_TAGS\.faq\], 'admin\/faq'\)/.test(read('app/api/admin/faq/route.ts')))
 t('the FAQ translator refreshes after a run that wrote; the competitor check after a verdict changed; db-migrate.cjs after every migration',
   /if \(!dryRun && !fixtures && \(report\.done > 0 \|\| report\.removed > 0\)\) \{[\s\S]{0,400}revalidatePages\(\['marketing-faq'\]/.test(read('scripts/faq-translate/main.ts'))
-  && /revalidate: \(\) => revalidateCountries\(/.test(read('scripts/competitor-check/main.ts'))
+  && /revalidate: \(codes, liveChanged\) => revalidateCountries\(codes, liveChanged,/.test(read('scripts/competitor-check/main.ts'))   // ⚠️ RE-PINNED (compare-cache-1): the changed countries only
   && /require\('\.\/revalidate-pages\.cjs'\)\.revalidatePages\(undefined, \{ why: `migration \$\{rel\}`/.test(read('scripts/db-migrate.cjs')))
 t('both workflows pass REVALIDATE_SECRET from the repository secrets',
   ['.github/workflows/faq-translate.yml', '.github/workflows/competitor-check.yml'].every(f => /REVALIDATE_SECRET: \$\{\{ secrets\.REVALIDATE_SECRET \}\}/.test(read(f))))
 t('no competitor table feeds a cached page: the landing reads only the comparison SWITCHES (country_settings, tag marketing-countries); the comparison pages themselves are per request',
   /comparisonFlagsOf/.test(read('app/(public)/(site)/landing/page.tsx')) && !/comparisonPage\(|comparisonData\(|comparison_entries|competitors/.test(noComments(read('app/(public)/(site)/landing/page.tsx')))
-  && /^export const dynamic = 'force-dynamic'$/m.test(read('app/(public)/[country]/[section]/[slug]/page.tsx')))
+  // ⚠️ RE-PINNED (compare-cache-1, 27 November 2026): the comparison pages are cached now — for 30 days, under their own tag comparison-<CC>
+  // ONLY (never marketing-countries, so no landing or migration refresh touches them; scripts/compare-cache-1.cjs).
+  && /^export const revalidate = 2592000/m.test(read('app/(public)/[country]/[section]/[slug]/page.tsx')) && !/force-dynamic/.test(noComments(read('app/(public)/[country]/[section]/[slug]/page.tsx'))))
 
 // ══ 4 ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 head('4 · compare and the legal pages: per request, unchanged')

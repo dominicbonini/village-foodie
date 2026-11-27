@@ -35,7 +35,10 @@ const STUBS = {
     const H = () => globalThis.__mcReq || { headers: {}, cookies: {} }
     export async function headers() { const r = H(); return { get: k => r.headers[k.toLowerCase()] ?? null, has: k => k.toLowerCase() in r.headers } }
     export async function cookies() { const r = H(); return { get: k => (k in r.cookies ? { name: k, value: r.cookies[k] } : undefined), has: k => k in r.cookies, getAll: () => Object.entries(r.cookies).map(([name, value]) => ({ name, value })), set() {} } }
-    export async function draftMode() { return { isEnabled: false } }`,
+    // ⚠️ RE-PINNED (compare-cache-1, 27 November 2026): the comparison pages read the admin only in Next's draft mode (an admin's preview,
+    // app/api/compare/preview) — a fixture that renders as an admin (globalThis.__cmpAdmin, or __mcDraft) is in draft mode, as a real
+    // admin is after the preview switch; every other render is the public, cached one (isEnabled false), exactly as before.
+    export async function draftMode() { return { isEnabled: !!(globalThis.__mcDraft ?? globalThis.__cmpAdmin), enable() { globalThis.__mcDraft = true }, disable() { globalThis.__mcDraft = false } } }`,
   'next/script': "import { createElement } from 'react'\nexport default function Script(p) { return createElement('script', { 'data-src': p.src || '', 'data-strategy': p.strategy || '' }) }",
   'next/dynamic': "export default function dynamic() { return function Dynamic() { return null } }",
   'posthog-js/react': "export const usePostHog = () => null\nexport function PostHogProvider(p) { return p.children }",

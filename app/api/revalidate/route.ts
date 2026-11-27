@@ -9,10 +9,12 @@
 //   • REVALIDATE_SECRET unset → 503 and nothing done (an unconfigured endpoint is closed, not open);
 //   • a wrong or missing secret → 401, the same short answer whatever was wrong;
 //   • every tag must be on the allow-list (lib/marketing-tags.ts) — anything else → 400 and nothing done;
+//     compare-cache-1 (27 November 2026): the allow-list also takes one country's comparison page, `comparison-GB` (isComparisonTag);
 //   • the tags are EXPIRED at once (revalidateTag(tag, { expire: 0 })): the next request reads the database.
 // It returns no data and reads nothing from the database.
 import { NextRequest, NextResponse } from 'next/server'
-import { isMarketingTag, MARKETING_TAG_LIST } from '@/lib/marketing-tags'
+import { revalidateTag } from 'next/cache'
+import { isMarketingTag, isRefreshTag, MARKETING_TAG_LIST, MAX_REFRESH_TAGS } from '@/lib/marketing-tags'
 import { revalidateMarketing } from '@/lib/marketing-cache'
 import { secretMatches } from '@/lib/revalidate-secret'
 
@@ -24,11 +26,15 @@ export async function POST(req: NextRequest) {
   if (!secretMatches(req.headers.get('x-revalidate-secret'), expected)) return NextResponse.json({ error: 'Not allowed.' }, { status: 401 })
   let tags: unknown
   try { tags = (await req.json())?.tags } catch { tags = null }
-  if (!Array.isArray(tags) || tags.length === 0 || tags.length > MARKETING_TAG_LIST.length || !tags.every(isMarketingTag)) {
-    return NextResponse.json({ error: `Give "tags": one or more of ${MARKETING_TAG_LIST.join(', ')}.` }, { status: 400 })
+  if (!Array.isArray(tags) || tags.length === 0 || tags.length > MAX_REFRESH_TAGS || !tags.every(isRefreshTag)) {
+    return NextResponse.json({ error: `Give "tags": one or more of ${MARKETING_TAG_LIST.join(', ')}, or comparison-<COUNTRY CODE>.` }, { status: 400 })
   }
   const unique = [...new Set(tags)]
-  revalidateMarketing(unique, 'api/revalidate')
+  revalidateMarketing(unique.filter(isMarketingTag), 'api/revalidate')
+  // compare-cache-1: a country's comparison page and its twins — expired at once, like the marketing tags.
+  for (const t of unique.filter(x => !isMarketingTag(x))) {
+    try { revalidateTag(t, { expire: 0 }) } catch (e) { console.error(`[revalidate] could not expire ${t}:`, e instanceof Error ? e.message : e) }
+  }
   console.log(`[revalidate] expired ${unique.join(', ')}`)
   return NextResponse.json({ revalidated: unique })
 }

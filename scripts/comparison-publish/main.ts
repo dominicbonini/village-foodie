@@ -16,17 +16,20 @@ import { runPublish } from '@/lib/comparison-publish-run'
 import { noCheckStore, pgPricingReads, pgPublishStore } from '@/lib/comparison-publish-store-pg'
 import { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'
 import { NO_COMPARISON_PAGE } from '@/lib/comparison-types'
+import { comparisonTag } from '@/lib/marketing-tags'
 import { inTransaction } from '@/lib/pg-rows'
 import { comparisonTally, connectComparisonDb, tallyDiff } from '../comparison-db'
 
-async function revalidate(log: (l: string) => void): Promise<boolean> {
+/** compare-cache-1 (27 November 2026): the changed countries' comparison pages (comparison-<CC>), and marketing-countries only when a live
+ *  status changed (the landing footers' comparison link, the hreflang). Never throws. */
+async function revalidate(codes: string[], liveChanged: boolean, log: (l: string) => void): Promise<boolean> {
   try {
     const secret = process.env.REVALIDATE_SECRET
     const base = (process.env.REVALIDATE_BASE_URL || 'https://www.hatchgrab.com').replace(/\/+$/, '')
     if (!secret) { log('revalidate: REVALIDATE_SECRET is not set — the pages pick the change up when their cache expires.'); return false }
     const res = await fetch(`${base}/api/revalidate`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-revalidate-secret': secret },
-      body: JSON.stringify({ tags: ['marketing-countries'] }), signal: AbortSignal.timeout(10_000) })
-    log(`revalidate: ${base}/api/revalidate answered ${res.status}.`)
+      body: JSON.stringify({ tags: [...codes.map(comparisonTag), ...(liveChanged ? ['marketing-countries'] : [])] }), signal: AbortSignal.timeout(10_000) })
+    log(`revalidate: ${base}/api/revalidate answered ${res.status} (${codes.length} comparison page${codes.length === 1 ? '' : 's'}${liveChanged ? ' and marketing-countries' : ''}).`)
     return res.status === 200
   } catch (e) { log(`revalidate: the site could not be reached — ${e instanceof Error ? e.message : e}`); return false }
 }
@@ -55,7 +58,10 @@ async function main() {
     const after = await comparisonTally(db.client)
     log(`tables after${dryRun ? ' the rollback' : ''}: ${tallyDiff(before, after)}`)
     if (dryRun && tallyDiff(before, after) !== 'no change') { console.error('🔴 the dry run changed the tables — this must never happen'); process.exitCode = 1 }
-    if (!dryRun) await revalidate(log)
+    // compare-cache-1: only the pages that changed in this run — none when nothing changed.
+    const refresh = p.refreshed ?? []
+    log(`pages${dryRun ? ' that would be' : ''} refreshed: ${refresh.length ? refresh.join(' ') : 'none'}${p.liveChanged ? ' + marketing-countries (a live status changed)' : ''}`)
+    if (!dryRun && refresh.length) await revalidate(refresh, p.liveChanged === true, log)
   } finally { await db.close() }
 }
 
