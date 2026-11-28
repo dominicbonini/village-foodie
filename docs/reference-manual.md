@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.42
+HatchGrab Engineering Reference Manual · V16.43
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.42**
+**Version 16.43**
 
 November 2026
 
@@ -120,7 +120,7 @@ identical; a **pre-flight** before the migration runs and a **check** after it. 
 insert fail (its own exception block; on error it leaves the value NULL and logs a WARNING). Never run a proof against Pizzeria
 Gusto or any trading truck. A proof that can't be run is a stop: say so; don't apply the migration.
 
-# Open items (V16.42, 26 November 2026) — THE ONLY CURRENT LIST
+# Open items (V16.43, 27 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
@@ -173,8 +173,11 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
      new languages' legal pages (`docs/languages-world-2/handover/NATIVE.md`).
    - **V16.34:** also km-KH, lo-LA, am-ET, ca-AD, sw-TZ and si-LK — their UI word choices, legal pages and store listings
      (`docs/languages-world-2/handover/NATIVE.md`).
-7. **Le Roi du Churrasco fixes their allergens by hand:** their 11 dishes were confirmed with all 14 allergens ticked
-   (demo-claim-2) and need the truck's own look. Not something an agent edits.
+   - **V16.43:** the privacy policy's two new section-6 rows and the transfers clause in all **54 used languages** (privacy-processors-1,
+     listed there). The comparison guide in the 77 non-English languages (hidden by `fit_off` until checked).
+7. ~~**Le Roi du Churrasco fixes their allergens by hand:** their 11 dishes were confirmed with all 14 allergens ticked
+   (demo-claim-2) and need the truck's own look. Not something an agent edits.~~ ⛔ **V16.43: removed** — fixing their allergens is Le
+   Roi du Churrasco's own action (Dominic, 27 Nov).
 8. **The country-specific terms sections** for the 47 languages-world-1 countries and the 167 new ones (a lawyer).
    ⛔ *V16.36: the privacy parts are gone from that page (one privacy policy for every country, france-privacy-1), so the
    lawyer's check now covers the terms parts and the single privacy policy.*
@@ -239,13 +242,15 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 26. 🔴 **The offer is not decided: every partner shows "Needs offer".** Create each partner's code (deal + commission) by hand in
     its drawer. Nothing is queued or sent until then. (The 13 site addresses: ⛔ done V16.32, site address primary.)
     **V16.35:** Dominic will reach out to partners once the landing page is updated.
+    **V16.43: parked** — Dominic will do the partner deals later.
 
 **Added V16.33 (events, dashboard sign-in, languages):**
 27. 🔴 **Dashboard sign-in, next steps** (rollout steps 2–8 in "Dashboard sign-in"). **Around 2 Dec:** read the `auth_shadow` counts.
 28. **Supabase session settings** (time-boxed sessions and inactivity timeout) must be OFF. ⛔ **V16.34:** keep open unless Dominic
     confirms he checked.
-29. **Decision: the comparison pages' Germany-only content** (Uber Eats DE rates, Lieferando, TSE) in non-German languages'
-    comparison pages. Recommendation: leave those sections out for countries without their own comparison check.
+29. ~~**Decision: the comparison pages' Germany-only content** (Uber Eats DE rates, Lieferando, TSE) in non-German languages'
+    comparison pages. Recommendation: leave those sections out for countries without their own comparison check.~~ ⛔ **V16.43: fixed
+    in code** (compare-suits-fix-2, `97d47768`): the Germany-only guide is replaced; closes with the deploy.
 30. **Decision: "per food truck" vs "per vehicle"** — sq-AL follows the English ("per food truck"); bs-BA and mk-MK say "per
     vehicle". Recommendation: all languages follow the English; change the English first if "per vehicle" is wanted.
 31. **Delete-account screen names UK law** in every language: kept (HatchGrab Ltd is a UK company); the legal check may add local
@@ -266,6 +271,9 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     Googlebot. Review: build ahead only the busiest countries and the rest on first visit; a much longer `revalidate` with an
     immediate refresh when prices or FAQ text change in admin; Vercel **Ignored Build Step** for pushes that only touch `docs/`,
     `supabase/migrations` or `*.md` (a dashboard setting, no deploy). Check Vercel → Usage first to see which charge dominates.~~
+    **V16.43:** after the deploy, Vercel → Usage after a week — the comparison cache (compare-cache-1) should remove most per-visit cost.
+    Optional: a Spend Management **notification-only** alert (never "pause production deployments"). Vercel Ignored Build Step for
+    docs-only pushes is still open (a dashboard setting).
 36. **FAQ translations after 1 Dec:** run the translator until done; check /tz/faq, /ad/faq, the four new answers in fr-FR and
     es-MX, and /br …0002. Optional: raise the Anthropic monthly spend limit instead of waiting. (OBSERVED 23 Nov: /al, /mk, /ba
     and /lk/faq also answer 404; their locales have 14 FAQ translation rows each.)
@@ -284,12 +292,16 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     (V16.37):** origin/main **`5df925d8`** (vercel-cost-1, pushed and deployed by Dominic on 24 Nov), main `59ae6161` (2 ahead of
     origin/main), france-vat-1 `cde49a32` (146 ahead of main), checked out. **Keep:** the full batch (france-*, enquiries, inbox,
     compare-fix, till) is on `france-vat-1` and goes out in ONE deploy after Dominic has tested it on localhost.
-41. 🔴 **Switch on the Inbox's drafting and intake, in this order:** (a) a Claude API key for drafting — a **separate Anthropic
+41. 🔴 **Switch on the Inbox's drafting and intake, in this order:** ~~(a) a Claude API key for drafting — a **separate Anthropic
     workspace with its own low spend limit**, key added to Vercel as `ANTHROPIC_API_KEY` (Dominic); (b) **privacy policy section 6**:
     add "Anthropic (Claude) — Translating messages you send us and helping draft our replies — United States" and "Namecheap — Our
-    email mailboxes — [location to check]", English first for Dominic's approval, then only the used languages; (c) a **test send from
+    email mailboxes — [location to check]", English first for Dominic's approval, then only the used languages;~~ (c) a **test send from
     an alias** in Outlook, then `enquiries_reply_from_alias` = true if it works; (d) the deploy; (e) `enquiries_intake_enabled` = true.
     OBSERVED 24 Nov: both settings false, 36 aliases, 0 enquiries.
+    **V16.43:** (a) ⛔ done 27 Nov — workspace "Inbox drafting", $20 limit, key without expiry, `ANTHROPIC_API_KEY` in Vercel
+    (Production). (b) ⛔ done in code (`e535b1b6`, English + 54 languages; native checks in item 6). (c) **Dominic will test the alias
+    send when real emails start arriving**; until then replies go from the main mailbox. (d) the deploy. (e) then
+    `enquiries_intake_enabled` = true.
 42. **Knowledge screen** to approve or retire suggested `reply_knowledge` lines (mockup first). Until then, SQL. OBSERVED 24 Nov:
     approved 4 fact, 1 gap, 2 guidance; suggested 1 fact.
 43. **Decision: the till line** (held as suggested) — follows the till-software decision (item 47).
@@ -332,8 +344,9 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     receipts (france-receipts-1 in progress: `6ed618a9`, `56ce9d7d` committed, more uncommitted work in the folder on 24 Nov).~~
     ⛔ *V16.36: business details, receipt number, date of sale and the franchise line are on the customer email, status page and
     ticket (france-receipts-1). Left: a receipt for counter orders when no email is taken (print or QR).*
-49. **Decision: Microsoft 365 for email** (Dominic considering). The CRM and the poll use IMAP/SMTP with a password on Namecheap;
-    Microsoft 365 would need the mail connection reworked (OAuth). Decide before switching the Inbox on.
+49. ~~**Decision: Microsoft 365 for email** (Dominic considering). The CRM and the poll use IMAP/SMTP with a password on Namecheap;
+    Microsoft 365 would need the mail connection reworked (OAuth). Decide before switching the Inbox on.~~ ⛔ **V16.43: removed from
+    the actions** — Dominic will move to Microsoft 365 himself, later.
 50. **Channels research:** Search Console and Bing (Performance by country; Indexing › Pages trend; URL Inspection of /de, /es,
     /it) and PostHog (visits and sources per country page), France against two or three others; ask new customers how they found
     HatchGrab (possibly a line in the Inbox's first reply).
@@ -372,8 +385,11 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     check that 2–4 competitors are checked a day (up to ~6 in early February with the kept dates) and the live countries stay live.
     **V16.42:** settings now core 180 days, monthly cap $50 (`20261143`). The batch deploy must carry compare-square-1's rule (`5135f4e3`)
     as well as `18836cf5`; re-enabling on the old `main` would take the 22 one-tool pages down.
-56. 🔴 **Vercel Spend Management:** confirm there is no budget with "Pause production deployments" (a pause = 503 for every page, Pizzeria
-    Gusto included); keep alerts only. **Decision: Observability** events (≈ $0.13–0.31 a day) — switch off if unused.
+    **V16.43:** the deploy must also carry compare-cache-1. Before re-enabling, confirm the workflow's publish step can refresh pages
+    after the deploy (it needs the revalidate secret as a GitHub secret, or the refresh fails silently and pages stay up to 30 days old).
+56. ~~🔴 **Vercel Spend Management:** confirm there is no budget with "Pause production deployments" (a pause = 503 for every page, Pizzeria
+    Gusto included); keep alerts only. **Decision: Observability** events (≈ $0.13–0.31 a day) — switch off if unused.~~ ⛔ **V16.43:
+    done** — Dominic confirmed (27 Nov) there is no Spend Management budget, so no pause can happen.
 57. ~~**Comparison research — next waves**, in launch order (the method in §91):
     - one short: MT; IS RS KR QA SA BH JO BO DO SV GT JM UY ZA CO; AL BA MK MD UZ IN LK BD (and others in compare-research-3's table);
     - nothing eligible found: AO BS CR CV HN IL MC MZ NI PE PY SN TN TT; KZ GE AZ AM ME KG PK KH NP MN MO BN LA TZ UG ET NA BW ZM ZW DZ BZ
@@ -424,6 +440,8 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     CH) need their older duplicate retired first, one at a time. Vendor display names with English in brackets (Chuzmonster, Nomad). Square:
     the US Plus billing period; AU's unused older plans (Square Online Plus $40, two Square for Restaurants plans) to tidy. The comparison
     cost calculator must add Stripe's fee to HatchGrab and no extra card fee to bundled rates (What The Truck, Square) — check (Open item 16).
+    **V16.43:** a "+ VAT on the fee" marker shown in the fee cell (a small code change, later); then rename What The Truck's plan back to
+    "What The Truck". Tidy the four unused `comparison.fit` keys (`oursBody`, `oursNot`, `appClause`, `marketplaces`).
 59. ~~**Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, Restorant NG, Menufy PR, Oddle TW, Yoveletta /
     Rent-a-Shop LI and Ordea GI (neighbour fits), Fudo AR/CL, Pedix, DISH HR/SK, Vitrina SI.~~
     ~~⛔ **V16.38:** **Borderline fits counted (Dominic may take any down with Admin's switch):** Asila MA, **Linkin1 SA**, Restorant NG,
@@ -454,6 +472,13 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     exemption; Q9: must a sole trader's legal name **and address** stay in the till record for 10 years after they close their
     account; offline orders). Also give the adviser the texts the law report could not read (its §5 "Not checked": loi n° 2026-534
     arts. 36 and 87 and CIBS L216-48 — Légifrance refused automated fetches). Before the attestation is signed.
+
+**Added V16.43 (harness pins, after the deploy):**
+65. **The harness pins:** re-pin vercel-cost-1's two "nothing else changed" checks to vercel-cost-1's own commit (as done for
+    compare-fix-1 / compare-square-1), and fix compare-de-1-screens (a third competitor on the test page, or expect a sideways scroll only
+    when the table is wider than the screen).
+66. **After the deploy:** delete the branch france-vat-1 (it will be identical to `main`) and start one new branch from `main` for
+    the next batch (Dominic: one branch, one localhost).
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -705,6 +730,67 @@ actions, `refund`, the Manage-level token routes. 6. After two clean weeks, grou
 board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings (owner only; needs a mockup first).
 
 # Changelog
+
+## V16.43 — 27 November 2026 — **COMPARISON PAGES CACHED 30 DAYS AND REFRESHED PER COUNTRY; A NEW PLAIN-ENGLISH GUIDE (OTHER LANGUAGES HIDDEN); THE 1,000-ROW CUT FIXED; HATCHES UP AND WHAT THE TRUCK IN GB; THE PRIVACY POLICY NAMES ANTHROPIC AND NAMECHEAP; THE INBOX'S DRAFTING KEY IN VERCEL**
+
+- **hatches-up-1** (26 Nov; migration `20261146`; `data/hatches-up-1/` registered fifteenth): Hatches Up from its own site
+  (hatchesup.co.uk; check_urls /vendors/, /pricing/); plan "Unlock orders & payments", £0 a month, card fee included 4.5 % + 20p online
+  (1.5 % + 10p in person); class A. **GB: Ordea · What The Truck · Hatches Up · Square** (Eventifood out). Still 96 live.
+- **The 1,000-row cut (compare-calc-check-1, read-only):** the public pages and Admin › Pricing check read `competitor_plans` in one
+  unpaged request; Supabase returns at most 1,000 rows and there were 1,057, so 47 of 212 shown tools (Square everywhere, What The Truck,
+  Hatches Up, territory tools) were missing and GF AX RE VA YT showed no competitor. The publish (via `pg`) was right.
+  - **Live fix, 26 Nov (Dominic):** Supabase **Max rows raised from 1,000 to 10,000** (Project Settings → Data API). The live pages
+    showed every tool again at once.
+  - **Code fix** (`e9626ca8`, compare-calc-fix-1): every read in `lib/admin/pricing-check-store.ts` that can pass 1,000 rows is paged
+    (pages of 1,000, ordered by created_at, id). Harness compare-calc-fix-1 20 / 0.
+- **Card fees on the pages (compare-calc-check-1):** the price answers ("lowest at 150 / 2,000 orders") leave card processing out on
+  both sides and are switched off where a bundled tool is shown — **kept that way (Dominic)**, because counting all-in, Square's free plan
+  is cheaper than HatchGrab in GB. Admin's cost model counts all-in.
+  - **What The Truck GB** (`20261147`): stored as card fee included at 3.95 % (`card_mode` bundled, `card_bps` 395, truck fee 0) and
+    renamed **"What The Truck (online fee + VAT)"**, because the page shows the plan name but not its note. Favrit NO and WEIQ SE:
+    `card_mode` 'unknown' (no rate on their own sites).
+- **The "Which system suits whom?" guide (compare-suits-fix-1 read-only, then compare-suits-fix-2):** it was one fixed text written for
+  Germany and translated, so all 96 pages showed Germany's TSE rule, Uber Eats' German rates, Wolt and Lieferando, a tills and card
+  machines card, and in the 50 billed-at-truck countries implied online payment.
+  - **Dominic approved (26 Nov) the UK wording and a mockup.** Two cards side by side ("HatchGrab suits you if…" / "HatchGrab may not
+    suit you if…"), each a short list, then a "Delivery apps" card; no tills or card machines anywhere; no jargon; no delivery rates.
+  - **New table `comparison_country_copy`** (`20261148`, `9ca5b402`): `fit_off`, `delivery_apps`, `pay_methods_missing`, `collect_word`.
+    GB: Deliveroo, Uber Eats, Just Eat · "PayPal or Klarna" · collection. IE: Deliveroo · "PayPal or Klarna". US: "PayPal or Venmo" ·
+    pickup. AU: "PayPal or Afterpay" · pickup. Other English-locale countries: "PayPal". **The 77 non-English countries: `fit_off`
+    (no guide) until a native-speaker-checked translation exists.**
+  - The payment line follows `offersOnlineCardPayments` (billed-at-truck: «…in {country} they pay when they collect»). Code
+    `97d47768`; `lib/comparison-server.ts` reads the table (a tolerant read). Harness compare-suits-fix-2 23 / 0.
+- **The privacy policy (privacy-processors-1, `e535b1b6`):** section 6 adds «Anthropic (Claude) — Translating messages you send us and
+  helping draft our replies — United States» and «Namecheap — Our email mailboxes — United States» (our mail host is
+  `mail.privateemail.com`; Namecheap's Private Email is at PhoenixNAP, Phoenix, Arizona); the international-transfers paragraph names
+  both. **Dated 27 November 2026** (`PRIVACY_UPDATED`, `TERMS_VERSION` 2026-11-27, the sitemap date). Written in English and all 54
+  used languages in the same change (by Claude Code, not the API translator); **all 54 need a native-speaker check**. Harness
+  privacy-processors-1 9 / 0.
+- **The Inbox's drafting key (Open item 41a, Dominic, 27 Nov):** a separate Anthropic workspace **"Inbox drafting"** with a **$20
+  monthly spend limit**; key **hatchgrab-inbox-vercel**, **no expiry**; saved in Vercel as `ANTHROPIC_API_KEY` (Production, sensitive).
+  Workload identity federation was considered and not used (the Inbox reads a key; the spend limit caps any leak).
+- **compare-cache-1** (`30ec10c5`, `5dcf78ce`; appendices `0a5f70d2`, `fb58b8ee`, report `a556c9c3`): the comparison pages and their
+  .md / .json twins are **cached for 30 days** (`revalidate = 2592000`, ISR; first visit renders, then kept), and **refreshed per
+  country** (tag `comparison-<CC>`, through `POST /api/revalidate` with its existing secret) when:
+  - the publish finds that country's live status, line-up, prices, answers or admin switch changed (a run with no change refreshes
+    nothing);
+  - an Admin › Countries, Admin › Billing or Admin › Pricing check save touches that country (a feature-list save refreshes every live
+    country);
+  - a deploy (a new deployment starts with an empty cache).
+  - Migrations refresh no comparison page. The 30 days stay as a backstop for any change no trigger catches (Dominic agreed).
+  - **The admin preview** runs through draft mode: `app/api/compare/preview?to=<page>` (admin only) sets the draft cookie, then the
+    normal page and twin URLs render live with the banner and `?view=public`.
+  - **Other hosts:** a proxy.ts rule returns 404 for comparison pages, their twins and `/api/compare/*` on any host but hatchgrab.com.
+  - **Saving:** a visit drops from ~1.8 s with ~20 database requests (~11–12 k rows) to **7–10 ms with none**. Harness compare-cache-1
+    53 / 0; pricing-copy-4 1157 / 0 again (a one-line type fix in `lib/comparison.ts`).
+- **Pre-existing harness failures, explained (read-only):** vercel-cost-1's 3 are "nothing else changed" checks frozen at `d309e4ef`
+  (23 Nov) — later intended commits and another session's uncommitted fixtures trip them; compare-de-1-screens' 2 expect the table to
+  scroll sideways at 390 px, but the test page's table (2 columns) fits — likely since `488073ee` (compare-ux-1, 9 Nov). Neither affects
+  caching, cost or the deploy.
+- **Vercel usage:** $18.12 of the $20 included credit on 27 Nov, with **no Spend Management budget** (nothing pauses; usage past $20 is
+  billed). The comparison pages rendering on every visit were the likely main cost; the cache ships with the next deploy.
+- **Everything above is committed on france-vat-1, not pushed.** It ships with the next deploy.
+- **OBSERVED when applying (28 Nov, read-only, section E):** 96 live; `comparison_country_copy` 96 rows, 77 `fit_off`; the newest `data_imports` row `data/hatches-up-1/competitors.json`, `ok` (26 Nov 13:13 UTC); tier_intervals commercial 90 · core 180 · secondary 365, daily cap 3.00, monthly cap 50.00; `e535b1b6`, `97d47768`, `e9626ca8`, `30ec10c5` and `fb58b8ee` are all on france-vat-1. Matches the delta. **Supabase Max rows is 10,000** (raised by Dominic on 26 Nov; deploy-prep-1's §10 says 1,000, which is out of date). Since the delta was written, deploy-prep-1 (27 Nov) cleared its sweep stop (`068ddf7c`: the translation checker accepts the 15 English-only `comparison.fit` keys while `fit_off` hides the guide, listed in `docs/i18n/english-only-keys.json`; three scope proofs re-pinned) and fast-forwarded local `main` to france-vat-1, not pushed (origin/main still `5df925d8`); `REVALIDATE_SECRET` is a GitHub secret (Open item 55's condition).
 
 ## V16.42 — 26 November 2026 — **96 COMPARISON COUNTRIES LIVE: 1 TOOL IS ENOUGH; FOOD-TRUCK TOOLS RANKED A → B; SQUARE IN ITS 8 COUNTRIES; WHAT THE TRUCK ON THE UK PAGE; FEATURES CHECKED EVERY 180 DAYS, $50 A MONTH**
 
@@ -31905,6 +31991,9 @@ Recorded so they are not briefed again.
 - **Unchanged:** `/<country>/compare`, the comparison pages and the legal pages still render per request.
 - ⛔ Supersedes every "within 5 minutes" / `revalidate = 300` statement about marketing pages (35.ap-2; Open items 35).
 - Harnesses `scripts/vercel-cost-1.cjs` (30/0) and `scripts/vercel-cost-1-local.cjs` (16/0). Report `docs/vercel-cost-1-report.md`.
+- **Comparison pages are cached (V16.43, compare-cache-1):** 30 days, refreshed per country (`comparison-<CC>`) by the publish and by
+  the Admin Countries, Billing and Pricing check saves; the admin preview through draft mode (`/api/compare/preview`); 404 on hosts other
+  than hatchgrab.com. A new Admin screen that changes comparison data must call the same refresh.
 
 # 49. Deploy posture (current at V16.11; earlier postures below, each dated)
 
@@ -40746,6 +40835,12 @@ Reports: `docs/enquiries-backend-1-report.md`, `docs/inbox-1-report.md`, `docs/i
   if any live country would stop being live, naming it.
 - **Bundled card fees (V16.42):** where a vendor's rate includes card processing (Square, What The Truck), it is stored as `card_mode`
   bundled with the rate, never as a separate per-order fee on top.
+- **The guide (V16.43):** "Which system suits whom?" is built per country from `comparison_country_copy`
+  (`fit_off`, `delivery_apps`, `pay_methods_missing`, `collect_word`) and `offersOnlineCardPayments`. No tills or card machines, no
+  jargon, no delivery rates unless quoted from the app's own site for that country; a non-English language shows no guide until its
+  translation has had a native-speaker check.
+- **Plan reads are paged (V16.43):** any read of competitors, plans, answers or benchmarks that can pass 1,000 rows is paged; a harness
+  fails on an unpaged one. Supabase Max rows is 10,000 as a backstop.
 
 ---
 
